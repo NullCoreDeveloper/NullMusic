@@ -21,7 +21,6 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -184,7 +183,7 @@ fun GridItem(
     title: @Composable () -> Unit,
     subtitle: @Composable () -> Unit,
     badges: @Composable RowScope.() -> Unit = {},
-    thumbnailContent: @Composable BoxWithConstraintsScope.() -> Unit,
+    thumbnailContent: @Composable BoxScope.() -> Unit,
     thumbnailRatio: Float = 1f,
     fillMaxWidth: Boolean = false,
 ) {
@@ -200,7 +199,7 @@ fun GridItem(
                 .width(GridThumbnailHeight * thumbnailRatio)
         }
     ) {
-        BoxWithConstraints(
+        Box(
             contentAlignment = Alignment.Center,
             modifier = if (fillMaxWidth) {
                 Modifier.fillMaxWidth()
@@ -230,7 +229,7 @@ fun GridItem(
     title: String,
     subtitle: String,
     badges: @Composable RowScope.() -> Unit = {},
-    thumbnailContent: @Composable BoxWithConstraintsScope.() -> Unit,
+    thumbnailContent: @Composable BoxScope.() -> Unit,
     thumbnailRatio: Float = 1f,
     fillMaxWidth: Boolean = false,
 ) = GridItem(
@@ -416,12 +415,7 @@ fun ArtistListItem(
     badges = badges,
     thumbnailContent = {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(artist.artist.thumbnailUrl)
-                .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .build(),
+            model = artist.artist.thumbnailUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(ListThumbnailSize)
@@ -448,12 +442,7 @@ fun ArtistGridItem(
     badges = badges,
     thumbnailContent = {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(artist.artist.thumbnailUrl)
-                .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .build(),
+            model = artist.artist.thumbnailUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -721,10 +710,11 @@ fun PlaylistGridItem(
     },
     badges = badges,
     thumbnailContent = {
-        val width = maxWidth
-        PlaylistThumbnail(
-            thumbnails = playlist.thumbnails,
-            size = width,
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val width = maxWidth
+            PlaylistThumbnail(
+                thumbnails = playlist.thumbnails,
+                size = width,
             placeHolder = {
                 val painter = when (playlist.playlist.name) {
                     stringResource(R.string.liked) -> R.drawable.favorite_border
@@ -748,6 +738,7 @@ fun PlaylistGridItem(
             },
             shape = RoundedCornerShape(ThumbnailCornerRadius)
         )
+        } // end BoxWithConstraints
     },
     fillMaxWidth = fillMaxWidth,
     modifier = modifier
@@ -1062,6 +1053,15 @@ fun ItemThumbnail(
     isSelected: Boolean = false,
     thumbnailRatio: Float = 1f
 ) {
+    val context = LocalContext.current
+    val imageRequest = remember(thumbnailUrl) {
+        ImageRequest.Builder(context)
+            .data(thumbnailUrl)
+            .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .build()
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -1071,12 +1071,7 @@ fun ItemThumbnail(
     ) {
         if (albumIndex == null) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(thumbnailUrl)
-                    .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
-                    .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
-                    .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
-                    .build(),
+                model = imageRequest,
                 contentDescription = null,
                 error = painterResource(R.drawable.echo_logo),
                 modifier = Modifier
@@ -1142,6 +1137,15 @@ fun LocalThumbnail(
     playButtonVisible: Boolean = false,
     thumbnailRatio: Float = 1f
 ) {
+    val context = LocalContext.current
+    val imageRequest = remember(thumbnailUrl) {
+        ImageRequest.Builder(context)
+            .data(thumbnailUrl)
+            .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
+            .build()
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -1149,12 +1153,7 @@ fun LocalThumbnail(
             .clip(shape)
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(thumbnailUrl)
-                .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
-                .build(),
+            model = imageRequest,
             contentDescription = null,
             modifier = Modifier.fillMaxSize()
         )

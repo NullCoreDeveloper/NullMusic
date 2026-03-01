@@ -114,11 +114,13 @@ fun AmbientModeScreen(
                     .allowHardware(false)
                     .build()
                 val result = context.imageLoader.execute(request)
-                result.image?.toBitmap()?.let { bitmap ->
-                    val palette = androidx.palette.graphics.Palette.from(bitmap)
-                        .maximumColorCount(32)
-                        .generate()
-                    
+                result.image?.let { image ->
+                    val palette = withContext(Dispatchers.Default) {
+                        val bitmap = image.toBitmap()
+                        androidx.palette.graphics.Palette.from(bitmap)
+                            .maximumColorCount(32)
+                            .generate()
+                    }
                     gradientColors = PlayerColorExtractor.extractRichGradientColors(
                         palette = palette,
                         fallbackColor = Color.Black.toArgb()

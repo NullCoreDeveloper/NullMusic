@@ -82,7 +82,9 @@ import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.ui.theme.PlayerColorExtractor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import androidx.compose.foundation.clickable
@@ -174,10 +176,10 @@ private fun NewMiniPlayer(
                     .build()
                 val result = context.imageLoader.execute(request)
                 result.image?.let { image ->
-                    val bitmap = image.toBitmap()
-                    val palette = Palette.from(bitmap)
-                        .maximumColorCount(32)
-                        .generate()
+                    val palette = withContext(Dispatchers.Default) {
+                        val bitmap = image.toBitmap()
+                        Palette.from(bitmap).maximumColorCount(32).generate()
+                    }
                     gradientColors = PlayerColorExtractor.extractGradientColors(
                         palette = palette,
                         fallbackColor = Color.Black.toArgb()
@@ -599,10 +601,10 @@ private fun LegacyMiniPlayer(
                     .build()
                 val result = context.imageLoader.execute(request)
                 result.image?.let { image ->
-                    val bitmap = image.toBitmap()
-                    val palette = Palette.from(bitmap)
-                        .maximumColorCount(32)
-                        .generate()
+                    val palette = withContext(Dispatchers.Default) {
+                        val bitmap = image.toBitmap()
+                        Palette.from(bitmap).maximumColorCount(32).generate()
+                    }
                     gradientColors = PlayerColorExtractor.extractGradientColors(
                         palette = palette,
                         fallbackColor = Color.Black.toArgb()

@@ -5,12 +5,12 @@
     <string name="local_history">Locale</string>
     <string name="remote_history">Distant</string>
 
-    <string name="charts">Charts</string>
+    <string name="charts">Classements</string>
     <string name="back_button_desc">Retour</string>
     <string name="no_title">Sans titre</string>
     <string name="unknown_artist">Artiste inconnu</string>
     <string name="unknown_item_type">Type d\'élément inconnu</string>
-    <string name="loading_charts">Chargement des charts…</string>
+    <string name="loading_charts">Chargement des classements…</string>
     <string name="retry_button">Réessayer</string>
     <string name="album_cover_desc">Pochette d\'album</string>
     <string name="top_music_videos">Meilleurs Clips Musicaux</string>
@@ -261,6 +261,9 @@
     <string name="lastfm_integration">Intégration Last.fm</string>
     <string name="enable_scrobbling">Activer le scrobbling</string>
     <string name="lastfm_now_playing">Envoyer En cours de lecture</string>
+    <string name="last_fm_send_likes">Envoyer des likes à Last.fm</string>
+    <string name="last_fm_send_likes_description">Aimez/n\'aimez pas les morceaux sur Last.fm selon vos préférences</string>
+    <string name="logging_in">Connexion en cours…</string>
     <string name="scrobbling_configuration">Configuration du scrobbling</string>
     <string name="scrobble_min_track_duration">Scrobble les titres plus longs que</string>
     <string name="scrobble_delay_percent">Pourcentage de retard de scrobbling</string>

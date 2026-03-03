@@ -495,51 +495,11 @@ class MainActivity : ComponentActivity() {
                 pureBlackEnabled && useDarkTheme 
             }
 
-            val (selectedThemeColorInt) = rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
-            val selectedThemeColor = Color(selectedThemeColorInt)
-
-            var themeColor by rememberSaveable(stateSaver = ColorSaver) {
-                mutableStateOf(selectedThemeColor)
-            }
-
-            LaunchedEffect(playerConnection, enableDynamicTheme, selectedThemeColor) {
-                val playerConnection = playerConnection
-                if (!enableDynamicTheme || playerConnection == null) {
-                    themeColor = selectedThemeColor
-                    return@LaunchedEffect
-                }
-
-                playerConnection.service.currentMediaMetadata.collectLatest { song ->
-                    if (song?.thumbnailUrl != null) {
-                        withContext(Dispatchers.IO) {
-                            try {
-                                val result = imageLoader.execute(
-                                    ImageRequest.Builder(this@MainActivity)
-                                        .data(song.thumbnailUrl)
-                                        .allowHardware(false)
-                                        .memoryCachePolicy(CachePolicy.ENABLED)
-                                        .diskCachePolicy(CachePolicy.ENABLED)
-                                        .networkCachePolicy(CachePolicy.ENABLED)
-                                        .crossfade(false)
-                                        .build()
-                                )
-                                themeColor = result.image?.toBitmap()?.extractThemeColor()
-                                    ?: selectedThemeColor
-                            } catch (e: Exception) {
-                                themeColor = selectedThemeColor
-                            }
-                        }
-                    } else {
-                        themeColor = selectedThemeColor
-                    }
-                }
-            }
-
             EchoTheme(
                 darkTheme = useDarkTheme,
                 pureBlack = pureBlack,
-                themeColor = themeColor,
-                isDynamicColor = enableMaterialYou,
+                themeColor = DefaultThemeColor,
+                isDynamicColor = false,
             ) {
                 BoxWithConstraints(
                         modifier =

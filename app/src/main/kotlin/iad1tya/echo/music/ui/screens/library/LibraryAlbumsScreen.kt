@@ -103,7 +103,7 @@ fun LibraryAlbumsScreen(
                 selected = true,
                 colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surface),
                 onClick = onDeselect,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 leadingIcon = {
                     Icon(painter = painterResource(R.drawable.close), contentDescription = "")

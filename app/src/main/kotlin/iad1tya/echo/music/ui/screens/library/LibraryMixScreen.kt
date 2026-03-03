@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -44,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,47 +103,46 @@ import java.util.UUID
 private fun QuickAccessCard(
     title: String,
     icon: Int,
-    backgroundColor: Color,
+    accentColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isWhite = backgroundColor == Color.White
-    val cardModifier = if (isWhite) {
-        modifier
-            .height(65.dp)
-            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(50))
-            .clickable(onClick = onClick)
-    } else {
-        modifier
-            .height(65.dp)
-            .clickable(onClick = onClick)
-    }
-    
     Card(
-        modifier = cardModifier,
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        shape = RoundedCornerShape(50),
+        modifier = modifier
+            .height(72.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = if (isWhite) Arrangement.Center else Arrangement.Start
+            horizontalArrangement = Arrangement.Start
         ) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = title,
-                tint = Color.Black,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.size(12.dp))
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .background(accentColor.copy(alpha = 0.15f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(icon),
+                    contentDescription = title,
+                    tint = accentColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
             )
         }
     }
@@ -159,59 +159,48 @@ private fun QuickAccessSection(
     showUploaded: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val strLiked = stringResource(R.string.liked)
+    val strTop = stringResource(R.string.my_top) + " $topSize"
+    val strCached = stringResource(R.string.cached_playlist)
+    val strOffline = stringResource(R.string.offline)
+
+    val cards = buildList {
+        if (showLiked) add(Triple(strLiked, R.drawable.favorite, Color(0xFFE91E63)))
+        if (showTop) add(Triple(strTop, R.drawable.trending_up, Color(0xFFFFC107)))
+        if (showCached) add(Triple(strCached, R.drawable.cached, Color(0xFF26C6DA)))
+        if (showDownloaded) add(Triple(strOffline, R.drawable.download, Color(0xFF66BB6A)))
+    }
+    if (cards.isEmpty()) return
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (showLiked) {
-                QuickAccessCard(
-                    title = stringResource(R.string.liked),
-                    icon = R.drawable.favorite,
-                    backgroundColor = Color(0xFFFF85C1), // Shifted Pink
-                    onClick = { navController.navigate("auto_playlist/liked") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            if (showTop) {
-                QuickAccessCard(
-                    title = stringResource(R.string.my_top) + " $topSize",
-                    icon = R.drawable.trending_up,
-                    backgroundColor = Color(0xFFFFC107), // Shifted Yellow/Amber
-                    onClick = { navController.navigate("top_playlist/$topSize") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (showCached) {
-                QuickAccessCard(
-                    title = stringResource(R.string.cached_playlist),
-                    icon = R.drawable.cached,
-                    backgroundColor = Color(0xFF26C6DA), // Shifted Cyan
-                    onClick = { navController.navigate("cache_playlist/cached") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            // Downloads / Offline
-            if (showDownloaded) {
-                QuickAccessCard(
-                    title = stringResource(R.string.offline),
-                    icon = R.drawable.download,
-                    backgroundColor = Color(0xFFFFFFFF), // White
-                    onClick = { navController.navigate("auto_playlist/downloaded") },
-                    modifier = Modifier.weight(1f)
-                )
+        cards.chunked(2).forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                row.forEach { (title, icon, color) ->
+                    QuickAccessCard(
+                        title = title,
+                        icon = icon,
+                        accentColor = color,
+                        onClick = {
+                            when (title) {
+                                strLiked -> navController.navigate("auto_playlist/liked")
+                                strOffline -> navController.navigate("auto_playlist/downloaded")
+                                strCached -> navController.navigate("cache_playlist/cached")
+                                else -> navController.navigate("top_playlist/$topSize")
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                // If odd row, fill remaining space
+                if (row.size == 1) Spacer(Modifier.weight(1f))
             }
         }
     }

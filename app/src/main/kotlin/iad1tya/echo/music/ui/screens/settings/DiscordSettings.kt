@@ -521,6 +521,13 @@ fun DiscordSettings(
                         { onDiscordRPCChange(!discordRPC) }
                     } else null,
                 ),
+            ),
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Material3SettingsGroup(
+            items = listOf(
                 Material3SettingsItem(
                     title = {
                         Text(
@@ -545,6 +552,13 @@ fun DiscordSettings(
                         { onUseDetailsChange(!useDetails) }
                     } else null,
                 ),
+            ),
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Material3SettingsGroup(
+            items = listOf(
                 Material3SettingsItem(
                     title = {
                         Text(
@@ -593,6 +607,13 @@ fun DiscordSettings(
                             },
                             onClick = { showStatusDialog = true },
                         ),
+                    ),
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Material3SettingsGroup(
+                    items = listOf(
                         Material3SettingsItem(
                             title = { Text(stringResource(R.string.discord_activity_type)) },
                             description = {
@@ -607,6 +628,13 @@ fun DiscordSettings(
                             },
                             onClick = { showActivityTypeDialog = true },
                         ),
+                    ),
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Material3SettingsGroup(
+                    items = listOf(
                         Material3SettingsItem(
                             title = { Text(stringResource(R.string.discord_activity_name)) },
                             description = {
@@ -639,6 +667,13 @@ fun DiscordSettings(
                             },
                             onClick = { showButton1TextDialog = true },
                         ),
+                    ),
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Material3SettingsGroup(
+                    items = listOf(
                         Material3SettingsItem(
                             title = { Text(stringResource(R.string.discord_button_2)) },
                             description = {

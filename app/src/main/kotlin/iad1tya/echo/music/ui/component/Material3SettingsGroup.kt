@@ -42,7 +42,7 @@ fun Material3SettingsGroup(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize(),
-            shape = RoundedCornerShape(50),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),

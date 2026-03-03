@@ -28,6 +28,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -148,17 +151,19 @@ fun AccountSettings(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = if (showAccountSwitcher)
+                    RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                else
+                    RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(
-                        if (showAccountSwitcher) 
-                            RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
-                        else 
-                            RoundedCornerShape(50.dp)
-                    )
-                    .background(MaterialTheme.colorScheme.surface)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = androidx.compose.material3.ripple(),
@@ -171,7 +176,7 @@ fun AccountSettings(
                             }
                         }
                     )
-                    .padding(horizontal = 18.dp, vertical = 12.dp)
+                    .padding(horizontal = 18.dp, vertical = 14.dp)
             ) {
             if (isLoggedIn && accountImageUrl != null) {
                 AsyncImage(
@@ -230,6 +235,7 @@ fun AccountSettings(
                     Text(stringResource(R.string.action_logout))
                 }
             }
+            } // end profile Card
         }
 
             // Account Switcher Dropdown - appears directly below the account section
@@ -294,21 +300,22 @@ fun AccountSettings(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.surface)
-                .clickable {
-                    if (!isLoggedIn) showTokenEditor = true
-                    else if (!showToken) showToken = true
-                    else showTokenEditor = true
-                }
-                .padding(horizontal = 18.dp, vertical = 12.dp)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        if (!isLoggedIn) showTokenEditor = true
+                        else if (!showToken) showToken = true
+                        else showTokenEditor = true
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.key),
@@ -332,20 +339,21 @@ fun AccountSettings(
         Spacer(Modifier.height(4.dp))
 
         // Settings button
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.surface)
-                .clickable {
-                    onClose()
-                    navController.navigate("settings")
-                }
-                .padding(horizontal = 18.dp, vertical = 12.dp)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onClose()
+                        navController.navigate("settings")
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp)
             ) {
                 BadgedBox(
                     badge = {
@@ -385,25 +393,82 @@ fun AccountSettings(
                 onCheckedChange = {
                     YouTube.useLoginForBrowse = it
                     onUseLoginForBrowseChange(it)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.surface)
+                }
             )
-  
-            Spacer(Modifier.height(4.dp))
 
             SwitchPreference(
                 title = { Text(stringResource(R.string.yt_sync)) },
                 icon = { Icon(painterResource(R.drawable.cached), null) },
                 checked = ytmSync,
-                onCheckedChange = onYtmSyncChange,
+                onCheckedChange = onYtmSyncChange
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // Connections
+        Text(
+            text = "Connections",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable {
+                        onClose()
+                        navController.navigate("settings/discord")
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.discord),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(R.string.discord_integration),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 18.dp),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onClose()
+                        navController.navigate("settings/lastfm")
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.music_note),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(R.string.lastfm_integration),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
 
         Spacer(Modifier.height(12.dp))

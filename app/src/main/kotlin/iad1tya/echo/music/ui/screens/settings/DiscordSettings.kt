@@ -373,7 +373,7 @@ fun DiscordSettings(
 
         // Profile Card
         Card(
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ),
@@ -478,11 +478,13 @@ fun DiscordSettings(
                 ) {
                     OutlinedButton(
                         onClick = { navController.navigate("settings/discord/login") },
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Text(stringResource(R.string.action_login))
                     }
                     OutlinedButton(
                         onClick = { showTokenDialog = true },
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Icon(
                             painterResource(R.drawable.token),

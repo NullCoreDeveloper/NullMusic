@@ -18,7 +18,6 @@ data class MediaMetadata(
     val album: Album? = null,
     val setVideoId: String? = null,
     val explicit: Boolean = false,
-    val isVideoSong: Boolean = false,
     val liked: Boolean = false,
     val likedDate: LocalDateTime? = null,
     val inLibrary: LocalDateTime? = null,

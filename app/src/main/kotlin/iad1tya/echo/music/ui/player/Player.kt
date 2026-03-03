@@ -93,13 +93,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -172,7 +170,6 @@ fun BottomSheetPlayer(
     pureBlack: Boolean,
 ) {
     val context = LocalContext.current
-    val haptic = LocalHapticFeedback.current
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
@@ -299,10 +296,6 @@ fun BottomSheetPlayer(
         PlayerButtonsStyle.SECONDARY -> Pair(
             MaterialTheme.colorScheme.secondary,
             MaterialTheme.colorScheme.onSecondary
-        )
-        PlayerButtonsStyle.TERTIARY -> Pair(
-            MaterialTheme.colorScheme.tertiary,
-            MaterialTheme.colorScheme.onTertiary
         )
     }
 
@@ -602,7 +595,6 @@ fun BottomSheetPlayer(
                                         }
                                     },
                                     onLongClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         val clip = ClipData.newPlainText("Copied Title", title)
                                         clipboardManager.setPrimaryClip(clip)
                                         Toast
@@ -677,7 +669,6 @@ fun BottomSheetPlayer(
                                             }
                                         },
                                         onLongClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             val clip =
                                                 ClipData.newPlainText("Copied Artist", annotatedString)
                                             clipboardManager.setPrimaryClip(clip)

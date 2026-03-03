@@ -165,7 +165,6 @@ import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.DefaultOpenTabKey
 import iad1tya.echo.music.constants.DisableScreenshotKey
 import iad1tya.echo.music.constants.DynamicThemeKey
-import iad1tya.echo.music.constants.KeepScreenOn
 import iad1tya.echo.music.constants.MaterialYouKey
 import iad1tya.echo.music.constants.MiniPlayerHeight
 import iad1tya.echo.music.constants.MiniPlayerBottomSpacing
@@ -175,7 +174,6 @@ import iad1tya.echo.music.constants.NavigationBarAnimationSpec
 import iad1tya.echo.music.constants.NavigationBarHeight
 import iad1tya.echo.music.constants.PauseSearchHistoryKey
 import iad1tya.echo.music.constants.PureBlackKey
-import iad1tya.echo.music.constants.SelectedThemeColorKey
 import iad1tya.echo.music.constants.SYSTEM_DEFAULT
 import iad1tya.echo.music.constants.SearchSource
 import iad1tya.echo.music.constants.SearchSourceKey
@@ -430,20 +428,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // Keep screen on while playing
-            val keepScreenOn by rememberPreference(KeepScreenOn, defaultValue = false)
-            val isPlaying by playerConnection?.isPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
-            DisposableEffect(keepScreenOn, isPlaying) {
-                if (keepScreenOn && isPlaying) {
-                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                } else {
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                }
-                onDispose {
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                }
-            }
-
             LaunchedEffect(checkForUpdates) {
                 if (checkForUpdates) {
                     withContext(Dispatchers.IO) {
@@ -495,17 +479,14 @@ class MainActivity : ComponentActivity() {
                 pureBlackEnabled && useDarkTheme 
             }
 
-            val (selectedThemeColorInt) = rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
-            val selectedThemeColor = Color(selectedThemeColorInt)
-
             var themeColor by rememberSaveable(stateSaver = ColorSaver) {
-                mutableStateOf(selectedThemeColor)
+                mutableStateOf(DefaultThemeColor)
             }
 
-            LaunchedEffect(playerConnection, enableDynamicTheme, selectedThemeColor) {
+            LaunchedEffect(playerConnection, enableDynamicTheme) {
                 val playerConnection = playerConnection
                 if (!enableDynamicTheme || playerConnection == null) {
-                    themeColor = selectedThemeColor
+                    themeColor = DefaultThemeColor
                     return@LaunchedEffect
                 }
 
@@ -524,13 +505,14 @@ class MainActivity : ComponentActivity() {
                                         .build()
                                 )
                                 themeColor = result.image?.toBitmap()?.extractThemeColor()
-                                    ?: selectedThemeColor
+                                    ?: DefaultThemeColor
                             } catch (e: Exception) {
-                                themeColor = selectedThemeColor
+                                // Fallback to default on error
+                                themeColor = DefaultThemeColor
                             }
                         }
                     } else {
-                        themeColor = selectedThemeColor
+                        themeColor = DefaultThemeColor
                     }
                 }
             }

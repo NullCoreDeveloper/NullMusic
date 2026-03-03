@@ -218,13 +218,11 @@ fun LyricsScreen(
     val textBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
         PlayerBackgroundStyle.GRADIENT -> Color.White
-        PlayerBackgroundStyle.BLUR -> Color.White
     }
 
     val iconButtonColor = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.surface
         PlayerBackgroundStyle.GRADIENT -> Color.Black
-        PlayerBackgroundStyle.BLUR -> Color.Black
     }
 
     LaunchedEffect(playbackState) {

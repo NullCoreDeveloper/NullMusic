@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.echo.innertube.models.PlaylistItem
@@ -65,9 +63,7 @@ fun LibraryArtistGridItem(
     coroutineScope: CoroutineScope,
     artist: Artist,
     modifier: Modifier = Modifier
-) {
-    val haptic = LocalHapticFeedback.current
-    ArtistGridItem(
+) = ArtistGridItem(
     artist = artist,
     fillMaxWidth = true,
     modifier = modifier
@@ -77,7 +73,6 @@ fun LibraryArtistGridItem(
                 navController.navigate("artist/${artist.id}")
             },
             onLongClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 menuState.show {
                     ArtistMenu(
                         originalArtist = artist,
@@ -88,7 +83,6 @@ fun LibraryArtistGridItem(
             }
         )
 )
-}
 
 @Composable
 fun LibraryAlbumListItem(
@@ -137,9 +131,7 @@ fun LibraryAlbumGridItem(
     album: Album,
     isActive: Boolean = false,
     isPlaying: Boolean = false
-) {
-    val haptic = LocalHapticFeedback.current
-    AlbumGridItem(
+) = AlbumGridItem(
     album = album,
     isActive = isActive,
     isPlaying = isPlaying,
@@ -152,7 +144,6 @@ fun LibraryAlbumGridItem(
                 navController.navigate("album/${album.id}")
             },
             onLongClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 menuState.show {
                     AlbumMenu(
                         originalAlbum = album,
@@ -163,7 +154,6 @@ fun LibraryAlbumGridItem(
             }
         )
 )
-}
 
 @Composable
 fun LibraryPlaylistListItem(
@@ -239,9 +229,7 @@ fun LibraryPlaylistGridItem(
     coroutineScope: CoroutineScope,
     playlist: Playlist,
     modifier: Modifier = Modifier
-) {
-    val haptic = LocalHapticFeedback.current
-    PlaylistGridItem(
+) = PlaylistGridItem(
     playlist = playlist,
     fillMaxWidth = true,
     modifier = modifier
@@ -254,7 +242,6 @@ fun LibraryPlaylistGridItem(
                     navController.navigate("local_playlist/${playlist.id}")
             },
             onLongClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 menuState.show {
                     if (playlist.playlist.isEditable || playlist.songCount != 0) {
                         PlaylistMenu(
@@ -294,4 +281,3 @@ fun LibraryPlaylistGridItem(
             }
         )
 )
-}

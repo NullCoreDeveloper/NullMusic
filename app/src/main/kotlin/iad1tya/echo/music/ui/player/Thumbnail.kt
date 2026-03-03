@@ -121,7 +121,6 @@ fun Thumbnail(
     val textBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
         PlayerBackgroundStyle.GRADIENT -> Color.White
-        PlayerBackgroundStyle.BLUR -> Color.White
     }
     
     // Grid state

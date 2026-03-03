@@ -16,8 +16,6 @@ package iad1tya.echo.music.ui.screens
  import androidx.compose.runtime.getValue
  import androidx.compose.runtime.rememberCoroutineScope
  import androidx.compose.ui.Modifier
- import androidx.compose.ui.hapticfeedback.HapticFeedbackType
- import androidx.compose.ui.platform.LocalHapticFeedback
  import androidx.compose.ui.res.painterResource
  import androidx.compose.ui.res.stringResource
  import androidx.compose.ui.unit.dp
@@ -50,7 +48,6 @@ package iad1tya.echo.music.ui.screens
     viewModel: BrowseViewModel = hiltViewModel(),
 ) {
      val menuState = LocalMenuState.current
-     val haptic = LocalHapticFeedback.current
      val playerConnection = LocalPlayerConnection.current ?: return
      val isPlaying by playerConnection.isPlaying.collectAsState()
      val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -87,7 +84,6 @@ package iad1tya.echo.music.ui.screens
                                  }
                              },
                              onLongClick = {
-                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                  menuState.show {
                                      when (item) {
                                          is AlbumItem ->

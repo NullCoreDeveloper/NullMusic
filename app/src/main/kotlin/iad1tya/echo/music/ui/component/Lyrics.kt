@@ -81,12 +81,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -180,7 +178,6 @@ fun Lyrics(
     val menuState = LocalMenuState.current
     val density = LocalDensity.current
     val context = LocalContext.current
-    val haptic = LocalHapticFeedback.current
     val configuration = LocalConfiguration.current // Get configuration
 
     val landscapeOffset =
@@ -207,9 +204,6 @@ fun Lyrics(
     val autoTranslateLyricsMismatch by rememberPreference(AutoTranslateLyricsMismatchKey, false)
     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
     val translateMode by rememberPreference(iad1tya.echo.music.constants.TranslateModeKey, "Literal")
-    
-    val lyricsTextSize by rememberPreference(iad1tya.echo.music.constants.LyricsTextSizeKey, 20f)
-    val lyricsLineSpacing by rememberPreference(iad1tya.echo.music.constants.LyricsLineSpacingKey, 6f)
     
     val scope = rememberCoroutineScope()
 
@@ -909,7 +903,6 @@ fun Lyrics(
                                 }
                             },
                             onLongClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 if (!isSelectionModeActive) {
                                     isSelectionModeActive = true
                                     selectedIndices.add(index)
@@ -928,7 +921,7 @@ fun Lyrics(
                             )
                             else Color.Transparent
                         )
-                        .padding(horizontal = 24.dp, vertical = lyricsLineSpacing.dp)
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
                         .graphicsLayer {
                             scaleX = animatedScale
                             scaleY = animatedScale
@@ -986,7 +979,7 @@ fun Lyrics(
                         // ORIGINAL TEXT (always on top, larger)
                         Text(
                             text = item.text,
-                            fontSize = lyricsTextSize.sp,
+                            fontSize = 24.sp,
                             color = if (isActive) {
                                 currentTextColor
                             } else {
@@ -1010,7 +1003,7 @@ fun Lyrics(
                         if (showSecondaryText && secondaryText != null) {
                             Text(
                                 text = secondaryText,
-                                fontSize = (lyricsTextSize * 0.67f).sp,
+                                fontSize = 16.sp,
                                 color = if (isActive) {
                                     currentTextColor.copy(alpha = 0.7f)
                                 } else {

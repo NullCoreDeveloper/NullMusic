@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.palette.graphics.Palette
-import com.materialkolor.rememberDynamicColorScheme
 import com.materialkolor.score.Score
 
 val DefaultThemeColor = Color(0xFFED5564)
@@ -110,18 +109,9 @@ fun EchoTheme(
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val useSystemDynamic = isDynamicColor && themeColor == DefaultThemeColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val useCustomSeedColor = themeColor != DefaultThemeColor
-
     val colorScheme = when {
-        useSystemDynamic -> {
+        isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        useCustomSeedColor -> {
-            rememberDynamicColorScheme(
-                seedColor = themeColor,
-                isDark = darkTheme,
-            )
         }
         else -> if (darkTheme) DarkColorScheme else LightColorScheme
     }

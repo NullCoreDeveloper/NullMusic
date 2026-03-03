@@ -38,10 +38,3 @@ fun List<MediaItem>.filterExplicit(enabled: Boolean = true) =
     } else {
         this
     }
-
-fun List<MediaItem>.filterVideoSongs(disableVideos: Boolean = false) =
-    if (disableVideos) {
-        filterNot { it.metadata?.isVideoSong == true }
-    } else {
-        this
-    }

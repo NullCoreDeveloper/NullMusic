@@ -270,4 +270,6 @@
     <string name="scrobble_min_track_duration">Scrobble songs longer than</string>
     <string name="scrobble_delay_percent">Scrobble delay percent</string>
     <string name="scrobble_delay_minutes">Scrobble delay minutes</string>
+    <string name="stat_total_plays">Plays</string>
+    <string name="stat_listening_time">Listening time</string>
 </resources>

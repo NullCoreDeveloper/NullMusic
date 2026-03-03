@@ -2,18 +2,26 @@ package iad1tya.echo.music.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -253,6 +261,57 @@ fun StatsScreen(
                 )
             }
 
+            item(key = "stats_summary") {
+                val totalTime = mostPlayedSongsStats.sumOf { it.timeListened ?: 0L }
+                val totalPlays = mostPlayedSongsStats.sumOf { it.songCountListened.toLong() }
+                if (mostPlayedSongsStats.isNotEmpty()) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        ),
+                        elevation = CardDefaults.cardElevation(0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "$totalPlays",
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(R.string.stat_total_plays),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(
+                                    text = makeTimeString(totalTime),
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(R.string.stat_listening_time),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             item(key = "mostPlayedSongs") {
                 NavigationTitle(
                     title = "${mostPlayedSongsStats.size} ${stringResource(id = R.string.songs)}",
@@ -313,6 +372,10 @@ fun StatsScreen(
                 }
             }
 
+            item(key = "songs_artists_spacer") {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             item(key = "mostPlayedArtists") {
                 NavigationTitle(
                     title = "${mostPlayedArtists.size} ${stringResource(id = R.string.artists)}",
@@ -359,6 +422,10 @@ fun StatsScreen(
                         )
                     }
                 }
+            }
+
+            item(key = "artists_albums_spacer") {
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item(key = "mostPlayedAlbums") {

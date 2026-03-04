@@ -9,10 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.SQLException
+import android.database.ContentObserver
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.provider.Settings
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.LoudnessEnhancer
 import android.net.ConnectivityManager
@@ -303,6 +305,7 @@ class MusicService :
     // Pause on mute state
     private var wasPlayingBeforeVolumeMute = false
     private var isPausedByVolumeMute = false
+    private var volumeObserver: ContentObserver? = null
 
     // Discord RPC
     private var discordRpc: DiscordRPC? = null
@@ -332,11 +335,11 @@ class MusicService :
                 it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
                         it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
             } == true
-            if (hasBluetooth) {
-                if (dataStore.get(ResumeOnBluetoothConnectKey, false)) {
-                    if (player.playbackState == Player.STATE_READY && !player.isPlaying) {
-                        player.play()
-                    }
+            if (hasBluetooth && dataStore.get(ResumeOnBluetoothConnectKey, false)) {
+                // Resume regardless of buffering state — audio routing change can briefly
+                // push the player into STATE_BUFFERING, so don't gate on STATE_READY.
+                if (!player.isPlaying) {
+                    player.play()
                 }
             }
         }
@@ -421,6 +424,38 @@ class MusicService :
 
         // Register Bluetooth audio device callback for auto-resume
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
+
+        // Register ContentObserver for pause-on-mute — more reliable than
+        // Player.Listener.onDeviceVolumeChanged which only fires for ExoPlayer API calls.
+        volumeObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                if (!dataStore.get(PauseOnMute, false)) return
+                val streamVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                val isMuted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    audioManager.isStreamMute(AudioManager.STREAM_MUSIC) || streamVol == 0
+                } else {
+                    streamVol == 0
+                }
+                if (isMuted) {
+                    if (player.isPlaying) {
+                        wasPlayingBeforeVolumeMute = true
+                        isPausedByVolumeMute = true
+                        player.pause()
+                    }
+                } else {
+                    if (wasPlayingBeforeVolumeMute && isPausedByVolumeMute && !player.isPlaying) {
+                        wasPlayingBeforeVolumeMute = false
+                        isPausedByVolumeMute = false
+                        player.play()
+                    }
+                }
+            }
+        }
+        contentResolver.registerContentObserver(
+            Settings.System.CONTENT_URI,
+            true,
+            volumeObserver!!
+        )
 
         // Initialize crossfade settings
         crossfadeEnabled = dataStore.get(CrossfadeEnabledKey, false)
@@ -1707,22 +1742,9 @@ class MusicService :
         }
     }
 
-    override fun onDeviceVolumeChanged(volume: Int, muted: Boolean) {
-        val pauseOnMuteEnabled = dataStore.get(PauseOnMute, false)
-        if ((volume == 0 || muted) && pauseOnMuteEnabled) {
-            if (player.isPlaying) {
-                wasPlayingBeforeVolumeMute = true
-                isPausedByVolumeMute = true
-                player.pause()
-            }
-        } else if (volume > 0 && !muted && pauseOnMuteEnabled) {
-            if (wasPlayingBeforeVolumeMute && !player.isPlaying) {
-                wasPlayingBeforeVolumeMute = false
-                isPausedByVolumeMute = false
-                player.play()
-            }
-        }
-    }
+    // onDeviceVolumeChanged is intentionally NOT used for pause-on-mute because it only
+    // fires for volume changes made through ExoPlayer's own APIs, not hardware volume keys.
+    // The ContentObserver registered in onCreate is the reliable replacement.
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
@@ -2523,6 +2545,8 @@ class MusicService :
         releaseLoudnessEnhancer()
         cleanupCrossfade()
         audioManager.unregisterAudioDeviceCallback(audioDeviceCallback)
+        volumeObserver?.let { contentResolver.unregisterContentObserver(it) }
+        volumeObserver = null
         player.removeListener(this)
         player.removeListener(sleepTimer)
         

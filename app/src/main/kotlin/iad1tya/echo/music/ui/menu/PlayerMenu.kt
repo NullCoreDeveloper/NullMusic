@@ -84,6 +84,7 @@ import iad1tya.echo.music.ui.component.ListDialog
 import iad1tya.echo.music.ui.component.AdvancedDownloadDialog
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
+import iad1tya.echo.music.ui.component.RingtoneTrimDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.log2
@@ -109,7 +110,8 @@ fun PlayerMenu(
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
 
-    val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
+    val downloadUtil = LocalDownloadUtil.current
+    val download by downloadUtil.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
 
     val artists =
@@ -139,6 +141,25 @@ fun PlayerMenu(
 
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    var showRingtoneTrimDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showRingtoneTrimDialog) {
+        RingtoneTrimDialog(
+            songId        = mediaMetadata.id,
+            title         = mediaMetadata.title,
+            artist        = mediaMetadata.artists.firstOrNull()?.name ?: "",
+            duration      = mediaMetadata.duration ?: 0,
+            downloadCache = downloadUtil.downloadCache,
+            playerCache   = downloadUtil.playerCache,
+            onDismiss     = {
+                showRingtoneTrimDialog = false
+                onDismiss()
+            },
+        )
     }
 
     if (showSelectArtistDialog) {
@@ -368,6 +389,18 @@ fun PlayerMenu(
                                 navController.navigate("ambient_mode")
                                 onDismiss()
                             }
+                        ),
+                        NewAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.notification),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(36.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            },
+                            text = "Set ringtone",
+                            onClick = { showRingtoneTrimDialog = true }
                         )
                     ),
                     modifier = Modifier.padding(12.dp)

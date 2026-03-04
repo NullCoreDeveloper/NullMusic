@@ -216,6 +216,8 @@ dependencies {
     implementation(libs.media3.okhttp)
     implementation(libs.media3.ui)
     implementation(libs.media3.cast)
+    implementation(libs.media3.transformer)
+    implementation(libs.media3.transformer)
     implementation(libs.mediarouter)
     implementation(libs.cast.framework)
     implementation(libs.squigglyslider)

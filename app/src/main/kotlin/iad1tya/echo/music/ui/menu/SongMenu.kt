@@ -92,6 +92,7 @@ import iad1tya.echo.music.ui.component.ListDialog
 import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
+import iad1tya.echo.music.ui.component.RingtoneTrimDialog
 import iad1tya.echo.music.ui.component.SongListItem
 import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
@@ -252,6 +253,25 @@ fun SongMenu(
 
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    var showRingtoneTrimDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showRingtoneTrimDialog) {
+        RingtoneTrimDialog(
+            songId        = song.id,
+            title         = song.song.title,
+            artist        = song.artists.firstOrNull()?.name ?: "",
+            duration      = song.song.duration,
+            downloadCache = downloadUtil.downloadCache,
+            playerCache   = downloadUtil.playerCache,
+            onDismiss     = {
+                showRingtoneTrimDialog = false
+                onDismiss()
+            },
+        )
     }
 
     if (showSelectArtistDialog) {
@@ -415,6 +435,39 @@ fun SongMenu(
                                 }
                                 context.startActivity(Intent.createChooser(intent, null))
                             }
+                        ),
+                        NewAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.notification),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            text = "Set ringtone",
+                            onClick = { showRingtoneTrimDialog = true }
+                        )
+                    ),
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                )
+            }
+        } else {
+            // Local songs: show ringtone action in its own grid
+            item {
+                NewActionGrid(
+                    actions = listOf(
+                        NewAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.notification),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            text = "Set ringtone",
+                            onClick = { showRingtoneTrimDialog = true }
                         )
                     ),
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
@@ -774,37 +827,6 @@ fun SongMenu(
                     }
                 )
                 }
-            }
-        }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-            ListItem(
-                headlineContent = { Text(text = "Set as ringtone") },
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.notification),
-                        contentDescription = null,
-                    )
-                },
-                modifier = Modifier.clickable {
-                    onDismiss()
-                    scope.launch {
-                        iad1tya.echo.music.utils.RingtoneHelper.setAsRingtone(
-                            context = context,
-                            songId = song.id,
-                            title = song.song.title,
-                            artist = song.artists.firstOrNull()?.name ?: "",
-                            downloadCache = downloadUtil.downloadCache,
-                            playerCache = downloadUtil.playerCache,
-                        )
-                    }
-                }
-            )
             }
         }
         item {

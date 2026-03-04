@@ -316,7 +316,9 @@ private fun NewMiniPlayer(
                 .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
                 .clip(RoundedCornerShape(32.dp)) // Clip first for perfect rounded corners
                 .then(
-                    if (gradientColors.isNotEmpty()) {
+                    if (pureBlack || pureBlackMiniPlayer) {
+                        Modifier.background(Color.Black)
+                    } else if (gradientColors.isNotEmpty()) {
                         Modifier.background(
                             Brush.horizontalGradient(
                                 colors = gradientColors
@@ -324,7 +326,7 @@ private fun NewMiniPlayer(
                         )
                     } else {
                         Modifier.background(
-                            color = if (pureBlack || pureBlackMiniPlayer) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+                            color = MaterialTheme.colorScheme.surfaceContainer
                         )
                     }
                 )
@@ -584,6 +586,7 @@ private fun LegacyMiniPlayer(
     val coroutineScope = rememberCoroutineScope()
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
     val swipeThumbnail by rememberPreference(iad1tya.echo.music.constants.SwipeThumbnailKey, true)
+    val pureBlackMiniPlayer by rememberPreference(PureBlackMiniPlayerKey, false)
 
     // NEW: Get screen configuration to determine if it's a tablet in landscape mode.
     val configuration = LocalConfiguration.current
@@ -649,7 +652,9 @@ private fun LegacyMiniPlayer(
             // preventing sharp edges when the width is reduced.
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .then(
-                if (gradientColors.isNotEmpty()) {
+                if (pureBlack || pureBlackMiniPlayer) {
+                    Modifier.background(Color.Black)
+                } else if (gradientColors.isNotEmpty()) {
                     Modifier.background(
                         Brush.verticalGradient(
                             colors = gradientColors
@@ -657,10 +662,7 @@ private fun LegacyMiniPlayer(
                     )
                 } else {
                     Modifier.background(
-                        if (pureBlack)
-                            Color.Black
-                        else
-                            MaterialTheme.colorScheme.surfaceContainer
+                        color = MaterialTheme.colorScheme.surfaceContainer
                     )
                 }
             )

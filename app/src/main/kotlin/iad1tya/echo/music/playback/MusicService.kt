@@ -1460,26 +1460,9 @@ class MusicService :
         }
     }
 
-    private fun startHapticsPolling() {
-        hapticsPollingJob?.cancel()
-        hapticsPollingJob = scope.launch {
-            while (isActive && player.isPlaying) {
-                try {
-                    // Use loudnessEnhancer target gain as a proxy for amplitude
-                    // Use player volume as a simple amplitude proxy
-                    val normalizedAmplitude = if (player.isPlaying) {
-                        // Simulate amplitude based on player state - real amplitude would require AudioVisualizer
-                        val baseAmplitude = 0.5f + (Math.random().toFloat() * 0.3f)
-                        baseAmplitude
-                    } else 0f
-                    // Also factor in volume
-                    val volume = player.volume
-                    hapticsManager.onAmplitude(normalizedAmplitude * volume)
-                } catch (_: Exception) { }
-                delay(50)
-            }
-        }
-    }
+    // hapticsPollingJob retained for cancellation in onDestroy; polling is no longer
+    // needed — the Visualizer in MusicHapticsManager fires its own callbacks.
+    private fun startHapticsPolling() { /* no-op: Visualizer drives callbacks directly */ }
 
     private fun openAudioEffectSession() {
         if (isAudioEffectSessionOpened) return
@@ -1620,14 +1603,12 @@ class MusicService :
         if (playWhenReady) {
             setupLoudnessEnhancer()
         }
-        // Music Haptics
+        // Music Haptics — pass the real audio session so Visualizer can capture amplitude
         if (dataStore.get(MusicHapticsEnabledKey, false)) {
             if (playWhenReady && player.playbackState == Player.STATE_READY) {
-                hapticsManager.start()
-                startHapticsPolling()
+                hapticsManager.start(player.audioSessionId)
             } else {
                 hapticsManager.stop()
-                hapticsPollingJob?.cancel()
             }
         }
         // Update widget

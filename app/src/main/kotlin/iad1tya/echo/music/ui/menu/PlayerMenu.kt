@@ -161,9 +161,9 @@ fun PlayerMenu(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -244,9 +244,9 @@ fun PlayerMenu(
                     // Volume Control Container
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                         ),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                          Row(
@@ -278,9 +278,9 @@ fun PlayerMenu(
              // Quick Actions Container
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f)
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 ),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -293,17 +293,17 @@ fun PlayerMenu(
                                     Download.STATE_COMPLETED -> Icon(
                                         painter = painterResource(R.drawable.offline),
                                         contentDescription = null,
-                                        modifier = Modifier.size(26.dp),
+                                        modifier = Modifier.size(36.dp),
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                     Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> CircularProgressIndicator(
-                                        modifier = Modifier.size(26.dp),
+                                        modifier = Modifier.size(36.dp),
                                         strokeWidth = 2.dp
                                     )
                                     else -> Icon(
                                         painter = painterResource(R.drawable.download),
                                         contentDescription = null,
-                                        modifier = Modifier.size(26.dp),
+                                        modifier = Modifier.size(36.dp),
                                         tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -347,7 +347,7 @@ fun PlayerMenu(
                                 Icon(
                                     painter = painterResource(R.drawable.playlist_add),
                                     contentDescription = null,
-                                    modifier = Modifier.size(26.dp),
+                                    modifier = Modifier.size(36.dp),
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                             },
@@ -359,7 +359,7 @@ fun PlayerMenu(
                                 Icon(
                                     painter = painterResource(R.drawable.bedtime), 
                                     contentDescription = null,
-                                    modifier = Modifier.size(26.dp),
+                                    modifier = Modifier.size(36.dp),
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                             },
@@ -475,9 +475,9 @@ private fun MenuGroup(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)

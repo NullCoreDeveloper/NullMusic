@@ -24,7 +24,10 @@ import com.google.android.gms.cast.framework.SessionManagerListener
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +38,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,6 +95,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -405,6 +410,10 @@ fun BottomSheetPlayer(
         mutableStateOf(false)
     }
 
+    var showLyricsInPlayer by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(playbackState) {
         if (playbackState == STATE_READY) {
             while (isActive) {
@@ -539,7 +548,7 @@ fun BottomSheetPlayer(
                     if (mediaMetadata.id.isNotEmpty() && isRectangularThumbnail) {
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(50))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(Color.White)
                                 .clickable {
                                     // Pause the current song before switching to video
@@ -558,15 +567,15 @@ fun BottomSheetPlayer(
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.play),
-                                    contentDescription = "Switch to Video",
+                                    contentDescription = "Video",
                                     tint = Color.Black,
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(14.dp)
                                 )
                                 Text(
-                                    "Switch to Video",
+                                    "Video",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = Color.Black,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -700,11 +709,12 @@ fun BottomSheetPlayer(
                 if (useNewPlayerDesign) {
                     val audioRoutingShape = RoundedCornerShape(
                         topStart = 50.dp, bottomStart = 50.dp,
-                        topEnd = 5.dp, bottomEnd = 5.dp
+                        topEnd = 8.dp, bottomEnd = 8.dp
                     )
 
-                    val favShape = RoundedCornerShape(
-                        topStart = 5.dp, bottomStart = 5.dp,
+                    val favShape = RoundedCornerShape(8.dp)
+                    val shareShape = RoundedCornerShape(
+                        topStart = 8.dp, bottomStart = 8.dp,
                         topEnd = 50.dp, bottomEnd = 50.dp
                     )
 
@@ -756,7 +766,7 @@ fun BottomSheetPlayer(
                             Image(
                                 painter = painterResource(audioIcon),
                                 contentDescription = null,
-                                colorFilter = ColorFilter.tint(Color.White),
+                                colorFilter = ColorFilter.tint(iconButtonColor),
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .size(24.dp)
@@ -778,6 +788,33 @@ fun BottomSheetPlayer(
                                         R.drawable.favorite
                                     else R.drawable.favorite_border
                                 ),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(iconButtonColor),
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(24.dp)
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(shareShape)
+                                .background(textButtonColor)
+                                .clickable {
+                                    val intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        type = "text/plain"
+                                        putExtra(
+                                            Intent.EXTRA_TEXT,
+                                            "https://music.youtube.com/watch?v=${mediaMetadata.id}"
+                                        )
+                                    }
+                                    context.startActivity(Intent.createChooser(intent, null))
+                                }
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.share),
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(iconButtonColor),
                                 modifier = Modifier
@@ -982,9 +1019,20 @@ fun BottomSheetPlayer(
                 ) {
                     val maxW = maxWidth
                     val playButtonHeight = maxW / 6f
-                    val playButtonWidth = playButtonHeight * 1.6f
+                    val playButtonWidth = playButtonHeight * 2.2f
                     val sideButtonHeight = playButtonHeight * 0.8f
                     val sideButtonWidth = sideButtonHeight * 1.3f
+
+                    val playInteractionSource = remember { MutableInteractionSource() }
+                    val isPlayPressed by playInteractionSource.collectIsPressedAsState()
+                    val playBounceScale by animateFloatAsState(
+                        targetValue = if (isPlayPressed) 0.90f else 1f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        ),
+                        label = "playBounceScale"
+                    )
 
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -1021,6 +1069,7 @@ fun BottomSheetPlayer(
                                     playerConnection.player.togglePlayPause()
                                 }
                             },
+                            interactionSource = playInteractionSource,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = textButtonColor,
                                 contentColor = iconButtonColor
@@ -1028,6 +1077,7 @@ fun BottomSheetPlayer(
                             modifier = Modifier
                                 .size(width = playButtonWidth, height = playButtonHeight)
                                 .clip(RoundedCornerShape(32.dp))
+                                .graphicsLayer(scaleX = playBounceScale, scaleY = playBounceScale)
                         ) {
                             Icon(
                                 painter = painterResource(
@@ -1178,57 +1228,17 @@ fun BottomSheetPlayer(
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Back button at top left
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = "Close player",
-                        tint = textButtonColor,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top + WindowInsetsSides.Start))
-                            .padding(16.dp)
-                            .size(24.dp)
-                            .clickable { state.collapseSoft() }
-                    )
-                    
-                    // Echo Music title at top center
-                    Text(
-                        text = "Echo Music",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(R.font.zalando_sans_expanded)),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 28.sp
-                        ),
-                        color = textButtonColor,
+                    // Drag-down indicator
+                    Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
-                            .padding(16.dp)
+                            .padding(top = 12.dp)
+                            .size(width = 36.dp, height = 4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Color.White.copy(alpha = 0.4f))
                     )
-                    
-                    // Share button at top right
-                    Icon(
-                        painter = painterResource(R.drawable.share),
-                        contentDescription = "Share",
-                        tint = textButtonColor,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top + WindowInsetsSides.End))
-                            .padding(16.dp)
-                            .size(24.dp)
-                            .clickable {
-                                val intent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    type = "text/plain"
-                                    putExtra(
-                                        Intent.EXTRA_TEXT,
-                                        "https://music.youtube.com/watch?v=${mediaMetadata?.id}"
-                                    )
-                                }
-                                context.startActivity(Intent.createChooser(intent, null))
-                            }
-                    )
-                    
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier =
@@ -1240,18 +1250,24 @@ fun BottomSheetPlayer(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f),
                     ) {
-                        Thumbnail(
-                            sliderPositionProvider = { sliderPosition },
-                            modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
-                            isPlayerExpanded = state.isExpanded,
-                            onToggleLyrics = {
-                                if (lyricsSheetState.isExpanded) {
-                                    lyricsSheetState.collapseSoft()
-                                } else {
-                                    lyricsSheetState.expandSoft()
-                                }
+                        if (showLyricsInPlayer) {
+                            mediaMetadata?.let { meta ->
+                                LyricsScreen(
+                                    mediaMetadata = meta,
+                                    onBackClick = { showLyricsInPlayer = false },
+                                    navController = navController,
+                                    backgroundAlpha = 1f,
+                                    isVisible = true
+                                )
                             }
-                        )
+                        } else {
+                            Thumbnail(
+                                sliderPositionProvider = { sliderPosition },
+                                modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
+                                isPlayerExpanded = state.isExpanded,
+                                onToggleLyrics = { showLyricsInPlayer = true }
+                            )
+                        }
                     }
 
                     mediaMetadata?.let {
@@ -1299,36 +1315,29 @@ fun BottomSheetPlayer(
                             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
                             .padding(bottom = queueSheetState.collapsedBound),
                     ) {
-                        // Top Bar alignment handling
-                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                                .height(48.dp) // Approximate height for top bar area
-                        ) {
-                             // Back and Share buttons will be placed here by the Box below, 
-                             // but we reserve space in the column if needed or just let them float.
-                             // Actually, the Back and Share buttons are floating in the outer Box. 
-                             // We just need the Column to start below them or have padding.
-                        }
-                        
                         // Main Thumbnail
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.weight(1f),
                         ) {
-                            Thumbnail(
-                                sliderPositionProvider = { sliderPosition },
-                                modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
-                                isPlayerExpanded = state.isExpanded,
-                                onToggleLyrics = {
-                                    if (lyricsSheetState.isExpanded) {
-                                        lyricsSheetState.collapseSoft()
-                                    } else {
-                                        lyricsSheetState.expandSoft()
-                                    }
+                            if (showLyricsInPlayer) {
+                                mediaMetadata?.let { meta ->
+                                    LyricsScreen(
+                                        mediaMetadata = meta,
+                                        onBackClick = { showLyricsInPlayer = false },
+                                        navController = navController,
+                                        backgroundAlpha = 1f,
+                                        isVisible = true
+                                    )
                                 }
-                            )
+                            } else {
+                                Thumbnail(
+                                    sliderPositionProvider = { sliderPosition },
+                                    modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
+                                    isPlayerExpanded = state.isExpanded,
+                                    onToggleLyrics = { showLyricsInPlayer = true }
+                                )
+                            }
                         }
 
                         mediaMetadata?.let {
@@ -1338,56 +1347,15 @@ fun BottomSheetPlayer(
                         Spacer(Modifier.height(30.dp))
                     }
 
-                    // 3. Top Controls (Back, Share) - Floating on top
-                    // Back button at top left
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = "Close player",
-                        tint = Color.White, // Always white on dark immersive bg
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top + WindowInsetsSides.Start))
-                            .padding(16.dp)
-                            .size(24.dp)
-                            .clickable { state.collapseSoft() }
-                    )
-                    
-                    // Echo Music title at top center
-                    Text(
-                        text = "Echo Music",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(R.font.zalando_sans_expanded)),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 28.sp
-                        ),
-                        color = Color.White, // Always white on dark immersive bg
+                    // Drag-down indicator
+                    Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
-                            .padding(16.dp)
-                    )
-                    
-                    // Share button at top right
-                    Icon(
-                        painter = painterResource(R.drawable.share),
-                        contentDescription = "Share",
-                        tint = Color.White, // Always white on dark immersive bg
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top + WindowInsetsSides.End))
-                            .padding(16.dp)
-                            .size(24.dp)
-                            .clickable {
-                                val intent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    type = "text/plain"
-                                    putExtra(
-                                        Intent.EXTRA_TEXT,
-                                        "https://music.youtube.com/watch?v=${mediaMetadata?.id}"
-                                    )
-                                }
-                                context.startActivity(Intent.createChooser(intent, null))
-                            }
+                            .padding(top = 12.dp)
+                            .size(width = 36.dp, height = 4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Color.White.copy(alpha = 0.4f))
                     )
                 }
             }

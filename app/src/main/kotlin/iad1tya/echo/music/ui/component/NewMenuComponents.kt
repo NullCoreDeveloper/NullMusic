@@ -68,14 +68,14 @@ fun NewActionButton(
             colors = CardDefaults.cardColors(
                 containerColor = animatedBackground
             ),
-            shape = RoundedCornerShape(50),
+            shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp
             )
         ) {
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
                 contentAlignment = Alignment.Center
             ) {
                 icon()

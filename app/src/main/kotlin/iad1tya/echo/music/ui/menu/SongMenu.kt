@@ -425,6 +425,12 @@ fun SongMenu(
             item {
                 when (download?.state) {
                     Download.STATE_COMPLETED -> {
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                            elevation = CardDefaults.cardElevation(0.dp)
+                        ) {
                         ListItem(
                             headlineContent = {
                                 Text(
@@ -447,8 +453,15 @@ fun SongMenu(
                                 )
                             }
                         )
+                        }
                     }
                     Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                            elevation = CardDefaults.cardElevation(0.dp)
+                        ) {
                         ListItem(
                             headlineContent = { Text(text = stringResource(R.string.downloading)) },
                             leadingContent = {
@@ -466,8 +479,15 @@ fun SongMenu(
                                 )
                             }
                         )
+                        }
                     }
                     else -> {
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                            elevation = CardDefaults.cardElevation(0.dp)
+                        ) {
                         ListItem(
                             headlineContent = { Text(text = stringResource(R.string.action_download)) },
                             leadingContent = {
@@ -491,11 +511,18 @@ fun SongMenu(
                                 )
                             }
                         )
+                        }
                     }
                 }
             }
         }
         item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.play_next)) },
                 leadingContent = {
@@ -509,8 +536,15 @@ fun SongMenu(
                     playerConnection.playNext(song.toMediaItem())
                 }
             )
+            }
         }
         item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.add_to_queue)) },
                 leadingContent = {
@@ -524,9 +558,16 @@ fun SongMenu(
                     playerConnection.addToQueue(song.toMediaItem())
                 }
             )
+            }
         }
         if (!song.song.isLocal) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = {
                         Text(
@@ -561,10 +602,17 @@ fun SongMenu(
                         }
                     }
                 )
+                }
             }
         }
         if (event != null) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.remove_from_history)) },
                     leadingContent = {
@@ -580,10 +628,17 @@ fun SongMenu(
                         }
                     }
                 )
+                }
             }
         }
         if (playlistSong != null) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.remove_from_playlist)) },
                     leadingContent = {
@@ -609,10 +664,17 @@ fun SongMenu(
                         onDismiss()
                     }
                 )
+                }
             }
         }
         if (isFromCache) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.remove_from_cache)) },
                     leadingContent = {
@@ -626,9 +688,16 @@ fun SongMenu(
                         cacheViewModel.removeSongFromCache(song.id)
                     }
                 )
+                }
             }
         }
         item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.view_artist)) },
                 leadingContent = {
@@ -646,9 +715,16 @@ fun SongMenu(
                     }
                 }
             )
+            }
         }
         if (song.song.albumId != null) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.view_album)) },
                     leadingContent = {
@@ -662,10 +738,17 @@ fun SongMenu(
                         navController.navigate("album/${song.song.albumId}")
                     }
                 )
+                }
             }
         }
         if (!song.song.isLocal) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.refetch)) },
                     leadingContent = {
@@ -689,9 +772,16 @@ fun SongMenu(
                         }
                     }
                 )
+                }
             }
         }
         item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.details)) },
                 leadingContent = {
@@ -707,6 +797,7 @@ fun SongMenu(
                     }
                 }
             )
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package iad1tya.echo.music.ui.player
 
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -42,6 +43,7 @@ import com.echo.innertube.YouTube
 import com.echo.innertube.models.YouTubeClient
 import com.echo.innertube.models.response.PlayerResponse
 import iad1tya.echo.music.R
+import iad1tya.echo.music.pip.PipHelper
 import iad1tya.echo.music.ui.theme.EchoTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -101,6 +103,24 @@ class VideoPlayerActivity : ComponentActivity() {
         super.onDestroy()
         exoPlayer?.release()
         exoPlayer = null
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val isPlaying = exoPlayer?.isPlaying == true
+            try {
+                enterPictureInPictureMode(
+                    PipHelper.buildPipParams(this, isPlaying, isVideo = true)
+                )
+            } catch (_: Exception) { }
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode)
+        // Controls are hidden automatically in PiP; we just track state
     }
     
     data class VideoQuality(

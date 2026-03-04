@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -76,7 +74,6 @@ import iad1tya.echo.music.constants.YtmSyncKey
 import iad1tya.echo.music.ui.component.InfoLabel
 import iad1tya.echo.music.ui.component.PreferenceEntry
 import iad1tya.echo.music.ui.component.ReleaseNotesCard
-import iad1tya.echo.music.ui.component.SwitchPreference
 import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.ui.component.AccountSwitcherDropdown
 import iad1tya.echo.music.utils.rememberPreference
@@ -300,14 +297,83 @@ fun AccountSettings(
             )
         }
 
+        // Actions card — Settings, Import from Spotify, Advanced Login
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
+            // Settings row
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onClose()
+                        navController.navigate("settings")
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                BadgedBox(
+                    badge = {
+                        if (latestVersionName != BuildConfig.VERSION_NAME) {
+                            Badge(containerColor = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.settings_outlined),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 18.dp),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+            )
+
+            // Import from Spotify row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onClose()
+                        navController.navigate("spotify_import")
+                    }
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_spotify),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Import from Spotify",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 18.dp),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+            )
+
+            // Advanced login / token row
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -315,67 +381,23 @@ fun AccountSettings(
                         else if (!showToken) showToken = true
                         else showTokenEditor = true
                     }
-                    .padding(horizontal = 18.dp, vertical = 14.dp)
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.key),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
-
-                Spacer(Modifier.width(16.dp))
-
                 Text(
                     text = when {
                         !isLoggedIn -> stringResource(R.string.advanced_login)
                         showToken -> stringResource(R.string.token_shown)
                         else -> stringResource(R.string.token_hidden)
                     },
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-        }
-
-        Spacer(Modifier.height(4.dp))
-
-        // Settings button
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-            elevation = CardDefaults.cardElevation(0.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onClose()
-                        navController.navigate("settings")
-                    }
-                    .padding(horizontal = 18.dp, vertical = 14.dp)
-            ) {
-                BadgedBox(
-                    badge = {
-                        if (latestVersionName != BuildConfig.VERSION_NAME) {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.settings_outlined),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                Spacer(Modifier.width(16.dp))
-
-                Text(
-                    text = stringResource(R.string.settings),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
@@ -390,26 +412,71 @@ fun AccountSettings(
                 modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
             )
 
-            SwitchPreference(
-                title = { Text(stringResource(R.string.more_content)) },
-                description = "Load personalised content using your account",
-                icon = { Icon(painterResource(R.drawable.add_circle), null) },
-                checked = useLoginForBrowse,
-                onCheckedChange = {
-                    YouTube.useLoginForBrowse = it
-                    onUseLoginForBrowseChange(it)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onUseLoginForBrowseChange(!useLoginForBrowse).also { YouTube.useLoginForBrowse = !useLoginForBrowse } }
+                        .padding(horizontal = 18.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.add_circle),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = stringResource(R.string.more_content),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+                    androidx.compose.material3.Switch(
+                        checked = useLoginForBrowse,
+                        onCheckedChange = {
+                            YouTube.useLoginForBrowse = it
+                            onUseLoginForBrowseChange(it)
+                        }
+                    )
                 }
-            )
 
-            Spacer(Modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 18.dp),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                )
 
-            SwitchPreference(
-                title = { Text(stringResource(R.string.yt_sync)) },
-                description = "Sync likes, playlists and history with your account",
-                icon = { Icon(painterResource(R.drawable.cached), null) },
-                checked = ytmSync,
-                onCheckedChange = onYtmSyncChange
-            )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onYtmSyncChange(!ytmSync) }
+                        .padding(horizontal = 18.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.cached),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = stringResource(R.string.yt_sync),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+                    androidx.compose.material3.Switch(
+                        checked = ytmSync,
+                        onCheckedChange = onYtmSyncChange
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(8.dp))

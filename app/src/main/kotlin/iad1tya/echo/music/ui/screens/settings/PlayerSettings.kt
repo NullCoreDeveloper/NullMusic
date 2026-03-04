@@ -63,6 +63,7 @@ import iad1tya.echo.music.constants.DisableLoadMoreWhenRepeatAllKey
 import iad1tya.echo.music.constants.AutoSkipNextOnErrorKey
 import iad1tya.echo.music.constants.DoubleTapToLikeKey
 import iad1tya.echo.music.constants.KeepScreenOn
+import iad1tya.echo.music.constants.MusicHapticsEnabledKey
 import iad1tya.echo.music.constants.PauseOnMute
 import iad1tya.echo.music.constants.PersistentQueueKey
 import iad1tya.echo.music.constants.PreventDuplicateTracksInQueueKey
@@ -71,6 +72,7 @@ import iad1tya.echo.music.constants.ResumeOnBluetoothConnectKey
 import iad1tya.echo.music.constants.SimilarContent
 import iad1tya.echo.music.constants.SkipSilenceKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
+import iad1tya.echo.music.constants.TTSAnnouncementEnabledKey
 import iad1tya.echo.music.constants.TapAlbumArtForLyricsKey
 import iad1tya.echo.music.constants.HistoryDuration
 import iad1tya.echo.music.constants.SeekExtraSeconds
@@ -186,6 +188,16 @@ fun PlayerSettings(
     val (rememberShuffleRepeat, onRememberShuffleRepeatChange) = rememberPreference(
         RememberShuffleAndRepeatKey,
         defaultValue = true
+    )
+
+    val (ttsAnnouncementEnabled, onTtsAnnouncementEnabledChange) = rememberPreference(
+        TTSAnnouncementEnabledKey,
+        defaultValue = false
+    )
+
+    val (musicHapticsEnabled, onMusicHapticsEnabledChange) = rememberPreference(
+        MusicHapticsEnabledKey,
+        defaultValue = false
     )
 
     Column(
@@ -391,6 +403,22 @@ fun PlayerSettings(
             icon = { Icon(painterResource(R.drawable.favorite), null) },
             checked = doubleTapToLike,
             onCheckedChange = onDoubleTapToLikeChange
+        )
+
+        SwitchPreference(
+            title = { Text("TTS song announcement") },
+            description = "Announce song title and artist when track changes",
+            icon = { Icon(painterResource(R.drawable.notification), null) },
+            checked = ttsAnnouncementEnabled,
+            onCheckedChange = onTtsAnnouncementEnabledChange
+        )
+
+        SwitchPreference(
+            title = { Text("Music haptics") },
+            description = "Vibrate to the beat of the music",
+            icon = { Icon(painterResource(R.drawable.graphic_eq), null) },
+            checked = musicHapticsEnabled,
+            onCheckedChange = onMusicHapticsEnabledChange
         )
 
         SwitchPreference(

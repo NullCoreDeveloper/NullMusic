@@ -118,6 +118,7 @@ fun SongMenu(
     val song = songState.value ?: originalSong
     val download by LocalDownloadUtil.current.getDownload(originalSong.id)
         .collectAsState(initial = null)
+    val downloadUtil = LocalDownloadUtil.current
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
     val scope = rememberCoroutineScope()
@@ -773,6 +774,37 @@ fun SongMenu(
                     }
                 )
                 }
+            }
+        }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(0.dp)
+            ) {
+            ListItem(
+                headlineContent = { Text(text = "Set as ringtone") },
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.notification),
+                        contentDescription = null,
+                    )
+                },
+                modifier = Modifier.clickable {
+                    onDismiss()
+                    scope.launch {
+                        iad1tya.echo.music.utils.RingtoneHelper.setAsRingtone(
+                            context = context,
+                            songId = song.id,
+                            title = song.song.title,
+                            artist = song.artists.firstOrNull()?.name ?: "",
+                            downloadCache = downloadUtil.downloadCache,
+                            playerCache = downloadUtil.playerCache,
+                        )
+                    }
+                }
+            )
             }
         }
         item {

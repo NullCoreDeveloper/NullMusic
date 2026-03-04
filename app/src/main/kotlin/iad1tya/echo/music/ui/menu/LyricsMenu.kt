@@ -67,6 +67,7 @@ import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.viewmodels.LyricsMenuViewModel
 import androidx.compose.runtime.rememberCoroutineScope
+import iad1tya.echo.music.utils.LyricsPdfGenerator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -389,6 +390,33 @@ fun LyricsMenu(
                         text = stringResource(R.string.search),
                         onClick = {
                             showSearchDialog = true
+                        }
+                    ),
+                    NewAction(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.share),
+                                contentDescription = null,
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        text = "Export PDF",
+                        onClick = {
+                            onDismiss()
+                            val lyrics = lyricsProvider()?.lyrics
+                            if (lyrics.isNullOrEmpty()) {
+                                Toast.makeText(context, "No lyrics available to export", Toast.LENGTH_SHORT).show()
+                            } else {
+                                scope.launch {
+                                    LyricsPdfGenerator.generateAndShare(
+                                        context = context,
+                                        title = mediaMetadataProvider().title,
+                                        artist = mediaMetadataProvider().artists.joinToString(", ") { it.name },
+                                        lyrics = lyrics
+                                    )
+                                }
+                            }
                         }
                     )
                 ),

@@ -113,6 +113,9 @@ fun NavGraphBuilder.navigationBuilder(
     composable("stats") {
         StatsScreen(navController)
     }
+    composable("spotify_import") {
+        SpotifyImportScreen(navController)
+    }
     composable("mood_and_genres") {
         MoodAndGenresScreen(navController, scrollBehavior)
     }

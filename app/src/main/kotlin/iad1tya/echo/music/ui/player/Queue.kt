@@ -177,7 +177,7 @@ fun Queue(
 
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
-        defaultValue = false
+        defaultValue = true
     )
 
     val snackbarHostState = remember { SnackbarHostState() }

@@ -147,7 +147,7 @@ fun AppearanceSettings(
         PureBlackMiniPlayerKey, defaultValue = false
     )
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
-        UseNewPlayerDesignKey, defaultValue = false
+        UseNewPlayerDesignKey, defaultValue = true
     )
     val (useNewMiniPlayerDesign, onUseNewMiniPlayerDesignChange) = rememberPreference(
         UseNewMiniPlayerDesignKey, defaultValue = true
@@ -167,7 +167,7 @@ fun AppearanceSettings(
     val (playerBackground, onPlayerBackgroundChange) =
         rememberEnumPreference(
             PlayerBackgroundStyleKey,
-            defaultValue = PlayerBackgroundStyle.DEFAULT,
+            defaultValue = PlayerBackgroundStyle.BLUR,
         )
 
     val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(

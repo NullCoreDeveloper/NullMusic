@@ -2577,7 +2577,7 @@ class MusicService :
         super.onTaskRemoved(rootIntent)
         
         // Check if user wants to stop music when task is cleared
-        if (dataStore.get(StopMusicOnTaskClearKey, false)) {
+        if (dataStore.get(StopMusicOnTaskClearKey, true)) {
             player.pause()
             stopSelf()
         }

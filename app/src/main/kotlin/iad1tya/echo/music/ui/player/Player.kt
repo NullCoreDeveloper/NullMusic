@@ -199,7 +199,7 @@ fun BottomSheetPlayer(
     // preventing the flash of old UI before DataStore emits (e.g. returning from ambient mode).
     val useNewPlayerDesignDefault = remember {
         runBlocking(Dispatchers.IO) {
-            context.dataStore.data.first()[UseNewPlayerDesignKey] ?: false
+            context.dataStore.data.first()[UseNewPlayerDesignKey] ?: true
         }
     }
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
@@ -208,7 +208,7 @@ fun BottomSheetPlayer(
     )
     val playerBackground by rememberEnumPreference(
         key = PlayerBackgroundStyleKey,
-        defaultValue = PlayerBackgroundStyle.DEFAULT
+        defaultValue = PlayerBackgroundStyle.BLUR
     )
     val playerButtonsStyle by rememberEnumPreference(
         key = PlayerButtonsStyleKey,

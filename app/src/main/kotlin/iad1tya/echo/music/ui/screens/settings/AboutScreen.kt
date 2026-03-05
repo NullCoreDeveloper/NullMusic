@@ -215,66 +215,66 @@ fun AboutScreen(
         // Community Section
         Text(
             text = "Connect With Us",
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 8.dp)
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
         )
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Column(modifier = Modifier.padding(4.dp)) {
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.language),
-                    title = "Website",
-                    subtitle = "echomusic.fun",
-                    onClick = { uriHandler.openUri("https://echomusic.fun") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.github),
-                    title = "GitHub",
-                    subtitle = "iad1tya/Echo-Music",
-                    onClick = { uriHandler.openUri("https://github.com/iad1tya/Echo-Music") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.discord),
-                    title = "Discord",
-                    subtitle = "Join our community",
-                    onClick = { uriHandler.openUri("https://discord.gg/EcfV3AxH5c") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.telegram),
-                    title = "Telegram",
-                    subtitle = "Follow for updates",
-                    onClick = { uriHandler.openUri("https://t.me/EchoMusicApp") },
-                    isLast = true
-                )
-            }
+            SocialLinkItem(
+                icon = painterResource(R.drawable.language),
+                title = "Website",
+                subtitle = "echomusic.fun",
+                onClick = { uriHandler.openUri("https://echomusic.fun") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.github),
+                title = "GitHub",
+                subtitle = "iad1tya/Echo-Music",
+                onClick = { uriHandler.openUri("https://github.com/iad1tya/Echo-Music") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.discord),
+                title = "Discord",
+                subtitle = "Join our community",
+                onClick = { uriHandler.openUri("https://discord.gg/EcfV3AxH5c") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.telegram),
+                title = "Telegram",
+                subtitle = "Follow for updates",
+                onClick = { uriHandler.openUri("https://t.me/EchoMusicApp") }
+            )
         }
 
         Spacer(Modifier.height(24.dp))
@@ -282,66 +282,66 @@ fun AboutScreen(
         // Support Section
         Text(
             text = "Support Development",
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 8.dp)
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
         )
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Column(modifier = Modifier.padding(4.dp)) {
-                BuyMeCoffeeItem(
-                    onClick = { uriHandler.openUri("https://www.buymeacoffee.com/iad1tya") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.patreon),
-                    title = "Patreon",
-                    subtitle = "Monthly support",
-                    iconSize = 24.dp,
-                    onClick = { uriHandler.openUri("https://patreon.com/iad1tya") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.upi),
-                    title = "UPI Payment",
-                    subtitle = "Support via UPI (India)",
-                    iconSize = 30.dp,
-                    onClick = { uriHandler.openUri("https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.currency_bitcoin),
-                    title = "Cryptocurrency",
-                    subtitle = "Bitcoin, Ethereum, Solana",
-                    iconSize = 24.dp,
-                    onClick = { showCryptoDialog = true },
-                    isLast = true
-                )
-            }
+            BuyMeCoffeeItem(
+                onClick = { uriHandler.openUri("https://www.buymeacoffee.com/iad1tya") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.patreon),
+                title = "Patreon",
+                subtitle = "Monthly support",
+                iconSize = 24.dp,
+                onClick = { uriHandler.openUri("https://patreon.com/iad1tya") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.upi),
+                title = "UPI Payment",
+                subtitle = "Support via UPI (India)",
+                iconSize = 30.dp,
+                onClick = { uriHandler.openUri("https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.currency_bitcoin),
+                title = "Cryptocurrency",
+                subtitle = "Bitcoin, Ethereum, Solana",
+                iconSize = 24.dp,
+                onClick = { showCryptoDialog = true }
+            )
         }
 
         Spacer(Modifier.height(24.dp))
@@ -349,54 +349,51 @@ fun AboutScreen(
         // Contact & Legal Section
         Text(
             text = "Information",
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 8.dp)
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
         )
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Column(modifier = Modifier.padding(4.dp)) {
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.mail_filled),
-                    title = "Contact",
-                    subtitle = "hello@echomusic.fun",
-                    onClick = { uriHandler.openUri("mailto:hello@echomusic.fun") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.lock),
-                    title = "Privacy Policy",
-                    subtitle = "How we handle your data",
-                    onClick = { uriHandler.openUri("https://echomusic.fun/p/privacy-policy") }
-                )
-                
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                )
-                
-                SocialLinkItem(
-                    icon = painterResource(R.drawable.info),
-                    title = "Terms & Conditions",
-                    subtitle = "Terms of service",
-                    onClick = { uriHandler.openUri("https://echomusic.fun/p/toc") },
-                    isLast = true
-                )
-            }
+            SocialLinkItem(
+                icon = painterResource(R.drawable.mail_filled),
+                title = "Contact",
+                subtitle = "hello@echomusic.fun",
+                onClick = { uriHandler.openUri("mailto:hello@echomusic.fun") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.lock),
+                title = "Privacy Policy",
+                subtitle = "How we handle your data",
+                onClick = { uriHandler.openUri("https://echomusic.fun/p/privacy-policy") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.info),
+                title = "Terms & Conditions",
+                subtitle = "Terms of service",
+                onClick = { uriHandler.openUri("https://echomusic.fun/p/toc") }
+            )
         }
 
         Spacer(Modifier.height(32.dp))
@@ -547,7 +544,7 @@ private fun SocialLinkItem(
             .clickable(onClick = onClick)
             .padding(
                 horizontal = 16.dp,
-                vertical = if (isLast) 12.dp else 16.dp
+                vertical = 14.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {

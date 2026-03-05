@@ -410,15 +410,6 @@ fun AboutScreen(
         )
 
         Spacer(Modifier.height(20.dp))
-
-        // Footer
-        Text(
-            text = "Made with passion for music lovers worldwide",
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
     }
 
     Box {

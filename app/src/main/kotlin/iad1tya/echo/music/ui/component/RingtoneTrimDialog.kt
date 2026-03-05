@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import android.media.MediaPlayer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +46,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.SimpleCache
 import iad1tya.echo.music.R
 import iad1tya.echo.music.utils.RingtoneHelper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.roundToInt
@@ -123,6 +127,49 @@ fun RingtoneTrimDialog(
     val endSec      = sliderValues.endInclusive.roundToInt().coerceAtLeast(startSec + 1)
     val clipDuration = endSec - startSec
     val isValid     = clipDuration in 1..MAX_CLIP_SEC
+
+    // ── Preview playback ─────────────────────────────────────────────────────
+    var isPreviewPlaying by remember { mutableStateOf(false) }
+    val mediaPlayerRef   = remember { mutableStateOf<MediaPlayer?>(null) }
+
+    androidx.compose.runtime.DisposableEffect(Unit) {
+        onDispose {
+            try { mediaPlayerRef.value?.release() } catch (_: Exception) {}
+            mediaPlayerRef.value = null
+        }
+    }
+
+    fun stopPreview() {
+        try {
+            mediaPlayerRef.value?.let { mp ->
+                if (mp.isPlaying) mp.stop()
+                mp.release()
+            }
+        } catch (_: Exception) {}
+        mediaPlayerRef.value = null
+        isPreviewPlaying = false
+    }
+
+    fun startPreview(audioFile: File) {
+        stopPreview()
+        scope.launch {
+            try {
+                val mp = MediaPlayer()
+                mp.setDataSource(audioFile.absolutePath)
+                mp.prepare()
+                mp.seekTo(startSec * 1000)
+                mp.setOnCompletionListener { isPreviewPlaying = false; mediaPlayerRef.value = null }
+                mp.start()
+                mediaPlayerRef.value = mp
+                isPreviewPlaying = true
+                // Auto-stop when the selected clip ends
+                delay((endSec - startSec).toLong() * 1000L)
+                stopPreview()
+            } catch (_: Exception) {
+                isPreviewPlaying = false
+            }
+        }
+    }
 
     AlertDialog(
         onDismissRequest = {
@@ -216,6 +263,7 @@ fun RingtoneTrimDialog(
                             RangeSlider(
                                 value = sliderValues,
                                 onValueChange = { new ->
+                                    if (isPreviewPlaying) stopPreview()
                                     val coerced = coerceRange(new)
                                     prevValues   = sliderValues
                                     sliderValues = coerced
@@ -242,6 +290,28 @@ fun RingtoneTrimDialog(
                                     text = formatTime(endSec),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+
+                            Spacer(Modifier.height(4.dp))
+
+                            OutlinedButton(
+                                onClick = {
+                                    if (isPreviewPlaying) stopPreview()
+                                    else startPreview(currentPhase.audioFile)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        if (isPreviewPlaying) R.drawable.pause else R.drawable.play
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    if (isPreviewPlaying) "Stop Preview" else "Preview Clip"
                                 )
                             }
                         }
@@ -277,6 +347,7 @@ fun RingtoneTrimDialog(
                     Button(
                         enabled = isValid,
                         onClick = {
+                            stopPreview()
                             scope.launch {
                                 phase = RingtonePhase.Processing("Creating ringtone…")
                                 val ok = RingtoneHelper.processAndSetRingtone(

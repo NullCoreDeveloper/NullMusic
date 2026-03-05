@@ -670,6 +670,41 @@ fun BottomSheetPlayer(
                 label = "playPauseRoundness",
             )
 
+            // Crossfading indicator - centered between album art and song title
+            AnimatedVisibility(
+                visible = isCrossfading,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { -it }),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.shuffle),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Text(
+                            text = "Crossfading",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                }
+            }
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
@@ -750,39 +785,6 @@ fun BottomSheetPlayer(
                         Spacer(Modifier.height(40.dp))
                     }
                     Spacer(Modifier.height(8.dp))
-
-                    // Crossfading indicator
-                    AnimatedVisibility(
-                        visible = isCrossfading,
-                        enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
-                        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it }),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                .padding(horizontal = 14.dp, vertical = 6.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.shuffle),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Text(
-                                    text = "Crossfading",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.SemiBold,
-                                    letterSpacing = 0.5.sp
-                                )
-                            }
-                        }
-                    }
 
                     AnimatedContent(
                         targetState = mediaMetadata.title,

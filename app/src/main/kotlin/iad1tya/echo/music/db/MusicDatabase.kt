@@ -109,7 +109,10 @@ abstract class InternalDatabase : RoomDatabase() {
                 delegate =
                 Room
                     .databaseBuilder(context, InternalDatabase::class.java, DB_NAME)
-                    .addMigrations(MIGRATION_1_2, MIGRATION_25_26)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_26, MIGRATION_25_26)
+                    // Safety net: any version gap not covered by explicit migrations falls
+                    // back to a fresh database instead of crashing the app.
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
                     .build(),
             )
@@ -320,6 +323,217 @@ val MIGRATION_1_2 =
                     ),
                 )
             }
+        }
+    }
+
+/**
+ * Comprehensive migration from v2 schema (produced by MIGRATION_1_2) to v26.
+ *
+ * Covers users who have been on the app since early versions (v1/v2) and are
+ * upgrading directly to v26. It:
+ *   - Recreates `song`, `artist`, `album`, `playlist` tables with the v26 schema,
+ *     preserving all data that existed in v2 for each table.
+ *   - Drops the legacy `download` table.
+ *   - Creates all tables added after v2 (format, lyrics, event, related_song_map,
+ *     set_video_id, playCount, account).
+ *   - Recreates all views.
+ */
+val MIGRATION_2_26 =
+    object : Migration(2, 26) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Drop old views first — they reference tables being recreated.
+            db.execSQL("DROP VIEW IF EXISTS `sorted_song_artist_map`")
+            db.execSQL("DROP VIEW IF EXISTS `sorted_song_album_map`")
+            db.execSQL("DROP VIEW IF EXISTS `playlist_song_map_preview`")
+
+            // ── song ──────────────────────────────────────────────────────────
+            db.execSQL(
+                """CREATE TABLE `song_new` (
+                    `id` TEXT NOT NULL,
+                    `title` TEXT NOT NULL,
+                    `duration` INTEGER NOT NULL,
+                    `thumbnailUrl` TEXT,
+                    `albumId` TEXT,
+                    `albumName` TEXT,
+                    `explicit` INTEGER NOT NULL DEFAULT 0,
+                    `year` INTEGER,
+                    `date` INTEGER,
+                    `dateModified` INTEGER,
+                    `liked` INTEGER NOT NULL,
+                    `likedDate` INTEGER,
+                    `totalPlayTime` INTEGER NOT NULL,
+                    `inLibrary` INTEGER,
+                    `dateDownload` INTEGER,
+                    `isLocal` INTEGER NOT NULL DEFAULT 0,
+                    `localPath` TEXT,
+                    `libraryAddToken` TEXT,
+                    `libraryRemoveToken` TEXT,
+                    `romanizeLyrics` INTEGER NOT NULL DEFAULT 1,
+                    `isDownloaded` INTEGER NOT NULL DEFAULT 0,
+                    `isUploaded` INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """INSERT INTO `song_new`
+                    (id, title, duration, thumbnailUrl, albumId, albumName, liked, totalPlayTime)
+                   SELECT id, title, duration, thumbnailUrl, albumId, albumName, liked, totalPlayTime
+                   FROM `song`"""
+            )
+            db.execSQL("DROP TABLE `song`")
+            db.execSQL("ALTER TABLE `song_new` RENAME TO `song`")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_song_albumId` ON `song` (`albumId`)")
+
+            // ── artist ────────────────────────────────────────────────────────
+            db.execSQL(
+                """CREATE TABLE `artist_new` (
+                    `id` TEXT NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `thumbnailUrl` TEXT,
+                    `channelId` TEXT,
+                    `lastUpdateTime` INTEGER NOT NULL,
+                    `bookmarkedAt` INTEGER,
+                    `isLocal` INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """INSERT INTO `artist_new` (id, name, thumbnailUrl, lastUpdateTime)
+                   SELECT id, name, thumbnailUrl, lastUpdateTime FROM `artist`"""
+            )
+            db.execSQL("DROP TABLE `artist`")
+            db.execSQL("ALTER TABLE `artist_new` RENAME TO `artist`")
+
+            // ── album ─────────────────────────────────────────────────────────
+            db.execSQL(
+                """CREATE TABLE `album_new` (
+                    `id` TEXT NOT NULL,
+                    `playlistId` TEXT,
+                    `title` TEXT NOT NULL,
+                    `year` INTEGER,
+                    `thumbnailUrl` TEXT,
+                    `themeColor` INTEGER,
+                    `songCount` INTEGER NOT NULL,
+                    `duration` INTEGER NOT NULL,
+                    `explicit` INTEGER NOT NULL DEFAULT 0,
+                    `lastUpdateTime` INTEGER NOT NULL,
+                    `bookmarkedAt` INTEGER,
+                    `likedDate` INTEGER,
+                    `inLibrary` INTEGER,
+                    `isLocal` INTEGER NOT NULL DEFAULT 0,
+                    `isUploaded` INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """INSERT INTO `album_new` (id, title, year, thumbnailUrl, songCount, duration, lastUpdateTime)
+                   SELECT id, title, year, thumbnailUrl, songCount, duration, lastUpdateTime
+                   FROM `album`"""
+            )
+            db.execSQL("DROP TABLE `album`")
+            db.execSQL("ALTER TABLE `album_new` RENAME TO `album`")
+
+            // ── playlist ──────────────────────────────────────────────────────
+            db.execSQL(
+                """CREATE TABLE `playlist_new` (
+                    `id` TEXT NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `browseId` TEXT,
+                    `createdAt` INTEGER,
+                    `lastUpdateTime` INTEGER,
+                    `isEditable` INTEGER NOT NULL DEFAULT 1,
+                    `bookmarkedAt` INTEGER,
+                    `remoteSongCount` INTEGER,
+                    `playEndpointParams` TEXT,
+                    `thumbnailUrl` TEXT,
+                    `shuffleEndpointParams` TEXT,
+                    `radioEndpointParams` TEXT,
+                    `isLocal` INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """INSERT INTO `playlist_new` (id, name)
+                   SELECT id, name FROM `playlist`"""
+            )
+            db.execSQL("DROP TABLE `playlist`")
+            db.execSQL("ALTER TABLE `playlist_new` RENAME TO `playlist`")
+
+            // ── drop legacy download table ────────────────────────────────────
+            db.execSQL("DROP TABLE IF EXISTS `download`")
+
+            // ── new tables added after v2 ─────────────────────────────────────
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `format` (
+                    `id` TEXT NOT NULL,
+                    `itag` INTEGER NOT NULL,
+                    `mimeType` TEXT NOT NULL,
+                    `codecs` TEXT NOT NULL,
+                    `bitrate` INTEGER NOT NULL,
+                    `sampleRate` INTEGER,
+                    `contentLength` INTEGER NOT NULL,
+                    `loudnessDb` REAL,
+                    `playbackUrl` TEXT,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `lyrics` (
+                    `id` TEXT NOT NULL,
+                    `lyrics` TEXT NOT NULL,
+                    PRIMARY KEY(`id`))"""
+            )
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `event` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `songId` TEXT NOT NULL,
+                    `timestamp` INTEGER NOT NULL,
+                    `playTime` INTEGER NOT NULL,
+                    FOREIGN KEY(`songId`) REFERENCES `song`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE)"""
+            )
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_event_songId` ON `event` (`songId`)")
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `related_song_map` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `songId` TEXT NOT NULL,
+                    `relatedSongId` TEXT NOT NULL,
+                    FOREIGN KEY(`songId`) REFERENCES `song`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE,
+                    FOREIGN KEY(`relatedSongId`) REFERENCES `song`(`id`)
+                        ON UPDATE NO ACTION ON DELETE CASCADE)"""
+            )
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_related_song_map_songId` ON `related_song_map` (`songId`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_related_song_map_relatedSongId` ON `related_song_map` (`relatedSongId`)")
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `set_video_id` (
+                    `videoId` TEXT NOT NULL,
+                    `setVideoId` TEXT,
+                    PRIMARY KEY(`videoId`))"""
+            )
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `playCount` (
+                    `song` TEXT NOT NULL,
+                    `year` INTEGER NOT NULL,
+                    `month` INTEGER NOT NULL,
+                    `count` INTEGER NOT NULL,
+                    PRIMARY KEY(`song`, `year`, `month`))"""
+            )
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS `account` (
+                    `id` TEXT NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `email` TEXT NOT NULL,
+                    `channelHandle` TEXT NOT NULL,
+                    `thumbnailUrl` TEXT,
+                    `innerTubeCookie` TEXT NOT NULL,
+                    `visitorData` TEXT NOT NULL,
+                    `dataSyncId` TEXT NOT NULL,
+                    `isActive` INTEGER NOT NULL,
+                    `createdAt` INTEGER NOT NULL,
+                    `lastUsedAt` INTEGER NOT NULL,
+                    PRIMARY KEY(`id`))"""
+            )
+
+            // ── recreate views ────────────────────────────────────────────────
+            db.execSQL("CREATE VIEW `sorted_song_artist_map` AS SELECT * FROM song_artist_map ORDER BY position")
+            db.execSQL("CREATE VIEW `sorted_song_album_map` AS SELECT * FROM song_album_map ORDER BY `index`")
+            db.execSQL("CREATE VIEW `playlist_song_map_preview` AS SELECT * FROM playlist_song_map WHERE position <= 3 ORDER BY position")
         }
     }
 

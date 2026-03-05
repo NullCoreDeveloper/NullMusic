@@ -2,18 +2,24 @@ package iad1tya.echo.music.ui.screens.settings
 
 import android.os.Build
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -244,76 +251,89 @@ fun PrivacySettings(
 
         permissions.forEach { perm ->
             val isGranted = androidx.core.content.ContextCompat.checkSelfPermission(
-                context, 
+                context,
                 perm.permission
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-            
-            Column(
+
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        val intent = android.content.Intent(
-                            android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                        ).apply {
-                            data = android.net.Uri.fromParts("package", context.packageName, null)
-                        }
-                        context.startActivity(intent)
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                shape = RoundedCornerShape(20.dp),
+                onClick = {
+                    val intent = android.content.Intent(
+                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    ).apply {
+                        data = android.net.Uri.fromParts("package", context.packageName, null)
                     }
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    context.startActivity(intent)
+                }
             ) {
-                androidx.compose.foundation.layout.Row(
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    androidx.compose.foundation.layout.Row(
+                    Row(
                         modifier = Modifier.weight(1f),
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ){
-                        Icon(
-                            imageVector = perm.icon,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = perm.icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(14.dp))
                         Column {
                             Text(
                                 text = perm.name,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = perm.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
-                    
                     Box(
                         modifier = Modifier
+                            .padding(start = 8.dp)
                             .background(
-                                color = if (isGranted) 
-                                    androidx.compose.ui.graphics.Color(0xFF4CAF50).copy(alpha = 0.2f) 
-                                else 
-                                    MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                                color = if (isGranted)
+                                    Color(0xFF4CAF50).copy(alpha = 0.15f)
+                                else
+                                    MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(20.dp)
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
                             text = if (isGranted) "Granted" else "Denied",
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (isGranted) 
-                                androidx.compose.ui.graphics.Color(0xFF4CAF50) 
-                            else 
-                                MaterialTheme.colorScheme.error,
-                             fontWeight = FontWeight.Bold
+                            color = if (isGranted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                     text = perm.description,
-                     style = MaterialTheme.typography.bodySmall,
-                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                     modifier = Modifier.padding(start = 40.dp)
-                )
             }
         }
 

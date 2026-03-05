@@ -766,7 +766,7 @@ fun AppearanceSettings(
                     LyricsAnimationStyle.KARAOKE -> "Karaoke"
                     LyricsAnimationStyle.APPLE -> "Apple"
                     LyricsAnimationStyle.APPLE_V2 -> "Apple V2"
-                    LyricsAnimationStyle.VIVIMUSIC_1 -> "ViviMusic"
+                    LyricsAnimationStyle.VIVIMUSIC_1 -> "Glowing Words"
                     LyricsAnimationStyle.LYRICS_V2 -> "Lyrics V2"
                 }
             },

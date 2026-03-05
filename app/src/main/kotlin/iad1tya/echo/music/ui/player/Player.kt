@@ -168,7 +168,10 @@ import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.utils.makeTimeString
 import iad1tya.echo.music.utils.rememberEnumPreference
+import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.rememberPreference
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -192,9 +195,16 @@ fun BottomSheetPlayer(
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
+    // Read synchronously once so the very first frame already uses the correct design,
+    // preventing the flash of old UI before DataStore emits (e.g. returning from ambient mode).
+    val useNewPlayerDesignDefault = remember {
+        runBlocking(Dispatchers.IO) {
+            context.dataStore.data.first()[UseNewPlayerDesignKey] ?: false
+        }
+    }
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
-        defaultValue = false
+        defaultValue = useNewPlayerDesignDefault
     )
     val playerBackground by rememberEnumPreference(
         key = PlayerBackgroundStyleKey,

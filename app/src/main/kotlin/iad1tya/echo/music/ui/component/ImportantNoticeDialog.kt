@@ -67,7 +67,7 @@ fun ImportantNoticeDialog(
                 
                 Button(
                     onClick = {
-                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://support.maskk.me/"))
+                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://support.iad1tya.cyou/"))
                          context.startActivity(intent)
                     },
                     modifier = Modifier.fillMaxWidth()

@@ -57,6 +57,7 @@ import com.echo.innertube.pages.NextPage
 import com.echo.innertube.pages.NextResult
 import com.echo.innertube.pages.PlaylistContinuationPage
 import com.echo.innertube.pages.PlaylistPage
+import com.echo.innertube.pages.PodcastPage
 import com.echo.innertube.pages.RelatedPage
 import com.echo.innertube.pages.SearchPage
 import com.echo.innertube.pages.SearchResult
@@ -467,6 +468,71 @@ object YouTube {
         PlaylistContinuationPage(
             songs = songs,
             continuation = nextContinuation
+        )
+    }
+
+    suspend fun podcast(podcastId: String): Result<PodcastPage> = runCatching {
+        val response = innerTube.browse(
+            client = WEB_REMIX,
+            browseId = podcastId,
+            setLogin = true,
+        ).body<BrowseResponse>()
+
+        // Try twoColumn first (standard layout), then singleColumn
+        val header = response.contents?.twoColumnBrowseResultsRenderer?.tabs?.firstOrNull()
+            ?.tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()
+            ?.musicResponsiveHeaderRenderer
+            ?: response.contents?.singleColumnBrowseResultsRenderer?.tabs?.firstOrNull()
+                ?.tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()
+                ?.musicResponsiveHeaderRenderer
+
+        val podcastItem = PodcastItem(
+            id = podcastId,
+            title = header?.title?.runs?.firstOrNull()?.text ?: "",
+            author = header?.straplineTextOne?.runs?.firstOrNull()?.let {
+                Artist(
+                    name = it.text,
+                    id = it.navigationEndpoint?.browseEndpoint?.browseId,
+                )
+            },
+            episodeCountText = header?.secondSubtitle?.runs?.firstOrNull()?.text,
+            thumbnail = header?.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails?.lastOrNull()?.url,
+            playEndpoint = null,
+            shuffleEndpoint = null,
+        )
+
+        // Get episodes from secondaryContents (twoColumn) or singleColumn
+        var episodeContents = response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents
+            ?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer?.contents
+
+        // Try musicPlaylistShelfRenderer as fallback
+        if (episodeContents == null) {
+            episodeContents = response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents
+                ?.sectionListRenderer?.contents?.firstOrNull()?.musicPlaylistShelfRenderer?.contents
+        }
+
+        // Fallback to singleColumn layout
+        if (episodeContents == null) {
+            episodeContents = response.contents?.singleColumnBrowseResultsRenderer?.tabs?.firstOrNull()
+                ?.tabRenderer?.content?.sectionListRenderer?.contents
+                ?.find { it.musicShelfRenderer != null }?.musicShelfRenderer?.contents
+        }
+
+        val episodes = episodeContents?.mapNotNull { content ->
+            content.musicMultiRowListItemRenderer?.let { renderer ->
+                PodcastPage.fromMusicMultiRowListItemRenderer(renderer, podcastItem)
+            } ?: content.musicResponsiveListItemRenderer?.let { renderer ->
+                PodcastPage.fromMusicResponsiveListItemRenderer(renderer, podcastItem)
+            }
+        } ?: emptyList()
+
+        val continuation = response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents
+            ?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer?.continuations?.getContinuation()
+
+        PodcastPage(
+            podcast = podcastItem,
+            episodes = episodes,
+            continuation = continuation,
         )
     }
 

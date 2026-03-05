@@ -248,7 +248,7 @@ fun OnlineSearchScreen(
                                     onDismiss()
                                 }
                                 is PodcastItem -> {
-                                    navController.navigate("online_playlist/${item.id}") {
+                                    navController.navigate("podcast/${item.id}") {
                                         popUpTo(Screens.Home.route)
                                     }
                                     onDismiss()

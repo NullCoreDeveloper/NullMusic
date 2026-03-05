@@ -55,6 +55,7 @@ import iad1tya.echo.music.ui.screens.playlist.AutoPlaylistScreen
 import iad1tya.echo.music.ui.screens.playlist.LocalPlaylistScreen
 import iad1tya.echo.music.ui.screens.playlist.OnlinePlaylistScreen
 import iad1tya.echo.music.ui.screens.playlist.TopPlaylistScreen
+import iad1tya.echo.music.ui.screens.podcast.OnlinePodcastScreen
 import iad1tya.echo.music.ui.screens.playlist.CachePlaylistScreen
 import iad1tya.echo.music.ui.screens.search.OnlineSearchResult
 import iad1tya.echo.music.ui.screens.WrappedScreen
@@ -249,6 +250,17 @@ fun NavGraphBuilder.navigationBuilder(
         ),
     ) {
         OnlinePlaylistScreen(navController, scrollBehavior)
+    }
+    composable(
+        route = "podcast/{podcastId}",
+        arguments =
+        listOf(
+            navArgument("podcastId") {
+                type = NavType.StringType
+            },
+        ),
+    ) {
+        OnlinePodcastScreen(navController, scrollBehavior)
     }
     composable(
         route = "local_playlist/{playlistId}",

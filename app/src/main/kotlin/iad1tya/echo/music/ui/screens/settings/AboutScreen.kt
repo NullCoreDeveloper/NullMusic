@@ -396,7 +396,20 @@ fun AboutScreen(
             )
         }
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(28.dp))
+
+        Image(
+            painter = painterResource(
+                if (isDarkTheme) R.drawable.pixelsphere_night
+                else R.drawable.pixelsphere_day
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(24.dp))
+        )
+
+        Spacer(Modifier.height(20.dp))
 
         // Footer
         Text(

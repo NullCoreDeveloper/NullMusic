@@ -715,7 +715,7 @@ fun BottomSheetPlayer(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White)
+                                .background(textButtonColor)
                                 .clickable {
                                     // Pause the current song before switching to video
                                     playerConnection.player.pause()
@@ -734,13 +734,13 @@ fun BottomSheetPlayer(
                                 Icon(
                                     painter = painterResource(R.drawable.play),
                                     contentDescription = "Video",
-                                    tint = Color.Black,
+                                    tint = iconButtonColor,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     "Video",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = Color.Black,
+                                    color = iconButtonColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -1024,6 +1024,7 @@ fun BottomSheetPlayer(
                             .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
                             .size(40.dp)
                             .clip(RoundedCornerShape(24.dp))
+                            .background(textButtonColor)
                             .clickable {
                                 audioRoutingSheetState.expandSoft()
                             },
@@ -1082,6 +1083,7 @@ fun BottomSheetPlayer(
                             .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
                             .size(40.dp)
                             .clip(RoundedCornerShape(24.dp))
+                            .background(textButtonColor)
                             .clickable {
                                 menuState.show {
                                     PlayerMenu(

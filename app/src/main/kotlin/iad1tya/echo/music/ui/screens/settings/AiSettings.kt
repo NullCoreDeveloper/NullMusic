@@ -127,7 +127,7 @@ fun AiSettings(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Uses Android's built-in ML Kit. No API key or internet required after the first use.",
+                            text = "This feature uses Android's built-in ML Kit for translation. No API key or internet connection is required after the first use. However, translations may not always be completely accurate. In some cases, the meaning, context, or slang in a message may not be translated correctly.",
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Spacer(modifier = Modifier.height(4.dp))

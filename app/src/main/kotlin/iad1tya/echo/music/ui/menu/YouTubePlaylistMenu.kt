@@ -511,7 +511,7 @@ fun YouTubePlaylistMenu(
         // Advanced Download Option
         item {
             ListItem(
-                headlineContent = { Text(text = "Advance Download") },
+                headlineContent = { Text(text = "Local Download") },
                 leadingContent = {
                     Icon(
                         painter = painterResource(R.drawable.download),

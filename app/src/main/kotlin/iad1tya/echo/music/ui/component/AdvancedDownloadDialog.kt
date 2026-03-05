@@ -94,7 +94,7 @@ fun AdvancedDownloadDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Advance Download",
+                text = "Local Download",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

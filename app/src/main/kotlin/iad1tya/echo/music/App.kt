@@ -155,6 +155,24 @@ class App : Application(), SingletonImageLoader.Factory {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = getSystemService(NotificationManager::class.java)
+
+            // Music playback channel — must be created before MusicService posts its first
+            // notification so the importance level is guaranteed (DefaultMediaNotificationProvider
+            // creates the channel lazily on first post, and Samsung can silently downgrade it).
+            if (nm.getNotificationChannel("music_channel_01") == null) {
+                nm.createNotificationChannel(
+                    NotificationChannel(
+                        "music_channel_01",
+                        getString(R.string.music_player),
+                        NotificationManager.IMPORTANCE_LOW,
+                    ).apply {
+                        description = getString(R.string.music_player)
+                        setShowBadge(false)
+                    }
+                )
+            }
+
             val channel = NotificationChannel(
                 "updates",
                 getString(R.string.update_channel_name),
@@ -162,7 +180,6 @@ class App : Application(), SingletonImageLoader.Factory {
             ).apply {
                 description = getString(R.string.update_channel_desc)
             }
-            val nm = getSystemService(NotificationManager::class.java)
             nm.createNotificationChannel(channel)
         }
     }

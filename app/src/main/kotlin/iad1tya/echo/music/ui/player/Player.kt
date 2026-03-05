@@ -206,7 +206,10 @@ fun BottomSheetPlayer(
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
-    val useDarkTheme = true
+    val useDarkTheme = remember(isSystemInDarkTheme, darkTheme) {
+        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+    }
+    val isCleanLightMode = !useDarkTheme && playerBackground == PlayerBackgroundStyle.DEFAULT
     val onBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.secondary
         else ->
@@ -317,9 +320,9 @@ fun BottomSheetPlayer(
         }
     }
 
-    val TextBackgroundColor = Color.White
+    val TextBackgroundColor = if (isCleanLightMode) Color.Black else Color.White
 
-    val icBackgroundColor = Color(0xFF1C1B1F)
+    val icBackgroundColor = if (isCleanLightMode) Color.White else Color(0xFF1C1B1F)
 
     val (textButtonColor, iconButtonColor) = when (playerButtonsStyle) {
         PlayerButtonsStyle.DEFAULT -> Pair(TextBackgroundColor, icBackgroundColor)
@@ -1046,7 +1049,7 @@ fun BottomSheetPlayer(
                         Image(
                             painter = painterResource(audioIcon),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(Color.White),
+                            colorFilter = ColorFilter.tint(iconButtonColor),
                             modifier =
                             Modifier
                                 .align(Alignment.Center)
@@ -1084,7 +1087,7 @@ fun BottomSheetPlayer(
                         Image(
                             painter = painterResource(R.drawable.more_vert),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(Color.White),
+                            colorFilter = ColorFilter.tint(iconButtonColor),
                         )
                     }
                 }
@@ -1414,7 +1417,7 @@ fun BottomSheetPlayer(
                             .padding(top = 12.dp)
                             .size(width = 36.dp, height = 4.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .background(Color.White.copy(alpha = 0.4f))
+                            .background(if (isCleanLightMode) Color.Black.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.4f))
                     )
 
                 Column(
@@ -1509,7 +1512,7 @@ fun BottomSheetPlayer(
                             .padding(top = 12.dp)
                             .size(width = 36.dp, height = 4.dp)
                             .clip(RoundedCornerShape(2.dp))
-                            .background(Color.White.copy(alpha = 0.4f))
+                            .background(if (isCleanLightMode) Color.Black.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.4f))
                     )
                 }
             }

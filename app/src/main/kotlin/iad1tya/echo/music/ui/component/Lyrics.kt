@@ -219,7 +219,7 @@ fun Lyrics(
     val aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
     
     val lyricsTextSize by rememberPreference(iad1tya.echo.music.constants.LyricsTextSizeKey, 20f)
-    val lyricsLineSpacing by rememberPreference(iad1tya.echo.music.constants.LyricsLineSpacingKey, 6f)
+    val lyricsLineSpacing by rememberPreference(iad1tya.echo.music.constants.LyricsLineSpacingKey, 2f)
     val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.VIVIMUSIC_1)
     val lyricsGlowEffect by rememberPreference(LyricsGlowEffectKey, false)
     val appleMusicLyricsBlur by rememberPreference(AppleMusicLyricsBlurKey, true)
@@ -400,6 +400,7 @@ fun Lyrics(
                          lyrics = lines,
                          targetLanguage = translateLanguage,
                          scope = scope,
+                         mode = translateMode,
                      )
                  } else if (openRouterApiKey.isNotBlank()) {
                      LyricsTranslationHelper.translateLyrics(
@@ -446,6 +447,7 @@ fun Lyrics(
                                 lyrics = lines,
                                 targetLanguage = targetLang,
                                 scope = scope,
+                                mode = translateMode,
                             )
                         } else {
                             LyricsTranslationHelper.translateLyrics(
@@ -1327,6 +1329,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     style = TextStyle(
                                         brush = if (isActive) Brush.horizontalGradient(
                                             0.0f to currentTextColor,
@@ -1359,6 +1362,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     style = TextStyle(
                                         brush = if (isActive) Brush.horizontalGradient(
                                             0.0f to currentTextColor.copy(alpha = 0.4f),
@@ -1392,6 +1396,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     color = if (isActive) currentTextColor.copy(alpha = 0.45f + (0.55f * lineProgress))
                                         else textColor.copy(alpha = 0.8f),
                                     style = TextStyle(
@@ -1416,6 +1421,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     color = if (isActive) currentTextColor.copy(alpha = 0.4f + (0.6f * lineProgress))
                                         else textColor.copy(alpha = 0.8f),
                                     style = TextStyle(
@@ -1441,6 +1447,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     color = if (isActive) currentTextColor.copy(alpha = 0.55f + (0.45f * lineProgress))
                                         else textColor.copy(alpha = 0.8f),
                                     style = TextStyle(
@@ -1463,6 +1470,7 @@ fun Lyrics(
                                 Text(
                                     text = item.text,
                                     fontSize = lyricsTextSize.sp,
+                                    lineHeight = (lyricsTextSize * lyricsLineSpacing).sp,
                                     color = if (isActive) {
                                         currentTextColor
                                     } else {

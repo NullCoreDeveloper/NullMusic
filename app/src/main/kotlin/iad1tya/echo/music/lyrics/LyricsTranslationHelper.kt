@@ -196,6 +196,7 @@ object LyricsTranslationHelper {
         lyrics: List<LyricsEntry>,
         targetLanguage: String,
         scope: CoroutineScope,
+        mode: String = "Literal",
     ) {
         translationJob?.cancel()
         _status.value = TranslationStatus.Translating
@@ -218,7 +219,7 @@ object LyricsTranslationHelper {
                 }
 
                 val lines = nonEmptyEntries.map { it.second.text }
-                val cacheKey = getCacheKey(lines.joinToString("\n"), "native", targetLanguage)
+                val cacheKey = getCacheKey(lines.joinToString("\n"), mode, targetLanguage)
 
                 // Check cache first
                 val cached = translationCache[cacheKey]
@@ -235,6 +236,7 @@ object LyricsTranslationHelper {
                 val result = NativeTranslationHelper.translateLines(
                     lines = lines,
                     targetLanguageBcp47 = targetLanguage,
+                    mode = mode,
                     onStatus = { msg -> _status.value = TranslationStatus.Translating },
                 )
 

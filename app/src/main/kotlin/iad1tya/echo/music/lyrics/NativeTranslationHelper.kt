@@ -18,16 +18,33 @@ import kotlin.coroutines.resumeWithException
 object NativeTranslationHelper {
 
     /**
-     * Translates [lines] to [targetLanguageBcp47] (e.g. "en", "hi", "ja").
+     * Translates or transcribes [lines] to [targetLanguageBcp47] (e.g. "en", "hi", "ja").
      *
+     * @param mode      "Literal" = translate, "Transcribed" = romanize/transliterate to Latin.
      * @param onStatus  Progress string callback for UI display.
-     * @return          Result containing translated lines (same count, blank lines preserved).
+     * @return          Result containing translated/transliterated lines (same count, blank lines preserved).
      */
     suspend fun translateLines(
         lines: List<String>,
         targetLanguageBcp47: String,
+        mode: String = "Literal",
         onStatus: (String) -> Unit = {},
     ): Result<List<String>> {
+        // "Transcribed" mode — use ICU Transliterator for romanization (no ML Kit needed)
+        if (mode == "Transcribed") {
+            return try {
+                onStatus("Transliterating…")
+                val transliterator = android.icu.text.Transliterator.getInstance("Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC")
+                val results = lines.map { line ->
+                    if (line.isBlank()) line else transliterator.transliterate(line)
+                }
+                Result.success(results)
+            } catch (e: Exception) {
+                Timber.e(e, "NativeTranslationHelper transliteration error")
+                Result.failure(e)
+            }
+        }
+
         return try {
             // 1 — Detect source language from first few non-blank lines
             onStatus("Detecting language…")

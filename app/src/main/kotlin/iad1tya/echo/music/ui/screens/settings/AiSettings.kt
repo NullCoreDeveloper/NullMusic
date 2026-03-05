@@ -41,6 +41,7 @@ import iad1tya.echo.music.constants.OpenRouterApiKey
 import iad1tya.echo.music.constants.OpenRouterBaseUrlKey
 import iad1tya.echo.music.constants.OpenRouterModelKey
 import iad1tya.echo.music.constants.TranslateLanguageKey
+import iad1tya.echo.music.constants.TranslateModeKey
 import iad1tya.echo.music.ui.component.EditTextPreference
 import iad1tya.echo.music.ui.component.ListPreference
 import iad1tya.echo.music.ui.component.SwitchPreference
@@ -62,6 +63,7 @@ fun AiSettings(
     var autoTranslateLyrics by rememberPreference(AutoTranslateLyricsKey, false)
     var autoTranslateLyricsMismatch by rememberPreference(AutoTranslateLyricsMismatchKey, false)
     var translateLanguage by rememberPreference(TranslateLanguageKey, "en")
+    var translateMode by rememberPreference(TranslateModeKey, "Literal")
 
     val aiProviders = mapOf(
         "Google Translate" to "",   // on-device ML Kit — no API key needed
@@ -242,42 +244,34 @@ fun AiSettings(
                 icon = { androidx.compose.material3.Icon(painterResource(R.drawable.translate), null) }
             )
 
-            if (autoTranslateLyrics) {
-                SwitchPreference(
-                    modifier = Modifier.padding(start = 24.dp),
-                    title = { Text("Translate only on language mismatch") },
-                    description = "Skip translation if lyrics identify as your system language",
-                    checked = autoTranslateLyricsMismatch,
-                    onCheckedChange = { autoTranslateLyricsMismatch = it }
-                )
+            SwitchPreference(
+                title = { Text("Translate only on language mismatch") },
+                description = "Skip translation if lyrics identify as your system language",
+                checked = autoTranslateLyricsMismatch,
+                onCheckedChange = { autoTranslateLyricsMismatch = it }
+            )
 
-                var translateMode by rememberPreference(iad1tya.echo.music.constants.TranslateModeKey, "Literal")
-                ListPreference(
-                    modifier = Modifier.padding(start = 24.dp),
-                    title = { Text("Translation Mode") },
-                    selectedValue = translateMode,
-                    values = listOf("Literal", "Transcribed"),
-                    valueText = { 
-                        when(it) {
-                            "Literal" -> "Original + Translation"
-                            "Transcribed" -> "Original + Transcribed"
-                            else -> it
-                        }
-                    },
-                    onValueSelected = { translateMode = it }
-                )
+            ListPreference(
+                title = { Text("Translation Mode") },
+                selectedValue = translateMode,
+                values = listOf("Literal", "Transcribed"),
+                valueText = {
+                    when(it) {
+                        "Literal" -> "Original + Translation"
+                        "Transcribed" -> "Original + Transcribed"
+                        else -> it
+                    }
+                },
+                onValueSelected = { translateMode = it }
+            )
 
-                if (!autoTranslateLyricsMismatch) {
-                    ListPreference(
-                        modifier = Modifier.padding(start = 24.dp),
-                        title = { Text("Target Language") },
-                        selectedValue = translateLanguage,
-                        values = LanguageCodeToName.keys.sortedBy { LanguageCodeToName[it] },
-                        valueText = { LanguageCodeToName[it] ?: it },
-                        onValueSelected = { translateLanguage = it }
-                    )
-                }
-            }
+            ListPreference(
+                title = { Text("Target Language") },
+                selectedValue = translateLanguage,
+                values = LanguageCodeToName.keys.sortedBy { LanguageCodeToName[it] },
+                valueText = { LanguageCodeToName[it] ?: it },
+                onValueSelected = { translateLanguage = it }
+            )
 
 
         }

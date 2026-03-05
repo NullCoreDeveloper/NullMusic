@@ -62,8 +62,7 @@ import iad1tya.echo.music.constants.PlaylistViewTypeKey
 import iad1tya.echo.music.constants.ShowLikedPlaylistKey
 import iad1tya.echo.music.constants.ShowDownloadedPlaylistKey
 import iad1tya.echo.music.constants.ShowTopPlaylistKey
-import iad1tya.echo.music.constants.ShowCachedPlaylistKey
-import iad1tya.echo.music.constants.ShowUploadedPlaylistKey
+
 import iad1tya.echo.music.constants.ShowLocalPlaylistKey
 import iad1tya.echo.music.constants.YtmSyncKey
 import iad1tya.echo.music.db.entities.Playlist
@@ -175,8 +174,8 @@ fun LibraryPlaylistsScreen(
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
-    val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
-    val (showUploaded) = rememberPreference(ShowUploadedPlaylistKey, true)
+    val showCached = false
+    val showUploaded = false
     val (showLocal) = rememberPreference(ShowLocalPlaylistKey, true)
 
     val lazyListState = rememberLazyListState()

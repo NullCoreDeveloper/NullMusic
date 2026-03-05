@@ -69,8 +69,6 @@ import iad1tya.echo.music.constants.MixSortTypeKey
 import iad1tya.echo.music.constants.ShowLikedPlaylistKey
 import iad1tya.echo.music.constants.ShowDownloadedPlaylistKey
 import iad1tya.echo.music.constants.ShowTopPlaylistKey
-import iad1tya.echo.music.constants.ShowCachedPlaylistKey
-import iad1tya.echo.music.constants.ShowUploadedPlaylistKey
 import iad1tya.echo.music.constants.YtmSyncKey
 import iad1tya.echo.music.db.entities.Album
 import iad1tya.echo.music.db.entities.Artist
@@ -289,8 +287,8 @@ fun LibraryMixScreen(
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
-    val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
-    val (showUploaded) = rememberPreference(ShowUploadedPlaylistKey, true)
+    val showCached = false
+    val showUploaded = false
 
     val albums = viewModel.albums.collectAsState()
     val artist = viewModel.artists.collectAsState()

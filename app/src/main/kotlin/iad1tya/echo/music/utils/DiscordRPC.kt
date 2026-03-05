@@ -57,7 +57,7 @@ class DiscordRPC(
                 button2Text.ifEmpty { "Visit Echo Music" },
                 song
             )
-            buttonsList.add(resolvedText to "https://github.com/EchoMusicApp/Echo-Music")
+            buttonsList.add(resolvedText to "https://echomusic.fun")
         }
 
         val type = when (activityType) {

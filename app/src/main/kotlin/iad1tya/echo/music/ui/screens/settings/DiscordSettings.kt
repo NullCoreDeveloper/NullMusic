@@ -1016,7 +1016,7 @@ fun RichPresence(
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://github.com/EchoMusicApp/Echo-Music".toUri()
+                            "https://echomusic.fun".toUri()
                         )
                         context.startActivity(intent)
                     },

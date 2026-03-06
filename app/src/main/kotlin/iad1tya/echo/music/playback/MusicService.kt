@@ -631,7 +631,7 @@ class MusicService :
         
         combine(
             currentMediaMetadata.distinctUntilChangedBy { it?.id },
-            dataStore.data.map { it[SponsorBlockEnabledKey] ?: true }.distinctUntilChanged()
+            dataStore.data.map { it[SponsorBlockEnabledKey] ?: false }.distinctUntilChanged()
         ) { media, enabled ->
              media to enabled
         }.collectLatest(scope) { (media, enabled) ->

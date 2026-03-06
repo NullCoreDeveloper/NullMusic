@@ -336,7 +336,7 @@ fun SliderPreference(
                     Slider(
                         value = sliderValue,
                         onValueChange = { sliderValue = it },
-                        valueRange = 15f..60f,
+                        valueRange = 3f..60f,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

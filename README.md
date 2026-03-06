@@ -42,22 +42,54 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 
 ## Features
 
+### What's New
+- **Completely redesigned UI** — Cleaner and faster experience from the ground up.
+- **Import from Spotify** — Bring your playlists and tracks over with ease.
+- **Podcast support** — Listen to podcasts alongside your music library.
+- **Local media support** — Play music stored directly on your device.
+- **Auto data migration** — Seamlessly move existing app data to the new version.
+- **Android Dynamic Island support** — Enhanced playback notifications on supported devices.
+
 ### Streaming & Playback
 - **Ad-Free** — Stream without interruptions.
 - **Seamless Playback** — Switch effortlessly between audio-only and video modes.
 - **Background Playback** — Listen while using other apps or with the screen off.
 - **Offline Mode** — Download tracks, albums, and playlists via a dedicated download manager.
+- **Crossfade** — Smooth transitions between tracks.
+- **Canvas Animations** — Visual animations while playing music.
+- **Vertical Ambient Mode** — Immersive ambient visuals during playback.
 
 ### Discovery & Echo Find
 - **Echo Find** — Identify songs playing around you using advanced audio recognition.
 - **Smart Recommendations** — Personalized suggestions based on your listening history.
 - **Comprehensive Browsing** — Explore Charts, Podcasts, Moods, and Genres.
 
-### Advanced Capabilities
-- **Synchronized Lyrics** — Real-time synced lyrics with AI-powered multilingual translation.
-- **Sleep Timer** — Set automatic playback stop after a chosen duration.
-- **Cross-Device Support** — Cast to Chromecast devices or stream via DLNA/UPnP.
-- **Data Import** — Import playlists and library data from other services.
+### Lyrics
+- **Multiple lyrics animations** — Choose from various lyric display styles.
+- **Word-by-word lyrics** — Precise per-word synchronization.
+- **Lyrics+** — New lyrics provider for improved accuracy and coverage.
+- **AI lyrics translation** — Built-in Google Translate integration for any language.
+
+### Integrations
+- **Discord integration** — Show what you're listening to on Discord.
+- **Last.fm integration** — Scrobble your plays automatically.
+- **Music sharing via Odesli** — Share songs as Song.link for cross-platform listening.
+- **Set as ringtone** — Directly set any song as your device ringtone.
+
+### Smart Playback
+- **Pause on mute** — Auto-pause when your device is muted.
+- **Resume on Bluetooth connect** — Playback resumes when buds or headphones reconnect.
+- **Keep screen on** — Prevent screen sleep while music is playing.
+- **TTS song announcements** — Hear the song title and artist read aloud on track change.
+- **Music haptics** — Tactile vibration feedback synced to the beat.
+
+### Customization
+- **UI density scale** — Adjust interface spacing to your preference.
+- **High refresh rate support** — Smoother UI and animations on supported displays.
+- **Hide player thumbnail** — Keep the player minimal without album art.
+- **Crop album art** — Adjust album art display to fit your style.
+- **Hide video songs** — Filter out video content from your feed.
+- **Hide YouTube Shorts** — Keep Shorts out of your music browsing.
 
 ---
 

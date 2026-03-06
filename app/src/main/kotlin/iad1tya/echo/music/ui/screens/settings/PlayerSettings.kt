@@ -71,6 +71,7 @@ import iad1tya.echo.music.constants.RememberShuffleAndRepeatKey
 import iad1tya.echo.music.constants.ResumeOnBluetoothConnectKey
 import iad1tya.echo.music.constants.SimilarContent
 import iad1tya.echo.music.constants.SkipSilenceKey
+import iad1tya.echo.music.constants.ForceStopOnTaskClearKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.TTSAnnouncementEnabledKey
 import iad1tya.echo.music.constants.TapAlbumArtForLyricsKey
@@ -142,6 +143,10 @@ fun PlayerSettings(
     val (stopMusicOnTaskClear, onStopMusicOnTaskClearChange) = rememberPreference(
         StopMusicOnTaskClearKey,
         defaultValue = true
+    )
+    val (forceStopOnTaskClear, onForceStopOnTaskClearChange) = rememberPreference(
+        ForceStopOnTaskClearKey,
+        defaultValue = false
     )
     val (tapAlbumArtForLyrics, onTapAlbumArtForLyricsChange) = rememberPreference(
         TapAlbumArtForLyricsKey,
@@ -426,6 +431,14 @@ fun PlayerSettings(
             icon = { Icon(painterResource(R.drawable.clear_all), null) },
             checked = stopMusicOnTaskClear,
             onCheckedChange = onStopMusicOnTaskClearChange
+        )
+
+        SwitchPreference(
+            title = { Text(stringResource(R.string.force_stop_on_task_clear)) },
+            description = stringResource(R.string.force_stop_on_task_clear_desc),
+            icon = { Icon(painterResource(R.drawable.close), null) },
+            checked = forceStopOnTaskClear,
+            onCheckedChange = onForceStopOnTaskClearChange
         )
     }
 

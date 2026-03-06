@@ -392,34 +392,8 @@ fun LyricsMenu(
                             showSearchDialog = true
                         }
                     ),
-                    NewAction(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.share),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        text = "Export PDF",
-                        onClick = {
-                            onDismiss()
-                            val lyrics = lyricsProvider()?.lyrics
-                            if (lyrics.isNullOrEmpty()) {
-                                Toast.makeText(context, "No lyrics available to export", Toast.LENGTH_SHORT).show()
-                            } else {
-                                scope.launch {
-                                    LyricsPdfGenerator.generateAndShare(
-                                        context = context,
-                                        title = mediaMetadataProvider().title,
-                                        artist = mediaMetadataProvider().artists.joinToString(", ") { it.name },
-                                        lyrics = lyrics
-                                    )
-                                }
-                            }
-                        }
-                    )
                 ),
+
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }

@@ -132,6 +132,7 @@ import iad1tya.echo.music.constants.SkipSilenceKey
 import iad1tya.echo.music.constants.SponsorBlockEnabledKey
 import iad1tya.echo.music.api.SponsorBlockService
 import android.widget.Toast
+import iad1tya.echo.music.constants.ForceStopOnTaskClearKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.TTSAnnouncementEnabledKey
 import iad1tya.echo.music.db.MusicDatabase
@@ -2575,7 +2576,14 @@ class MusicService :
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        
+
+        if (dataStore.get(ForceStopOnTaskClearKey, false)) {
+            player.pause()
+            stopSelf()
+            android.os.Process.killProcess(android.os.Process.myPid())
+            return
+        }
+
         // Check if user wants to stop music when task is cleared
         if (dataStore.get(StopMusicOnTaskClearKey, true)) {
             player.pause()

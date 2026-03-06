@@ -248,6 +248,7 @@ fun BottomSheetPlayer(
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
+    val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
     val automix by playerConnection.service.automixItems.collectAsState()
     val repeatMode by playerConnection.repeatMode.collectAsState()
     val isCrossfading by playerConnection.service.isCrossfading.collectAsState()
@@ -930,33 +931,156 @@ fun BottomSheetPlayer(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
-
-                if (useNewPlayerDesign) {
-                    val audioRoutingShape = RoundedCornerShape(
-                        topStart = 50.dp, bottomStart = 50.dp,
-                        topEnd = 8.dp, bottomEnd = 8.dp
-                    )
-
-                    val favShape = RoundedCornerShape(8.dp)
-                    val shareShape = RoundedCornerShape(
-                        topStart = 8.dp, bottomStart = 8.dp,
-                        topEnd = 50.dp, bottomEnd = 50.dp
-                    )
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
+                if (showInlineLyrics) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(textButtonColor)
+                            .clickable {
+                                menuState.show {
+                                    LyricsMenu(
+                                        lyricsProvider = { currentLyrics },
+                                        songProvider = { currentSong?.song },
+                                        mediaMetadataProvider = { mediaMetadata },
+                                        onDismiss = menuState::dismiss
+                                    )
+                                }
+                            }
                     ) {
+                        Image(
+                            painter = painterResource(R.drawable.more_vert),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(iconButtonColor),
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    if (useNewPlayerDesign) {
+                        val audioRoutingShape = RoundedCornerShape(
+                            topStart = 50.dp, bottomStart = 50.dp,
+                            topEnd = 8.dp, bottomEnd = 8.dp
+                        )
+
+                        val favShape = RoundedCornerShape(8.dp)
+                        val shareShape = RoundedCornerShape(
+                            topStart = 8.dp, bottomStart = 8.dp,
+                            topEnd = 50.dp, bottomEnd = 50.dp
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(audioRoutingShape)
+                                    .background(textButtonColor)
+                                    .clickable {
+                                        audioRoutingSheetState.expandSoft()
+                                    }
+                            ) {
+                                // Detect cast / audio device state
+                                val isCastingLocal = playerConnection.service.castConnectionHandler
+                                    ?.isCasting?.collectAsState()?.value ?: false
+                                val audioManager = try {
+                                    context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+                                } catch (e: Exception) {
+                                    null
+                                }
+                                val devices = try {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager != null) {
+                                        audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).toList()
+                                    } else {
+                                        emptyList()
+                                    }
+                                } catch (e: Exception) {
+                                    emptyList()
+                                }
+                                val hasBluetoothDevice = devices.any {
+                                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+                                }
+                                val hasWiredHeadset = devices.any {
+                                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                                }
+
+                                // Choose icon based on active output
+                                val audioIcon = when {
+                                    isCastingLocal -> R.drawable.cast_connected
+                                    hasBluetoothDevice -> R.drawable.audio_bluetooth
+                                    hasWiredHeadset -> R.drawable.audio_earphone
+                                    else -> R.drawable.audio_device
+                                }
+
+                                Image(
+                                    painter = painterResource(audioIcon),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(iconButtonColor),
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(24.dp)
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(favShape)
+                                    .background(textButtonColor)
+                                    .clickable {
+                                        playerConnection.toggleLike()
+                                    }
+                            ) {
+                                Image(
+                                    painter = painterResource(
+                                        if (currentSong?.song?.liked == true)
+                                            R.drawable.favorite
+                                        else R.drawable.favorite_border
+                                    ),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(iconButtonColor),
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(24.dp)
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(shareShape)
+                                    .background(textButtonColor)
+                                    .clickable {
+                                        showShareSheet = true
+                                    }
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.share),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(iconButtonColor),
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(24.dp)
+                                )
+                            }
+                        }
+                    } else {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
-                                .clip(audioRoutingShape)
+                                .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
                                 .clickable {
                                     audioRoutingSheetState.expandSoft()
-                                }
+                                },
                         ) {
                             // Detect cast / audio device state
                             val isCastingLocal = playerConnection.service.castConnectionHandler
@@ -975,15 +1099,15 @@ fun BottomSheetPlayer(
                             } catch (e: Exception) {
                                 emptyList()
                             }
-                            val hasBluetoothDevice = devices.any { 
-                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP || 
-                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO 
+                            val hasBluetoothDevice = devices.any {
+                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
                             }
-                            val hasWiredHeadset = devices.any { 
-                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET || 
-                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES 
+                            val hasWiredHeadset = devices.any {
+                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
                             }
-                            
+
                             // Choose icon based on active output
                             val audioIcon = when {
                                 isCastingLocal -> R.drawable.cast_connected
@@ -991,149 +1115,50 @@ fun BottomSheetPlayer(
                                 hasWiredHeadset -> R.drawable.audio_earphone
                                 else -> R.drawable.audio_device
                             }
-                            
+
                             Image(
                                 painter = painterResource(audioIcon),
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(iconButtonColor),
                                 modifier = Modifier
                                     .align(Alignment.Center)
-                                    .size(24.dp)
+                                    .size(24.dp),
                             )
                         }
-                        
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .clip(favShape)
-                                .background(textButtonColor)
-                                .clickable {
-                                    playerConnection.toggleLike()
-                                }
-                        ) {
-                            Image(
-                                painter = painterResource(
-                                    if (currentSong?.song?.liked == true)
-                                        R.drawable.favorite
-                                    else R.drawable.favorite_border
-                                ),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(iconButtonColor),
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .size(24.dp)
-                            )
-                        }
+
+                        Spacer(modifier = Modifier.size(6.dp))
 
                         Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(42.dp)
-                                .clip(shareShape)
+                                .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
                                 .clickable {
-                                    showShareSheet = true
-                                }
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.share),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(iconButtonColor),
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .size(24.dp)
-                            )
-                        }
-                    }
-                } else {
-                    Box(
-                        modifier =
-                        Modifier
-                            .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(textButtonColor)
-                            .clickable {
-                                audioRoutingSheetState.expandSoft()
-                            },
-                    ) {
-                        // Detect cast / audio device state
-                        val isCastingLocal = playerConnection.service.castConnectionHandler
-                            ?.isCasting?.collectAsState()?.value ?: false
-                        val audioManager = try {
-                            context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-                        } catch (e: Exception) {
-                            null
-                        }
-                        val devices = try {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager != null) {
-                                audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).toList()
-                            } else {
-                                emptyList()
-                            }
-                        } catch (e: Exception) {
-                            emptyList()
-                        }
-                        val hasBluetoothDevice = devices.any { 
-                            it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP || 
-                            it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO 
-                        }
-                        val hasWiredHeadset = devices.any { 
-                            it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET || 
-                            it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES 
-                        }
-                        
-                        // Choose icon based on active output
-                        val audioIcon = when {
-                            isCastingLocal -> R.drawable.cast_connected
-                            hasBluetoothDevice -> R.drawable.audio_bluetooth
-                            hasWiredHeadset -> R.drawable.audio_earphone
-                            else -> R.drawable.audio_device
-                        }
-                        
-                        Image(
-                            painter = painterResource(audioIcon),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(iconButtonColor),
-                            modifier =
-                            Modifier
-                                .align(Alignment.Center)
-                                .size(24.dp),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.size(6.dp))
-
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier =
-                        Modifier
-                            .padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(textButtonColor)
-                            .clickable {
-                                menuState.show {
-                                    PlayerMenu(
-                                        mediaMetadata = mediaMetadata,
-                                        navController = navController,
-                                        playerBottomSheetState = state,
-                                        onShowDetailsDialog = {
-                                            mediaMetadata.id.let {
-                                                bottomSheetPageState.show {
-                                                    ShowMediaInfo(it)
+                                    menuState.show {
+                                        PlayerMenu(
+                                            mediaMetadata = mediaMetadata,
+                                            navController = navController,
+                                            playerBottomSheetState = state,
+                                            onShowDetailsDialog = {
+                                                mediaMetadata.id.let {
+                                                    bottomSheetPageState.show {
+                                                        ShowMediaInfo(it)
+                                                    }
                                                 }
-                                            }
-                                        },
-                                        onDismiss = menuState::dismiss,
-                                    )
-                                }
-                            },
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.more_vert),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(iconButtonColor),
-                        )
+                                            },
+                                            onDismiss = menuState::dismiss,
+                                        )
+                                    }
+                                },
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.more_vert),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(iconButtonColor),
+                            )
+                        }
                     }
                 }
             }

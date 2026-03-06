@@ -17,6 +17,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -110,7 +111,9 @@ import coil3.request.allowHardware
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import coil3.toBitmap
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
@@ -691,12 +694,19 @@ fun Lyrics(
         }
     }
 
-    LaunchedEffect(isSeeking, lastPreviewTime) {
+    // When the playback slider is being dragged, always follow the seek position live
+    LaunchedEffect(isSeeking) {
         if (isSeeking) {
             lastPreviewTime = 0L
-        } else if (lastPreviewTime != 0L) {
-            delay(LyricsPreviewTime)
-            lastPreviewTime = 0L
+        }
+    }
+
+    // Detect real user touch on the lyrics list — set manual mode so auto-scroll stops
+    LaunchedEffect(lazyListState.interactionSource) {
+        lazyListState.interactionSource.interactions.collect { interaction ->
+            if (interaction is DragInteraction.Start && !isSelectionModeActive) {
+                lastPreviewTime = System.currentTimeMillis()
+            }
         }
     }
 
@@ -760,13 +770,9 @@ fun Lyrics(
                 // Fast scroll for seeking to center the target line (300ms)
                 val seekCenterIndex = kotlin.math.max(0, currentLineIndex - 1)
                 performSmoothPageScroll(seekCenterIndex, 500) // Fast seek duration
-            } else if ((lastPreviewTime == 0L || currentLineIndex != previousLineIndex) && scrollLyrics) {
-                // Auto-scroll when lyrics settings allow it
-                if (currentLineIndex != previousLineIndex) {
-                    // Calculate which line should be at the top to center the active group
-                    val centerTargetIndex = currentLineIndex
-                    performSmoothPageScroll(centerTargetIndex, 1500) // Auto scroll duration
-                }
+            } else if (lastPreviewTime == 0L && scrollLyrics && currentLineIndex != previousLineIndex) {
+                // Auto-scroll only when user hasn't manually scrolled away
+                performSmoothPageScroll(currentLineIndex, 1500)
             }
         }
         if(currentLineIndex > 0) {
@@ -805,30 +811,6 @@ fun Lyrics(
                 .asPaddingValues(),
             modifier = Modifier
                 .fadingEdge(top = 120.dp, bottom = 64.dp)
-                .nestedScroll(remember {
-                    object : NestedScrollConnection {
-                        override fun onPostScroll(
-                            consumed: Offset,
-                            available: Offset,
-                            source: NestedScrollSource
-                        ): Offset {
-                            if (!isSelectionModeActive) { // Only update preview time if not selecting
-                                lastPreviewTime = System.currentTimeMillis()
-                            }
-                            return super.onPostScroll(consumed, available, source)
-                        }
-
-                        override suspend fun onPostFling(
-                            consumed: Velocity,
-                            available: Velocity
-                        ): Velocity {
-                            if (!isSelectionModeActive) { // Only update preview time if not selecting
-                                lastPreviewTime = System.currentTimeMillis()
-                            }
-                            return super.onPostFling(consumed, available)
-                        }
-                    }
-                })
         ) {
             val displayedCurrentLineIndex =
                 if (isSeeking || isSelectionModeActive) deferredCurrentLineIndex else currentLineIndex
@@ -859,7 +841,8 @@ fun Lyrics(
                 ) { index, item ->
                     val isSelected = selectedIndices.contains(index)
                     val isActive = index == displayedCurrentLineIndex && isSynced
-                    val distance = kotlin.math.abs(index - displayedCurrentLineIndex)
+                    val isManualScrolling = lastPreviewTime != 0L
+                    val distance = if (isManualScrolling) 0 else kotlin.math.abs(index - displayedCurrentLineIndex)
 
                     // Compute estimated word timing for word-level animation styles
                     val nextEntryTime = lines.getOrNull(index + 1)?.time
@@ -915,6 +898,7 @@ fun Lyrics(
 
                     // Progressive blur for VIVIMUSIC_1 style
                     val targetBlur = if (
+                        !isManualScrolling &&
                         lyricsAnimationStyle == LyricsAnimationStyle.VIVIMUSIC_1 &&
                         appleMusicLyricsBlur && !isActive && isSynced && !isSelectionModeActive
                     ) {
@@ -985,32 +969,7 @@ fun Lyrics(
                                         }
                                     }
                                 } else if (isSynced && changeLyrics) {
-                                    // Professional seek action with smooth animation
                                     playerConnection.player.seekTo(item.time)
-                                    // Smooth slow scroll when clicking on lyrics (3 seconds)
-                                    scope.launch {
-                                        // First scroll to the clicked item without animation
-                                        lazyListState.scrollToItem(index = index)
-
-                                        // Then animate it to center position slowly
-                                        val itemInfo =
-                                            lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
-                                        if (itemInfo != null) {
-                                            val viewportHeight =
-                                                lazyListState.layoutInfo.viewportEndOffset - lazyListState.layoutInfo.viewportStartOffset
-                                            val center =
-                                                lazyListState.layoutInfo.viewportStartOffset + (viewportHeight / 2)
-                                            val itemCenter = itemInfo.offset + itemInfo.size / 2
-                                            val offset = itemCenter - center
-
-                                            if (kotlin.math.abs(offset) > 10) { // Only animate if not already centered
-                                                lazyListState.animateScrollBy(
-                                                    value = offset.toFloat(),
-                                                    animationSpec = tween(durationMillis = 800) // Fast smooth scroll
-                                                )
-                                            }
-                                        }
-                                    }
                                     lastPreviewTime = 0L
                                 }
                             },
@@ -1116,7 +1075,9 @@ fun Lyrics(
                                     val wordDur = if (totalChars > 0) (activeDuration * charCount.toFloat() / totalChars).toLong() else activeDuration
                                     val wordEnd = wordStart + wordDur
                                     accumulatedTime += wordDur
-                                    Triple(word, wordStart, wordEnd)
+                                    // Include trailing space in word text so FlowRow wraps the word+space
+                                    // as one atomic unit, preventing orphaned leading spaces on wrapped lines
+                                    Triple(if (includeSpace) "$word " else word, wordStart, wordEnd)
                                 }
                             }
                         }
@@ -1173,14 +1134,6 @@ fun Lyrics(
                                             ),
                                             color = if (!isActive) currentTextColor else Color.Unspecified
                                         )
-                                        if (wordIndex != wordData.lastIndex) {
-                                            Text(
-                                                text = " ",
-                                                fontSize = lyricsTextSize.sp,
-                                                color = currentTextColor.copy(alpha = if (isActive && lineRelTime >= endRelative) 1f else 0.45f),
-                                                lineHeight = (lyricsTextSize * lyricsLineSpacing).sp
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -1240,13 +1193,6 @@ fun Lyrics(
                                                     )
                                                 )
                                             }
-                                        }
-                                        if (wordIndex != wordData.lastIndex) {
-                                            Text(
-                                                text = " ",
-                                                fontSize = lyricsTextSize.sp,
-                                                lineHeight = (lyricsTextSize * lyricsLineSpacing).sp
-                                            )
                                         }
                                     }
                                 }
@@ -1312,9 +1258,6 @@ fun Lyrics(
                                                     )
                                                 )
                                             }
-                                        }
-                                        if (wordIndex != wordData.lastIndex) {
-                                            Text(text = " ", fontSize = lyricsTextSize.sp, lineHeight = (lyricsTextSize * lyricsLineSpacing).sp)
                                         }
                                     }
                                 }
@@ -1515,6 +1458,50 @@ fun Lyrics(
         }
 
 
+
+        // "Back to live" chip — shown when user scrolls away from the current line
+        if (isSynced) {
+            AnimatedVisibility(
+                visible = lastPreviewTime != 0L && !isSelectionModeActive,
+                enter = fadeIn() + slideInVertically { it },
+                exit = fadeOut() + slideOutVertically { it },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 72.dp)
+                    .zIndex(2f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f),
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                        .clickable {
+                            lastPreviewTime = 0L
+                        }
+                        .padding(horizontal = 18.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.sync),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "Back to live",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        }
 
         // Action buttons: Close and Share buttons grouped together
         if (isSelectionModeActive) {

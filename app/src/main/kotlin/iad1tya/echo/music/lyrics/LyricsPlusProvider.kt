@@ -57,7 +57,7 @@ object LyricsPlusProvider : LyricsProvider {
     }
 
     override fun isEnabled(context: Context): Boolean =
-        context.dataStore[EnableLyricsPlus] ?: false
+        context.dataStore[EnableLyricsPlus] ?: true
 
     private suspend fun fetchFromUrl(
         url: String,

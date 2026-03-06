@@ -755,7 +755,7 @@ class MainActivity : ComponentActivity() {
                         if (shouldShowNavigationBar && !showRail) {
                             bottom += NavigationBarHeight
                         }
-                        if (!playerBottomSheetState.isDismissed && !isFindScreen) bottom += MiniPlayerHeight
+                        if (!playerBottomSheetState.isDismissed && !isFindScreen) bottom += MiniPlayerHeight + MiniPlayerBottomSpacing
                         windowsInsets
                             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                             .add(WindowInsets(top = AppBarHeight, bottom = bottom))

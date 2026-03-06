@@ -293,7 +293,7 @@ fun Thumbnail(
                 // Thumbnail content
                 BoxWithConstraints(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize().padding(top = 40.dp)
                 ) {
                     val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
                     val containerMaxWidth = maxWidth

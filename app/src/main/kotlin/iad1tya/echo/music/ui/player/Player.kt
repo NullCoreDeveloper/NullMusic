@@ -148,6 +148,7 @@ import iad1tya.echo.music.constants.PlayerButtonsStyleKey
 import iad1tya.echo.music.ui.theme.PlayerColorExtractor
 import iad1tya.echo.music.ui.theme.PlayerSliderColors
 import iad1tya.echo.music.constants.PlayerHorizontalPadding
+import iad1tya.echo.music.constants.ThumbnailCornerRadius
 import iad1tya.echo.music.constants.QueuePeekHeight
 import iad1tya.echo.music.constants.SliderStyle
 import iad1tya.echo.music.constants.SliderStyleKey
@@ -163,7 +164,14 @@ import iad1tya.echo.music.ui.component.PlayerSliderTrack
 import iad1tya.echo.music.ui.component.ResizableIconButton
 import iad1tya.echo.music.ui.component.rememberBottomSheetState
 import iad1tya.echo.music.ui.component.ShareChooserSheet
+import iad1tya.echo.music.ui.component.Lyrics
+import iad1tya.echo.music.LocalDatabase
+import iad1tya.echo.music.db.entities.LyricsEntity
+import iad1tya.echo.music.ui.menu.LyricsMenu
 import iad1tya.echo.music.ui.menu.PlayerMenu
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.text.style.TextAlign
+import dagger.hilt.android.EntryPointAccessors
 import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.utils.makeTimeString
@@ -459,7 +467,7 @@ fun BottomSheetPlayer(
         mutableStateOf(false)
     }
 
-    var showLyricsInPlayer by remember {
+    var showInlineLyrics by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -479,13 +487,6 @@ fun BottomSheetPlayer(
         dismissedBound = dismissedBound,
         expandedBound = state.expandedBound,
         collapsedBound = dismissedBound + 1.dp,
-        initialAnchor = 1
-    )
-
-    val lyricsSheetState = rememberBottomSheetState(
-        dismissedBound = 0.dp,
-        expandedBound = state.expandedBound,
-        collapsedBound = 0.dp,
         initialAnchor = 1
     )
 
@@ -707,12 +708,35 @@ fun BottomSheetPlayer(
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = PlayerHorizontalPadding),
             ) {
+                AnimatedContent(
+                    targetState = showInlineLyrics,
+                    label = "ThumbnailAnimation"
+                ) { showLyrics ->
+                    if (showLyrics) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 48.dp)
+                        ) {
+                            AsyncImage(
+                                model = mediaMetadata.thumbnailUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.width(0.dp))
+                    }
+                }
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -745,8 +769,8 @@ fun BottomSheetPlayer(
                         }
                     }
                     
-                    // Switch to Video button - above song title (only show for rectangular thumbnails)
-                    if (mediaMetadata.id.isNotEmpty() && isRectangularThumbnail) {
+                    // Switch to Video button - above song title (only show for rectangular thumbnails, and not in lyrics mode)
+                    if (!showInlineLyrics && mediaMetadata.id.isNotEmpty() && isRectangularThumbnail) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
@@ -1451,23 +1475,25 @@ fun BottomSheetPlayer(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f),
                     ) {
-                        if (showLyricsInPlayer) {
-                            mediaMetadata?.let { meta ->
-                                LyricsScreen(
-                                    mediaMetadata = meta,
-                                    onBackClick = { showLyricsInPlayer = false },
-                                    navController = navController,
-                                    backgroundAlpha = 1f,
-                                    isVisible = true
+                        AnimatedContent(
+                            targetState = showInlineLyrics,
+                            label = "Lyrics",
+                            transitionSpec = { fadeIn() togetherWith fadeOut() }
+                        ) { showLyrics ->
+                            if (showLyrics) {
+                                InlineLyricsView(
+                                    mediaMetadata = mediaMetadata,
+                                    showLyrics = showLyrics,
+                                    positionProvider = { sliderPosition ?: position }
+                                )
+                            } else {
+                                Thumbnail(
+                                    sliderPositionProvider = { sliderPosition },
+                                    modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
+                                    isPlayerExpanded = state.isExpanded,
+                                    onToggleLyrics = { showInlineLyrics = true }
                                 )
                             }
-                        } else {
-                            Thumbnail(
-                                sliderPositionProvider = { sliderPosition },
-                                modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
-                                isPlayerExpanded = state.isExpanded,
-                                onToggleLyrics = { showLyricsInPlayer = true }
-                            )
                         }
                     }
 
@@ -1497,23 +1523,25 @@ fun BottomSheetPlayer(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.weight(1f),
                         ) {
-                            if (showLyricsInPlayer) {
-                                mediaMetadata?.let { meta ->
-                                    LyricsScreen(
-                                        mediaMetadata = meta,
-                                        onBackClick = { showLyricsInPlayer = false },
-                                        navController = navController,
-                                        backgroundAlpha = 1f,
-                                        isVisible = true
+                            AnimatedContent(
+                                targetState = showInlineLyrics,
+                                label = "Lyrics",
+                                transitionSpec = { fadeIn() togetherWith fadeOut() }
+                            ) { showLyrics ->
+                                if (showLyrics) {
+                                    InlineLyricsView(
+                                        mediaMetadata = mediaMetadata,
+                                        showLyrics = showLyrics,
+                                        positionProvider = { sliderPosition ?: position }
+                                    )
+                                } else {
+                                    Thumbnail(
+                                        sliderPositionProvider = { sliderPosition },
+                                        modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
+                                        isPlayerExpanded = state.isExpanded,
+                                        onToggleLyrics = { showInlineLyrics = true }
                                     )
                                 }
-                            } else {
-                                Thumbnail(
-                                    sliderPositionProvider = { sliderPosition },
-                                    modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
-                                    isPlayerExpanded = state.isExpanded,
-                                    onToggleLyrics = { showLyricsInPlayer = true }
-                                )
                             }
                         }
 
@@ -1552,27 +1580,9 @@ fun BottomSheetPlayer(
             TextBackgroundColor = TextBackgroundColor,
             textButtonColor = textButtonColor,
             iconButtonColor = iconButtonColor,
-            onShowLyrics = { lyricsSheetState.expandSoft() },
+            onShowLyrics = { showInlineLyrics = !showInlineLyrics },
             pureBlack = pureBlack,
         )
-
-        mediaMetadata?.let { metadata ->
-            BottomSheet(
-                state = lyricsSheetState,
-                background = { Box(Modifier.fillMaxSize().background(Color.Unspecified)) },
-                onDismiss = { },
-                collapsedContent = {
-                }
-            ) {
-                LyricsScreen(
-                    mediaMetadata = metadata,
-                    onBackClick = { lyricsSheetState.collapseSoft() },
-                    navController = navController,
-                    backgroundAlpha = lyricsSheetState.progress.coerceIn(0f, 1f),
-                    isVisible = lyricsSheetState.progress > 0.01f
-                )
-            }
-        }
         
         // Audio Routing Bottom Sheet
         BottomSheet(
@@ -2518,4 +2528,69 @@ fun BottomSheetPlayer(
                 } // Close spacing Column
             } // Close main Column
         } // Close Audio Routing BottomSheet and Player BottomSheet
+}
+
+@Composable
+fun InlineLyricsView(
+    mediaMetadata: MediaMetadata?,
+    showLyrics: Boolean,
+    positionProvider: () -> Long
+) {
+    val playerConnection = LocalPlayerConnection.current ?: return
+    val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
+    val lyrics = remember(currentLyrics) { currentLyrics?.lyrics?.trim() }
+    val context = LocalContext.current
+    val database = LocalDatabase.current
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(mediaMetadata?.id, currentLyrics) {
+        if (mediaMetadata != null && currentLyrics == null) {
+            delay(500)
+            coroutineScope.launch(Dispatchers.IO) {
+                try {
+                    val entryPoint = EntryPointAccessors.fromApplication(
+                        context.applicationContext,
+                        iad1tya.echo.music.di.LyricsHelperEntryPoint::class.java
+                    )
+                    val lyricsHelper = entryPoint.lyricsHelper()
+                    val fetchedLyrics = lyricsHelper.getLyrics(mediaMetadata)
+                    database.query {
+                        upsert(LyricsEntity(mediaMetadata.id, fetchedLyrics))
+                    }
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            lyrics == null -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            lyrics == LyricsEntity.LYRICS_NOT_FOUND -> {
+                Text(
+                    text = stringResource(R.string.lyrics_not_found),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center
+                )
+            }
+            else -> {
+                Lyrics(
+                    sliderPositionProvider = { positionProvider() },
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    isVisible = showLyrics
+                )
+            }
+        }
+    }
 }

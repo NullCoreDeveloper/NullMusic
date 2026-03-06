@@ -804,7 +804,7 @@ fun Lyrics(
                 .add(WindowInsets(top = maxHeight / 3, bottom = maxHeight / 2))
                 .asPaddingValues(),
             modifier = Modifier
-                .fadingEdge(vertical = 64.dp)
+                .fadingEdge(top = 120.dp, bottom = 64.dp)
                 .nestedScroll(remember {
                     object : NestedScrollConnection {
                         override fun onPostScroll(

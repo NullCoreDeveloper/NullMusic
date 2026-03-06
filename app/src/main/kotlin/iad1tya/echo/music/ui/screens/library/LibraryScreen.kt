@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.ChipSortTypeKey
 import iad1tya.echo.music.constants.LibraryFilter
@@ -18,6 +21,17 @@ import iad1tya.echo.music.utils.rememberEnumPreference
 @Composable
 fun LibraryScreen(navController: NavController) {
     var filterType by rememberEnumPreference(ChipSortTypeKey, LibraryFilter.LIBRARY)
+
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val scrollToTop =
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
+    LaunchedEffect(scrollToTop?.value) {
+        if (scrollToTop?.value == true && filterType == LibraryFilter.LOCAL_MEDIA) {
+            filterType = LibraryFilter.LIBRARY
+            backStackEntry?.savedStateHandle?.set("scrollToTop", false)
+        }
+    }
 
     val filterContent = @Composable {
         Row {

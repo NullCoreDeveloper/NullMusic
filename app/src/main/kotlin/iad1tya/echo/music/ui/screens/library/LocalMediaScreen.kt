@@ -596,7 +596,7 @@ fun LocalMediaScreen(
             },
             navigationIcon = {
                 LongClickIconButton(
-                    onClick = navController::navigateUp,
+                    onClick = { onDeselect?.invoke() ?: navController.navigateUp() },
                     onLongClick = navController::backToMain,
                 ) {
                     Icon(
@@ -605,6 +605,9 @@ fun LocalMediaScreen(
                     )
                 }
             },
+            modifier = Modifier.windowInsetsPadding(
+                LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+            ),
         )
     }
 }

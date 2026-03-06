@@ -730,6 +730,7 @@ fun BottomSheetPlayer(
                                 modifier = Modifier
                                     .size(56.dp)
                                     .clip(RoundedCornerShape(ThumbnailCornerRadius))
+                                    .clickable { showInlineLyrics = false }
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                         }

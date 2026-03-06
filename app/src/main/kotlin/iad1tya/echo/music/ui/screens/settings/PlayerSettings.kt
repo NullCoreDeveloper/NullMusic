@@ -263,7 +263,7 @@ fun PlayerSettings(
         SwitchPreference(
             title = { Text("Crossfade") },
             description = "Smooth crossfade between tracks",
-            icon = { Icon(painterResource(R.drawable.sync), null) },
+            icon = { Icon(painterResource(R.drawable.waves), null) },
             checked = crossfadeEnabled,
             onCheckedChange = onCrossfadeEnabledChange
         )

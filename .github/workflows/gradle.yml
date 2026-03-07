@@ -19,17 +19,27 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build FOSS Debug APK (no Firebase needed)
-        run: ./gradlew assembleFossDebug
+      - name: Build Universal Debug APK
+        run: ./gradlew assembleUniversalDebug
 
-      - name: Upload FOSS APK
+      - name: Upload Universal APK
         uses: actions/upload-artifact@v4
         with:
-          name: echo-music-foss-debug
-          path: app/build/outputs/apk/foss/debug/*.apk
+          name: echo-music-universal-debug
+          path: app/build/outputs/apk/universal/debug/app-universal-debug.apk

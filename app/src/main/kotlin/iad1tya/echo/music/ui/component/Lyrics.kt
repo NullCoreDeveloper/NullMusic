@@ -1493,7 +1493,7 @@ fun Lyrics(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "Back to live",
+                            text = "Re-Sync",
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.SemiBold

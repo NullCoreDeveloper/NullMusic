@@ -47,6 +47,7 @@ import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERR
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
@@ -400,6 +401,17 @@ class MusicService :
                 .Builder(this)
                 .setMediaSourceFactory(createMediaSourceFactory())
                 .setRenderersFactory(createRenderersFactory())
+                .setLoadControl(
+                    DefaultLoadControl.Builder()
+                        .setBufferDurationsMs(
+                            /* minBufferMs = */ 15_000,
+                            /* maxBufferMs = */ 30_000,
+                            /* bufferForPlaybackMs = */ 500,
+                            /* bufferForPlaybackAfterRebufferMs = */ 1_500,
+                        )
+                        .setPrioritizeTimeOverSizeThresholds(true)
+                        .build(),
+                )
                 .setHandleAudioBecomingNoisy(true)
                 .setWakeMode(C.WAKE_MODE_NETWORK)
                 .setAudioAttributes(

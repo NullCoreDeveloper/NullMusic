@@ -11,11 +11,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -35,6 +35,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import iad1tya.echo.music.constants.FloatingCompactMaxWidth
+import iad1tya.echo.music.constants.FloatingCompactWidthFraction
 import iad1tya.echo.music.ui.screens.Screens
 
 @Composable
@@ -47,7 +49,9 @@ fun FloatingNavigationToolbar(
     onItemClick: (Screens, Boolean) -> Unit,
 ) {
     Surface(
-        modifier = modifier.wrapContentWidth(),
+        modifier = modifier
+            .fillMaxWidth(FloatingCompactWidthFraction)
+            .widthIn(max = FloatingCompactMaxWidth),
         shape = RoundedCornerShape(28.dp),
         color = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
         tonalElevation = 6.dp,
@@ -55,8 +59,9 @@ fun FloatingNavigationToolbar(
     ) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 10.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             items.forEach { screen ->

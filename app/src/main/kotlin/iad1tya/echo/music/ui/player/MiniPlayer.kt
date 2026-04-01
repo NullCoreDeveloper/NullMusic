@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,6 +75,8 @@ import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.MiniPlayerHeight
+import iad1tya.echo.music.constants.FloatingCompactMaxWidth
+import iad1tya.echo.music.constants.FloatingCompactWidthFraction
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.SwipeSensitivityKey
 import iad1tya.echo.music.constants.ThumbnailCornerRadius
@@ -309,12 +312,15 @@ private fun NewMiniPlayer(
                             .width(500.dp)
                             .align(Alignment.CenterEnd) // Right align
                     } else {
-                        Modifier.fillMaxWidth()
+                        Modifier
+                            .fillMaxWidth(FloatingCompactWidthFraction)
+                            .widthIn(max = FloatingCompactMaxWidth)
+                            .align(Alignment.Center)
                     }
                 )
                 .height(64.dp) // Circular height
                 .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
-                .clip(RoundedCornerShape(32.dp)) // Clip first for perfect rounded corners
+                .clip(RoundedCornerShape(28.dp)) // Match floating toolbar roundness
                 .then(
                     if (pureBlack || pureBlackMiniPlayer) {
                         Modifier.background(Color.Black)
@@ -642,7 +648,9 @@ private fun LegacyMiniPlayer(
                 if (isTabletLandscape) {
                     Modifier.width(500.dp)
                 } else {
-                    Modifier.fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth(FloatingCompactWidthFraction)
+                        .widthIn(max = FloatingCompactMaxWidth)
                 }
             )
             .height(MiniPlayerHeight)
@@ -650,7 +658,7 @@ private fun LegacyMiniPlayer(
             // NEW: Clip the shape BEFORE applying the background.
             // This ensures that the background is applied to the clipped, rounded shape,
             // preventing sharp edges when the width is reduced.
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .clip(RoundedCornerShape(28.dp))
             .then(
                 if (pureBlack || pureBlackMiniPlayer) {
                     Modifier.background(Color.Black)

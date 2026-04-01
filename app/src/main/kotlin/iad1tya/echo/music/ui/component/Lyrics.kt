@@ -580,6 +580,15 @@ fun Lyrics(
     var currentPlaybackPosition by remember {
         mutableLongStateOf(0L)
     }
+    var previousObservedPosition by remember {
+        mutableLongStateOf(0L)
+    }
+    var lastSliderPreviewValue by remember {
+        mutableLongStateOf(Long.MIN_VALUE)
+    }
+    var lastSliderPreviewUpdatedAt by remember {
+        mutableLongStateOf(0L)
+    }
     // Because LaunchedEffect has delay, which leads to inconsistent with current line color and scroll animation,
     // we use deferredCurrentLineIndex when user is scrolling
     var deferredCurrentLineIndex by rememberSaveable {
@@ -594,6 +603,9 @@ fun Lyrics(
         mutableLongStateOf(0L)
     }
     var isSeeking by remember {
+        mutableStateOf(false)
+    }
+    var isUserDraggingLyrics by remember {
         mutableStateOf(false)
     }
 
@@ -683,18 +695,42 @@ fun Lyrics(
         }
         while (isActive) {
             delay(50)
-            val sliderPosition = sliderPositionProvider()
+            val rawSliderPosition = sliderPositionProvider()
+            val now = System.currentTimeMillis()
+
+            if (rawSliderPosition != null && rawSliderPosition != lastSliderPreviewValue) {
+                lastSliderPreviewValue = rawSliderPosition
+                lastSliderPreviewUpdatedAt = now
+            }
+            if (rawSliderPosition == null) {
+                lastSliderPreviewValue = Long.MIN_VALUE
+                lastSliderPreviewUpdatedAt = 0L
+            }
+
+            val sliderPosition = rawSliderPosition?.takeIf {
+                lastSliderPreviewUpdatedAt != 0L && (now - lastSliderPreviewUpdatedAt) <= 400L
+            }
+
             isSeeking = sliderPosition != null
             val position = sliderPosition ?: playerConnection.player.currentPosition
-            currentPlaybackPosition = position
+            val effectivePosition = position
+
+            // Detect seek jumps (from lyric click, seek slider, or skip controls) and re-enable auto-sync.
+            if (previousObservedPosition != 0L && kotlin.math.abs(effectivePosition - previousObservedPosition) > 1500L) {
+                lastPreviewTime = 0L
+                initialScrollDone = false
+            }
+
+            currentPlaybackPosition = effectivePosition
+            previousObservedPosition = effectivePosition
             currentLineIndex = findCurrentLineIndex(
                 lines,
-                position
+                effectivePosition
             )
+            deferredCurrentLineIndex = currentLineIndex
         }
     }
 
-    // When the playback slider is being dragged, always follow the seek position live
     LaunchedEffect(isSeeking) {
         if (isSeeking) {
             lastPreviewTime = 0L
@@ -704,8 +740,19 @@ fun Lyrics(
     // Detect real user touch on the lyrics list — set manual mode so auto-scroll stops
     LaunchedEffect(lazyListState.interactionSource) {
         lazyListState.interactionSource.interactions.collect { interaction ->
-            if (interaction is DragInteraction.Start && !isSelectionModeActive) {
-                lastPreviewTime = System.currentTimeMillis()
+            when (interaction) {
+                is DragInteraction.Start -> {
+                    isUserDraggingLyrics = true
+                    if (!isSelectionModeActive) {
+                        lastPreviewTime = System.currentTimeMillis()
+                    }
+                }
+                is DragInteraction.Stop,
+                is DragInteraction.Cancel -> {
+                    isUserDraggingLyrics = false
+                    // Always release manual-scroll lock when user drag ends.
+                    lastPreviewTime = 0L
+                }
             }
         }
     }
@@ -756,27 +803,13 @@ fun Lyrics(
             }
         }
         
-        if((currentLineIndex == 0 && shouldScrollToFirstLine) || !initialScrollDone) {
-            shouldScrollToFirstLine = false
-            // Initial scroll to center the first line with medium animation (600ms)
-            val initialCenterIndex = kotlin.math.max(0, currentLineIndex)
-            performSmoothPageScroll(initialCenterIndex, 800) // Initial scroll duration
-            if(!isAppMinimized) {
-                initialScrollDone = true
-            }
-        } else if (currentLineIndex != -1) {
-            deferredCurrentLineIndex = currentLineIndex
+        if (currentLineIndex != -1) {
             if (isSeeking) {
-                // Fast scroll for seeking to center the target line (300ms)
-                val seekCenterIndex = kotlin.math.max(0, currentLineIndex - 1)
-                performSmoothPageScroll(seekCenterIndex, 500) // Fast seek duration
-            } else if (lastPreviewTime == 0L && scrollLyrics && currentLineIndex != previousLineIndex) {
-                // Auto-scroll only when user hasn't manually scrolled away
-                performSmoothPageScroll(currentLineIndex, 1500)
+                val seekCenterIndex = kotlin.math.max(0, currentLineIndex)
+                performSmoothPageScroll(seekCenterIndex, 420)
+            } else if (scrollLyrics && !isUserDraggingLyrics && currentLineIndex != previousLineIndex) {
+                performSmoothPageScroll(currentLineIndex, 700)
             }
-        }
-        if(currentLineIndex > 0) {
-            shouldScrollToFirstLine = true
         }
         previousLineIndex = currentLineIndex
     }
@@ -969,8 +1002,12 @@ fun Lyrics(
                                         }
                                     }
                                 } else if (isSynced && changeLyrics) {
+                                    deferredCurrentLineIndex = index
+                                    currentLineIndex = index
                                     playerConnection.player.seekTo(item.time)
+                                    isUserDraggingLyrics = false
                                     lastPreviewTime = 0L
+                                    initialScrollDone = false
                                 }
                             },
                             onLongClick = {

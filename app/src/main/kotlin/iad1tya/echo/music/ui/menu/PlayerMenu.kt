@@ -349,7 +349,7 @@ fun PlayerMenu(
                                             insert(mediaMetadata)
                                         }
                                         val downloadRequest = DownloadRequest
-                                            .Builder(mediaMetadata.id, mediaMetadata.id.toUri())
+                                            .Builder(mediaMetadata.id, "echo://${mediaMetadata.id}".toUri())
                                             .setCustomCacheKey(mediaMetadata.id)
                                             .setData(mediaMetadata.title.toByteArray())
                                             .build()

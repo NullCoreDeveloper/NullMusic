@@ -69,14 +69,18 @@ constructor(
                     ),
                 ),
         ) { dataSpec ->
-            val mediaId = dataSpec.key ?: error("No media id")
+            val mediaId = dataSpec.key
+                ?: dataSpec.uri.host
+                ?: dataSpec.uri.lastPathSegment
+                ?: dataSpec.uri.toString().removePrefix("echo://")
+            require(mediaId.isNotBlank()) { "No media id" }
             val length = if (dataSpec.length >= 0) dataSpec.length else 1
 
             if (playerCache.isCached(mediaId, dataSpec.position, length)) {
                 return@Factory dataSpec
             }
 
-            songUrlCache[mediaId]?.takeIf { it.second < System.currentTimeMillis() }?.let {
+            songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                 return@Factory dataSpec.withUri(it.first.toUri())
             }
 
@@ -131,7 +135,8 @@ constructor(
                 "${it}&range=0-${format.contentLength ?: 10000000}"
             }
 
-            songUrlCache[mediaId] = streamUrl to playbackData.streamExpiresInSeconds * 1000L
+            songUrlCache[mediaId] =
+                streamUrl to (System.currentTimeMillis() + playbackData.streamExpiresInSeconds * 1000L)
             dataSpec.withUri(streamUrl.toUri())
         }
 

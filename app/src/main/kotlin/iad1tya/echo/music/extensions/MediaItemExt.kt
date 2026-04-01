@@ -27,7 +27,7 @@ fun Song.toMediaItem() =
                 }
                 setUri(uri)
             } else {
-                setUri(song.id)
+                setUri("echo://${song.id}")
                 setCustomCacheKey(song.id)
                 setMimeType(androidx.media3.common.MimeTypes.AUDIO_MPEG)
             }
@@ -50,7 +50,7 @@ fun SongItem.toMediaItem() =
     MediaItem
         .Builder()
         .setMediaId(id)
-        .setUri(id)
+        .setUri("echo://$id")
         .setCustomCacheKey(id)
         .setTag(toMediaMetadata())
         .setMediaMetadata(
@@ -71,7 +71,7 @@ fun MediaMetadata.toMediaItem() =
     MediaItem
         .Builder()
         .setMediaId(id)
-        .setUri(id)
+        .setUri("echo://$id")
         .setCustomCacheKey(id)
         .setTag(this)
         .setMediaMetadata(

@@ -431,7 +431,7 @@ fun PlaylistMenu(
                                     songs.forEach { song ->
                                         val downloadRequest =
                                             DownloadRequest
-                                                .Builder(song.id, song.id.toUri())
+                                                .Builder(song.id, "echo://${song.id}".toUri())
                                                 .setCustomCacheKey(song.id)
                                                 .setData(song.song.title.toByteArray())
                                                 .build()

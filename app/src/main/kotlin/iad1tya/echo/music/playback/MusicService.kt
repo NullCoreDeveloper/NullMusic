@@ -1362,7 +1362,7 @@ class MusicService :
                 if (dataStore.get(AutoDownloadOnLikeKey, false) && song.liked) {
                     // Trigger download for the liked song
                     val downloadRequest = androidx.media3.exoplayer.offline.DownloadRequest
-                        .Builder(song.id, song.id.toUri())
+                        .Builder(song.id, "echo://${song.id}".toUri())
                         .setCustomCacheKey(song.id)
                         .setData(song.title.toByteArray())
                         .build()
@@ -2051,7 +2051,12 @@ class MusicService :
             if (dataSpec.uri.scheme == "file" || dataSpec.uri.scheme == "content") {
                 return@Factory dataSpec
             }
-            val mediaId = dataSpec.key ?: run {
+            val mediaId = dataSpec.key
+                ?: dataSpec.uri.host
+                ?: dataSpec.uri.lastPathSegment
+                ?: dataSpec.uri.toString().removePrefix("echo://")
+
+            if (mediaId.isBlank()) {
                 Log.e("MusicService", "DataSpec has no media id key")
                 throw PlaybackException(
                     "No media ID available for playback",

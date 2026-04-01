@@ -395,7 +395,7 @@ fun YouTubePlaylistMenu(
                                     }
                                     else -> {
                                         songs.forEach { song ->
-                                            val downloadRequest = DownloadRequest.Builder(song.id, song.id.toUri())
+                                            val downloadRequest = DownloadRequest.Builder(song.id, "echo://${song.id}".toUri())
                                                 .setCustomCacheKey(song.id)
                                                 .setData(song.title.toByteArray())
                                                 .build()

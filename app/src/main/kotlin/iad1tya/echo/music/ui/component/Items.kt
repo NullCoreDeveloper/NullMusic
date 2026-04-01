@@ -161,6 +161,7 @@ fun ListItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String?,
+    subtitleColor: Color = MaterialTheme.colorScheme.secondary,
     badges: @Composable RowScope.() -> Unit = {},
     thumbnailContent: @Composable () -> Unit,
     trailingContent: @Composable RowScope.() -> Unit = {},
@@ -172,7 +173,7 @@ fun ListItem(
     subtitle = {
         badges()
         if (!subtitle.isNullOrEmpty()) {
-            Text(text = subtitle, color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = subtitle, color = subtitleColor, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     },
     thumbnailContent = thumbnailContent,
@@ -266,6 +267,7 @@ fun SongListItem(
     song: Song,
     modifier: Modifier = Modifier,
     albumIndex: Int? = null,
+    subtitleColor: Color = MaterialTheme.colorScheme.secondary,
     showLikedIcon: Boolean = true,
     showInLibraryIcon: Boolean = false,
     showDownloadIcon: Boolean = true,
@@ -300,6 +302,7 @@ fun SongListItem(
                 song.artists.joinToString { it.name },
                 makeTimeString(song.song.duration * 1000L)
             ),
+            subtitleColor = subtitleColor,
             badges = badges,
             thumbnailContent = {
                 ItemThumbnail(
@@ -784,6 +787,7 @@ fun YouTubeListItem(
     item: YTItem,
     modifier: Modifier = Modifier,
     albumIndex: Int? = null,
+    subtitleColor: Color = MaterialTheme.colorScheme.secondary,
     isSelected: Boolean = false,
     isActive: Boolean = false,
     isPlaying: Boolean = false,
@@ -825,6 +829,7 @@ fun YouTubeListItem(
                 is PlaylistItem -> joinByBullet(item.author?.name, item.songCountText)
                 is EpisodeItem, is PodcastItem -> null
             },
+            subtitleColor = subtitleColor,
             badges = badges,
             thumbnailContent = {
                 ItemThumbnail(

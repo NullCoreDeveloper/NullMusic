@@ -34,7 +34,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -271,7 +270,7 @@ fun AlbumScreen(
                     Text(
                         text = albumMeta,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = Color.White,
                     )
 
                     Spacer(Modifier.height(12.dp))
@@ -305,13 +304,17 @@ fun AlbumScreen(
                             )
                         }
 
-                        OutlinedButton(
+                        Button(
                             onClick = {
                                 playerConnection.service.getAutomix(playlistId)
                                 playerConnection.playQueue(
                                     LocalAlbumRadio(albumWithSongs.copy(songs = albumWithSongs.songs.shuffled())),
                                 )
                             },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                            ),
                             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                             modifier = Modifier.weight(1f),
                         ) {
@@ -378,6 +381,7 @@ fun AlbumScreen(
                     SongListItem(
                         song = songWrapper.item,
                         albumIndex = index + 1,
+                        subtitleColor = Color.White,
                         isActive = songWrapper.item.id == mediaMetadata?.id,
                         isPlaying = isPlaying,
                         showInLibraryIcon = true,
@@ -526,8 +530,8 @@ fun AlbumScreen(
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
+            containerColor = screenAccentColor,
+            scrolledContainerColor = screenAccentColor,
         ),
         title = {
             if (selection) {

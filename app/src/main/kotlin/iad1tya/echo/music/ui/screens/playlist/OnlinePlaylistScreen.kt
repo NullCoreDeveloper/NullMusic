@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -377,7 +376,7 @@ fun OnlinePlaylistScreen(
                                 Text(
                                     text = playlistMeta,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = Color.White,
                                 )
 
                                 Spacer(Modifier.height(12.dp))
@@ -441,7 +440,7 @@ fun OnlinePlaylistScreen(
                                     }
 
                                     playlist.shuffleEndpoint?.let {
-                                        OutlinedButton(
+                                        Button(
                                             onClick = {
                                                 val shuffledSongs = songs.map { it.toMediaItem() }.shuffled()
                                                 playerConnection.playQueue(
@@ -451,6 +450,10 @@ fun OnlinePlaylistScreen(
                                                     ),
                                                 )
                                             },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color.White,
+                                                contentColor = Color.Black,
+                                            ),
                                             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                                             modifier = Modifier.weight(1f),
                                         ) {
@@ -541,6 +544,7 @@ fun OnlinePlaylistScreen(
                     ) { index, song ->
                         YouTubeListItem(
                             item = song.item.second,
+                            subtitleColor = Color.White,
                             isActive = mediaMetadata?.id == song.item.second.id,
                             isPlaying = isPlaying,
                             isSelected = song.isSelected && selection,
@@ -664,8 +668,8 @@ fun OnlinePlaylistScreen(
 
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent,
+                containerColor = screenAccentColor,
+                scrolledContainerColor = screenAccentColor,
             ),
             title = {
                 if (selection) {

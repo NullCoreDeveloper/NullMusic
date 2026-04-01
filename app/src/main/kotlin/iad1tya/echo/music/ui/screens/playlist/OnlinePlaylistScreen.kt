@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,11 +56,11 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -102,7 +104,6 @@ import iad1tya.echo.music.extensions.toMediaItem
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.models.toMediaMetadata
 import iad1tya.echo.music.playback.queues.ListQueue
-import iad1tya.echo.music.ui.component.AnimatedGradientBackground
 import iad1tya.echo.music.ui.component.AutoResizeText
 import iad1tya.echo.music.ui.component.DraggableScrollbar
 import iad1tya.echo.music.ui.component.FontSizeRange
@@ -248,22 +249,23 @@ fun OnlinePlaylistScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        if (paletteColors.isNotEmpty()) {
-            AnimatedGradientBackground(
-                colors = paletteColors,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.45f),
-            )
-        }
+    val isDarkMode = isSystemInDarkTheme()
+    val baseAccentColor = paletteColors.firstOrNull() ?: MaterialTheme.colorScheme.surfaceVariant
+    val screenAccentColor = if (isDarkMode) {
+        lerp(baseAccentColor, Color.Black, 0.28f)
+    } else {
+        lerp(baseAccentColor, Color.White, 0.16f)
+    }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(screenAccentColor),
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.72f)),
+                .background(screenAccentColor),
             state = lazyListState,
             contentPadding = LocalPlayerAwareWindowInsets.current.union(WindowInsets.ime)
                 .asPaddingValues(),
@@ -562,6 +564,7 @@ fun OnlinePlaylistScreen(
                             },
                             modifier =
                             Modifier
+                                .background(screenAccentColor)
                                 .combinedClickable(
                                     enabled = !hideExplicit || !song.item.second.explicit,
                                     onClick = {
@@ -660,6 +663,10 @@ fun OnlinePlaylistScreen(
         )
 
         TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent,
+            ),
             title = {
                 if (selection) {
                     val count = wrappedSongs.count { it.isSelected }

@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +51,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -87,7 +89,6 @@ import iad1tya.echo.music.constants.ThumbnailCornerRadius
 import iad1tya.echo.music.db.entities.Album
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.playback.queues.LocalAlbumRadio
-import iad1tya.echo.music.ui.component.AnimatedGradientBackground
 import iad1tya.echo.music.ui.component.AutoResizeText
 import iad1tya.echo.music.ui.component.FontSizeRange
 import iad1tya.echo.music.ui.component.IconButton
@@ -184,20 +185,24 @@ fun AlbumScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (paletteColors.isNotEmpty()) {
-            AnimatedGradientBackground(
-                colors = paletteColors,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.45f),
-            )
-        }
+    val isDarkMode = isSystemInDarkTheme()
+    val baseAccentColor = paletteColors.firstOrNull() ?: MaterialTheme.colorScheme.surfaceVariant
+    val screenAccentColor = if (isDarkMode) {
+        lerp(baseAccentColor, Color.Black, 0.28f)
+    } else {
+        lerp(baseAccentColor, Color.White, 0.16f)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(screenAccentColor),
+    ) {
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.72f)),
+                .background(screenAccentColor),
             contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
         ) {
         val albumWithSongs = albumWithSongs
@@ -398,6 +403,7 @@ fun AlbumScreen(
                         isSelected = songWrapper.isSelected && selection,
                         modifier =
                         Modifier
+                            .background(screenAccentColor)
                             .fillMaxWidth()
                             .animateItem()
                             .combinedClickable(
@@ -519,6 +525,10 @@ fun AlbumScreen(
     }
 
     TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent,
+        ),
         title = {
             if (selection) {
                 val count = wrappedSongs?.count { it.isSelected } ?: 0

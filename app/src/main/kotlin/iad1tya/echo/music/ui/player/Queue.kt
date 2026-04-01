@@ -48,6 +48,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -749,9 +751,18 @@ fun Queue(
                         }
 
                         val content: @Composable () -> Unit = {
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.animateItem(),
+                            Card(
+                                shape = RoundedCornerShape(24.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = when {
+                                        index == currentWindowIndex -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f)
+                                        selection && window.mediaItem.metadata!! in selectedSongs -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.92f)
+                                        else -> MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.92f)
+                                    },
+                                ),
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                                    .animateItem(),
                             ) {
                                 MediaMetadataListItem(
                                     mediaMetadata = window.mediaItem.metadata!!,
@@ -796,10 +807,8 @@ fun Queue(
                                             }
                                         }
                                     },
-                                    modifier =
-                                    Modifier
+                                    modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(background)
                                         .combinedClickable(
                                             onClick = {
                                                 if (selection) {
@@ -826,8 +835,8 @@ fun Queue(
                                                 if (!selection) {
                                                     selection = true
                                                 }
-                                                selectedSongs.clear() // Clear all selections
-                                                selectedSongs.add(window.mediaItem.metadata!!) // Select current item
+                                                selectedSongs.clear()
+                                                selectedSongs.add(window.mediaItem.metadata!!)
                                             },
                                         ),
                                 )
@@ -865,8 +874,14 @@ fun Queue(
                         items = automix,
                         key = { _, it -> it.mediaId },
                     ) { index, item ->
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
+                        Card(
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.92f),
+                            ),
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                                .animateItem(),
                         ) {
                             MediaMetadataListItem(
                                 mediaMetadata = item.metadata!!,
@@ -898,8 +913,7 @@ fun Queue(
                                         )
                                     }
                                 },
-                                modifier =
-                                Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {},
@@ -921,8 +935,7 @@ fun Queue(
                                                 )
                                             }
                                         },
-                                    )
-                                    .animateItem(),
+                                    ),
                             )
                         }
                     }
@@ -944,57 +957,80 @@ fun Queue(
                         .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
                 ),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                Modifier
-                    .height(ListItemHeight)
-                    .padding(horizontal = 12.dp),
+            Card(
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (pureBlack) {
+                        Color(0xFF141414)
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.96f)
+                    },
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
             ) {
-                Text(
-                    text = queueTitle.orEmpty(),
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-
-                AnimatedVisibility(
-                    visible = !selection,
-                    enter = fadeIn() + slideInVertically { it },
-                    exit = fadeOut() + slideOutVertically { it },
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
                 ) {
-                    Row {
-                        IconButton(
-                            onClick = { locked = !locked },
-                            modifier = Modifier.padding(horizontal = 6.dp),
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                         ) {
-                            Icon(
-                                painter = painterResource(if (locked) R.drawable.lock else R.drawable.lock_open),
-                                contentDescription = null,
+                            Text(
+                                text = stringResource(R.string.queue),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                text = queueTitle.orEmpty(),
+                                style = MaterialTheme.typography.titleLarge,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+
+                        AnimatedVisibility(
+                            visible = !selection,
+                            enter = fadeIn() + slideInVertically { it },
+                            exit = fadeOut() + slideOutVertically { it },
+                        ) {
+                            IconButton(
+                                onClick = { locked = !locked },
+                            ) {
+                                Icon(
+                                    painter = painterResource(if (locked) R.drawable.lock else R.drawable.lock_open),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        QueueStatChip(
+                            label = pluralStringResource(R.plurals.n_song, queueWindows.size, queueWindows.size),
+                        )
+                        QueueStatChip(
+                            label = makeTimeString(queueLength * 1000L),
+                        )
+                        if (selection) {
+                            QueueStatChip(
+                                label = stringResource(R.string.elements_selected, selectedSongs.size),
+                                highlighted = true,
                             )
                         }
                     }
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalAlignment = Alignment.End,
-                ) {
-                    Text(
-                        text = pluralStringResource(
-                            R.plurals.n_song,
-                            queueWindows.size,
-                            queueWindows.size
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-
-                    Text(
-                        text = makeTimeString(queueLength * 1000L),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
                 }
             }
 
@@ -1006,7 +1042,8 @@ fun Queue(
                 Row(
                     modifier =
                     Modifier
-                        .height(48.dp),
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .height(52.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val count = selectedSongs.size
@@ -1166,6 +1203,34 @@ fun Queue(
                                 .calculateBottomPadding(),
                 )
                 .align(Alignment.BottomCenter),
+        )
+    }
+}
+
+@Composable
+private fun QueueStatChip(
+    label: String,
+    highlighted: Boolean = false,
+) {
+    Card(
+        shape = RoundedCornerShape(999.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (highlighted) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerHigh
+            },
+        ),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (highlighted) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
         )
     }
 }

@@ -982,50 +982,18 @@ fun BottomSheetPlayer(
                                     .clip(audioRoutingShape)
                                     .background(textButtonColor)
                                     .clickable {
-                                        audioRoutingSheetState.expandSoft()
+                                        playerConnection.player.shuffleModeEnabled =
+                                            !playerConnection.player.shuffleModeEnabled
                                     }
                             ) {
-                                // Detect cast / audio device state
-                                val isCastingLocal = playerConnection.service.castConnectionHandler
-                                    ?.isCasting?.collectAsState()?.value ?: false
-                                val audioManager = try {
-                                    context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-                                } catch (e: Exception) {
-                                    null
-                                }
-                                val devices = try {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager != null) {
-                                        audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).toList()
-                                    } else {
-                                        emptyList()
-                                    }
-                                } catch (e: Exception) {
-                                    emptyList()
-                                }
-                                val hasBluetoothDevice = devices.any {
-                                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                                }
-                                val hasWiredHeadset = devices.any {
-                                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                                }
-
-                                // Choose icon based on active output
-                                val audioIcon = when {
-                                    isCastingLocal -> R.drawable.cast_connected
-                                    hasBluetoothDevice -> R.drawable.audio_bluetooth
-                                    hasWiredHeadset -> R.drawable.audio_earphone
-                                    else -> R.drawable.audio_device
-                                }
-
                                 Image(
-                                    painter = painterResource(audioIcon),
+                                    painter = painterResource(R.drawable.shuffle),
                                     contentDescription = null,
                                     colorFilter = ColorFilter.tint(iconButtonColor),
                                     modifier = Modifier
                                         .align(Alignment.Center)
                                         .size(24.dp)
+                                        .alpha(if (playerConnection.player.shuffleModeEnabled) 1f else 0.5f)
                                 )
                             }
 
@@ -1079,50 +1047,18 @@ fun BottomSheetPlayer(
                                 .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
                                 .clickable {
-                                    audioRoutingSheetState.expandSoft()
+                                    playerConnection.player.shuffleModeEnabled =
+                                        !playerConnection.player.shuffleModeEnabled
                                 },
                         ) {
-                            // Detect cast / audio device state
-                            val isCastingLocal = playerConnection.service.castConnectionHandler
-                                ?.isCasting?.collectAsState()?.value ?: false
-                            val audioManager = try {
-                                context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-                            } catch (e: Exception) {
-                                null
-                            }
-                            val devices = try {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && audioManager != null) {
-                                    audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).toList()
-                                } else {
-                                    emptyList()
-                                }
-                            } catch (e: Exception) {
-                                emptyList()
-                            }
-                            val hasBluetoothDevice = devices.any {
-                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                            }
-                            val hasWiredHeadset = devices.any {
-                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                                it.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                            }
-
-                            // Choose icon based on active output
-                            val audioIcon = when {
-                                isCastingLocal -> R.drawable.cast_connected
-                                hasBluetoothDevice -> R.drawable.audio_bluetooth
-                                hasWiredHeadset -> R.drawable.audio_earphone
-                                else -> R.drawable.audio_device
-                            }
-
                             Image(
-                                painter = painterResource(audioIcon),
+                                painter = painterResource(R.drawable.shuffle),
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(iconButtonColor),
                                 modifier = Modifier
                                     .align(Alignment.Center)
-                                    .size(24.dp),
+                                    .size(24.dp)
+                                    .alpha(if (playerConnection.player.shuffleModeEnabled) 1f else 0.5f),
                             )
                         }
 
@@ -1141,6 +1077,7 @@ fun BottomSheetPlayer(
                                             mediaMetadata = mediaMetadata,
                                             navController = navController,
                                             playerBottomSheetState = state,
+                                            onShowAudioOutput = { audioRoutingSheetState.expandSoft() },
                                             onShowDetailsDialog = {
                                                 mediaMetadata.id.let {
                                                     bottomSheetPageState.show {

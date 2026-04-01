@@ -68,6 +68,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.navigation.NavController
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.echo.innertube.YouTube
 import com.echo.innertube.models.WatchEndpoint
 import iad1tya.echo.music.LocalDatabase
@@ -75,6 +76,7 @@ import iad1tya.echo.music.LocalDownloadUtil
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.ListItemHeight
+import iad1tya.echo.music.constants.CrossfadeEnabledKey
 import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.ExoDownloadService
 import iad1tya.echo.music.playback.queues.YouTubeQueue
@@ -85,6 +87,8 @@ import iad1tya.echo.music.ui.component.AdvancedDownloadDialog
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.RingtoneTrimDialog
+import iad1tya.echo.music.viewmodels.ConnectivityViewModel
+import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.log2
@@ -98,13 +102,16 @@ fun PlayerMenu(
     playerBottomSheetState: BottomSheetState,
     isQueueTrigger: Boolean? = false,
     onShowDetailsDialog: () -> Unit,
+    onShowAudioOutput: (() -> Unit)? = null,
     onDismiss: () -> Unit,
 ) {
     mediaMetadata ?: return
     val context = LocalContext.current
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
+    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     val playerVolume = playerConnection.service.playerVolume.collectAsState()
+    val connectedBluetoothDevices by connectivityViewModel.connectedBluetoothDevices.collectAsState()
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
@@ -113,6 +120,8 @@ fun PlayerMenu(
     val downloadUtil = LocalDownloadUtil.current
     val download by downloadUtil.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
+
+    val (crossfadeEnabled, onCrossfadeEnabledChange) = rememberPreference(CrossfadeEnabledKey, defaultValue = false)
 
     val artists =
         remember(mediaMetadata.artists) {
@@ -437,6 +446,24 @@ fun PlayerMenu(
         
         item {
             MenuGroup {
+                if (onShowAudioOutput != null) {
+                    MenuEntry(
+                        icon = R.drawable.audio_device,
+                        text = "Audio Output",
+                        onClick = {
+                            onShowAudioOutput()
+                            onDismiss()
+                        }
+                    )
+                }
+                MenuEntry(
+                    icon = R.drawable.waves,
+                    text = if (crossfadeEnabled) "Disable crossfade" else "Enable crossfade",
+                    onClick = {
+                        onCrossfadeEnabledChange(!crossfadeEnabled)
+                        onDismiss()
+                    }
+                )
                 MenuEntry(
                     icon = R.drawable.info,
                     text = stringResource(R.string.details),

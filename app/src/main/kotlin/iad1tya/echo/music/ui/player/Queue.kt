@@ -331,15 +331,17 @@ fun Queue(
                             .size(buttonSize)
                             .clip(RoundedCornerShape(5.dp))
                             .border(1.dp, borderColor, RoundedCornerShape(5.dp))
-                            .clickable { onCrossfadeEnabledChange(!crossfadeEnabled) },
+                            .clickable {
+                                playerConnection.player.shuffleModeEnabled = !playerConnection.player.shuffleModeEnabled
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.waves),
+                            painter = painterResource(id = R.drawable.shuffle),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(iconSize)
-                                .alpha(if (crossfadeEnabled) 1f else 0.5f),
+                                .alpha(if (playerConnection.player.shuffleModeEnabled) 1f else 0.5f),
                             tint = TextBackgroundColor
                         )
                     }
@@ -777,6 +779,7 @@ fun Queue(
                                                         mediaMetadata = window.mediaItem.metadata!!,
                                                         navController = navController,
                                                         playerBottomSheetState = playerBottomSheetState,
+                                                        onShowAudioOutput = null,
                                                         isQueueTrigger = true,
                                                         onShowDetailsDialog = {
                                                             window.mediaItem.mediaId.let {

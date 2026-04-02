@@ -237,6 +237,25 @@ fun SwitchPreference(
 }
 
 @Composable
+fun ButtonPreference(
+    modifier: Modifier = Modifier,
+    title: @Composable () -> Unit,
+    description: String? = null,
+    icon: (@Composable () -> Unit)? = null,
+    onClick: () -> Unit,
+    isEnabled: Boolean = true,
+) {
+    PreferenceEntry(
+        modifier = modifier,
+        title = title,
+        description = description,
+        icon = icon,
+        onClick = onClick,
+        isEnabled = isEnabled,
+    )
+}
+
+@Composable
 fun EditTextPreference(
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit,

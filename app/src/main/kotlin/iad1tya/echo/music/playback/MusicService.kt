@@ -16,7 +16,9 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.provider.Settings
 import android.media.audiofx.AudioEffect
+import android.media.audiofx.Equalizer
 import android.media.audiofx.LoudnessEnhancer
+import android.media.audiofx.Virtualizer
 import android.net.ConnectivityManager
 import android.os.Binder
 import android.os.Build
@@ -77,6 +79,8 @@ import com.echo.innertube.models.WatchEndpoint
 import iad1tya.echo.music.MainActivity
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.AudioNormalizationKey
+import iad1tya.echo.music.constants.AudioEngineMode
+import iad1tya.echo.music.constants.AudioEngineModeKey
 import iad1tya.echo.music.constants.AudioOffload
 import iad1tya.echo.music.constants.AudioQualityKey
 import iad1tya.echo.music.constants.AutoDownloadOnLikeKey
@@ -122,11 +126,18 @@ import iad1tya.echo.music.constants.PauseOnMute
 import iad1tya.echo.music.constants.PersistentQueueKey
 import iad1tya.echo.music.constants.PlayerVolumeKey
 import iad1tya.echo.music.constants.PreventDuplicateTracksInQueueKey
+import iad1tya.echo.music.constants.ProEqEnabledKey
+import iad1tya.echo.music.constants.ProEqGainDbKey
 import iad1tya.echo.music.constants.RememberShuffleAndRepeatKey
 import iad1tya.echo.music.constants.RepeatModeKey
 import iad1tya.echo.music.constants.ResumeOnBluetoothConnectKey
 import iad1tya.echo.music.constants.ShuffleModeKey
 import iad1tya.echo.music.constants.ShowLyricsKey
+import iad1tya.echo.music.constants.SpatialAudioEnabledKey
+import iad1tya.echo.music.constants.SpatialAudioStrengthKey
+import iad1tya.echo.music.constants.AudioArEnabledKey
+import iad1tya.echo.music.constants.AudioArAutoCalibrateKey
+import iad1tya.echo.music.constants.AudioArSensitivityKey
 import iad1tya.echo.music.constants.SimilarContent
 import iad1tya.echo.music.constants.SkipSilenceKey
 import iad1tya.echo.music.constants.SponsorBlockEnabledKey
@@ -169,6 +180,7 @@ import iad1tya.echo.music.utils.TTSManager
 import iad1tya.echo.music.utils.MusicHapticsManager
 import iad1tya.echo.music.utils.YTPlayerUtils
 import iad1tya.echo.music.utils.dataStore
+import iad1tya.echo.music.utils.SpatialAudioManager
 import iad1tya.echo.music.utils.enumPreference
 import iad1tya.echo.music.utils.get
 import iad1tya.echo.music.utils.reportException
@@ -245,6 +257,11 @@ class MusicService :
         AudioQualityKey,
         iad1tya.echo.music.constants.AudioQuality.AUTO
     )
+    private val audioEngineMode by enumPreference(
+        this,
+        AudioEngineModeKey,
+        AudioEngineMode.STANDARD
+    )
 
     private var currentQueue: Queue = EmptyQueue
     var queueTitle: String? = null
@@ -284,6 +301,9 @@ class MusicService :
 
     private var isAudioEffectSessionOpened = false
     private var loudnessEnhancer: LoudnessEnhancer? = null
+    private var equalizer: Equalizer? = null
+    private var virtualizer: Virtualizer? = null
+    private var spatialAudioManager: SpatialAudioManager? = null
 
     private var lastPlaybackSpeed = 1.0f
 
@@ -497,6 +517,15 @@ class MusicService :
             Log.e("MusicService", "Failed to initialize Cast: ${e.message}", e)
         }
         
+        // Initialize Spatial Audio Manager (Audio AR)
+        try {
+            spatialAudioManager = SpatialAudioManager(this, dataStore)
+            spatialAudioManager?.loadCalibrationPoint()
+            Log.d("MusicService", "SpatialAudioManager initialized")
+        } catch (e: Exception) {
+            Log.e("MusicService", "Failed to initialize SpatialAudioManager: ${e.message}", e)
+        }
+        
         // Initialize DLNA
         try {
             if (::dlnaManager.isInitialized) {
@@ -676,6 +705,20 @@ class MusicService :
         ) { format, normalizeAudio ->
             format to normalizeAudio
         }.collectLatest(scope) { (format, normalizeAudio) -> setupLoudnessEnhancer()}
+
+        dataStore.data
+            .map {
+                listOf(
+                    it[ProEqEnabledKey] ?: false,
+                    it[ProEqGainDbKey] ?: 0f,
+                    it[SpatialAudioEnabledKey] ?: false,
+                    it[SpatialAudioStrengthKey] ?: 500,
+                )
+            }
+            .distinctUntilChanged()
+            .collectLatest(scope) {
+                setupProAudioEffects()
+            }
 
         if (dataStore.get(PersistentQueueKey, true)) {
             runCatching {
@@ -1461,6 +1504,99 @@ class MusicService :
         }
     }
 
+    private fun setupProAudioEffects() {
+        val sessionId = player.audioSessionId
+        if (sessionId == C.AUDIO_SESSION_ID_UNSET || sessionId <= 0) return
+
+        val proEqEnabled = dataStore.get(ProEqEnabledKey, false)
+        val preampDb = dataStore.get(ProEqGainDbKey, 0f).coerceIn(-8f, 8f)
+        
+        // Standard spatial audio
+        val spatialEnabled = dataStore.get(SpatialAudioEnabledKey, false)
+        val spatialStrength = dataStore.get(SpatialAudioStrengthKey, 500).coerceIn(0, 1000)
+        
+        // Audio AR (Augmented Reality) - advanced spatial audio with device rotation tracking
+        val audioArEnabled = dataStore.get(AudioArEnabledKey, false)
+
+        if (proEqEnabled) {
+            try {
+                if (equalizer == null) {
+                    equalizer = Equalizer(0, sessionId)
+                }
+                equalizer?.enabled = true
+                val gainMb = (preampDb * 100).toInt().coerceIn(-1000, 1000).toShort()
+                val bands = equalizer?.numberOfBands?.toInt() ?: 0
+                for (i in 0 until bands) {
+                    equalizer?.setBandLevel(i.toShort(), gainMb)
+                }
+            } catch (e: Exception) {
+                reportException(e)
+            }
+        } else {
+            equalizer?.enabled = false
+        }
+
+        // Apply spatial audio effects (standard + Audio AR)
+        if (spatialEnabled || audioArEnabled) {
+            try {
+                if (virtualizer == null) {
+                    virtualizer = Virtualizer(0, sessionId)
+                }
+                virtualizer?.strengthSupported?.let { supported ->
+                    if (supported) {
+                        var effectiveStrength = spatialStrength
+                        
+                        // Enhance strength with Audio AR if enabled
+                        if (audioArEnabled && spatialAudioManager != null) {
+                            // Modulate strength based on soundstage rotation and depth
+                            val rotationInfluence = Math.abs(spatialAudioManager?.currentSoundstageRotation ?: 0f) / 180f
+                            val depthInfluence = spatialAudioManager?.currentSoundstageDepth ?: 1f
+                            val audioArBoost = (1f + rotationInfluence * 0.3f) * depthInfluence
+                            effectiveStrength = (spatialStrength * audioArBoost).toInt().coerceIn(0, 1000)
+                        }
+                        
+                        virtualizer?.setStrength(effectiveStrength.toShort())
+                    }
+                }
+                virtualizer?.enabled = true
+                
+                if (audioArEnabled) {
+                    Log.d("MusicService", "Pro Audio: Spatial Audio AR enabled - Rotation: ${spatialAudioManager?.currentSoundstageRotation}°, Depth: ${spatialAudioManager?.currentSoundstageDepth}x")
+                }
+            } catch (e: Exception) {
+                reportException(e)
+            }
+        } else {
+            virtualizer?.enabled = false
+        }
+    }
+
+    /**
+     * Recenter the Audio AR soundstage to the current device orientation.
+     */
+    fun recenterAudioAr() {
+        spatialAudioManager?.recenter()
+        Log.d("MusicService", "Audio AR recentered")
+    }
+
+    private fun releaseProAudioEffects() {
+        try {
+            equalizer?.release()
+        } catch (e: Exception) {
+            reportException(e)
+        } finally {
+            equalizer = null
+        }
+
+        try {
+            virtualizer?.release()
+        } catch (e: Exception) {
+            reportException(e)
+        } finally {
+            virtualizer = null
+        }
+    }
+
     // hapticsPollingJob retained for cancellation in onDestroy; polling is no longer
     // needed — the Visualizer in MusicHapticsManager fires its own callbacks.
     private fun startHapticsPolling() { /* no-op: Visualizer drives callbacks directly */ }
@@ -1469,6 +1605,7 @@ class MusicService :
         if (isAudioEffectSessionOpened) return
         isAudioEffectSessionOpened = true
         setupLoudnessEnhancer()
+        setupProAudioEffects()
         sendBroadcast(
             Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
                 putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
@@ -1482,6 +1619,7 @@ class MusicService :
         if (!isAudioEffectSessionOpened) return
         isAudioEffectSessionOpened = false
         releaseLoudnessEnhancer()
+        releaseProAudioEffects()
         sendBroadcast(
             Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
                 putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
@@ -1497,6 +1635,7 @@ class MusicService :
         lastPlaybackSpeed = -1.0f // force update song
 
         setupLoudnessEnhancer()
+        setupProAudioEffects()
 
         // Schedule crossfade for next transition
         scheduleCrossfade()
@@ -1603,6 +1742,7 @@ class MusicService :
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
         if (playWhenReady) {
             setupLoudnessEnhancer()
+            setupProAudioEffects()
         }
         // Music Haptics — pass the real audio session so Visualizer can capture amplitude
         if (dataStore.get(MusicHapticsEnabledKey, false)) {
@@ -1614,6 +1754,12 @@ class MusicService :
         }
         // Update widget
         updateWidget()
+    }
+
+    override fun onAudioSessionIdChanged(audioSessionId: Int) {
+        super.onAudioSessionIdChanged(audioSessionId)
+        setupLoudnessEnhancer()
+        setupProAudioEffects()
     }
 
     override fun onEvents(
@@ -2170,17 +2316,23 @@ class MusicService :
                 context: Context,
                 enableFloatOutput: Boolean,
                 enableAudioTrackPlaybackParams: Boolean,
-            ) = DefaultAudioSink
-                .Builder(this@MusicService)
-                .setEnableFloatOutput(enableFloatOutput)
-                .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-                .setAudioProcessorChain(
-                    DefaultAudioSink.DefaultAudioProcessorChain(
-                        emptyArray(),
-                        SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
-                        SonicAudioProcessor(),
-                    ),
-                ).build()
+            ): DefaultAudioSink {
+                val hiFiMode = audioEngineMode == AudioEngineMode.HIFI_EXPERIMENTAL
+                if (hiFiMode) {
+                    NativeAudioEngine.initializeIfAvailable()
+                }
+                return DefaultAudioSink
+                    .Builder(this@MusicService)
+                    .setEnableFloatOutput(enableFloatOutput || hiFiMode)
+                    .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams || hiFiMode)
+                    .setAudioProcessorChain(
+                        DefaultAudioSink.DefaultAudioProcessorChain(
+                            emptyArray(),
+                            SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
+                            SonicAudioProcessor(),
+                        ),
+                    ).build()
+            }
         }
 
     override fun onPlaybackStatsReady(
@@ -2530,6 +2682,9 @@ class MusicService :
         connectivityObserver.unregister()
         abandonAudioFocus()
         releaseLoudnessEnhancer()
+        releaseProAudioEffects()
+        spatialAudioManager?.release()
+        spatialAudioManager = null
         cleanupCrossfade()
         audioManager.unregisterAudioDeviceCallback(audioDeviceCallback)
         volumeObserver?.let { contentResolver.unregisterContentObserver(it) }

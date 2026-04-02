@@ -29,6 +29,7 @@ import iad1tya.echo.music.di.ApplicationScope
 import iad1tya.echo.music.extensions.toEnum
 import iad1tya.echo.music.extensions.toInetSocketAddress
 import iad1tya.echo.music.utils.CrashHandler
+import iad1tya.echo.music.utils.DiagnosticsLogTree
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.get
 import iad1tya.echo.music.utils.reportException
@@ -60,6 +61,7 @@ class App : Application(), SingletonImageLoader.Factory {
         AppContextHolder.initialize(this)
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(applicationContext))
         Timber.plant(Timber.DebugTree())
+        Timber.plant(DiagnosticsLogTree())
 
         // Initialize Firebase with error handling
         try {

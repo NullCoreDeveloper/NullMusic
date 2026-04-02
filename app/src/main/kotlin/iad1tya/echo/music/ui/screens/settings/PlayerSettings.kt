@@ -62,6 +62,12 @@ import iad1tya.echo.music.constants.CrossfadeGaplessKey
 import iad1tya.echo.music.constants.DisableLoadMoreWhenRepeatAllKey
 import iad1tya.echo.music.constants.AutoSkipNextOnErrorKey
 import iad1tya.echo.music.constants.DoubleTapToLikeKey
+import iad1tya.echo.music.constants.DownloadAutoRetryKey
+import iad1tya.echo.music.constants.DownloadChargingOnlyKey
+import iad1tya.echo.music.constants.DownloadRetryLimitKey
+import iad1tya.echo.music.constants.DownloadWifiOnlyKey
+import iad1tya.echo.music.constants.GestureDoubleTapSeekKey
+import iad1tya.echo.music.constants.GestureVerticalControlsKey
 import iad1tya.echo.music.constants.KeepScreenOn
 import iad1tya.echo.music.constants.MusicHapticsEnabledKey
 import iad1tya.echo.music.constants.PauseOnMute
@@ -71,6 +77,15 @@ import iad1tya.echo.music.constants.RememberShuffleAndRepeatKey
 import iad1tya.echo.music.constants.ResumeOnBluetoothConnectKey
 import iad1tya.echo.music.constants.SimilarContent
 import iad1tya.echo.music.constants.SkipSilenceKey
+import iad1tya.echo.music.constants.AudioEngineMode
+import iad1tya.echo.music.constants.AudioEngineModeKey
+import iad1tya.echo.music.constants.ProEqEnabledKey
+import iad1tya.echo.music.constants.ProEqGainDbKey
+import iad1tya.echo.music.constants.SpatialAudioEnabledKey
+import iad1tya.echo.music.constants.SpatialAudioStrengthKey
+import iad1tya.echo.music.constants.AudioArEnabledKey
+import iad1tya.echo.music.constants.AudioArAutoCalibrateKey
+import iad1tya.echo.music.constants.AudioArSensitivityKey
 import iad1tya.echo.music.constants.ForceStopOnTaskClearKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.TTSAnnouncementEnabledKey
@@ -79,9 +94,11 @@ import iad1tya.echo.music.constants.HistoryDuration
 import iad1tya.echo.music.constants.SeekExtraSeconds
 import iad1tya.echo.music.ui.component.EnumListPreference
 import iad1tya.echo.music.ui.component.IconButton
+import iad1tya.echo.music.ui.component.ListPreference
 import iad1tya.echo.music.ui.component.PreferenceGroupTitle
 import iad1tya.echo.music.ui.component.SliderPreference
 import iad1tya.echo.music.ui.component.SwitchPreference
+import iad1tya.echo.music.ui.component.ButtonPreference
 import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
@@ -93,10 +110,13 @@ fun PlayerSettings(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
+    val onRecenterAudioClick = remember { { } }
+
     val (audioQuality, onAudioQualityChange) = rememberEnumPreference(
         AudioQualityKey,
         defaultValue = AudioQuality.AUTO
     )
+
     val (persistentQueue, onPersistentQueueChange) = rememberPreference(
         PersistentQueueKey,
         defaultValue = true
@@ -113,6 +133,38 @@ fun PlayerSettings(
     val (audioOffload, onAudioOffloadChange) = rememberPreference(
         key = AudioOffload,
         defaultValue = false
+    )
+    val (audioEngineMode, onAudioEngineModeChange) = rememberEnumPreference(
+        AudioEngineModeKey,
+        defaultValue = AudioEngineMode.STANDARD
+    )
+    val (proEqEnabled, onProEqEnabledChange) = rememberPreference(
+        ProEqEnabledKey,
+        defaultValue = false
+    )
+    val (proEqGain, onProEqGainChange) = rememberPreference(
+        ProEqGainDbKey,
+        defaultValue = 0f
+    )
+    val (spatialAudioEnabled, onSpatialAudioEnabledChange) = rememberPreference(
+        SpatialAudioEnabledKey,
+        defaultValue = false
+    )
+    val (spatialAudioStrength, onSpatialAudioStrengthChange) = rememberPreference(
+        SpatialAudioStrengthKey,
+        defaultValue = 500
+    )
+    val (audioArEnabled, onAudioArEnabledChange) = rememberPreference(
+        AudioArEnabledKey,
+        defaultValue = false
+    )
+    val (audioArAutoCalibrate, onAudioArAutoCalibrateChange) = rememberPreference(
+        AudioArAutoCalibrateKey,
+        defaultValue = false
+    )
+    val (audioArSensitivity, onAudioArSensitivityChange) = rememberPreference(
+        AudioArSensitivityKey,
+        defaultValue = 1f
     )
 
     val (seekExtraSeconds, onSeekExtraSeconds) = rememberPreference(
@@ -154,6 +206,14 @@ fun PlayerSettings(
     )
     val (doubleTapToLike, onDoubleTapToLikeChange) = rememberPreference(
         DoubleTapToLikeKey,
+        defaultValue = false
+    )
+    val (gestureDoubleTapSeek, onGestureDoubleTapSeekChange) = rememberPreference(
+        GestureDoubleTapSeekKey,
+        defaultValue = true
+    )
+    val (gestureVerticalControls, onGestureVerticalControlsChange) = rememberPreference(
+        GestureVerticalControlsKey,
         defaultValue = false
     )
     val (historyDuration, onHistoryDurationChange) = rememberPreference(
@@ -203,6 +263,22 @@ fun PlayerSettings(
     val (musicHapticsEnabled, onMusicHapticsEnabledChange) = rememberPreference(
         MusicHapticsEnabledKey,
         defaultValue = false
+    )
+    val (downloadWifiOnly, onDownloadWifiOnlyChange) = rememberPreference(
+        DownloadWifiOnlyKey,
+        defaultValue = false
+    )
+    val (downloadChargingOnly, onDownloadChargingOnlyChange) = rememberPreference(
+        DownloadChargingOnlyKey,
+        defaultValue = false
+    )
+    val (downloadAutoRetry, onDownloadAutoRetryChange) = rememberPreference(
+        DownloadAutoRetryKey,
+        defaultValue = true
+    )
+    val (downloadRetryLimit, onDownloadRetryLimitChange) = rememberPreference(
+        DownloadRetryLimitKey,
+        defaultValue = 2
     )
 
     Column(
@@ -264,6 +340,103 @@ fun PlayerSettings(
             checked = audioOffload,
             onCheckedChange = onAudioOffloadChange
         )
+
+        EnumListPreference(
+            title = { Text("Audio engine") },
+            icon = { Icon(painterResource(R.drawable.graphic_eq), null) },
+            selectedValue = audioEngineMode,
+            onValueSelected = onAudioEngineModeChange,
+            valueText = {
+                when (it) {
+                    AudioEngineMode.STANDARD -> "Standard"
+                    AudioEngineMode.HIFI_EXPERIMENTAL -> "Hi-Fi Experimental"
+                }
+            }
+        )
+
+        SwitchPreference(
+            title = { Text("Pro EQ") },
+            description = "Enable gain staging and louder/cleaner response profile",
+            icon = { Icon(painterResource(R.drawable.equalizer), null) },
+            checked = proEqEnabled,
+            onCheckedChange = onProEqEnabledChange
+        )
+
+        if (proEqEnabled) {
+            val preampOptions = listOf(-8f, -4f, 0f, 4f, 8f)
+            ListPreference(
+                title = { Text("Preamp gain") },
+                icon = { Icon(painterResource(R.drawable.volume_up), null) },
+                selectedValue = preampOptions.minByOrNull { kotlin.math.abs(it - proEqGain) } ?: 0f,
+                values = preampOptions,
+                valueText = { "${it.roundToInt()} dB" },
+                onValueSelected = onProEqGainChange
+            )
+        }
+
+        SwitchPreference(
+            title = { Text("Spatial audio") },
+            description = "Virtualizer-based spatial widening for headphones",
+            icon = { Icon(painterResource(R.drawable.waves), null) },
+            checked = spatialAudioEnabled,
+            onCheckedChange = onSpatialAudioEnabledChange
+        )
+
+        if (spatialAudioEnabled) {
+            val spatialOptions = listOf(0, 250, 500, 750, 1000)
+            ListPreference(
+                title = { Text("Spatial strength") },
+                icon = { Icon(painterResource(R.drawable.tune), null) },
+                selectedValue = spatialOptions.minByOrNull { kotlin.math.abs(it - spatialAudioStrength) } ?: 500,
+                values = spatialOptions,
+                valueText = {
+                    when (it) {
+                        0 -> "Off"
+                        250 -> "Low"
+                        500 -> "Medium"
+                        750 -> "High"
+                        else -> "Max"
+                    }
+                },
+                onValueSelected = onSpatialAudioStrengthChange
+            )
+        }
+
+        // Audio AR (Spatial Audio Augmented Reality)
+        SwitchPreference(
+            title = { Text("Spatial Audio AR") },
+            description = "Rotate soundstage based on device movement (needs headphones)",
+            icon = { Icon(painterResource(R.drawable.waves), null) },
+            checked = audioArEnabled,
+            onCheckedChange = onAudioArEnabledChange
+        )
+
+        if (audioArEnabled) {
+            SwitchPreference(
+                title = { Text("Auto-calibration") },
+                description = "Automatically adjust center point when head is stable",
+                icon = { Icon(painterResource(R.drawable.tune), null) },
+                checked = audioArAutoCalibrate,
+                onCheckedChange = onAudioArAutoCalibrateChange
+            )
+
+            val sensitivityOptions = listOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f, 2.5f)
+            ListPreference(
+                title = { Text("Soundstage depth (sensitivity)") },
+                icon = { Icon(painterResource(R.drawable.tune), null) },
+                selectedValue = sensitivityOptions.minByOrNull { kotlin.math.abs(it - audioArSensitivity) } ?: 1f,
+                values = sensitivityOptions,
+                valueText = { String.format("%.2fx", it) },
+                onValueSelected = onAudioArSensitivityChange
+            )
+
+            ButtonPreference(
+                title = { Text("Recenter Audio") },
+                description = "Set current device orientation as front",
+                icon = { Icon(painterResource(R.drawable.tune), null) },
+                onClick = onRecenterAudioClick
+            )
+        }
 
         SwitchPreference(
             title = { Text("Crossfade") },
@@ -375,6 +548,41 @@ fun PlayerSettings(
         )
 
         SwitchPreference(
+            title = { Text("Downloads on Wi-Fi only") },
+            description = "Pause download queue automatically when Wi-Fi is unavailable",
+            icon = { Icon(painterResource(R.drawable.download), null) },
+            checked = downloadWifiOnly,
+            onCheckedChange = onDownloadWifiOnlyChange
+        )
+
+        SwitchPreference(
+            title = { Text("Downloads while charging only") },
+            description = "Require charging state for large background download batches",
+            icon = { Icon(painterResource(R.drawable.storage), null) },
+            checked = downloadChargingOnly,
+            onCheckedChange = onDownloadChargingOnlyChange
+        )
+
+        SwitchPreference(
+            title = { Text("Auto retry failed downloads") },
+            description = "Automatically requeue transient failures",
+            icon = { Icon(painterResource(R.drawable.restore), null) },
+            checked = downloadAutoRetry,
+            onCheckedChange = onDownloadAutoRetryChange
+        )
+
+        if (downloadAutoRetry) {
+            ListPreference(
+                title = { Text("Download retry limit") },
+                icon = { Icon(painterResource(R.drawable.timer), null) },
+                selectedValue = downloadRetryLimit.coerceIn(1, 5),
+                values = listOf(1, 2, 3, 4, 5),
+                valueText = { "$it attempts" },
+                onValueSelected = onDownloadRetryLimitChange
+            )
+        }
+
+        SwitchPreference(
             title = { Text(stringResource(R.string.enable_similar_content)) },
             description = stringResource(R.string.similar_content_desc),
             icon = { Icon(painterResource(R.drawable.similar), null) },
@@ -408,6 +616,22 @@ fun PlayerSettings(
             icon = { Icon(painterResource(R.drawable.favorite), null) },
             checked = doubleTapToLike,
             onCheckedChange = onDoubleTapToLikeChange
+        )
+
+        SwitchPreference(
+            title = { Text("Double tap seek") },
+            description = "Double tap left/right artwork half to seek backward/forward",
+            icon = { Icon(painterResource(R.drawable.fast_forward), null) },
+            checked = gestureDoubleTapSeek,
+            onCheckedChange = onGestureDoubleTapSeekChange
+        )
+
+        SwitchPreference(
+            title = { Text("Vertical gesture controls") },
+            description = "Swipe up/down on artwork for volume and brightness",
+            icon = { Icon(painterResource(R.drawable.swipe), null) },
+            checked = gestureVerticalControls,
+            onCheckedChange = onGestureVerticalControlsChange
         )
 
         SwitchPreference(

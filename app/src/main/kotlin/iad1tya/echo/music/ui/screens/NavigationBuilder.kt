@@ -76,6 +76,7 @@ import iad1tya.echo.music.ui.screens.settings.SupporterScreen
 import iad1tya.echo.music.ui.screens.settings.UpdaterScreen
 import iad1tya.echo.music.ui.screens.settings.AiSettings
 import iad1tya.echo.music.ui.screens.settings.DiscordLoginScreen
+import iad1tya.echo.music.ui.screens.settings.DiagnosticsSettings
 import iad1tya.echo.music.ui.screens.settings.DiscordSettings
 import iad1tya.echo.music.ui.screens.settings.LastFMSettings
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
@@ -345,6 +346,9 @@ fun NavGraphBuilder.navigationBuilder(
     }
     composable("settings/privacy") {
         PrivacySettings(navController, scrollBehavior)
+    }
+    composable("settings/diagnostics") {
+        DiagnosticsSettings(navController, scrollBehavior)
     }
     composable("settings/backup_restore") {
         BackupAndRestore(navController, scrollBehavior)

@@ -47,6 +47,34 @@ val ResumeOnBluetoothConnectKey = booleanPreferencesKey("resumeOnBluetoothConnec
 val KeepScreenOn = booleanPreferencesKey("keepScreenOn")
 val DeveloperModeKey = booleanPreferencesKey("developerMode")
 
+// Advanced playback and Hi-Fi track
+val AudioEngineModeKey = stringPreferencesKey("audioEngineMode")
+val ProEqEnabledKey = booleanPreferencesKey("proEqEnabled")
+val ProEqGainDbKey = floatPreferencesKey("proEqGainDb")
+val SpatialAudioEnabledKey = booleanPreferencesKey("spatialAudioEnabled")
+val SpatialAudioStrengthKey = intPreferencesKey("spatialAudioStrength")
+
+// Audio Augmented Reality (Spatial Audio AR)
+val AudioArEnabledKey = booleanPreferencesKey("audioArEnabled")
+val AudioArAutoCalibrateKey = booleanPreferencesKey("audioArAutoCalibrate")
+val AudioArSensitivityKey = floatPreferencesKey("audioArSensitivity")
+val AudioArCenterPointKey = stringPreferencesKey("audioArCenterPoint")
+
+// Player gestures
+val GestureDoubleTapSeekKey = booleanPreferencesKey("gestureDoubleTapSeek")
+val GestureVerticalControlsKey = booleanPreferencesKey("gestureVerticalControls")
+
+// Download intelligence
+val DownloadWifiOnlyKey = booleanPreferencesKey("downloadWifiOnly")
+val DownloadChargingOnlyKey = booleanPreferencesKey("downloadChargingOnly")
+val DownloadAutoRetryKey = booleanPreferencesKey("downloadAutoRetry")
+val DownloadRetryLimitKey = intPreferencesKey("downloadRetryLimit")
+
+enum class AudioEngineMode {
+    STANDARD,
+    HIFI_EXPERIMENTAL,
+}
+
 enum class SliderStyle {
     DEFAULT,
     SQUIGGLY,

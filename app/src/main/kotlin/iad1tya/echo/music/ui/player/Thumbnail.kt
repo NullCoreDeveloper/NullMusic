@@ -15,8 +15,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import android.app.Activity
+import android.content.Context.AUDIO_SERVICE
+import android.media.AudioManager
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -101,6 +105,8 @@ import iad1tya.echo.music.constants.CanvasThumbnailAnimationKey
 import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
 import iad1tya.echo.music.constants.DoubleTapToLikeKey
+import iad1tya.echo.music.constants.GestureDoubleTapSeekKey
+import iad1tya.echo.music.constants.GestureVerticalControlsKey
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
@@ -123,6 +129,7 @@ fun Thumbnail(
     val context = LocalContext.current
     val currentView = LocalView.current
     val coroutineScope = rememberCoroutineScope()
+    val audioManager = remember(context) { context.getSystemService(AUDIO_SERVICE) as? AudioManager }
 
     // States
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -132,6 +139,8 @@ fun Thumbnail(
     val swipeThumbnail by rememberPreference(SwipeThumbnailKey, true)
     val tapAlbumArtForLyrics by rememberPreference(TapAlbumArtForLyricsKey, false)
     val doubleTapToLike by rememberPreference(DoubleTapToLikeKey, false)
+    val doubleTapSeekEnabled by rememberPreference(GestureDoubleTapSeekKey, true)
+    val verticalGesturesEnabled by rememberPreference(GestureVerticalControlsKey, false)
     val thumbnailCornerRadius by rememberPreference(ThumbnailCornerRadiusKey, 3f)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
     val hidePlayerThumbnail by rememberPreference(HidePlayerThumbnailKey, false)
@@ -380,7 +389,7 @@ fun Thumbnail(
                                     .width(horizontalLazyGridItemWidth)
                                     .fillMaxSize()
                                     .padding(horizontal = PlayerHorizontalPadding)
-                                    .pointerInput(Unit) {
+                                    .pointerInput(doubleTapToLike, doubleTapSeekEnabled, tapAlbumArtForLyrics) {
                                         detectTapGestures(
                                             onTap = {
                                                 if (tapAlbumArtForLyrics) {
@@ -392,6 +401,7 @@ fun Thumbnail(
                                                     playerConnection.toggleLike()
                                                     return@detectTapGestures
                                                 }
+                                                if (!doubleTapSeekEnabled) return@detectTapGestures
 
                                                 val currentPosition = playerConnection.player.currentPosition
                                                 val duration = playerConnection.player.duration
@@ -424,6 +434,33 @@ fun Thumbnail(
                                                 showSeekEffect = true
                                             }
                                         )
+                                    }
+                                    .pointerInput(verticalGesturesEnabled) {
+                                        if (!verticalGesturesEnabled) return@pointerInput
+                                        detectVerticalDragGestures { change, dragAmount ->
+                                            change.consume()
+                                            val isLeftSide = change.position.x < size.width / 2f
+                                            if (isLeftSide) {
+                                                val activity = context as? Activity
+                                                val window = activity?.window ?: return@detectVerticalDragGestures
+                                                val currentBrightness = if (window.attributes.screenBrightness >= 0f) {
+                                                    window.attributes.screenBrightness
+                                                } else {
+                                                    0.5f
+                                                }
+                                                val updated = (currentBrightness - dragAmount / 1400f).coerceIn(0.05f, 1f)
+                                                window.attributes = window.attributes.apply {
+                                                    screenBrightness = updated
+                                                }
+                                            } else {
+                                                val manager = audioManager ?: return@detectVerticalDragGestures
+                                                val maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                                                val currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                                                val delta = (-dragAmount / 80f).toInt()
+                                                val target = (currentVolume + delta).coerceIn(0, maxVolume)
+                                                manager.setStreamVolume(AudioManager.STREAM_MUSIC, target, 0)
+                                            }
+                                        }
                                     },
                                 contentAlignment = Alignment.Center
                             ) {

@@ -12,15 +12,22 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
+import androidx.media3.exoplayer.offline.DownloadService
+import androidx.media3.exoplayer.scheduler.Requirements
 import com.echo.innertube.YouTube
 import iad1tya.echo.music.constants.AudioQuality
 import iad1tya.echo.music.constants.AudioQualityKey
+import iad1tya.echo.music.constants.DownloadAutoRetryKey
+import iad1tya.echo.music.constants.DownloadChargingOnlyKey
+import iad1tya.echo.music.constants.DownloadRetryLimitKey
+import iad1tya.echo.music.constants.DownloadWifiOnlyKey
 import iad1tya.echo.music.db.MusicDatabase
 import iad1tya.echo.music.db.entities.FormatEntity
 import iad1tya.echo.music.db.entities.SongEntity
 import iad1tya.echo.music.di.DownloadCache
 import iad1tya.echo.music.di.PlayerCache
 import iad1tya.echo.music.utils.YTPlayerUtils
+import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.enumPreference
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -41,9 +48,11 @@ constructor(
     @DownloadCache val downloadCache: SimpleCache,
     @PlayerCache val playerCache: SimpleCache,
 ) {
+    private val appContext = context
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
     private val audioQuality by enumPreference(context, AudioQualityKey, AudioQuality.AUTO)
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
+    private val downloadRetryCount = mutableMapOf<String, Int>()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -169,9 +178,27 @@ constructor(
                         scope.launch {
                             when (download.state) {
                                 Download.STATE_COMPLETED -> {
+                                    downloadRetryCount.remove(download.request.id)
                                     database.updateDownloadedInfo(download.request.id, true, LocalDateTime.now())
                                 }
-                                Download.STATE_FAILED,
+                                Download.STATE_FAILED -> {
+                                    database.updateDownloadedInfo(download.request.id, false, null)
+
+                                    val prefs = appContext.dataStore.data.first()
+                                    val autoRetry = prefs[DownloadAutoRetryKey] ?: true
+                                    val retryLimit = (prefs[DownloadRetryLimitKey] ?: 2).coerceIn(1, 5)
+                                    val currentAttempt = downloadRetryCount[download.request.id] ?: 0
+
+                                    if (autoRetry && currentAttempt < retryLimit) {
+                                        downloadRetryCount[download.request.id] = currentAttempt + 1
+                                        DownloadService.sendAddDownload(
+                                            appContext,
+                                            ExoDownloadService::class.java,
+                                            download.request,
+                                            false
+                                        )
+                                    }
+                                }
                                 Download.STATE_STOPPED,
                                 Download.STATE_REMOVING -> {
                                     database.updateDownloadedInfo(download.request.id, false, null)
@@ -186,6 +213,21 @@ constructor(
         }
 
     init {
+        scope.launch {
+            appContext.dataStore.data.collect { prefs ->
+                var requirementsMask = Requirements.DEVICE_STORAGE_NOT_LOW
+                if (prefs[DownloadWifiOnlyKey] == true) {
+                    requirementsMask = requirementsMask or Requirements.NETWORK_UNMETERED
+                } else {
+                    requirementsMask = requirementsMask or Requirements.NETWORK
+                }
+                if (prefs[DownloadChargingOnlyKey] == true) {
+                    requirementsMask = requirementsMask or Requirements.DEVICE_CHARGING
+                }
+                downloadManager.requirements = Requirements(requirementsMask)
+            }
+        }
+
         val result = mutableMapOf<String, Download>()
         val cursor = downloadManager.downloadIndex.getDownloads()
         while (cursor.moveToNext()) {

@@ -1544,6 +1544,7 @@ fun BottomSheetPlayer(
             textButtonColor = textButtonColor,
             iconButtonColor = iconButtonColor,
             onShowLyrics = { showInlineLyrics = !showInlineLyrics },
+            onShowAudioOutput = { audioRoutingSheetState.expandSoft() },
             pureBlack = pureBlack,
         )
         

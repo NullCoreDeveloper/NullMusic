@@ -151,6 +151,7 @@ fun Queue(
     textButtonColor: Color,
     iconButtonColor: Color,
     onShowLyrics: () -> Unit = {},
+    onShowAudioOutput: () -> Unit = {},
     pureBlack: Boolean,
 ) {
     val context = LocalContext.current
@@ -403,6 +404,7 @@ fun Queue(
                                         mediaMetadata = mediaMetadata,
                                         navController = navController,
                                         playerBottomSheetState = playerBottomSheetState,
+                                        onShowAudioOutput = onShowAudioOutput,
                                         onShowDetailsDialog = {
                                             mediaMetadata?.id?.let {
                                                 bottomSheetPageState.show {
@@ -784,7 +786,7 @@ fun Queue(
                                                         mediaMetadata = window.mediaItem.metadata!!,
                                                         navController = navController,
                                                         playerBottomSheetState = playerBottomSheetState,
-                                                        onShowAudioOutput = null,
+                                                        onShowAudioOutput = onShowAudioOutput,
                                                         isQueueTrigger = true,
                                                         onShowDetailsDialog = {
                                                             window.mediaItem.mediaId.let {
@@ -931,6 +933,7 @@ fun Queue(
                                                     mediaMetadata = item.metadata!!,
                                                     navController = navController,
                                                     playerBottomSheetState = playerBottomSheetState,
+                                                    onShowAudioOutput = onShowAudioOutput,
                                                     isQueueTrigger = true,
                                                     onShowDetailsDialog = {
                                                         item.mediaId.let {

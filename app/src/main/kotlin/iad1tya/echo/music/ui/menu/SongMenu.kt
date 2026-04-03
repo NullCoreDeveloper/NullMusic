@@ -3,6 +3,7 @@ package iad1tya.echo.music.ui.menu
 import android.content.Intent
 import android.content.res.Configuration
 import android.media.audiofx.AudioEffect
+import android.provider.Settings
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -489,8 +490,64 @@ fun SongMenu(
                             text = "Audio Output",
                             onClick = {
                                 onDismiss()
-                                if (playerConnection != null) {
-                                    playerConnection.forceAudioToSpeaker(context)
+                                bottomSheetPageState.show {
+                                    Text(
+                                        text = "Audio Output",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
+
+                                    ListItem(
+                                        headlineContent = { Text("This Device") },
+                                        supportingContent = { Text("Play through phone speaker") },
+                                        leadingContent = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.audio_device),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                playerConnection.forceAudioToSpeaker(context)
+                                                bottomSheetPageState.dismiss()
+                                            }
+                                    )
+
+                                    ListItem(
+                                        headlineContent = { Text("Bluetooth") },
+                                        supportingContent = { Text("Try routing playback to connected Bluetooth device") },
+                                        leadingContent = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.bluetooth),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                playerConnection.forceAudioToBluetooth(context)
+                                                bottomSheetPageState.dismiss()
+                                            }
+                                    )
+
+                                    ListItem(
+                                        headlineContent = { Text("System audio settings") },
+                                        supportingContent = { Text("Open Android sound output settings") },
+                                        leadingContent = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.tune),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                context.startActivity(Intent(Settings.ACTION_SOUND_SETTINGS))
+                                                bottomSheetPageState.dismiss()
+                                            }
+                                    )
                                 }
                             },
                         )

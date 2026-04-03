@@ -340,6 +340,7 @@ class MusicService :
 
     // Haptics polling
     private var hapticsPollingJob: Job? = null
+    private var musicHapticsEnabled = false
     private var crossfadeDuration = 3000L // ms
     private var crossfadeGapless = false
     private var crossfadeTriggerJob: Job? = null
@@ -702,6 +703,14 @@ class MusicService :
             .distinctUntilChanged()
             .collectLatest(scope) {
                 player.skipSilenceEnabled = it
+            }
+
+        dataStore.data
+            .map { it[MusicHapticsEnabledKey] ?: false }
+            .distinctUntilChanged()
+            .collectLatest(scope) { enabled ->
+                musicHapticsEnabled = enabled
+                updateMusicHapticsState()
             }
 
         combine(
@@ -1750,6 +1759,8 @@ class MusicService :
         
         // Update widget
         updateWidget()
+
+        updateMusicHapticsState()
     }
 
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -1757,14 +1768,10 @@ class MusicService :
             setupLoudnessEnhancer()
             setupProAudioEffects()
         }
-        // Music Haptics — pass the real audio session so Visualizer can capture amplitude
-        if (dataStore.get(MusicHapticsEnabledKey, false)) {
-            if (playWhenReady && player.playbackState == Player.STATE_READY) {
-                hapticsManager.start(player.audioSessionId)
-            } else {
-                hapticsManager.stop()
-            }
-        }
+
+        // Music Haptics should react immediately to play/pause as well.
+        updateMusicHapticsState()
+
         // Update widget
         updateWidget()
     }
@@ -1773,6 +1780,20 @@ class MusicService :
         super.onAudioSessionIdChanged(audioSessionId)
         setupLoudnessEnhancer()
         setupProAudioEffects()
+        updateMusicHapticsState()
+    }
+
+    private fun updateMusicHapticsState() {
+        if (!musicHapticsEnabled) {
+            hapticsManager.stop()
+            return
+        }
+
+        if (player.playWhenReady && player.playbackState == Player.STATE_READY && player.audioSessionId > 0) {
+            hapticsManager.start(player.audioSessionId)
+        } else {
+            hapticsManager.stop()
+        }
     }
 
     override fun onEvents(

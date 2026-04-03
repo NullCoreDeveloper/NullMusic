@@ -86,12 +86,10 @@ import iad1tya.echo.music.constants.LyricsAnimationStyleKey
 import iad1tya.echo.music.constants.LyricsGlowEffectKey
 import iad1tya.echo.music.constants.AppleMusicLyricsBlurKey
 import iad1tya.echo.music.constants.ThumbnailCornerRadiusKey
-import iad1tya.echo.music.constants.CanvasThumbnailAnimationKey
 import iad1tya.echo.music.constants.EnableHighRefreshRateKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
 import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
-import iad1tya.echo.music.constants.UseNewPlayerDesignKey
 import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
@@ -146,9 +144,6 @@ fun AppearanceSettings(
     val (pureBlackMiniPlayer, onPureBlackMiniPlayerChange) = rememberPreference(
         PureBlackMiniPlayerKey, defaultValue = false
     )
-    val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
-        UseNewPlayerDesignKey, defaultValue = true
-    )
     val (useNewMiniPlayerDesign, onUseNewMiniPlayerDesignChange) = rememberPreference(
         UseNewMiniPlayerDesignKey, defaultValue = true
     )
@@ -160,9 +155,6 @@ fun AppearanceSettings(
     )
     val (thumbnailCornerRadius, onThumbnailCornerRadiusChange) = rememberPreference(
         ThumbnailCornerRadiusKey, defaultValue = 3f
-    )
-    val (canvasThumbnailAnimation, onCanvasThumbnailAnimationChange) = rememberPreference(
-        CanvasThumbnailAnimationKey, defaultValue = false
     )
     val (playerBackground, onPlayerBackgroundChange) =
         rememberEnumPreference(
@@ -522,14 +514,6 @@ fun AppearanceSettings(
         )
 
         SwitchPreference(
-            title = { Text(stringResource(R.string.new_player_design)) },
-            description = stringResource(R.string.new_player_design_desc),
-            icon = { Icon(painterResource(R.drawable.play), null) },
-            checked = useNewPlayerDesign,
-            onCheckedChange = onUseNewPlayerDesignChange,
-        )
-
-        SwitchPreference(
             title = { Text(stringResource(R.string.new_mini_player_design)) },
             description = stringResource(R.string.new_mini_player_design_desc),
             icon = { Icon(painterResource(R.drawable.play), null) },
@@ -620,14 +604,6 @@ fun AppearanceSettings(
                 )
             }
         }
-
-        SwitchPreference(
-            title = { Text("Canvas Animation") },
-            description = "Enable animated album art backgrounds",
-            icon = { Icon(painterResource(R.drawable.palette), null) },
-            checked = canvasThumbnailAnimation,
-            onCheckedChange = onCanvasThumbnailAnimationChange,
-        )
 
         PreferenceEntry(
             title = { Text(stringResource(R.string.player_slider_style)) },

@@ -109,7 +109,6 @@ import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.CrossfadeEnabledKey
 import iad1tya.echo.music.constants.ListItemHeight
-import iad1tya.echo.music.constants.UseNewPlayerDesignKey
 import iad1tya.echo.music.constants.PlayerButtonsStyle
 import iad1tya.echo.music.constants.PlayerButtonsStyleKey
 import iad1tya.echo.music.constants.QueueEditLockKey
@@ -182,10 +181,7 @@ fun Queue(
 
     var locked by rememberPreference(QueueEditLockKey, defaultValue = false)
 
-    val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
-        UseNewPlayerDesignKey,
-        defaultValue = true
-    )
+    val useNewPlayerDesign = true
 
     val snackbarHostState = remember { SnackbarHostState() }
     var dismissJob: Job? by remember { mutableStateOf(null) }

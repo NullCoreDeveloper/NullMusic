@@ -101,7 +101,6 @@ import iad1tya.echo.music.constants.SwipeThumbnailKey
 import iad1tya.echo.music.constants.TapAlbumArtForLyricsKey
 import iad1tya.echo.music.constants.ThumbnailCornerRadius
 import iad1tya.echo.music.constants.ThumbnailCornerRadiusKey
-import iad1tya.echo.music.constants.CanvasThumbnailAnimationKey
 import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
 import iad1tya.echo.music.constants.DoubleTapToLikeKey
@@ -144,7 +143,7 @@ fun Thumbnail(
     val thumbnailCornerRadius by rememberPreference(ThumbnailCornerRadiusKey, 3f)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
     val hidePlayerThumbnail by rememberPreference(HidePlayerThumbnailKey, false)
-    val canvasThumbnailAnimation by rememberPreference(CanvasThumbnailAnimationKey, false)
+    val canvasThumbnailAnimation = false
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
     

@@ -350,6 +350,7 @@ class MusicService :
     private var fadingPlayer: ExoPlayer? = null
     private var lastCrossfadeTrackDuration = C.TIME_UNSET
     private var pendingManualSkipCrossfadeIn = false
+    private var proAudioRetryJob: Job? = null
     val isCrossfading = MutableStateFlow(false)
 
     // Bluetooth resume callback
@@ -729,6 +730,8 @@ class MusicService :
                     it[ProEqGainDbKey] ?: 0f,
                     it[SpatialAudioEnabledKey] ?: false,
                     it[SpatialAudioStrengthKey] ?: 500,
+                    it[AudioArEnabledKey] ?: false,
+                    it[AudioEngineModeKey] ?: AudioEngineMode.STANDARD.name,
                 )
             }
             .distinctUntilChanged()
@@ -1522,7 +1525,24 @@ class MusicService :
 
     private fun setupProAudioEffects() {
         val sessionId = player.audioSessionId
-        if (sessionId == C.AUDIO_SESSION_ID_UNSET || sessionId <= 0) return
+        if (sessionId == C.AUDIO_SESSION_ID_UNSET || sessionId <= 0) {
+            if (proAudioRetryJob?.isActive != true) {
+                proAudioRetryJob = scope.launch {
+                    repeat(20) {
+                        delay(150)
+                        val retrySession = player.audioSessionId
+                        if (retrySession != C.AUDIO_SESSION_ID_UNSET && retrySession > 0) {
+                            setupProAudioEffects()
+                            return@launch
+                        }
+                    }
+                }
+            }
+            return
+        }
+
+        proAudioRetryJob?.cancel()
+        proAudioRetryJob = null
 
         val proEqEnabled = dataStore.get(ProEqEnabledKey, false)
         val preampDb = dataStore.get(ProEqGainDbKey, 0f).coerceIn(-8f, 8f)
@@ -1596,6 +1616,9 @@ class MusicService :
     }
 
     private fun releaseProAudioEffects() {
+        proAudioRetryJob?.cancel()
+        proAudioRetryJob = null
+
         try {
             equalizer?.release()
         } catch (e: Exception) {
@@ -1755,6 +1778,8 @@ class MusicService :
             player.currentMediaItem?.mediaId?.let { mediaId ->
                 resetRetryCount(mediaId)
             }
+
+            setupProAudioEffects()
         }
         
         // Update widget

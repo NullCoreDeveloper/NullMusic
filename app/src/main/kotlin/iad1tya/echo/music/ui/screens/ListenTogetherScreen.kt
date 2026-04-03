@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -49,6 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.listentogether.ConnectionState
+import iad1tya.echo.music.listentogether.RoomRole
+import iad1tya.echo.music.constants.ListenTogetherAutoApprovalKey
+import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.ListenTogetherViewModel
 
 @Composable
@@ -59,6 +63,10 @@ fun ListenTogetherScreen(
     val connectionState by viewModel.connectionState.collectAsState()
     val roomState by viewModel.roomState.collectAsState()
     val role by viewModel.role.collectAsState()
+    val (autoApproveNewUsers, onAutoApproveNewUsersChange) = rememberPreference(
+        key = ListenTogetherAutoApprovalKey,
+        defaultValue = false,
+    )
 
     var username by rememberSaveable { mutableStateOf("") }
     var roomCode by rememberSaveable { mutableStateOf("") }
@@ -167,6 +175,39 @@ fun ListenTogetherScreen(
                             OutlinedButton(onClick = { viewModel.disconnect() }, modifier = Modifier.fillMaxWidth()) {
                                 Text("Disconnect")
                             }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            ) {
+                                Text(
+                                    text = "Auto-approve new users",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    text = if (role == RoomRole.HOST) {
+                                        "Automatically approve join requests while you are host"
+                                    } else {
+                                        "Applied when you host a room"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Switch(
+                                checked = autoApproveNewUsers,
+                                onCheckedChange = onAutoApproveNewUsersChange,
+                            )
                         }
                     }
                 }

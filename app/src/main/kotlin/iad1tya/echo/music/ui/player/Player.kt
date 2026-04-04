@@ -14,7 +14,6 @@ import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.widget.Toast
-import androidx.core.net.toUri
 import androidx.core.content.ContextCompat
 import androidx.mediarouter.media.MediaRouter
 import androidx.mediarouter.media.MediaRouteSelector
@@ -126,6 +125,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_ENDED
@@ -158,7 +158,6 @@ import iad1tya.echo.music.constants.SliderStyleKey
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.extensions.toggleRepeatMode
 import iad1tya.echo.music.models.MediaMetadata
-import iad1tya.echo.music.playback.ExoDownloadService
 import iad1tya.echo.music.ui.component.BottomSheet
 import iad1tya.echo.music.ui.component.BottomSheetState
 import iad1tya.echo.music.ui.component.AnimatedGradientBackground
@@ -173,6 +172,7 @@ import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.db.entities.LyricsEntity
 import iad1tya.echo.music.ui.menu.LyricsMenu
 import iad1tya.echo.music.ui.menu.PlayerMenu
+import iad1tya.echo.music.playback.ExoDownloadService
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.text.style.TextAlign
 import dagger.hilt.android.EntryPointAccessors
@@ -200,7 +200,6 @@ fun BottomSheetPlayer(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val database = LocalDatabase.current
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -968,14 +967,14 @@ fun BottomSheetPlayer(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = if (mediaMetadata.id.isNotEmpty()) 48.dp else 8.dp)
                         ) {
-                            val downloadState = download?.state
+                            val isLocalSong = currentSong?.song?.isLocal == true
                             Box(
                                 modifier = Modifier
                                     .size(42.dp)
                                     .clip(audioRoutingShape)
                                     .background(textButtonColor)
-                                    .clickable(enabled = mediaMetadata.id.isNotEmpty()) {
-                                        when (downloadState) {
+                                    .clickable(enabled = !isLocalSong) {
+                                        when (download?.state) {
                                             Download.STATE_COMPLETED,
                                             Download.STATE_QUEUED,
                                             Download.STATE_DOWNLOADING -> {
@@ -986,52 +985,48 @@ fun BottomSheetPlayer(
                                                     false,
                                                 )
                                             }
-
                                             else -> {
-                                                database.transaction {
-                                                    insert(mediaMetadata)
+                                                if (mediaMetadata.id.isNotBlank()) {
+                                                    val downloadRequest =
+                                                        DownloadRequest
+                                                            .Builder(mediaMetadata.id, mediaMetadata.id.toUri())
+                                                            .setCustomCacheKey(mediaMetadata.id)
+                                                            .setData(mediaMetadata.title.toByteArray())
+                                                            .build()
+                                                    DownloadService.sendAddDownload(
+                                                        context,
+                                                        ExoDownloadService::class.java,
+                                                        downloadRequest,
+                                                        false,
+                                                    )
                                                 }
-                                                val downloadRequest = DownloadRequest
-                                                    .Builder(mediaMetadata.id, "echo://${mediaMetadata.id}".toUri())
-                                                    .setCustomCacheKey(mediaMetadata.id)
-                                                    .setData(mediaMetadata.title.toByteArray())
-                                                    .build()
-                                                DownloadService.sendAddDownload(
-                                                    context,
-                                                    ExoDownloadService::class.java,
-                                                    downloadRequest,
-                                                    false,
-                                                )
                                             }
                                         }
                                     }
                             ) {
-                                when (downloadState) {
-                                    Download.STATE_COMPLETED -> Image(
-                                        painter = painterResource(R.drawable.offline),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(iconButtonColor),
+                                if (download?.state == Download.STATE_QUEUED || download?.state == Download.STATE_DOWNLOADING) {
+                                    CircularProgressIndicator(
                                         modifier = Modifier
                                             .align(Alignment.Center)
-                                            .size(24.dp)
-                                    )
-
-                                    Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> CircularProgressIndicator(
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .size(20.dp),
+                                            .size(18.dp),
                                         strokeWidth = 2.dp,
                                         color = iconButtonColor,
                                     )
-
-                                    else -> Image(
-                                        painter = painterResource(R.drawable.download),
+                                } else {
+                                    Image(
+                                        painter = painterResource(
+                                            if (download?.state == Download.STATE_COMPLETED) {
+                                                R.drawable.offline
+                                            } else {
+                                                R.drawable.download
+                                            }
+                                        ),
                                         contentDescription = null,
                                         colorFilter = ColorFilter.tint(iconButtonColor),
                                         modifier = Modifier
                                             .align(Alignment.Center)
                                             .size(24.dp)
-                                            .alpha(if (mediaMetadata.id.isNotEmpty()) 1f else 0.5f)
+                                            .alpha(if (isLocalSong) 0.4f else 1f)
                                     )
                                 }
                             }
@@ -1085,66 +1080,20 @@ fun BottomSheetPlayer(
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
-                                .clickable(enabled = mediaMetadata.id.isNotEmpty()) {
-                                    when (download?.state) {
-                                        Download.STATE_COMPLETED,
-                                        Download.STATE_QUEUED,
-                                        Download.STATE_DOWNLOADING -> {
-                                            DownloadService.sendRemoveDownload(
-                                                context,
-                                                ExoDownloadService::class.java,
-                                                mediaMetadata.id,
-                                                false,
-                                            )
-                                        }
-
-                                        else -> {
-                                            database.transaction {
-                                                insert(mediaMetadata)
-                                            }
-                                            val downloadRequest = DownloadRequest
-                                                .Builder(mediaMetadata.id, "echo://${mediaMetadata.id}".toUri())
-                                                .setCustomCacheKey(mediaMetadata.id)
-                                                .setData(mediaMetadata.title.toByteArray())
-                                                .build()
-                                            DownloadService.sendAddDownload(
-                                                context,
-                                                ExoDownloadService::class.java,
-                                                downloadRequest,
-                                                false,
-                                            )
-                                        }
-                                    }
+                                .clickable {
+                                    playerConnection.player.shuffleModeEnabled =
+                                        !playerConnection.player.shuffleModeEnabled
                                 },
                         ) {
-                            when (download?.state) {
-                                Download.STATE_COMPLETED -> Image(
-                                    painter = painterResource(R.drawable.offline),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(iconButtonColor),
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(24.dp),
-                                )
-
-                                Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(18.dp),
-                                    strokeWidth = 2.dp,
-                                    color = iconButtonColor,
-                                )
-
-                                else -> Image(
-                                    painter = painterResource(R.drawable.download),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(iconButtonColor),
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(24.dp)
-                                        .alpha(if (mediaMetadata.id.isNotEmpty()) 1f else 0.5f),
-                                )
-                            }
+                            Image(
+                                painter = painterResource(R.drawable.shuffle),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(iconButtonColor),
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(24.dp)
+                                    .alpha(if (playerConnection.player.shuffleModeEnabled) 1f else 0.5f),
+                            )
                         }
 
                         Spacer(modifier = Modifier.size(6.dp))

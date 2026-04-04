@@ -486,7 +486,8 @@ fun HomeScreen(
                                                     SongMenu(
                                                         originalSong = song!!,
                                                         navController = navController,
-                                                        onDismiss = menuState::dismiss
+                                                        onDismiss = menuState::dismiss,
+                                                        compactMode = true,
                                                     )
                                                 }
                                             }
@@ -517,7 +518,8 @@ fun HomeScreen(
                                                     SongMenu(
                                                         originalSong = song!!,
                                                         navController = navController,
-                                                        onDismiss = menuState::dismiss
+                                                        onDismiss = menuState::dismiss,
+                                                        compactMode = true,
                                                     )
                                                 }
                                             }

@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -506,35 +507,63 @@ fun AlbumScreen(
                 ShimmerHost(
                     modifier = Modifier.animateItem()
                 ) {
-                    Column(Modifier.padding(12.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Spacer(
-                                modifier =
-                                Modifier
-                                    .size(AlbumThumbnailSize)
-                                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
-                                    .background(MaterialTheme.colorScheme.onSurface),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Spacer(
+                            modifier = Modifier
+                                .size(AlbumThumbnailSize + 28.dp)
+                                .clip(RoundedCornerShape(ThumbnailCornerRadius))
+                                .background(MaterialTheme.colorScheme.onSurface),
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        TextPlaceholder(
+                            modifier = Modifier
+                                .fillMaxWidth(0.9f)
+                                .height(30.dp),
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        TextPlaceholder(
+                            modifier = Modifier
+                                .fillMaxWidth(0.65f)
+                                .height(20.dp),
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        TextPlaceholder(
+                            modifier = Modifier
+                                .fillMaxWidth(0.4f)
+                                .height(16.dp),
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            ButtonPlaceholder(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
                             )
 
-                            Spacer(Modifier.width(16.dp))
-
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                TextPlaceholder()
-                                TextPlaceholder()
-                                TextPlaceholder()
-                            }
-                        }
-
-                        Spacer(Modifier.padding(8.dp))
-
-                        Row {
                             ButtonPlaceholder(Modifier.weight(1f))
 
-                            Spacer(Modifier.width(12.dp))
-
-                            ButtonPlaceholder(Modifier.weight(1f))
+                            ButtonPlaceholder(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
+                            )
                         }
                     }
 

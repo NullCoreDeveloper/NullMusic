@@ -1240,9 +1240,22 @@ fun BottomSheetPlayer(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val maxW = maxWidth
-                    val playButtonHeight = maxW / 6f
-                    val playButtonWidth = playButtonHeight * 2.2f
-                    val sideButtonHeight = playButtonHeight * 0.8f
+                    val isTablet = LocalConfiguration.current.screenWidthDp >= 840
+                    val playButtonHeight = if (isTablet) {
+                        86.dp
+                    } else {
+                        (maxW / 6f).coerceIn(68.dp, 96.dp)
+                    }
+                    val playButtonWidth = if (isTablet) {
+                        210.dp
+                    } else {
+                        playButtonHeight * 2.2f
+                    }
+                    val sideButtonHeight = if (isTablet) {
+                        68.dp
+                    } else {
+                        playButtonHeight * 0.8f
+                    }
                     val sideButtonWidth = sideButtonHeight * 1.3f
 
                     val playInteractionSource = remember { MutableInteractionSource() }

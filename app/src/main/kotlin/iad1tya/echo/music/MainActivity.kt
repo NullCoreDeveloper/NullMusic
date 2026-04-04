@@ -170,7 +170,6 @@ import iad1tya.echo.music.constants.FloatingToolbarHeight
 import iad1tya.echo.music.constants.MiniPlayerHeight
 import iad1tya.echo.music.constants.MiniPlayerBottomSpacing
 import iad1tya.echo.music.constants.UpdateNotificationsEnabledKey
-import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
 import iad1tya.echo.music.constants.NavigationBarAnimationSpec
 import iad1tya.echo.music.constants.NavigationBarHeight
 import iad1tya.echo.music.constants.PauseSearchHistoryKey
@@ -569,7 +568,7 @@ class MainActivity : ComponentActivity() {
                         else Screens.MainScreens.filter { it != Screens.Find }
                     }
                     val (slimNav) = rememberPreference(SlimNavBarKey, defaultValue = false)
-                    val (useNewMiniPlayerDesign) = rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
+                    val useNewMiniPlayerDesign = true
                     val defaultOpenTab = remember {
                         dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
                     }

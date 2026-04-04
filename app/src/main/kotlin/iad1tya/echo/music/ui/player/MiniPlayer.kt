@@ -80,7 +80,6 @@ import iad1tya.echo.music.constants.FloatingCompactWidthFraction
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.SwipeSensitivityKey
 import iad1tya.echo.music.constants.ThumbnailCornerRadius
-import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
 import iad1tya.echo.music.db.entities.ArtistEntity
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.models.MediaMetadata
@@ -110,7 +109,7 @@ fun MiniPlayer(
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
 ) {
-    val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
+    val useNewMiniPlayerDesign = true
 
     if (useNewMiniPlayerDesign) {
         NewMiniPlayer(

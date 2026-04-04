@@ -1726,30 +1726,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     val lastNoticeVersion by rememberPreference(LastImportantNoticeVersionKey, defaultValue = "")
-                    var showNoticeDialog by remember { mutableStateOf(false) }
-                    var isPreferenceLoaded by remember { mutableStateOf(false) }
+                    val showNoticeDialog = lastNoticeVersion != BuildConfig.VERSION_NAME
 
-                    // Only check after we are sure preferences are loaded (simple heuristic: defaultValue is empty)
-                    // Better approach: use a dedicated "loaded" state if rememberPreference supported it,
-                    // but here we wait for the first composition where lastNoticeVersion matches expectations or we simply delay slightly.
-                    // Actually, rememberPreference is a composable that returns state.
-                    // The issue is likely that on some devices, the write doesn't happen fast enough or the read is stale.
-
-                    LaunchedEffect(lastNoticeVersion) {
-                        if (lastNoticeVersion != BuildConfig.VERSION_NAME && lastNoticeVersion.isNotEmpty()) {
-                            // If we have a stored version that isn't null/empty but doesn't match current, show dialog.
-                            // However, we also want to show it on first install if we want to force it?
-                            // The defaultValue is "", so if it is "" it might be first run.
-                            // Let's assume we want to show it if it doesn't match.
-                             showNoticeDialog = true
-                        } else if (lastNoticeVersion == "") {
-                             // First run or cleared data, maybe don't show or show?
-                             // Assuming we want to show it to everyone on this version.
-                             showNoticeDialog = true
-                        }
-                    }
-
-                    if (showNoticeDialog && lastNoticeVersion != BuildConfig.VERSION_NAME) {
+                    if (showNoticeDialog) {
                         ImportantNoticeDialog(
                             onDismiss = {
                                 lifecycleScope.launch(Dispatchers.IO) {
@@ -1757,7 +1736,6 @@ class MainActivity : ComponentActivity() {
                                         it[LastImportantNoticeVersionKey] = BuildConfig.VERSION_NAME
                                     }
                                 }
-                                showNoticeDialog = false
                             }
                         )
                     }

@@ -225,10 +225,25 @@ fun AboutScreen(
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
-                icon = painterResource(R.drawable.language),
-                title = "Website",
-                subtitle = "echomusic.fun",
-                onClick = { uriHandler.openUri("https://echomusic.fun") }
+                icon = painterResource(R.drawable.instagram_asset),
+                title = "Instagram",
+                subtitle = "@iad1tya",
+                onClick = { uriHandler.openUri("https://instagram.com/iad1tya") }
+            )
+        }
+
+        Spacer(Modifier.height(6.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            SocialLinkItem(
+                icon = painterResource(R.drawable.twitter_asset),
+                title = "Twitter / X",
+                subtitle = "@xad1tya",
+                onClick = { uriHandler.openUri("https://x.com/xad1tya") }
             )
         }
 

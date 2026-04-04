@@ -424,6 +424,15 @@ fun PlayerMenu(
                     }
                 )
                 MenuEntry(
+                    icon = R.drawable.bedtime,
+                    text = "Ambient mode",
+                    onClick = {
+                        navController.navigate("ambient_mode")
+                        playerBottomSheetState.collapseSoft()
+                        onDismiss()
+                    }
+                )
+                MenuEntry(
                     icon = R.drawable.download,
                     text = "Local Download",
                     onClick = {

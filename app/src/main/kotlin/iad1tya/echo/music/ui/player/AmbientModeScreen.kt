@@ -61,7 +61,6 @@ import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.AmbientModeDullBackgroundKey
 import iad1tya.echo.music.constants.AmbientModeSongAccentKey
-import iad1tya.echo.music.constants.AmbientModeLandscapeKey
 import iad1tya.echo.music.ui.theme.extractThemeColor
 import coil3.imageLoader
 import coil3.request.ImageRequest
@@ -103,7 +102,6 @@ fun AmbientModeScreen(
 
     val (isDullBackground, onDullBackgroundChange) = rememberPreference(AmbientModeDullBackgroundKey, false)
     val (isSongAccent, onSongAccentChange) = rememberPreference(AmbientModeSongAccentKey, false)
-    val (isLandscapeMode, onLandscapeModeChange) = rememberPreference(AmbientModeLandscapeKey, false)
     
     // Extract song accent colors
     var gradientColors by remember { mutableStateOf<List<Color>>(emptyList()) }
@@ -165,7 +163,7 @@ fun AmbientModeScreen(
     // Set orientation and Fullscreen
     DisposableEffect(Unit) {
         val originalOrientation = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         
         // Hide system bars
         activity?.window?.let { window ->
@@ -187,14 +185,6 @@ fun AmbientModeScreen(
                 window.attributes = layoutParams
             }
         }
-    }
-
-    // Switch orientation when user toggles landscape mode
-    LaunchedEffect(isLandscapeMode) {
-        activity?.requestedOrientation = if (isLandscapeMode)
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        else
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     // Handle Brightness Change
@@ -247,86 +237,44 @@ fun AmbientModeScreen(
                     .alpha(0.6f) // Slightly dimmed for ambient mode
             )
         }
-        if (isLandscapeMode) {
-            // Landscape: album art on the left, lyrics on the right
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(if (isDullBackground) 0.3f else 1f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AnimatedVisibility(visible = showAlbumArt) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        mediaMetadata?.let { metadata ->
-                            AsyncImage(
-                                model = metadata.thumbnailUrl,
-                                contentDescription = "Album Art",
-                                modifier = Modifier
-                                    .size(300.dp)
-                                    .clip(RoundedCornerShape(16.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-                }
+        // Always horizontal: album art on the left, lyrics on the right
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(if (isDullBackground) 0.3f else 1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AnimatedVisibility(visible = showAlbumArt) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
-                        .padding(32.dp)
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Lyrics(
-                        sliderPositionProvider = { playerConnection.player.currentPosition },
-                        isVisible = true,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        } else {
-            // Portrait: album art on top, lyrics below
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(if (isDullBackground) 0.3f else 1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AnimatedVisibility(visible = showAlbumArt) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 48.dp, start = 32.dp, end = 32.dp, bottom = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        mediaMetadata?.let { metadata ->
-                            AsyncImage(
-                                model = metadata.thumbnailUrl,
-                                contentDescription = "Album Art",
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .clip(RoundedCornerShape(16.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
+                    mediaMetadata?.let { metadata ->
+                        AsyncImage(
+                            model = metadata.thumbnailUrl,
+                            contentDescription = "Album Art",
+                            modifier = Modifier
+                                .size(300.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentScale = ContentScale.Crop
+                        )
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 24.dp, vertical = 8.dp)
-                ) {
-                    Lyrics(
-                        sliderPositionProvider = { playerConnection.player.currentPosition },
-                        isVisible = true,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(32.dp)
+            ) {
+                Lyrics(
+                    sliderPositionProvider = { playerConnection.player.currentPosition },
+                    isVisible = true,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
 
@@ -382,20 +330,6 @@ fun AmbientModeScreen(
                             painter = painterResource(if (isDullBackground) R.drawable.contrast else R.drawable.contrast),
                             contentDescription = null,
                             tint = if (isDullBackground) MaterialTheme.colorScheme.primary else LocalContentColor.current
-                        )
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Horizontal Mode") },
-                    onClick = {
-                        onLandscapeModeChange(!isLandscapeMode)
-                        areControlsVisible = false
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.screen_rotation),
-                            contentDescription = null,
-                            tint = if (isLandscapeMode) MaterialTheme.colorScheme.primary else LocalContentColor.current
                         )
                     }
                 )

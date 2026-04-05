@@ -905,7 +905,7 @@ fun AppearanceSettings(
         SwitchPreference(
             title = { Text("Old Music Page") },
             description = "Use the previous music player page layout",
-            icon = { Icon(painterResource(R.drawable.graphic_eq), null) },
+            icon = { Icon(painterResource(R.drawable.queue_music), null) },
             checked = !useNewPlayerDesign,
             onCheckedChange = { useOldMusicPage -> onUseNewPlayerDesignChange(!useOldMusicPage) }
         )

@@ -104,6 +104,12 @@ class ListenTogetherManager @Inject constructor(
     // Track if a buffer-complete arrived before the pending sync was ready
     private var bufferCompleteReceivedForTrack: String? = null
 
+    // Drift Correction - from SuvMusic
+    // Tracking playback position for gradual sync via speed adjustment
+    private var anchorTime: Long = 0
+    private var anchorPosition: Long = 0
+    private var driftCorrectionJob: Job? = null
+
     // Expose client state
     val connectionState = client.connectionState
     val roomState = client.roomState
@@ -442,16 +448,31 @@ class ListenTogetherManager @Inject constructor(
                 Timber.tag(TAG).d("Join approved for room: ${event.roomCode}")
                 // Save current mute state before joining as guest so we can restore it on leave
                 saveMuteStateOnJoin()
+                val now = System.currentTimeMillis()
+                val adjustedJoinPosition =
+                    if (event.state.isPlaying) {
+                        event.state.position + kotlin.math.max(0L, now - event.state.lastUpdate)
+                    } else {
+                        event.state.position
+                    }
                 // Apply the full initial state including queue
                 applyPlaybackState(
                     currentTrack = event.state.currentTrack,
                     isPlaying = event.state.isPlaying,
-                    position = event.state.position,
+                    position = adjustedJoinPosition,
                     queue = event.state.queue
                     // bypassBuffer=false (default) for initial join buffer sync
                 )
                 applyHostVolumeIfNeeded(event.state.volume)
                 updateGuestMuteState()
+
+                // Force a fresh sync shortly after join to align guest clock with live host position.
+                scope.launch {
+                    delay(1200)
+                    if (isInRoom && !isHost) {
+                        requestSync()
+                    }
+                }
             }
             
             is ListenTogetherEvent.PlaybackSync -> {
@@ -682,6 +703,7 @@ class ListenTogetherManager @Inject constructor(
         }
         stopQueueSyncObservation()
         stopHeartbeat()
+        stopDriftCorrection()
         stopVolumeSyncObservation()
         // Note: Don't clear shouldBlockPlaybackChanges callback - it checks isInRoom dynamically
         lastSyncedIsPlaying = null
@@ -763,6 +785,10 @@ class ListenTogetherManager @Inject constructor(
         val posDiff = kotlin.math.abs(player.currentPosition - targetPos)
         val willPlay = pending.isPlaying
         
+        // Initialize anchors for drift correction
+        anchorPosition = targetPos
+        anchorTime = System.currentTimeMillis()
+        
         // Use appropriate tolerance based on whether we're about to play
         val tolerance = if (willPlay && player.playWhenReady) PLAYBACK_POSITION_TOLERANCE_MS else POSITION_TOLERANCE_MS
         
@@ -776,10 +802,16 @@ class ListenTogetherManager @Inject constructor(
         // Apply play/pause state only if it needs to change
         if (willPlay && !player.playWhenReady) {
             Timber.tag(TAG).d("Applying pending sync: starting playback")
+            connection.allowInternalSync = true
             connection.play()
+            connection.allowInternalSync = false
+            startDriftCorrectionJob()
         } else if (!willPlay && player.playWhenReady) {
             Timber.tag(TAG).d("Applying pending sync: pausing playback")
+            connection.allowInternalSync = true
             connection.pause()
+            connection.allowInternalSync = false
+            stopDriftCorrection()
         }
 
         scope.launch {
@@ -830,33 +862,45 @@ class ListenTogetherManager @Inject constructor(
                         return
                     }
 
-                    // Debounce PLAY actions when already playing and in sync
+                    // Initialize anchors for drift correction
+                    anchorPosition = adjustedPos
+                    anchorTime = System.currentTimeMillis()
+
                     val posDiff = kotlin.math.abs(player.currentPosition - adjustedPos)
                     val alreadyPlaying = player.playWhenReady
                     
-                    if (alreadyPlaying && posDiff < POSITION_TOLERANCE_MS && (now - lastSyncActionTime) < SYNC_DEBOUNCE_THRESHOLD_MS) {
-                        Timber.tag(TAG).d("Guest: PLAY debounced - already playing and in sync (diff ${posDiff}ms)")
-                        return
-                    }
-
-                    // CRITICAL: Only seek during active playback if position is VERY far off
-                    // This prevents interrupting the audio for small drifts
+                    // If already playing: only debounce if position is very close AND sync happened recently
                     if (alreadyPlaying) {
+                        // Only skip if drift is negligible (< 500ms) AND we synced very recently (< 500ms)
+                        if (posDiff < 500 && (now - lastSyncActionTime) < 500) {
+                            Timber.tag(TAG).d("Guest: PLAY debounced - already playing, drift minimal (${posDiff}ms)")
+                            return
+                        }
+                        
+                        // Seek if position is off
                         if (posDiff > PLAYBACK_POSITION_TOLERANCE_MS) {
                             Timber.tag(TAG).d("Guest: PLAY seeking during playback ${player.currentPosition} -> $adjustedPos (diff ${posDiff}ms)")
                             connection.seekTo(adjustedPos)
                         } else {
                             Timber.tag(TAG).d("Guest: PLAY skipping seek - already playing, drift acceptable (${posDiff}ms < ${PLAYBACK_POSITION_TOLERANCE_MS}ms)")
                         }
+                        // Ensure drift correction is running for active playback
+                        if (driftCorrectionJob?.isActive != true) {
+                            startDriftCorrectionJob()
+                        }
                     } else {
-                        // When paused/stopped, we can seek more aggressively
+                        // Not playing - transition to playing
+                        // When paused/stopped, seek more aggressively to ensure sync
                         if (posDiff > POSITION_TOLERANCE_MS) {
                             Timber.tag(TAG).d("Guest: PLAY seeking while paused ${player.currentPosition} -> $adjustedPos (diff ${posDiff}ms)")
                             connection.seekTo(adjustedPos)
                         }
-                        // Start playback
-                        Timber.tag(TAG).d("Guest: Starting playback")
+                        // Start playback - bypass guest blocking
+                        Timber.tag(TAG).d("Guest: Starting playback with drift correction")
+                        connection.allowInternalSync = true
                         connection.play()
+                        connection.allowInternalSync = false
+                        startDriftCorrectionJob()
                     }
                     lastSyncActionTime = now
                 }
@@ -882,19 +926,24 @@ class ListenTogetherManager @Inject constructor(
                         return
                     }
 
-                    // Debounce PAUSE actions when already paused and in sync
                     val posDiff = kotlin.math.abs(player.currentPosition - pos)
                     val alreadyPaused = !player.playWhenReady
                     
-                    if (alreadyPaused && posDiff < POSITION_TOLERANCE_MS && (now - lastSyncActionTime) < SYNC_DEBOUNCE_THRESHOLD_MS) {
-                        Timber.tag(TAG).d("Guest: PAUSE debounced - already paused and in sync (diff ${posDiff}ms)")
-                        return
-                    }
-
-                    // Pause playback first
-                    if (player.playWhenReady) {
-                        Timber.tag(TAG).d("Guest: Pausing playback")
+                    // If already paused: only debounce if position is very close AND sync happened recently
+                    if (alreadyPaused) {
+                        // Only skip if drift is negligible (< 500ms) AND we synced very recently (< 500ms)
+                        if (posDiff < 500 && (now - lastSyncActionTime) < 500) {
+                            Timber.tag(TAG).d("Guest: PAUSE debounced - already paused, drift minimal (${posDiff}ms)")
+                            lastSyncActionTime = now
+                            return
+                        }
+                    } else {
+                        // Transitioning from playing to paused - always apply
+                        Timber.tag(TAG).d("Guest: Pausing playback (was playing)")
+                        connection.allowInternalSync = true
                         connection.pause()
+                        connection.allowInternalSync = false
+                        stopDriftCorrection()
                     }
                     
                     // Only seek if position difference is significant
@@ -902,7 +951,7 @@ class ListenTogetherManager @Inject constructor(
                         Timber.tag(TAG).d("Guest: PAUSE seeking ${player.currentPosition} -> $pos (diff ${posDiff}ms)")
                         connection.seekTo(pos)
                     } else {
-                        Timber.tag(TAG).d("Guest: PAUSE skipping seek (diff ${posDiff}ms < ${POSITION_TOLERANCE_MS}ms)")
+                        Timber.tag(TAG).d("Guest: PAUSE position ok (diff ${posDiff}ms < ${POSITION_TOLERANCE_MS}ms)")
                     }
                     lastSyncActionTime = now
                 }
@@ -911,25 +960,42 @@ class ListenTogetherManager @Inject constructor(
                     val pos = action.position ?: 0L
                     val now = System.currentTimeMillis()
                     
-                    // Debounce SEEK actions - don't seek if one just happened
-                    if (now - lastSyncActionTime < SYNC_DEBOUNCE_THRESHOLD_MS) {
-                        Timber.tag(TAG).d("Guest: SEEK debounced (only ${now - lastSyncActionTime}ms since last sync)")
-                        return
-                    }
+                    Timber.tag(TAG).d("Guest: SEEK to $pos from ${player.currentPosition}")
                     
-                    // Use larger position tolerance
-                    if (kotlin.math.abs(player.currentPosition - pos) > POSITION_TOLERANCE_MS) {
-                        Timber.tag(TAG).d("Guest: SEEK to $pos from ${player.currentPosition} (diff > ${POSITION_TOLERANCE_MS}ms)")
+                    // Initialize anchors for drift correction
+                    anchorPosition = pos
+                    anchorTime = System.currentTimeMillis()
+                    
+                    // Use larger position tolerance - only skip if position is very close
+                    val posDiff = kotlin.math.abs(player.currentPosition - pos)
+                    if (posDiff > 100) {  // Any meaningful seek > 100ms should go through
+                        Timber.tag(TAG).d("Guest: SEEK applied (diff ${posDiff}ms)")
                         connection.seekTo(pos)
                         lastSyncActionTime = now
                     } else {
-                        Timber.tag(TAG).d("Guest: SEEK ignored (position diff < ${POSITION_TOLERANCE_MS}ms)")
+                        Timber.tag(TAG).d("Guest: SEEK ignored (position diff ${posDiff}ms < 100ms)")
                     }
                 }
                 
                 PlaybackActions.CHANGE_TRACK -> {
                     action.trackInfo?.let { track ->
                         Timber.tag(TAG).d("Guest: CHANGE_TRACK to ${track.title}, queue size=${action.queue?.size}")
+                        val trackId = track.id.trim()
+                        if (trackId.isEmpty()) {
+                            Timber.tag(TAG).w("Guest: CHANGE_TRACK ignored because track id is blank")
+                            return
+                        }
+
+                        val now = System.currentTimeMillis()
+                        val basePosition = action.position ?: roomState.value?.position ?: 0L
+                        val shouldPlay = roomState.value?.isPlaying == true
+                        val targetPosition =
+                            if (shouldPlay) {
+                                val actionTime = action.serverTime ?: roomState.value?.lastUpdate ?: now
+                                basePosition + kotlin.math.max(0L, now - actionTime)
+                            } else {
+                                basePosition
+                            }
                         
                         // Reset sync debounce timer on track change - this is a fresh sync cycle
                         lastSyncActionTime = 0L
@@ -938,16 +1004,16 @@ class ListenTogetherManager @Inject constructor(
                         if (action.queue != null && action.queue.isNotEmpty()) {
                             val queueTitle = action.queueTitle
                             applyPlaybackState(
-                                currentTrack = track,
-                                isPlaying = false, // Will be updated by subsequent PLAY or pending sync
-                                position = 0,
+                                currentTrack = track.copy(id = trackId),
+                                isPlaying = shouldPlay,
+                                position = targetPosition,
                                 queue = action.queue,
                                 queueTitle = queueTitle
                             )
                         } else {
                             // Fallback to old behavior (network fetch) if no queue provided
-                            bufferingTrackId = track.id
-                            syncToTrack(track, false, 0)
+                            bufferingTrackId = trackId
+                            syncToTrack(track.copy(id = trackId), shouldPlay, targetPosition)
                         }
                     }
                 }
@@ -966,6 +1032,8 @@ class ListenTogetherManager @Inject constructor(
                     val track = action.trackInfo
                     if (track == null) {
                         Timber.tag(TAG).w("QUEUE_ADD missing trackInfo")
+                    } else if (track.id.isBlank()) {
+                        Timber.tag(TAG).w("QUEUE_ADD ignored because track id is blank")
                     } else {
                         Timber.tag(TAG).d("Guest: QUEUE_ADD ${track.title}, insertNext=${action.insertNext == true}")
                         scope.launch(Dispatchers.IO) {
@@ -1042,8 +1110,13 @@ class ListenTogetherManager @Inject constructor(
                             val player = connection.player
                             
                             // Map TrackInfo to MediaItems
-                            val mediaItems = queue.map { track ->
-                                track.toMediaMetadata().toMediaItem()
+                            val mediaItems = queue.mapNotNull { track ->
+                                track.toMediaItemOrNull()
+                            }
+
+                            if (mediaItems.isEmpty()) {
+                                Timber.tag(TAG).w("SYNC_QUEUE produced no playable items (all missing ids)")
+                                return@launch
                             }
                             
                             // Try to find current track in new queue to preserve playback state
@@ -1066,7 +1139,9 @@ class ListenTogetherManager @Inject constructor(
 
                             // Restore playing state if needed
                             if (wasPlaying && !player.isPlaying) {
+                                connection.allowInternalSync = true
                                 connection.play()
+                                connection.allowInternalSync = false
                             }
                             
                             // Sync queue title
@@ -1089,11 +1164,18 @@ class ListenTogetherManager @Inject constructor(
     }
     
     private fun handleSyncState(state: SyncStatePayload) {
-        Timber.tag(TAG).d("handleSyncState: playing=${state.isPlaying}, pos=${state.position}, track=${state.currentTrack?.id}")
+        val now = System.currentTimeMillis()
+        val adjustedPosition =
+            if (state.isPlaying) {
+                state.position + kotlin.math.max(0L, now - state.lastUpdate)
+            } else {
+                state.position
+            }
+        Timber.tag(TAG).d("handleSyncState: playing=${state.isPlaying}, pos=${state.position}, adjusted=$adjustedPosition, track=${state.currentTrack?.id}")
         applyPlaybackState(
             currentTrack = state.currentTrack,
             isPlaying = state.isPlaying,
-            position = state.position,
+            position = adjustedPosition,
             queue = state.queue,
             bypassBuffer = true  // Manual sync: bypass buffer
         )
@@ -1135,7 +1217,13 @@ class ListenTogetherManager @Inject constructor(
                 isSyncing = true
                 connection.allowInternalSync = true
                 if (queue != null && queue.isNotEmpty()) {
-                    val mediaItems = queue.map { it.toMediaMetadata().toMediaItem() }
+                    val mediaItems = queue.mapNotNull { it.toMediaItemOrNull() }
+                    if (mediaItems.isEmpty()) {
+                        Timber.tag(TAG).w("No playable queue items while clearing state")
+                        connection.allowInternalSync = false
+                        isSyncing = false
+                        return@launch
+                    }
                     player.setMediaItems(mediaItems)
                 } else if (queue != null) {
                     player.clearMediaItems()
@@ -1175,13 +1263,27 @@ class ListenTogetherManager @Inject constructor(
                 
                 // Apply queue/media (same)
                 if (queue != null && queue.isNotEmpty()) {
-                    val mediaItems = queue.map { it.toMediaMetadata().toMediaItem() }
+                    val mediaItems = queue.mapNotNull { it.toMediaItemOrNull() }
+                    if (mediaItems.isEmpty()) {
+                        Timber.tag(TAG).w("State queue contains no playable items, falling back to track sync")
+                        connection.allowInternalSync = false
+                        isSyncing = false
+                        syncToTrack(currentTrack, isPlaying, position)
+                        return@launch
+                    }
                     
                     // Find index of current track
                     var startIndex = mediaItems.indexOfFirst { it.mediaId == currentTrack.id }
                     if (startIndex == -1) {
                         Timber.tag(TAG).w("Current track ${currentTrack.id} not found in queue, defaulting to 0")
-                        val singleItem = currentTrack.toMediaMetadata().toMediaItem()
+                        val singleItem = currentTrack.toMediaItemOrNull()
+                        if (singleItem == null) {
+                            Timber.tag(TAG).w("Current track has no playable media id, falling back to syncToTrack")
+                            connection.allowInternalSync = false
+                            isSyncing = false
+                            syncToTrack(currentTrack, isPlaying, position)
+                            return@launch
+                        }
                         // Prepend or fallback? Let's just play the track alone if not in queue
                         player.setMediaItems(listOf(singleItem), 0, position)
                     } else {
@@ -1194,7 +1296,14 @@ class ListenTogetherManager @Inject constructor(
                     // But here we assume authoritative state.
                     Timber.tag(TAG).d("No queue in state, loading single track")
                     // Construct single item
-                    val item = currentTrack.toMediaMetadata().toMediaItem()
+                    val item = currentTrack.toMediaItemOrNull()
+                    if (item == null) {
+                        Timber.tag(TAG).w("Current track has blank id in applyPlaybackState, falling back to syncToTrack")
+                        connection.allowInternalSync = false
+                        isSyncing = false
+                        syncToTrack(currentTrack, isPlaying, position)
+                        return@launch
+                    }
                     player.setMediaItems(listOf(item), 0, position)
                 }
                 
@@ -1220,11 +1329,22 @@ class ListenTogetherManager @Inject constructor(
                     if (player.playbackState == Player.STATE_READY) {
                         Timber.tag(TAG).d("Player ready after ${attempts * 50}ms, seeking to $position")
                         player.seekTo(position)
+                        
+                        // Initialize anchors for drift correction
+                        anchorPosition = position
+                        anchorTime = System.currentTimeMillis()
+                        
                         if (isPlaying) {
+                            connection.allowInternalSync = true
                             connection.play()
-                            Timber.tag(TAG).d("Bypass: PLAY issued")
+                            connection.allowInternalSync = false
+                            startDriftCorrectionJob()
+                            Timber.tag(TAG).d("Bypass: PLAY issued with drift correction")
                         } else {
+                            connection.allowInternalSync = true
                             connection.pause()
+                            connection.allowInternalSync = false
+                            stopDriftCorrection()
                             Timber.tag(TAG).d("Bypass: PAUSE issued")
                         }
                     } else {
@@ -1237,7 +1357,9 @@ class ListenTogetherManager @Inject constructor(
                     bufferCompleteReceivedForTrack = null
                 } else {
                     // Normal sync: pause, store pending, send buffer_ready
+                    connection.allowInternalSync = true
                     connection.pause()
+                    connection.allowInternalSync = false
                     pendingSyncState = SyncStatePayload(
                         currentTrack = currentTrack,
                         isPlaying = isPlaying,
@@ -1259,6 +1381,10 @@ class ListenTogetherManager @Inject constructor(
     }
 
     private fun syncToTrack(track: TrackInfo, shouldPlay: Boolean, position: Long) {
+        if (track.id.isBlank()) {
+            Timber.tag(TAG).w("syncToTrack aborted: blank track id for ${track.title}")
+            return
+        }
         Timber.tag(TAG).d("syncToTrack: ${track.title}, play: $shouldPlay, pos: $position")
 
         // Track which buffer-complete we expect for this load
@@ -1461,12 +1587,18 @@ class ListenTogetherManager @Inject constructor(
      */
     private fun sendTrackChangeInternal(metadata: MediaMetadata) {
         if (!isHost) return
+        val fallbackId = playerConnection?.player?.currentMediaItem?.mediaId?.trim().orEmpty()
+        val resolvedTrackId = metadata.id.trim().ifEmpty { fallbackId }
+        if (resolvedTrackId.isBlank()) {
+            Timber.tag(TAG).w("Skipping track change: metadata has blank id and no mediaId fallback")
+            return
+        }
         
         // Use a default duration of 3 minutes if duration is 0 or negative
         val durationMs = if (metadata.duration > 0) metadata.duration.toLong() * 1000 else 180000L
         
         val trackInfo = TrackInfo(
-            id = metadata.id,
+            id = resolvedTrackId,
             title = metadata.title,
             artist = metadata.artists.joinToString(", ") { it.name },
             album = metadata.album?.title,
@@ -1489,9 +1621,16 @@ class ListenTogetherManager @Inject constructor(
             Timber.tag(TAG).e(e, "Failed to get current title")
             null
         }
+        val currentPosition = try {
+            playerConnection?.player?.currentPosition ?: 0L
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to get current position")
+            0L
+        }
         
         client.sendPlaybackAction(
             PlaybackActions.CHANGE_TRACK,
+            position = currentPosition,
             queueTitle = currentTitle,
             trackInfo = trackInfo,
             queue = currentQueue
@@ -1556,9 +1695,10 @@ class ListenTogetherManager @Inject constructor(
 
     private fun androidx.media3.common.Timeline.Window.toTrackInfo(): TrackInfo {
         val metadata = mediaItem.metadata ?: return TrackInfo("unknown", "Unknown", "Unknown", "", 0, "")
+        val resolvedTrackId = metadata.id.ifBlank { mediaItem.mediaId.ifBlank { "unknown" } }
         val durationMs = if (metadata.duration > 0) metadata.duration.toLong() * 1000 else 180000L
         return TrackInfo(
-            id = metadata.id,
+            id = resolvedTrackId,
             title = metadata.title,
             artist = metadata.artists.joinToString(", ") { it.name },
             album = metadata.album?.title,
@@ -1581,6 +1721,15 @@ class ListenTogetherManager @Inject constructor(
             duration = (duration / 1000).toInt(),
             thumbnailUrl = thumbnail
         )
+    }
+
+    private fun TrackInfo.toMediaItemOrNull(): MediaItem? {
+        val resolvedId = id.trim()
+        if (resolvedId.isEmpty()) {
+            Timber.tag(TAG).w("Track skipped due to blank id: $title")
+            return null
+        }
+        return copy(id = resolvedId).toMediaMetadata().toMediaItem()
     }
 
     /**
@@ -1639,6 +1788,54 @@ class ListenTogetherManager @Inject constructor(
      * Get current session age
      */
     fun getSessionAge(): Long = client.getSessionAge()
+
+    // Drift Correction Functions (from SuvMusic)
+    // Gradually syncs playback speed to prevent jarring audio interruptions
+    private fun startDriftCorrectionJob() {
+        driftCorrectionJob?.cancel()
+        driftCorrectionJob = scope.launch {
+            while (true) {
+                delay(500) // Check every 500ms
+                val player = playerConnection?.player ?: continue
+                if (!player.isPlaying) continue
+                
+                val expectedPosition = anchorPosition + (System.currentTimeMillis() - anchorTime)
+                val currentPosition = player.currentPosition
+                val drift = currentPosition - expectedPosition
+                
+                // Drift thresholds - adjust playback speed for smooth syncing
+                when {
+                    kotlin.math.abs(drift) > 2000 -> {
+                        // Major drift (> 2s): Hard seek instead of speed adjustment
+                        Timber.tag(TAG).d("[DRIFT] Major drift ($drift ms), seeking to $expectedPosition")
+                        player.seekTo(expectedPosition)
+                        anchorPosition = expectedPosition
+                        anchorTime = System.currentTimeMillis()
+                    }
+                    drift < -40 -> {
+                        // Behind by > 40ms: Speed up slightly (1.05x)
+                        player.playbackParameters = androidx.media3.common.PlaybackParameters(1.05f)
+                    }
+                    drift > 40 -> {
+                        // Ahead by > 40ms: Slow down slightly (0.95x)
+                        player.playbackParameters = androidx.media3.common.PlaybackParameters(0.95f)
+                    }
+                    kotlin.math.abs(drift) < 20 -> {
+                        // Within 20ms: Sync is good, reset to normal speed
+                        if (player.playbackParameters.speed != 1.0f) {
+                            player.playbackParameters = androidx.media3.common.PlaybackParameters(1.0f)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopDriftCorrection() {
+        driftCorrectionJob?.cancel()
+        driftCorrectionJob = null
+        playerConnection?.player?.playbackParameters = androidx.media3.common.PlaybackParameters(1.0f)
+    }
 
     // Heartbeat timer
     private var heartbeatJob: Job? = null

@@ -1543,7 +1543,17 @@ class ListenTogetherClient
             }
             sendMessage(
                 MessageTypes.PLAYBACK_ACTION,
-                PlaybackActionPayload(action, trackId, position, trackInfo, insertNext, queue, queueTitle, volume),
+                PlaybackActionPayload(
+                    action = action,
+                    trackId = trackId,
+                    position = position,
+                    trackInfo = trackInfo,
+                    insertNext = insertNext,
+                    queue = queue,
+                    queueTitle = queueTitle,
+                    volume = volume,
+                    serverTime = System.currentTimeMillis(),
+                ),
             )
         }
 

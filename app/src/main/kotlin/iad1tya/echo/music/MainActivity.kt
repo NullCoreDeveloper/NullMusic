@@ -264,7 +264,8 @@ class MainActivity : ComponentActivity() {
     private var pendingIntent: Intent? = null
     private var latestVersionName by mutableStateOf(BuildConfig.VERSION_NAME)
 
-    private var playerConnection by mutableStateOf<PlayerConnection?>(null)
+    private var playerConnection: PlayerConnection? = null
+    private var playerConnectionSnapshot by mutableStateOf<PlayerConnection?>(null)
 
     private val serviceConnection =
         object : ServiceConnection {
@@ -273,20 +274,45 @@ class MainActivity : ComponentActivity() {
                 service: IBinder?,
             ) {
                 if (service is MusicBinder) {
-                    playerConnection =
-                        PlayerConnection(this@MainActivity, service, database, lifecycleScope)
-                    listenTogetherManager.setPlayerConnection(playerConnection)
+                    try {
+                        playerConnection =
+                            PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                        playerConnectionSnapshot = playerConnection
+                        listenTogetherManager.setPlayerConnection(playerConnection)
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Failed to create PlayerConnection", e)
+                        lifecycleScope.launch {
+                            delay(500)
+                            try {
+                                playerConnection =
+                                    PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                                playerConnectionSnapshot = playerConnection
+                                listenTogetherManager.setPlayerConnection(playerConnection)
+                            } catch (retryError: Exception) {
+                                Log.e("MainActivity", "Failed to create PlayerConnection on retry", retryError)
+                            }
+                        }
+                    }
                 }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
                 listenTogetherManager.setPlayerConnection(null)
-                playerConnection?.dispose()
-                playerConnection = null
             }
         }
 
     private var isServiceBound = false
+
+    private fun safeUnbindService(source: String) {
+        if (!isServiceBound) return
+        try {
+            unbindService(serviceConnection)
+        } catch (e: IllegalArgumentException) {
+            Log.w("MainActivity", "Service was not bound when unbinding in $source", e)
+        } finally {
+            isServiceBound = false
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -307,25 +333,18 @@ class MainActivity : ComponentActivity() {
                  throw e
              }
         }
-        bindService(
-            Intent(this, MusicService::class.java),
-            serviceConnection,
-            Context.BIND_AUTO_CREATE
-        )
-        isServiceBound = true
+        if (!isServiceBound) {
+            bindService(
+                Intent(this, MusicService::class.java),
+                serviceConnection,
+                Context.BIND_AUTO_CREATE
+            )
+            isServiceBound = true
+        }
     }
 
     override fun onStop() {
         listenTogetherManager.setPlayerConnection(null)
-        if (isServiceBound) {
-            try {
-                unbindService(serviceConnection)
-            } catch (e: IllegalArgumentException) {
-                // Service might interpret as not registered
-                e.printStackTrace()
-            }
-            isServiceBound = false
-        }
         super.onStop()
     }
 
@@ -338,16 +357,11 @@ class MainActivity : ComponentActivity() {
             ) && playerConnection?.isPlaying?.value == true && isFinishing
         ) {
             stopService(Intent(this, MusicService::class.java))
-            if (isServiceBound) {
-                 try {
-                    unbindService(serviceConnection)
-                } catch (e: IllegalArgumentException) {
-                     e.printStackTrace()
-                }
-                isServiceBound = false
-            }
-            playerConnection = null
         }
+        playerConnection?.dispose()
+        playerConnection = null
+        playerConnectionSnapshot = null
+        safeUnbindService("onDestroy")
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -392,6 +406,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val playerConnection = playerConnectionSnapshot
             val checkForUpdates by rememberPreference(CheckForUpdatesKey, defaultValue = true)
             
             // Request all runtime permissions at app startup

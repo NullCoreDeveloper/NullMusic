@@ -73,8 +73,6 @@ import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.DefaultOpenTabKey
 import iad1tya.echo.music.constants.DensityScale
 import iad1tya.echo.music.constants.DensityScaleKey
-import iad1tya.echo.music.constants.DynamicThemeKey
-import iad1tya.echo.music.constants.RandomThemeOnStartupKey
 import iad1tya.echo.music.constants.GridItemSize
 import iad1tya.echo.music.constants.GridItemsSizeKey
 import iad1tya.echo.music.constants.LibraryFilter
@@ -91,25 +89,19 @@ import iad1tya.echo.music.constants.ThumbnailCornerRadiusKey
 import iad1tya.echo.music.constants.EnableHighRefreshRateKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
 import iad1tya.echo.music.constants.CropAlbumArtKey
-import iad1tya.echo.music.constants.PureBlackKey
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.UseSystemFontKey
 import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
-import iad1tya.echo.music.constants.DisableBlurKey
-import iad1tya.echo.music.constants.BlurRadiusKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.PlayerButtonsStyle
 import iad1tya.echo.music.constants.PlayerButtonsStyleKey
-import iad1tya.echo.music.constants.PlayerDesignStyle
-import iad1tya.echo.music.constants.PlayerDesignStyleKey
 import iad1tya.echo.music.constants.UseNewLibraryDesignKey
 import iad1tya.echo.music.constants.ArchiveTuneCanvasKey
 import iad1tya.echo.music.constants.SliderStyle
 import iad1tya.echo.music.constants.SliderStyleKey
 import iad1tya.echo.music.constants.SlimNavBarKey
 import iad1tya.echo.music.constants.OldNavbarStyleKey
-import iad1tya.echo.music.constants.UseNewPlayerDesignKey
 import iad1tya.echo.music.constants.ShowLikedPlaylistKey
 import iad1tya.echo.music.constants.ShowDownloadedPlaylistKey
 import iad1tya.echo.music.constants.ShowTopPlaylistKey
@@ -143,42 +135,12 @@ fun AppearanceSettings(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
+    val context = LocalContext.current
+
     // Dark mode preference
     val (darkMode, onDarkModeChange) = rememberEnumPreference(
         DarkModeKey,
-        defaultValue = DarkMode.ON
-    )
-    
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
-    val (dynamicTheme, onDynamicThemeChange) = rememberPreference(
-        DynamicThemeKey,
-        defaultValue = true
-    )
-    val (randomThemeOnStartup, onRandomThemeOnStartupChange) = rememberPreference(
-        RandomThemeOnStartupKey,
-        defaultValue = false
-    )
-    val (pureBlack, onPureBlackChange) = rememberPreference(
-        PureBlackKey,
-        defaultValue = false
-    )
-    val (useSystemFont, onUseSystemFontChange) = rememberPreference(
-        UseSystemFontKey,
-        defaultValue = false
-    )
-    val (disableBlur, onDisableBlurChange) = rememberPreference(
-        DisableBlurKey,
-        defaultValue = false
-    )
-    val (blurRadius, onBlurRadiusChange) = rememberPreference(
-        BlurRadiusKey,
-        defaultValue = 36f
-    )
-
-    val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
-        EnableHighRefreshRateKey, defaultValue = true
+        defaultValue = DarkMode.AUTO,
     )
     val (pureBlackMiniPlayer, onPureBlackMiniPlayerChange) = rememberPreference(
         PureBlackMiniPlayerKey, defaultValue = false
@@ -206,30 +168,37 @@ fun AppearanceSettings(
             PlayerBackgroundStyleKey,
             defaultValue = PlayerBackgroundStyle.BLUR,
         )
-    val (playerDesignStyle, onPlayerDesignStyleChange) = rememberEnumPreference(
-        PlayerDesignStyleKey,
-        defaultValue = PlayerDesignStyle.V4
-    )
     val (useNewLibraryDesign, onUseNewLibraryDesignChange) = rememberPreference(
         UseNewLibraryDesignKey,
         defaultValue = false
     )
-    val (archiveTuneCanvasEnabled, onArchiveTuneCanvasEnabledChange) = rememberPreference(
-        ArchiveTuneCanvasKey,
+    val (useSystemFont, onUseSystemFontChange) = rememberPreference(
+        UseSystemFontKey,
         defaultValue = false
     )
-
-    val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(
-        DefaultOpenTabKey,
-        defaultValue = NavigationTab.HOME
+    val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
+        EnableHighRefreshRateKey,
+        defaultValue = false
+    )
+    val (sliderStyle, onSliderStyleChange) = rememberEnumPreference(
+        SliderStyleKey,
+        defaultValue = SliderStyle.DEFAULT
     )
     val (playerButtonsStyle, onPlayerButtonsStyleChange) = rememberEnumPreference(
         PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT
     )
-    val (lyricsPosition, onLyricsPositionChange) = rememberEnumPreference(
+    val (lyricsTextPosition, onLyricsTextPositionChange) = rememberEnumPreference(
         LyricsTextPositionKey,
         defaultValue = LyricsPosition.CENTER
+    )
+    val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(
+        DefaultOpenTabKey,
+        defaultValue = NavigationTab.HOME
+    )
+    val (appleMusicLyricsBlur, onAppleMusicLyricsBlurChange) = rememberPreference(
+        AppleMusicLyricsBlurKey,
+        defaultValue = true
     )
     val (lyricsClick, onLyricsClickChange) = rememberPreference(LyricsClickKey, defaultValue = true)
     val (lyricsScroll, onLyricsScrollChange) = rememberPreference(LyricsScrollKey, defaultValue = true)
@@ -244,14 +213,6 @@ fun AppearanceSettings(
     )
     val (lyricsGlowEffect, onLyricsGlowEffectChange) = rememberPreference(
         LyricsGlowEffectKey, defaultValue = false
-    )
-    val (appleMusicLyricsBlur, onAppleMusicLyricsBlurChange) = rememberPreference(
-        AppleMusicLyricsBlurKey, defaultValue = true
-    )
-
-    val (sliderStyle, onSliderStyleChange) = rememberEnumPreference(
-        SliderStyleKey,
-        defaultValue = SliderStyle.DEFAULT
     )
     val (swipeThumbnail, onSwipeThumbnailChange) = rememberPreference(
         SwipeThumbnailKey,
@@ -274,11 +235,6 @@ fun AppearanceSettings(
         OldNavbarStyleKey,
         defaultValue = false
     )
-    val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
-        UseNewPlayerDesignKey,
-        defaultValue = true
-    )
-
     val (swipeToSong, onSwipeToSongChange) = rememberPreference(
         SwipeToSongKey,
         defaultValue = false
@@ -498,23 +454,6 @@ fun AppearanceSettings(
             title = stringResource(R.string.theme),
         )
 
-        SwitchPreference(
-            title = { Text("Enable Dynamic Theme") },
-            icon = { Icon(painterResource(R.drawable.palette), null) },
-            checked = dynamicTheme,
-            onCheckedChange = onDynamicThemeChange,
-        )
-
-        AnimatedVisibility(!dynamicTheme || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            SwitchPreference(
-                title = { Text("Random Theme on Startup") },
-                description = "Apply a random color palette each time the app starts",
-                icon = { Icon(painterResource(R.drawable.shuffle), null) },
-                checked = randomThemeOnStartup,
-                onCheckedChange = onRandomThemeOnStartupChange,
-            )
-        }
-
         EnumListPreference(
             title = { Text(stringResource(R.string.dark_mode)) },
             icon = { Icon(painterResource(R.drawable.dark_mode), null) },
@@ -527,41 +466,6 @@ fun AppearanceSettings(
                     DarkMode.AUTO -> stringResource(R.string.dark_mode_auto)
                 }
             },
-        )
-
-        AnimatedVisibility(darkMode != DarkMode.OFF) {
-            SwitchPreference(
-                title = { Text("Pure Black") },
-                icon = { Icon(painterResource(R.drawable.contrast), null) },
-                checked = pureBlack,
-                onCheckedChange = onPureBlackChange,
-            )
-        }
-
-        SwitchPreference(
-            title = { Text("Disable Blur Effects") },
-            description = "Disable blur effects throughout the app",
-            icon = { Icon(painterResource(R.drawable.tune), null) },
-            checked = disableBlur,
-            onCheckedChange = onDisableBlurChange,
-        )
-
-        PreferenceEntry(
-            title = { Text("Blur Intensity") },
-            description = "${blurRadius.roundToInt()} dp",
-            icon = { Icon(painterResource(R.drawable.tune), null) },
-            isEnabled = !disableBlur,
-            content = {
-                Spacer(modifier = Modifier.height(10.dp))
-                Slider(
-                    value = blurRadius,
-                    onValueChange = onBlurRadiusChange,
-                    valueRange = 0f..48f,
-                    steps = 47,
-                    enabled = !disableBlur,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
         )
 
         SwitchPreference(
@@ -650,38 +554,12 @@ fun AppearanceSettings(
             title = stringResource(R.string.player),
         )
 
-        EnumListPreference(
-            title = { Text("Player Design Style") },
-            icon = { Icon(painterResource(R.drawable.palette), null) },
-            selectedValue = playerDesignStyle,
-            onValueSelected = onPlayerDesignStyleChange,
-            valueText = {
-                when (it) {
-                    PlayerDesignStyle.V1 -> "V1"
-                    PlayerDesignStyle.V2 -> "V2"
-                    PlayerDesignStyle.V3 -> "V3"
-                    PlayerDesignStyle.V4 -> "V4"
-                    PlayerDesignStyle.V5 -> "V5"
-                    PlayerDesignStyle.V6 -> "V6"
-                    PlayerDesignStyle.V7 -> "V7"
-                }
-            },
-        )
-
         SwitchPreference(
             title = { Text("New Library Design") },
             description = "Enable the new library design",
             icon = { Icon(painterResource(R.drawable.grid_view), null) },
             checked = useNewLibraryDesign,
             onCheckedChange = onUseNewLibraryDesignChange,
-        )
-
-        SwitchPreference(
-            title = { Text("Pure Black Mini Player") },
-            description = "Use pure black background for mini player",
-            icon = { Icon(painterResource(R.drawable.dark_mode), null) },
-            checked = pureBlackMiniPlayer,
-            onCheckedChange = onPureBlackMiniPlayerChange,
         )
 
         EnumListPreference(
@@ -693,11 +571,7 @@ fun AppearanceSettings(
                 when (it) {
                     PlayerBackgroundStyle.DEFAULT -> stringResource(R.string.follow_theme)
                     PlayerBackgroundStyle.GRADIENT -> stringResource(R.string.gradient)
-                    PlayerBackgroundStyle.CUSTOM -> "Custom"
                     PlayerBackgroundStyle.BLUR -> "Blur"
-                    PlayerBackgroundStyle.COLORING -> "Coloring"
-                    PlayerBackgroundStyle.BLUR_GRADIENT -> "Blur Gradient"
-                    PlayerBackgroundStyle.GLOW -> "Glow"
                     PlayerBackgroundStyle.GLOW_ANIMATED -> "Glow Animated"
                 }
             },
@@ -723,14 +597,6 @@ fun AppearanceSettings(
             icon = { Icon(painterResource(R.drawable.hide_image), null) },
             checked = hidePlayerThumbnail,
             onCheckedChange = onHidePlayerThumbnailChange,
-        )
-
-        SwitchPreference(
-            title = { Text("ArchiveTune Canvas") },
-            description = "Animate album artwork while playing",
-            icon = { Icon(painterResource(R.drawable.slow_motion_video), null) },
-            checked = archiveTuneCanvasEnabled,
-            onCheckedChange = onArchiveTuneCanvasEnabledChange,
         )
 
         SwitchPreference(
@@ -868,8 +734,8 @@ fun AppearanceSettings(
         EnumListPreference(
             title = { Text(stringResource(R.string.lyrics_text_position)) },
             icon = { Icon(painterResource(R.drawable.lyrics), null) },
-            selectedValue = lyricsPosition,
-            onValueSelected = onLyricsPositionChange,
+            selectedValue = lyricsTextPosition,
+            onValueSelected = onLyricsTextPositionChange,
             valueText = {
                 when (it) {
                     LyricsPosition.LEFT -> stringResource(R.string.left)
@@ -1082,14 +948,6 @@ fun AppearanceSettings(
             onCheckedChange = onOldNavbarStyleChange
         )
 
-        SwitchPreference(
-            title = { Text("Old Music Page") },
-            description = "Use the previous music player page layout",
-            icon = { Icon(painterResource(R.drawable.queue_music), null) },
-            checked = !useNewPlayerDesign,
-            onCheckedChange = { useOldMusicPage -> onUseNewPlayerDesignChange(!useOldMusicPage) }
-        )
-
         EnumListPreference(
             title = { Text(stringResource(R.string.grid_cell_size)) },
             icon = { Icon(painterResource(R.drawable.grid_view), null) },
@@ -1124,11 +982,11 @@ fun AppearanceSettings(
                 .height(100.dp)
                 .zIndex(10f)
                 .then(
-                    if (!disableBlur && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         Modifier.graphicsLayer {
                             renderEffect = android.graphics.RenderEffect.createBlurEffect(
-                                blurRadius,
-                                blurRadius,
+                                36f,
+                                36f,
                                 android.graphics.Shader.TileMode.CLAMP
                             ).asComposeRenderEffect()
                         }

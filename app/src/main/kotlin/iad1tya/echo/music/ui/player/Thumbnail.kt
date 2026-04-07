@@ -92,8 +92,6 @@ import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.ArchiveTuneCanvasKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
 import iad1tya.echo.music.constants.MaxCanvasCacheSizeKey
-import iad1tya.echo.music.constants.PlayerDesignStyle
-import iad1tya.echo.music.constants.PlayerDesignStyleKey
 import iad1tya.echo.music.constants.DoubleTapToLikeKey
 import iad1tya.echo.music.constants.GestureDoubleTapSeekKey
 import iad1tya.echo.music.constants.GestureVerticalControlsKey
@@ -133,10 +131,6 @@ fun Thumbnail(
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
     val hidePlayerThumbnail by rememberPreference(HidePlayerThumbnailKey, false)
     val canvasThumbnailAnimation by rememberPreference(ArchiveTuneCanvasKey, false)
-    val playerDesignStyle by rememberEnumPreference(
-        key = PlayerDesignStyleKey,
-        defaultValue = PlayerDesignStyle.V4,
-    )
     val (maxCanvasCacheSize, _) = rememberPreference(
         key = MaxCanvasCacheSizeKey,
         defaultValue = 256,
@@ -153,11 +147,7 @@ fun Thumbnail(
     val textBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
         PlayerBackgroundStyle.GRADIENT -> Color.White
-        PlayerBackgroundStyle.CUSTOM -> Color.White
         PlayerBackgroundStyle.BLUR -> Color.White
-        PlayerBackgroundStyle.COLORING -> Color.White
-        PlayerBackgroundStyle.BLUR_GRADIENT -> Color.White
-        PlayerBackgroundStyle.GLOW -> Color.White
         PlayerBackgroundStyle.GLOW_ANIMATED -> Color.White
     }
 
@@ -332,7 +322,6 @@ fun Thumbnail(
             val isCurrentItem = item.mediaId == (currentMediaItem?.mediaId ?: "")
             val shouldAnimateCanvas =
                 canvasThumbnailAnimation &&
-                    playerDesignStyle != PlayerDesignStyle.V7 &&
                     isCurrentItem
             var canvasArtwork by remember(item.mediaId) { mutableStateOf<iad1tya.echo.music.canvas.CanvasArtwork?>(null) }
             val canvasFetchInFlight = remember(item.mediaId) { mutableStateOf(false) }

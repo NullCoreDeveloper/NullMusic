@@ -144,7 +144,6 @@ import iad1tya.echo.music.LocalDownloadUtil
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.DarkModeKey
-import iad1tya.echo.music.constants.DisableBlurKey
 import iad1tya.echo.music.constants.BlurRadiusKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
@@ -157,7 +156,6 @@ import iad1tya.echo.music.constants.ThumbnailCornerRadius
 import iad1tya.echo.music.constants.QueuePeekHeight
 import iad1tya.echo.music.constants.SliderStyle
 import iad1tya.echo.music.constants.SliderStyleKey
-import iad1tya.echo.music.constants.UseNewPlayerDesignKey
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.extensions.toggleRepeatMode
 import iad1tya.echo.music.models.MediaMetadata
@@ -207,10 +205,7 @@ fun BottomSheetPlayer(
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
-    val useNewPlayerDesign by rememberPreference(
-        key = UseNewPlayerDesignKey,
-        defaultValue = true
-    )
+    val useNewPlayerDesign = true
     val playerBackground by rememberEnumPreference(
         key = PlayerBackgroundStyleKey,
         defaultValue = PlayerBackgroundStyle.BLUR
@@ -219,7 +214,6 @@ fun BottomSheetPlayer(
         key = PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT
     )
-    val disableBlur by rememberPreference(DisableBlurKey, false)
     val blurRadius by rememberPreference(BlurRadiusKey, 36f)
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
@@ -493,10 +487,6 @@ fun BottomSheetPlayer(
     val bottomSheetBackgroundColor = when (playerBackground) {
         PlayerBackgroundStyle.BLUR,
         PlayerBackgroundStyle.GRADIENT,
-        PlayerBackgroundStyle.CUSTOM,
-        PlayerBackgroundStyle.COLORING,
-        PlayerBackgroundStyle.BLUR_GRADIENT,
-        PlayerBackgroundStyle.GLOW,
         PlayerBackgroundStyle.GLOW_ANIMATED ->
             Color.Black
         else ->
@@ -534,7 +524,7 @@ fun BottomSheetPlayer(
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .blur(if (disableBlur) 0.dp else blurRadius.dp)
+                                            .blur(blurRadius.dp)
                                     )
                                     Box(
                                         modifier = Modifier
@@ -545,11 +535,7 @@ fun BottomSheetPlayer(
                             }
                         }
                     }
-                    PlayerBackgroundStyle.GRADIENT,
-                    PlayerBackgroundStyle.CUSTOM,
-                    PlayerBackgroundStyle.COLORING,
-                    PlayerBackgroundStyle.BLUR_GRADIENT,
-                    PlayerBackgroundStyle.GLOW -> {
+                    PlayerBackgroundStyle.GRADIENT -> {
                         AnimatedContent(
                             targetState = gradientColors,
                             transitionSpec = {

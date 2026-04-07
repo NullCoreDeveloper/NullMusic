@@ -162,7 +162,6 @@ import iad1tya.echo.music.constants.LastLikeSongSyncKey
 import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.DefaultOpenTabKey
 import iad1tya.echo.music.constants.DisableScreenshotKey
-import iad1tya.echo.music.constants.DynamicThemeKey
 import iad1tya.echo.music.constants.KeepScreenOn
 import iad1tya.echo.music.constants.MaterialYouKey
 import iad1tya.echo.music.constants.EnableHighRefreshRateKey
@@ -174,9 +173,6 @@ import iad1tya.echo.music.constants.NavigationBarAnimationSpec
 import iad1tya.echo.music.constants.NavigationBarHeight
 import iad1tya.echo.music.constants.OldNavbarStyleKey
 import iad1tya.echo.music.constants.PauseSearchHistoryKey
-import iad1tya.echo.music.constants.PureBlackKey
-import iad1tya.echo.music.constants.RandomThemeOnStartupKey
-import iad1tya.echo.music.constants.SelectedThemeColorKey
 import iad1tya.echo.music.constants.SlimFloatingToolbarHeight
 import iad1tya.echo.music.constants.SYSTEM_DEFAULT
 import iad1tya.echo.music.constants.SearchSource
@@ -504,26 +500,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
             val enableMaterialYou by rememberPreference(MaterialYouKey, defaultValue = false)
-            val randomThemeOnStartup by rememberPreference(RandomThemeOnStartupKey, defaultValue = false)
-            val (themeSeedColorValue, onThemeSeedColorChange) = rememberPreference(
-                SelectedThemeColorKey,
-                defaultValue = DefaultThemeColor.toArgb()
-            )
-
-            LaunchedEffect(randomThemeOnStartup) {
-                if (randomThemeOnStartup) {
-                    val palette = listOf(
-                        Color(0xFFED5564).toArgb(),
-                        Color(0xFF4CAF50).toArgb(),
-                        Color(0xFF2196F3).toArgb(),
-                        Color(0xFFFF9800).toArgb(),
-                        Color(0xFF00BCD4).toArgb(),
-                    )
-                    onThemeSeedColorChange(palette.random())
-                }
-            }
+            val themeSeedColorValue = DefaultThemeColor.toArgb()
             
             // Read dark mode preference
             val darkModePreference by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.ON)
@@ -537,11 +515,8 @@ class MainActivity : ComponentActivity() {
                 setSystemBarAppearance(useDarkTheme)
             }
 
-            val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-            val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
-                pureBlackEnabled && useDarkTheme 
-            }
             val useSystemFont by rememberPreference(UseSystemFontKey, defaultValue = false)
+            val pureBlack = false
 
             val enableHighRefreshRate by rememberPreference(EnableHighRefreshRateKey, defaultValue = true)
             LaunchedEffect(enableHighRefreshRate) {
@@ -572,9 +547,9 @@ class MainActivity : ComponentActivity() {
 
             EchoTheme(
                 darkTheme = useDarkTheme,
-                pureBlack = pureBlack,
+                pureBlack = false,
                 themeColor = Color(themeSeedColorValue),
-                isDynamicColor = enableDynamicTheme || enableMaterialYou,
+                isDynamicColor = enableMaterialYou,
                 useSystemFont = useSystemFont,
             ) {
                 BoxWithConstraints(
@@ -582,7 +557,7 @@ class MainActivity : ComponentActivity() {
                         Modifier
                             .fillMaxSize()
                             .background(
-                                if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface
+                                MaterialTheme.colorScheme.surface
                             )
                     ) {
                     val context = androidx.compose.ui.platform.LocalContext.current

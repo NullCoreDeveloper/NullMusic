@@ -221,7 +221,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -236,7 +236,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -251,7 +251,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -266,7 +266,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -281,7 +281,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -303,7 +303,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             BuyMeCoffeeItem(
@@ -315,7 +315,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -331,7 +331,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -347,7 +347,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -370,7 +370,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -385,7 +385,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(
@@ -400,7 +400,7 @@ fun AboutScreen(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(20.dp)
         ) {
             SocialLinkItem(

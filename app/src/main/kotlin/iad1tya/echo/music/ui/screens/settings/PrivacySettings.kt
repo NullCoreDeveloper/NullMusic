@@ -2,6 +2,7 @@ package iad1tya.echo.music.ui.screens.settings
 
 import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -276,8 +277,9 @@ fun PrivacySettings(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
                 shape = RoundedCornerShape(20.dp),
                 onClick = {
                     val intent = android.content.Intent(

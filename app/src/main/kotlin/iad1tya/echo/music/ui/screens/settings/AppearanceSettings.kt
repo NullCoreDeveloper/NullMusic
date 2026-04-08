@@ -4,6 +4,7 @@ import android.os.Build
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -622,8 +623,9 @@ fun AppearanceSettings(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
             Column(
@@ -810,8 +812,9 @@ fun AppearanceSettings(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
             Column(
@@ -839,8 +842,9 @@ fun AppearanceSettings(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
             Column(

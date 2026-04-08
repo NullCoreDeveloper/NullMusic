@@ -1,6 +1,7 @@
 package iad1tya.echo.music.ui.component
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,8 +45,9 @@ fun Material3SettingsGroup(
                 .animateContentSize(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column {

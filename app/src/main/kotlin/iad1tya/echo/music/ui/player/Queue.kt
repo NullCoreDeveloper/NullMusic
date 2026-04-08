@@ -1034,12 +1034,6 @@ fun Queue(
                                 )
                             }
                         }
-                        if (selection) {
-                            QueueStatChip(
-                                label = stringResource(R.string.elements_selected, selectedSongs.size),
-                                highlighted = true,
-                            )
-                        }
                     }
                 }
             }
@@ -1271,13 +1265,13 @@ private fun QueueStatChip(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.titleSmall,
             color = if (highlighted) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
         )
     }
 }

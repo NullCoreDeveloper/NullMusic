@@ -237,6 +237,7 @@ val ShowTagsInLibraryKey = booleanPreferencesKey("showTagsInLibrary")
 val EnableGoogleCastKey = booleanPreferencesKey("enableGoogleCast")
 val SponsorBlockEnabledKey = booleanPreferencesKey("sponsorBlockEnabled")
 val SponsorBlockCategoriesKey = stringPreferencesKey("sponsorBlockCategories")
+val SponsorBlockResetV420DoneKey = booleanPreferencesKey("sponsorBlockResetV420Done")
 
 // Local Media Scanner
 val ScanPathsKey = stringPreferencesKey("scanPaths")

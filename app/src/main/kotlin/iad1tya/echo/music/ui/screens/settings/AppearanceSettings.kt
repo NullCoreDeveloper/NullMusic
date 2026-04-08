@@ -99,7 +99,6 @@ import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.PlayerButtonsStyle
 import iad1tya.echo.music.constants.PlayerButtonsStyleKey
-import iad1tya.echo.music.constants.UseNewLibraryDesignKey
 import iad1tya.echo.music.constants.ArchiveTuneCanvasKey
 import iad1tya.echo.music.constants.SliderStyle
 import iad1tya.echo.music.constants.SliderStyleKey
@@ -174,10 +173,6 @@ fun AppearanceSettings(
             PlayerBackgroundStyleKey,
             defaultValue = PlayerBackgroundStyle.BLUR,
         )
-    val (useNewLibraryDesign, onUseNewLibraryDesignChange) = rememberPreference(
-        UseNewLibraryDesignKey,
-        defaultValue = false
-    )
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
         defaultValue = true
@@ -562,14 +557,6 @@ fun AppearanceSettings(
 
         PreferenceGroupTitle(
             title = stringResource(R.string.player),
-        )
-
-        SwitchPreference(
-            title = { Text("New Library Design") },
-            description = "Enable the new library design",
-            icon = { Icon(painterResource(R.drawable.grid_view), null) },
-            checked = useNewLibraryDesign,
-            onCheckedChange = onUseNewLibraryDesignChange,
         )
 
         EnumListPreference(

@@ -94,7 +94,7 @@ import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.UseSystemFontKey
 import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
-import iad1tya.echo.music.constants.UseOldMusicPageUiKey
+import iad1tya.echo.music.constants.UseNewPlayerDesignKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.PlayerButtonsStyle
@@ -178,9 +178,9 @@ fun AppearanceSettings(
         UseNewLibraryDesignKey,
         defaultValue = false
     )
-    val (useOldMusicPageUi, onUseOldMusicPageUiChange) = rememberPreference(
-        UseOldMusicPageUiKey,
-        defaultValue = false
+    val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
+        UseNewPlayerDesignKey,
+        defaultValue = true
     )
     val (useSystemFont, onUseSystemFontChange) = rememberPreference(
         UseSystemFontKey,
@@ -570,14 +570,6 @@ fun AppearanceSettings(
             icon = { Icon(painterResource(R.drawable.grid_view), null) },
             checked = useNewLibraryDesign,
             onCheckedChange = onUseNewLibraryDesignChange,
-        )
-
-        SwitchPreference(
-            title = { Text(stringResource(R.string.enable_old_music_page_ui)) },
-            description = stringResource(R.string.enable_old_music_page_ui_desc),
-            icon = { Icon(painterResource(R.drawable.album), null) },
-            checked = useOldMusicPageUi,
-            onCheckedChange = onUseOldMusicPageUiChange,
         )
 
         EnumListPreference(
@@ -973,6 +965,14 @@ fun AppearanceSettings(
             icon = { Icon(painterResource(R.drawable.nav_bar), null) },
             checked = oldNavbarStyle,
             onCheckedChange = onOldNavbarStyleChange
+        )
+
+        SwitchPreference(
+            title = { Text("Old Music Page") },
+            description = "Use the previous music player page layout",
+            icon = { Icon(painterResource(R.drawable.queue_music), null) },
+            checked = !useNewPlayerDesign,
+            onCheckedChange = { useOldMusicPage -> onUseNewPlayerDesignChange(!useOldMusicPage) }
         )
 
         EnumListPreference(

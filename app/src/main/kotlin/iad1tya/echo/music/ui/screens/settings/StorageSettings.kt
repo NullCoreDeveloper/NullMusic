@@ -2,6 +2,7 @@ package iad1tya.echo.music.ui.screens.settings
 
 import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -283,7 +284,8 @@ fun StorageSettings(
         // Overview stats card
         Card(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             shape = RoundedCornerShape(20.dp)
         ) {
             Row(
@@ -304,7 +306,9 @@ fun StorageSettings(
         StorageSectionLabel(stringResource(R.string.downloaded_songs))
         StorageCard {
             StorageInfoRow(R.drawable.download, stringResource(R.string.downloaded_songs), stringResource(R.string.size_used, formatFileSize(downloadCacheSize)))
-            StorageDivider()
+        }
+        Spacer(Modifier.height(8.dp))
+        StorageCard {
             StorageActionRow(R.drawable.delete, stringResource(R.string.clear_all_downloads)) { clearDownloads = true }
         }
 
@@ -331,7 +335,9 @@ fun StorageSettings(
                     strokeCap = StrokeCap.Round
                 )
             }
-            StorageDivider()
+        }
+        Spacer(Modifier.height(8.dp))
+        StorageCard {
             StorageSettingRow(
                 iconRes = R.drawable.storage,
                 title = stringResource(R.string.max_cache_size),
@@ -342,7 +348,9 @@ fun StorageSettings(
                 },
                 onClick = { songCacheSizeDialog = true }
             )
-            StorageDivider()
+        }
+        Spacer(Modifier.height(8.dp))
+        StorageCard {
             StorageActionRow(R.drawable.delete, stringResource(R.string.clear_song_cache)) { clearCacheDialog = true }
         }
 
@@ -366,14 +374,18 @@ fun StorageSettings(
                     strokeCap = StrokeCap.Round
                 )
             }
-            StorageDivider()
+        }
+        Spacer(Modifier.height(8.dp))
+        StorageCard {
             StorageSettingRow(
                 iconRes = R.drawable.storage,
                 title = stringResource(R.string.max_cache_size),
                 value = if (maxImageCacheSize == 0) stringResource(R.string.disable) else formatFileSize(maxImageCacheSize * 1024 * 1024L),
                 onClick = { imageCacheSizeDialog = true }
             )
-            StorageDivider()
+        }
+        Spacer(Modifier.height(8.dp))
+        StorageCard {
             StorageActionRow(R.drawable.delete, stringResource(R.string.clear_image_cache)) { clearImageCacheDialog = true }
         }
 
@@ -448,7 +460,8 @@ private fun StorageSectionLabel(text: String) {
 private fun StorageCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
         shape = RoundedCornerShape(20.dp)
     ) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) { content() }

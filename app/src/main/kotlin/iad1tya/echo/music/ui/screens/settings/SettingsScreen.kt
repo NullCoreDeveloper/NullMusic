@@ -343,7 +343,7 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Privacy & Security Section
+        // Privacy - Separate
         Material3SettingsGroup(
             title = stringResource(R.string.settings_section_privacy),
             items = listOf(
@@ -351,7 +351,15 @@ fun SettingsScreen(
                     icon = painterResource(R.drawable.security),
                     title = { Text(stringResource(R.string.privacy)) },
                     onClick = { navController.navigate("settings/privacy") }
-                ),
+                )
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Diagnostics - Separate
+        Material3SettingsGroup(
+            items = listOf(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.error),
                     title = { Text("Diagnostics & Bug Report") },

@@ -21,10 +21,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton as M3IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -79,6 +81,7 @@ fun ListenTogetherScreen(
 
     var username by rememberSaveable { mutableStateOf("") }
     var roomCode by rememberSaveable { mutableStateOf("") }
+    var selectedSection by rememberSaveable { mutableStateOf(ListenSection.HOST) }
 
     Scaffold(
         topBar = {
@@ -100,6 +103,32 @@ fun ListenTogetherScreen(
                         Icon(
                             painter = painterResource(R.drawable.arrow_back),
                             contentDescription = null,
+                        )
+                    }
+                },
+                actions = {
+                    M3IconButton(
+                        onClick = {
+                            if (connectionState == ConnectionState.CONNECTED) {
+                                viewModel.disconnect()
+                            } else {
+                                viewModel.connect()
+                            }
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.link),
+                            contentDescription = if (connectionState == ConnectionState.CONNECTED) {
+                                "Disconnect from server"
+                            } else {
+                                "Connect to server"
+                            },
+                            tint = when (connectionState) {
+                                ConnectionState.CONNECTED -> Color(0xFF2E7D32)
+                                ConnectionState.CONNECTING, ConnectionState.RECONNECTING -> MaterialTheme.colorScheme.primary
+                                ConnectionState.ERROR -> Color(0xFFC62828)
+                                ConnectionState.DISCONNECTED -> MaterialTheme.colorScheme.onSurfaceVariant
+                            },
                         )
                     }
                 },
@@ -190,47 +219,37 @@ fun ListenTogetherScreen(
                             )
                         }
 
-                        if (connectionState == ConnectionState.DISCONNECTED || connectionState == ConnectionState.ERROR) {
-                            OutlinedButton(onClick = { viewModel.connect() }, modifier = Modifier.fillMaxWidth()) {
-                                Text("Connect to server")
-                            }
-                        } else {
-                            OutlinedButton(onClick = { viewModel.disconnect() }, modifier = Modifier.fillMaxWidth()) {
-                                Text("Disconnect")
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                                .padding(horizontal = 12.dp, vertical = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                        if ((roomState == null && selectedSection == ListenSection.HOST) ||
+                            (roomState != null && role == RoomRole.HOST)
                         ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Text(
-                                    text = "Auto-approve new users",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                                Text(
-                                    text = if (role == RoomRole.HOST) {
-                                        "Automatically approve join requests while you are host"
-                                    } else {
-                                        "Applied when you host a room"
-                                    },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                                ) {
+                                    Text(
+                                        text = "Auto-approve new users",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                    )
+                                    Text(
+                                        text = "Automatically approve join requests while you are host",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                Switch(
+                                    checked = autoApproveNewUsers,
+                                    onCheckedChange = onAutoApproveNewUsersChange,
                                 )
                             }
-                            Switch(
-                                checked = autoApproveNewUsers,
-                                onCheckedChange = onAutoApproveNewUsersChange,
-                            )
                         }
                     }
                 }
@@ -240,42 +259,85 @@ fun ListenTogetherScreen(
                 item {
                     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
                         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text("Identity & Room", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                            Text(
-                                "Use your display name and a valid room code to start syncing.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            OutlinedTextField(
-                                value = username,
-                                onValueChange = { username = it },
-                                label = { Text("Username") },
-                                placeholder = { Text("e.g. Aditya") },
+                            Text("Room Setup", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                            Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                                singleLine = true,
-                            )
-                            OutlinedTextField(
-                                value = roomCode,
-                                onValueChange = { roomCode = it.uppercase() },
-                                label = { Text("Room code") },
-                                placeholder = { Text("ABCD") },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
-                            )
-                            FilledTonalButton(
-                                onClick = { viewModel.createRoom(username.trim()) },
-                                enabled = username.isNotBlank(),
-                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
-                                Text("Create room")
+                                FilledTonalButton(
+                                    onClick = { selectedSection = ListenSection.HOST },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = if (selectedSection == ListenSection.HOST) Color.White else MaterialTheme.colorScheme.surfaceContainerHighest,
+                                        contentColor = if (selectedSection == ListenSection.HOST) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    ),
+                                ) {
+                                    Text("Host")
+                                }
+                                FilledTonalButton(
+                                    onClick = { selectedSection = ListenSection.JOIN },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = if (selectedSection == ListenSection.JOIN) Color.White else MaterialTheme.colorScheme.surfaceContainerHighest,
+                                        contentColor = if (selectedSection == ListenSection.JOIN) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    ),
+                                ) {
+                                    Text("Join")
+                                }
                             }
-                            Button(
-                                onClick = { viewModel.joinRoom(roomCode.trim(), username.trim()) },
-                                enabled = username.isNotBlank() && roomCode.length >= 4,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Text("Join room")
+
+                            if (selectedSection == ListenSection.HOST) {
+                                Text(
+                                    "Enter your name, then host a room to get a room code.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                OutlinedTextField(
+                                    value = username,
+                                    onValueChange = { username = it },
+                                    label = { Text("Username") },
+                                    placeholder = { Text("e.g. Aditya") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                                    singleLine = true,
+                                )
+                                Button(
+                                    onClick = { viewModel.createRoom(username.trim()) },
+                                    enabled = username.isNotBlank(),
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text("Host the room")
+                                }
+                            } else {
+                                Text(
+                                    "Enter your name and room code, then join.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                OutlinedTextField(
+                                    value = username,
+                                    onValueChange = { username = it },
+                                    label = { Text("Username") },
+                                    placeholder = { Text("e.g. Aditya") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                                    singleLine = true,
+                                )
+                                OutlinedTextField(
+                                    value = roomCode,
+                                    onValueChange = { roomCode = it.uppercase() },
+                                    label = { Text("Room code") },
+                                    placeholder = { Text("ABCD") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true,
+                                )
+                                Button(
+                                    onClick = { viewModel.joinRoom(roomCode.trim(), username.trim()) },
+                                    enabled = username.isNotBlank() && roomCode.length >= 4,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text("Join the room")
+                                }
                             }
                         }
                     }
@@ -309,41 +371,53 @@ fun ListenTogetherScreen(
                     Text("Participants (${roomState?.users?.size ?: 0})", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 }
                 items(roomState?.users ?: emptyList(), key = { it.userId }) { user ->
-                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 11.dp),
+                                .padding(horizontal = 12.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
                         ) {
                             Box(
                                 modifier = Modifier
                                     .clip(MaterialTheme.shapes.small)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                                    .padding(horizontal = 9.dp, vertical = 5.dp),
+                                    .background(
+                                        if (user.isHost) MaterialTheme.colorScheme.tertiaryContainer
+                                        else MaterialTheme.colorScheme.secondaryContainer
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
                             ) {
                                 Text(
                                     text = user.username.take(1).uppercase(),
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    color = if (user.isHost) MaterialTheme.colorScheme.onTertiaryContainer
+                                    else MaterialTheme.colorScheme.onSecondaryContainer,
                                 )
                             }
-                            Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(user.username, fontWeight = FontWeight.Medium)
-                                AssistChip(
-                                    onClick = {},
-                                    enabled = false,
-                                    label = {
-                                        Text(
-                                            if (user.isHost) "Host" else "Guest",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = if (user.isHost) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    },
+                                Text(user.username, fontWeight = FontWeight.SemiBold)
+                                Text(
+                                    text = if (user.isHost) "Room host" else "Participant",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
+                            AssistChip(
+                                onClick = {},
+                                enabled = false,
+                                label = {
+                                    Text(
+                                        if (user.isHost) "Host" else "Guest",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = if (user.isHost) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                },
+                            )
                         }
                     }
                 }
@@ -352,6 +426,11 @@ fun ListenTogetherScreen(
             item { Spacer(Modifier.height(64.dp)) }
         }
     }
+}
+
+private enum class ListenSection {
+    HOST,
+    JOIN,
 }
 
 @Composable

@@ -45,6 +45,7 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 ### What's New
 - **Completely redesigned UI** — Cleaner and faster experience from the ground up.
 - **Import from Spotify** — Bring your playlists and tracks over with ease.
+- **Listen Together** - allows users to sync music in real time, similar to Spotify Jam.
 - **Podcast support** — Listen to podcasts alongside your music library.
 - **Local media support** — Play music stored directly on your device.
 - **Auto data migration** — Seamlessly move existing app data to the new version.

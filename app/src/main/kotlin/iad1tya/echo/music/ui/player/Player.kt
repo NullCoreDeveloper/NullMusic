@@ -42,8 +42,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -95,10 +97,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -189,6 +193,27 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.saket.squiggles.SquigglySlider
 import kotlin.math.roundToInt
+
+private fun Modifier.tvFocusableHighlight(shape: RoundedCornerShape): Modifier = composed {
+    val context = LocalContext.current
+    val isTvDevice = remember(context) {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+    var isFocused by remember { mutableStateOf(false) }
+
+    if (isTvDevice) {
+        this
+            .focusable()
+            .onFocusChanged { isFocused = it.isFocused }
+            .border(
+                width = if (isFocused) 2.dp else 0.dp,
+                color = if (isFocused) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = shape
+            )
+    } else {
+        this
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -772,6 +797,7 @@ fun BottomSheetPlayer(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(textButtonColor)
+                                .tvFocusableHighlight(RoundedCornerShape(12.dp))
                                 .clickable {
                                     // Pause the current song before switching to video
                                     playerConnection.player.pause()
@@ -934,6 +960,7 @@ fun BottomSheetPlayer(
                             .size(40.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(textButtonColor)
+                            .tvFocusableHighlight(RoundedCornerShape(24.dp))
                             .clickable {
                                 menuState.show {
                                     LyricsMenu(
@@ -977,6 +1004,7 @@ fun BottomSheetPlayer(
                                     .size(42.dp)
                                     .clip(audioRoutingShape)
                                     .background(textButtonColor)
+                                    .tvFocusableHighlight(audioRoutingShape)
                                     .clickable(enabled = !isLocalSong) {
                                         when (download?.state) {
                                             Download.STATE_COMPLETED,
@@ -1040,6 +1068,7 @@ fun BottomSheetPlayer(
                                     .size(42.dp)
                                     .clip(favShape)
                                     .background(textButtonColor)
+                                    .tvFocusableHighlight(favShape)
                                     .clickable {
                                         playerConnection.toggleLike()
                                     }
@@ -1063,6 +1092,7 @@ fun BottomSheetPlayer(
                                     .size(42.dp)
                                     .clip(shareShape)
                                     .background(textButtonColor)
+                                    .tvFocusableHighlight(shareShape)
                                     .clickable {
                                         showShareSheet = true
                                     }
@@ -1084,6 +1114,7 @@ fun BottomSheetPlayer(
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
+                                .tvFocusableHighlight(RoundedCornerShape(24.dp))
                                 .clickable {
                                     showShareSheet = true
                                 },
@@ -1107,6 +1138,7 @@ fun BottomSheetPlayer(
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(24.dp))
                                 .background(textButtonColor)
+                                .tvFocusableHighlight(RoundedCornerShape(24.dp))
                                 .clickable {
                                     menuState.show {
                                         PlayerMenu(
@@ -1398,6 +1430,7 @@ fun BottomSheetPlayer(
                             .size(72.dp)
                             .clip(RoundedCornerShape(playPauseRoundness))
                             .background(textButtonColor)
+                            .tvFocusableHighlight(RoundedCornerShape(playPauseRoundness))
                             .clickable {
                                 if (playbackState == STATE_ENDED) {
                                     playerConnection.player.seekTo(0, 0)

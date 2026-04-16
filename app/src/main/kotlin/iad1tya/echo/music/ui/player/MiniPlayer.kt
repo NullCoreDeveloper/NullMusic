@@ -1,5 +1,6 @@
 package iad1tya.echo.music.ui.player
 
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -92,8 +93,12 @@ import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.palette.graphics.Palette
 import coil3.imageLoader
@@ -102,6 +107,27 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.toArgb
+
+private fun Modifier.tvFocusableHighlight(shape: Shape): Modifier = composed {
+    val context = LocalContext.current
+    val isTvDevice = remember(context) {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+    var isFocused by remember { mutableStateOf(false) }
+
+    if (isTvDevice) {
+        this
+            .focusable()
+            .onFocusChanged { isFocused = it.isFocused }
+            .border(
+                width = if (isFocused) 2.dp else 0.dp,
+                color = if (isFocused) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = shape
+            )
+    } else {
+        this
+    }
+}
 
 @Composable
 fun MiniPlayer(
@@ -463,6 +489,7 @@ private fun NewMiniPlayer(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(40.dp)
+                        .tvFocusableHighlight(CircleShape)
                         .clip(CircleShape)
                         .border(
                             width = 1.dp,
@@ -498,6 +525,7 @@ private fun NewMiniPlayer(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(40.dp)
+                        .tvFocusableHighlight(CircleShape)
                         .clip(CircleShape)
                         .border(
                             width = 1.dp,
@@ -546,6 +574,7 @@ private fun NewMiniPlayer(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(40.dp)
+                        .tvFocusableHighlight(CircleShape)
                         .clip(CircleShape)
                         .border(
                             width = 1.dp,

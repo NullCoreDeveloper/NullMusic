@@ -1,5 +1,6 @@
 package iad1tya.echo.music.ui.component
 
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,10 +40,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.focusable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
@@ -64,6 +75,18 @@ fun BottomSheet(
     collapsedContent: @Composable BoxScope.() -> Unit,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val context = LocalContext.current
+    val isTvDevice = remember(context) {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+    val collapsedFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(isTvDevice, state.isExpanded, state.isDismissed, onDismiss) {
+        if (isTvDevice && !state.isExpanded && (onDismiss == null || !state.isDismissed)) {
+            collapsedFocusRequester.requestFocus()
+        }
+    }
+
     Box(
         modifier = modifier
             .graphicsLayer {
@@ -128,6 +151,20 @@ fun BottomSheet(
                 modifier = Modifier
                     .graphicsLayer {
                         alpha = 1f - (state.progress * 4).coerceAtMost(1f)
+                    }
+                    .focusRequester(collapsedFocusRequester)
+                    .focusable()
+                    .onPreviewKeyEvent { keyEvent ->
+                        if (keyEvent.type == KeyEventType.KeyDown &&
+                            (keyEvent.key == Key.DirectionCenter ||
+                                keyEvent.key == Key.Enter ||
+                                keyEvent.key == Key.NumPadEnter)
+                        ) {
+                            state.expandSoft()
+                            true
+                        } else {
+                            false
+                        }
                     }
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },

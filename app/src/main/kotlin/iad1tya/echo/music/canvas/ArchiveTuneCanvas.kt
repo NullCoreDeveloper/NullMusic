@@ -1,5 +1,6 @@
 package iad1tya.echo.music.canvas
 
+import com.echo.innertube.CloudflareDnsResolver
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -37,6 +38,11 @@ object ArchiveTuneCanvas {
 
     private val client by lazy {
         HttpClient(OkHttp) {
+            engine {
+                config {
+                    dns(CloudflareDnsResolver)
+                }
+            }
             install(ContentNegotiation) { json(json) }
             install(HttpTimeout) {
                 connectTimeoutMillis = 12_000

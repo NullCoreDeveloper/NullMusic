@@ -20,6 +20,7 @@ import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
 import androidx.media3.transformer.Transformer
+import com.echo.innertube.CloudflareDnsResolver
 import com.echo.innertube.YouTube
 import iad1tya.echo.music.constants.AudioQuality
 import iad1tya.echo.music.constants.PlayerStreamClient
@@ -42,6 +43,7 @@ object RingtoneHelper {
     private const val TAG = "RingtoneHelper"
 
     private val httpClient = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
         .proxy(YouTube.proxy)
         .addInterceptor { chain ->
             val request = chain.request()

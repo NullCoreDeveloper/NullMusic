@@ -44,9 +44,12 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
+import iad1tya.echo.music.constants.CloudflareDnsEnabledKey
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.PreferenceEntry
+import iad1tya.echo.music.ui.component.SwitchPreference
 import iad1tya.echo.music.ui.utils.backToMain
+import iad1tya.echo.music.utils.rememberPreference
 
 private const val CLOUDFLARE_PRIVATE_DNS_HOSTNAME = "1dot1dot1dot1.cloudflare-dns.com"
 
@@ -57,6 +60,10 @@ fun NetworkTroubleshootSettings(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val context = LocalContext.current
+    val (cloudflareDnsEnabled, onCloudflareDnsEnabledChange) = rememberPreference(
+        key = CloudflareDnsEnabledKey,
+        defaultValue = false
+    )
 
     fun openPrivateDnsSettings() {
         val intent = Intent("android.settings.PRIVATE_DNS_SETTINGS").apply {
@@ -189,6 +196,14 @@ fun NetworkTroubleshootSettings(
             description = "Copy hostname and open Private DNS settings",
             icon = { Icon(painterResource(R.drawable.wifi_proxy), null) },
             onClick = { copyDnsAndOpenSettings() }
+        )
+
+        SwitchPreference(
+            title = { Text("Use Cloudflare DNS in app") },
+            description = "Force in-app domain lookups through Cloudflare DNS (1.1.1.1 / 1.0.0.1)",
+            icon = { Icon(painterResource(R.drawable.wifi_proxy), null) },
+            checked = cloudflareDnsEnabled,
+            onCheckedChange = onCloudflareDnsEnabledChange,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

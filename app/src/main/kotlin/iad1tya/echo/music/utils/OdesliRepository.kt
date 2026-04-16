@@ -1,5 +1,6 @@
 package iad1tya.echo.music.utils
 
+import com.echo.innertube.CloudflareDnsResolver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -8,7 +9,9 @@ import org.json.JSONObject
 import java.net.URLEncoder
 
 object OdesliRepository {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
+        .build()
 
     /**
      * Fetches the Odesli/Songlink page URL for the given YouTube Music video ID or URL.

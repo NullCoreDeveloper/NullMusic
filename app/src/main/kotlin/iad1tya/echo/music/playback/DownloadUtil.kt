@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Requirements
+import com.echo.innertube.CloudflareDnsResolver
 import com.echo.innertube.YouTube
 import iad1tya.echo.music.constants.AudioQuality
 import iad1tya.echo.music.constants.AudioQualityKey
@@ -75,6 +76,7 @@ constructor(
                 .setUpstreamDataSourceFactory(
                     OkHttpDataSource.Factory(
                         OkHttpClient.Builder()
+                            .dns(CloudflareDnsResolver)
                             .proxy(YouTube.proxy)
                             .addInterceptor { chain ->
                                 val request = chain.request()

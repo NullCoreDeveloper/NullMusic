@@ -1,6 +1,7 @@
 package iad1tya.echo.music.dlna
 
 import android.util.Log
+import com.echo.innertube.CloudflareDnsResolver
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -8,7 +9,9 @@ import java.io.InputStream
 
 class DLNAMediaServer(private val port: Int = 8080) : NanoHTTPD(port) {
     private val TAG = "DLNAMediaServer"
-    private val httpClient = OkHttpClient()
+    private val httpClient = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
+        .build()
     
     override fun serve(session: IHTTPSession): Response {
         val uri = session.uri

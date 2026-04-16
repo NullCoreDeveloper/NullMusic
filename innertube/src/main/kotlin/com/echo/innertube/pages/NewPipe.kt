@@ -21,6 +21,7 @@ import java.net.Proxy
 private class NewPipeDownloaderImpl(proxy: Proxy?, proxyAuth: String?) : Downloader() {
 
     private val client = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
         .proxy(proxy)
         .proxyAuthenticator { _, response ->
             proxyAuth?.let { auth ->

@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.echo.innertube.CloudflareDnsResolver
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
@@ -175,7 +176,9 @@ fun SettingsScreen(
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
                                         // Fetch latest release info
-                                        val client = okhttp3.OkHttpClient()
+                                        val client = okhttp3.OkHttpClient.Builder()
+                                            .dns(CloudflareDnsResolver)
+                                            .build()
                                         val request = okhttp3.Request.Builder()
                                             .url("https://api.github.com/repos/iad1tya/Echo-Music/releases/latest")
                                             .build()

@@ -26,6 +26,7 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import android.view.TextureView
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import com.echo.innertube.CloudflareDnsResolver
 import com.echo.innertube.YouTube
 import okhttp3.OkHttpClient
 import java.util.Locale
@@ -46,6 +47,7 @@ fun CanvasArtworkPlayer(
 
     val okHttpClient = remember {
         OkHttpClient.Builder()
+            .dns(CloudflareDnsResolver)
             .proxy(YouTube.proxy)
             .build()
     }

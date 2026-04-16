@@ -60,6 +60,23 @@ class InnerTube {
     private fun createClient() = HttpClient(OkHttp) {
         expectSuccess = true
 
+        engine {
+            config {
+                dns(CloudflareDnsResolver)
+            }
+
+            proxy = this@InnerTube.proxy
+            proxyAuth?.let {
+                config {
+                    proxyAuthenticator { _, response ->
+                        response.request.newBuilder()
+                            .header("Proxy-Authorization", proxyAuth!!)
+                            .build()
+                    }
+                }
+            }
+        }
+
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -71,21 +88,6 @@ class InnerTube {
         install(ContentEncoding) {
             gzip(0.9F)
             deflate(0.8F)
-        }
-
-        proxy?.let {
-            engine {
-                proxy = this@InnerTube.proxy
-                proxyAuth?.let {
-                    config {
-                        proxyAuthenticator { _, response ->
-                            response.request.newBuilder()
-                                .header("Proxy-Authorization", proxyAuth!!)
-                                .build()
-                        }
-                    }
-                }
-            }
         }
 
         defaultRequest {

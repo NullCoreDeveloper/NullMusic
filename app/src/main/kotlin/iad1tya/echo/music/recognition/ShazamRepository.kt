@@ -3,6 +3,7 @@ package iad1tya.echo.music.recognition
 import com.github.f4b6a3.uuid.UuidCreator
 import com.alexmercerind.audire.native.ShazamSignature
 import com.github.f4b6a3.uuid.enums.UuidNamespace
+import com.echo.innertube.CloudflareDnsResolver
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,6 +15,7 @@ import kotlin.random.Random
 class ShazamRepository @Inject constructor() {
     private val client: OkHttpClient by lazy {
         OkHttpClient.Builder()
+            .dns(CloudflareDnsResolver)
             .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             .build()
     }

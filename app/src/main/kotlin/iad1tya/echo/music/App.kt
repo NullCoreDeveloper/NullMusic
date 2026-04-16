@@ -15,6 +15,7 @@ import coil3.disk.directory
 import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import com.echo.innertube.CloudflareDnsResolver
 import com.echo.innertube.YouTube
 import com.echo.innertube.models.YouTubeLocale
 import com.echo.kugou.KuGou
@@ -128,6 +129,8 @@ class App : Application(), SingletonImageLoader.Factory {
             KuGou.useTraditionalChinese = true
         }
 
+        CloudflareDnsResolver.isEnabled = settings[CloudflareDnsEnabledKey] ?: false
+
         if (settings[ProxyEnabledKey] == true) {
             val username = settings[ProxyUsernameKey].orEmpty()
             val password = settings[ProxyPasswordKey].orEmpty()
@@ -237,6 +240,15 @@ class App : Application(), SingletonImageLoader.Factory {
                         Timber.e(e, "Could not parse cookie. Clearing existing cookie.")
                         forgetAccount(this@App)
                     }
+                }
+        }
+
+        applicationScope.launch(Dispatchers.IO) {
+            dataStore.data
+                .map { it[CloudflareDnsEnabledKey] ?: false }
+                .distinctUntilChanged()
+                .collect { enabled ->
+                    CloudflareDnsResolver.isEnabled = enabled
                 }
         }
 

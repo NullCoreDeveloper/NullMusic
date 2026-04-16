@@ -1,5 +1,6 @@
 package iad1tya.echo.music.api
 
+import com.echo.innertube.CloudflareDnsResolver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit
 
 object OpenRouterService {
     private val client = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(90, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)

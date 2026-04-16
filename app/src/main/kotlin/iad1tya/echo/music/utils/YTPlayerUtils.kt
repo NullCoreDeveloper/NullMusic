@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.media3.common.PlaybackException
 import iad1tya.echo.music.constants.AudioQuality
 import iad1tya.echo.music.constants.PlayerStreamClient
+import com.echo.innertube.CloudflareDnsResolver
 import com.echo.innertube.NewPipeUtils
 import com.echo.innertube.YouTube
 import com.echo.innertube.models.YouTubeClient
@@ -39,6 +40,7 @@ object YTPlayerUtils {
     private val poTokenGenerator = PoTokenGenerator()
 
     private val httpClient = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
         .proxy(YouTube.proxy)
         .build()
     /**

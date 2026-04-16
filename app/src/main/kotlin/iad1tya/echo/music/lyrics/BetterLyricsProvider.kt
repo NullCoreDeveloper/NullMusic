@@ -1,6 +1,7 @@
 package iad1tya.echo.music.lyrics
 
 import android.content.Context
+import com.echo.innertube.CloudflareDnsResolver
 import iad1tya.echo.music.constants.EnableBetterLyricsKey
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.get
@@ -27,6 +28,11 @@ object BetterLyricsProvider : LyricsProvider {
 
     private val client by lazy {
         HttpClient(OkHttp) {
+            engine {
+                config {
+                    dns(CloudflareDnsResolver)
+                }
+            }
             install(ContentNegotiation) {
                 json(
                     Json {

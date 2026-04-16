@@ -1,6 +1,7 @@
 package iad1tya.echo.music.utils
 
 import android.util.Log
+import com.echo.innertube.CloudflareDnsResolver
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.util.concurrent.TimeUnit
@@ -13,7 +14,9 @@ import org.jsoup.Jsoup
 object SpotifyImportHelper {
     private const val TAG = "SpotifyImportHelper"
     private val gson = Gson()
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .dns(CloudflareDnsResolver)
+        .build()
 
     data class ImportProgress(
         val playlistName: String,

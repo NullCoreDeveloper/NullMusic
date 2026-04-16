@@ -1,6 +1,8 @@
 package iad1tya.echo.music.ui.screens
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -85,6 +88,78 @@ import iad1tya.echo.music.ui.player.VideoPlayerScreen
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 
+private const val TOP_LEVEL_TAB_ANIMATION_DURATION = 340
+private const val TOP_LEVEL_TAB_FADE_IN_DURATION = 260
+private const val TOP_LEVEL_TAB_FADE_OUT_DURATION = 240
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelTabEnterTransition() =
+    when (targetState.destination.route) {
+        Screens.Library.route ->
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+
+        Screens.Home.route ->
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+
+        else -> fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+    }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelTabExitTransition() =
+    when (targetState.destination.route) {
+        Screens.Library.route ->
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+
+        Screens.Home.route ->
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+
+        else -> fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+    }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelTabPopEnterTransition() =
+    when (initialState.destination.route) {
+        Screens.Library.route ->
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+
+        Screens.Home.route ->
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+
+        else -> fadeIn(tween(TOP_LEVEL_TAB_FADE_IN_DURATION, easing = FastOutSlowInEasing))
+    }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.topLevelTabPopExitTransition() =
+    when (initialState.destination.route) {
+        Screens.Library.route ->
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+
+        Screens.Home.route ->
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                tween(TOP_LEVEL_TAB_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            ) + fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+
+        else -> fadeOut(tween(TOP_LEVEL_TAB_FADE_OUT_DURATION, easing = FastOutSlowInEasing))
+    }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.navigationBuilder(
@@ -93,7 +168,13 @@ fun NavGraphBuilder.navigationBuilder(
     latestVersionName: String,
     onOpenPlayer: () -> Unit,
 ) {
-    composable(Screens.Home.route) {
+    composable(
+        Screens.Home.route,
+        enterTransition = { topLevelTabEnterTransition() },
+        exitTransition = { topLevelTabExitTransition() },
+        popEnterTransition = { topLevelTabPopEnterTransition() },
+        popExitTransition = { topLevelTabPopExitTransition() },
+    ) {
         HomeScreen(navController)
     }
     composable(Screens.Search.route) {
@@ -104,6 +185,10 @@ fun NavGraphBuilder.navigationBuilder(
     }
     composable(
         Screens.Library.route,
+        enterTransition = { topLevelTabEnterTransition() },
+        exitTransition = { topLevelTabExitTransition() },
+        popEnterTransition = { topLevelTabPopEnterTransition() },
+        popExitTransition = { topLevelTabPopExitTransition() },
     ) {
         LibraryScreen(navController)
     }

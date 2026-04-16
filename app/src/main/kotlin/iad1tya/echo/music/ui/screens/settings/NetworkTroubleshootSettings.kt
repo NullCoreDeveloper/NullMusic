@@ -62,7 +62,7 @@ fun NetworkTroubleshootSettings(
     val context = LocalContext.current
     val (cloudflareDnsEnabled, onCloudflareDnsEnabledChange) = rememberPreference(
         key = CloudflareDnsEnabledKey,
-        defaultValue = false
+        defaultValue = true
     )
 
     fun openPrivateDnsSettings() {
@@ -194,14 +194,14 @@ fun NetworkTroubleshootSettings(
         PreferenceEntry(
             title = { Text("Apply Cloudflare DNS") },
             description = "Copy hostname and open Private DNS settings",
-            icon = { Icon(painterResource(R.drawable.wifi_proxy), null) },
+            icon = { Icon(painterResource(R.drawable.cloudflare), null) },
             onClick = { copyDnsAndOpenSettings() }
         )
 
         SwitchPreference(
-            title = { Text("Use Cloudflare DNS in app") },
+            title = { Text("Use Cloudflare DNS in app (Beta)") },
             description = "Force in-app domain lookups through Cloudflare DNS (1.1.1.1 / 1.0.0.1)",
-            icon = { Icon(painterResource(R.drawable.wifi_proxy), null) },
+            icon = { Icon(painterResource(R.drawable.cloudflare), null) },
             checked = cloudflareDnsEnabled,
             onCheckedChange = onCloudflareDnsEnabledChange,
         )

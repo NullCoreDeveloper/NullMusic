@@ -129,7 +129,7 @@ class App : Application(), SingletonImageLoader.Factory {
             KuGou.useTraditionalChinese = true
         }
 
-        CloudflareDnsResolver.isEnabled = settings[CloudflareDnsEnabledKey] ?: false
+        CloudflareDnsResolver.isEnabled = settings[CloudflareDnsEnabledKey] ?: true
 
         if (settings[ProxyEnabledKey] == true) {
             val username = settings[ProxyUsernameKey].orEmpty()
@@ -245,7 +245,7 @@ class App : Application(), SingletonImageLoader.Factory {
 
         applicationScope.launch(Dispatchers.IO) {
             dataStore.data
-                .map { it[CloudflareDnsEnabledKey] ?: false }
+                .map { it[CloudflareDnsEnabledKey] ?: true }
                 .distinctUntilChanged()
                 .collect { enabled ->
                     CloudflareDnsResolver.isEnabled = enabled

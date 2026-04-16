@@ -815,8 +815,8 @@ fun Lyrics(
                     val offset = itemCenter - center
 
                     if (kotlin.math.abs(offset) > 10) {
-                        val adaptiveDuration = (duration + kotlin.math.abs(offset) / 2)
-                            .coerceIn(220, 900)
+                        val adaptiveDuration = (duration + kotlin.math.abs(offset) / 3)
+                            .coerceIn(220, 760)
                         lazyListState.animateScrollBy(
                             value = offset.toFloat(),
                             animationSpec = tween(
@@ -953,6 +953,8 @@ fun Lyrics(
                         }
                     }
 
+                    val shouldAnimateLine = isSynced && (isActive || distance <= 3 || isSelected)
+
                     // Progressive blur for VIVIMUSIC_1 style
                     val targetBlur = if (
                         !isManualScrolling &&
@@ -962,38 +964,43 @@ fun Lyrics(
                         when (distance) {
                             1 -> 0f
                             2 -> 0f
-                            3 -> 2f
-                            4 -> 4f
-                            else -> 6f
+                            3 -> 1.2f
+                            4 -> 2.2f
+                            else -> 3.2f
                         }
                     } else 0f
 
-                    val animatedBlur by animateFloatAsState(
-                        targetValue = targetBlur,
-                        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
-                        label = "blur"
-                    )
-                    
-                    val animatedScale by animateFloatAsState(
-                        targetValue = targetScale,
-                        animationSpec = when (lyricsAnimationStyle) {
-                            LyricsAnimationStyle.VIVIMUSIC_1 -> tween(
-                                durationMillis = 320,
-                                easing = FastOutSlowInEasing
-                            )
-                            else -> spring(
-                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                stiffness = Spring.StiffnessLow
-                            )
-                        },
-                        label = "scale"
-                    )
+                    val animatedBlur = if (shouldAnimateLine) {
+                        animateFloatAsState(
+                            targetValue = targetBlur,
+                            animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
+                            label = "blur"
+                        ).value
+                    } else {
+                        targetBlur
+                    }
 
-                    val animatedAlpha by animateFloatAsState(
-                        targetValue = targetAlpha,
-                        animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
-                        label = "alpha"
-                    )
+                    val animatedScale = if (shouldAnimateLine) {
+                        animateFloatAsState(
+                            targetValue = targetScale,
+                            animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+                            label = "scale"
+                        ).value
+                    } else {
+                        targetScale
+                    }
+
+                    val animatedAlpha = if (shouldAnimateLine) {
+                        animateFloatAsState(
+                            targetValue = targetAlpha,
+                            animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+                            label = "alpha"
+                        ).value
+                    } else {
+                        targetAlpha
+                    }
+
+                    val lineBlur = if (distance <= 5) animatedBlur else 0f
 
                     val itemModifier = Modifier
                         .fillMaxWidth()
@@ -1051,7 +1058,7 @@ fun Lyrics(
                             scaleY = animatedScale
                             alpha = animatedAlpha
                         }
-                        .then(if (animatedBlur > 0f) Modifier.blur(animatedBlur.dp) else Modifier)
+                        .then(if (lineBlur > 0f) Modifier.blur(lineBlur.dp) else Modifier)
 
                     Column(
                         modifier = itemModifier,
@@ -1160,7 +1167,7 @@ fun Lyrics(
                                                 else -> (lineRelTime - startRelative).toFloat() / wordDuration
                                             },
                                             animationSpec = tween(
-                                                durationMillis = wordDuration.coerceIn(140L, 260L).toInt(),
+                                                durationMillis = wordDuration.coerceIn(120L, 210L).toInt(),
                                                 easing = FastOutSlowInEasing
                                             ),
                                             label = "wordProgress"
@@ -1184,7 +1191,7 @@ fun Lyrics(
                                                 shadow = if (isActive && (lyricsGlowEffect || progress > 0.1f)) Shadow(
                                                     color = currentTextColor.copy(alpha = 0.6f * progress),
                                                     offset = Offset.Zero,
-                                                    blurRadius = (12f * progress).coerceAtLeast(0.1f)
+                                                    blurRadius = (8f * progress).coerceAtLeast(0.1f)
                                                 ) else null
                                             ),
                                             color = if (!isActive) currentTextColor else Color.Unspecified
@@ -1215,7 +1222,7 @@ fun Lyrics(
                                         shadow = if (isActive) Shadow(
                                             color = currentTextColor.copy(alpha = 0.4f * lineProgress),
                                             offset = Offset.Zero,
-                                            blurRadius = 14f + (4f * lineProgress)
+                                            blurRadius = 10f + (3f * lineProgress)
                                         ) else Shadow.None,
                                         fontWeight = if (isActive) FontWeight.ExtraBold else FontWeight.Bold,
                                     ),
@@ -1249,7 +1256,7 @@ fun Lyrics(
                                         shadow = if (isActive) Shadow(
                                             color = currentTextColor.copy(alpha = 0.5f + (0.3f * glowIntensity)),
                                             offset = Offset.Zero,
-                                            blurRadius = 16f + (12f * glowIntensity)
+                                            blurRadius = 10f + (8f * glowIntensity)
                                         ) else Shadow.None,
                                         fontWeight = if (isActive) FontWeight.ExtraBold else FontWeight.Bold,
                                     ),
@@ -1276,7 +1283,7 @@ fun Lyrics(
                                         shadow = if (isActive) Shadow(
                                             color = currentTextColor.copy(alpha = 0.5f + (0.3f * glowIntensity)),
                                             offset = Offset.Zero,
-                                            blurRadius = 16f + (12f * glowIntensity)
+                                            blurRadius = 10f + (8f * glowIntensity)
                                         ) else Shadow.None,
                                         fontWeight = if (isActive) FontWeight.ExtraBold else FontWeight.Bold,
                                     ),

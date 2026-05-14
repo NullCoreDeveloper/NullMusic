@@ -125,3 +125,24 @@
 -dontwarn javax.imageio.**
 -dontwarn javax.swing.**
 -keep class org.jaudiotagger.** { *; }
+
+## Firebase Crashlytics & Analytics
+# Keep Firebase classes from being stripped by R8 in release builds
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+
+# Crashlytics: keep the component initializer and NDK crash handler
+-keep class com.google.firebase.crashlytics.** { *; }
+-keepnames class com.google.firebase.crashlytics.** { *; }
+-keep class com.google.firebase.crashlytics.internal.** { *; }
+-keep class com.google.firebase.components.** { *; }
+-keep class com.google.firebase.provider.** { *; }
+
+# Analytics: keep the component initializer
+-keep class com.google.firebase.analytics.** { *; }
+-keepnames class com.google.firebase.analytics.** { *; }
+
+# Keep Firebase component registrar (required for all Firebase SDKs)
+-keep class * implements com.google.firebase.components.ComponentRegistrar

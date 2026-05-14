@@ -283,8 +283,12 @@ class App : Application(), SingletonImageLoader.Factory {
                 .map { it[EnableAnalyticsKey] ?: true }
                 .distinctUntilChanged()
                 .collect { enabled ->
-                    FirebaseAnalytics.getInstance(this@App).setAnalyticsCollectionEnabled(enabled)
-                    FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+                    try {
+                        FirebaseAnalytics.getInstance(this@App).setAnalyticsCollectionEnabled(enabled)
+                        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+                    } catch (e: Exception) {
+                        Timber.w(e, "Firebase component not available (release build initialization)")
+                    }
                 }
         }
     }

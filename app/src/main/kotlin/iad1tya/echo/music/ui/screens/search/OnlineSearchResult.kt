@@ -239,9 +239,25 @@ fun OnlineSearchResult(
             .asPaddingValues(),
     ) {
         if (searchFilter == null) {
-            searchSummary?.summaries?.forEachIndexed { index, summary ->
-                if (index > 0) {
-                    item(key = "divider_$index") {
+            val summaryList = searchSummary?.summaries.orEmpty()
+
+            // Every section: show exactly 3 items, use title from YouTube as-is
+            summaryList.forEachIndexed { summaryIndex, summary ->
+                val sectionItems = summary.items.take(3)
+                if (sectionItems.isEmpty()) return@forEachIndexed
+
+                item(key = "hdr_$summaryIndex") {
+                    SectionHeader(title = summary.title)
+                }
+
+                sectionItems.forEachIndexed { itemIndex, ytItem ->
+                    item(key = "s${summaryIndex}_i${itemIndex}_${ytItem.id}") {
+                        ytItemContent(this, ytItem)
+                    }
+                }
+
+                if (summaryIndex < summaryList.lastIndex) {
+                    item(key = "div_$summaryIndex") {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
                             thickness = 0.5.dp,
@@ -250,41 +266,11 @@ fun OnlineSearchResult(
                     }
                 }
 
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(3.dp)
-                                .height(18.dp)
-                                .clip(RoundedCornerShape(2.dp))
-                                .background(MaterialTheme.colorScheme.primary)
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            text = summary.title,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-
-                items(
-                    items = summary.items,
-                    key = { "${summary.title}/${it.id}/${summary.items.indexOf(it)}" },
-                    itemContent = ytItemContent,
-                )
-
-                item {
-                    Spacer(Modifier.height(4.dp))
-                }
+                item(key = "sp_$summaryIndex") { Spacer(Modifier.height(4.dp)) }
             }
 
-            if (searchSummary?.summaries?.isEmpty() == true) {
-                item {
+            if (summaryList.isEmpty() && searchSummary != null) {
+                item(key = "empty") {
                     EmptyPlaceholder(
                         icon = R.drawable.search,
                         text = stringResource(R.string.no_results_found),
@@ -301,9 +287,7 @@ fun OnlineSearchResult(
             if (itemsPage?.continuation != null) {
                 item(key = "loading") {
                     ShimmerHost {
-                        repeat(3) {
-                            ListItemPlaceHolder()
-                        }
+                        repeat(3) { ListItemPlaceHolder() }
                     }
                 }
             }
@@ -321,13 +305,12 @@ fun OnlineSearchResult(
         if (searchFilter == null && searchSummary == null || searchFilter != null && itemsPage == null) {
             item {
                 ShimmerHost {
-                    repeat(8) {
-                        ListItemPlaceHolder()
-                    }
+                    repeat(8) { ListItemPlaceHolder() }
                 }
             }
         }
     }
+
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -369,3 +352,27 @@ fun OnlineSearchResult(
         )
     }
 }
+
+@Composable
+private fun SectionHeader(title: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(3.dp)
+                .height(18.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(MaterialTheme.colorScheme.primary)
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+

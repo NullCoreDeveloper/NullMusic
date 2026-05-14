@@ -118,7 +118,7 @@ fun SwipeableMiniPlayerBox(
         modifier = modifier
             .fillMaxWidth()
             .height(MiniPlayerHeight)
-                        .padding(horizontal = 48.dp)
+            .padding(horizontal = 8.dp)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
             .let { baseModifier ->
                 if (useLegacyBackground) {

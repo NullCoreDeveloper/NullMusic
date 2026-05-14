@@ -160,6 +160,7 @@ Echo Music stands on the shoulders of several excellent open-source projects. Si
 | Project | Description |
 |---------|-------------|
 | [Metrolist](https://github.com/MetrolistGroup/Metrolist) | Foundational inspiration and architecture reference |
+| [ArchiveTune](https://github.com/koiverse/ArchiveTune) | Material You UI inspiration |
 | [Better Lyrics](https://better-lyrics.boidu.dev/) | Lyrics enhancement and synchronization |
 | [SimpMusic](https://github.com/maxrave-dev/SimpMusic) | Lyrics implementation reference |
 | [Music Recognizer](https://github.com/aleksey-saenko/MusicRecognizer) | Audio recognition (Echo Find) |

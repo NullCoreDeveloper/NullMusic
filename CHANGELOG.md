@@ -5,54 +5,198 @@ All notable changes to Echo Music will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] - 2026-05-14
+
+**A Fresh New Experience**
+
+This update introduces a complete visual refresh alongside major improvements to local media handling, playback experience, customization, and overall app optimization.
+
+### New & Redesigned
+- Brand-new refreshed app icon
+- Redesigned carousel interface
+- New bottom navigation bar
+- Material You based UI enhancements added throughout the app
+- UI improvements inspired by and ported from ArchiveTune
+- Dynamic theming support added
+- User preference based themes added
+
+### Playback & Audio Improvements
+- Listen Together issues fixed (MetroList)
+- Fixed blurred album art and music artwork issues
+- Improved lyrics animations
+- Improved Set Ringtone functionality
+
+### Local Media Enhancements
+- Search bar added for local media
+- Users can now exclude specific files from local media scanning
+- Improved local download support
+- Added support for third-party apps
+
+### Settings Changes
+- Spotify Import has been moved to the Backup & Restore section in Settings
+
+### Performance & Optimization
+- Significant app size reduction:
+  - Reduced from 120MB to 21MB
+- General performance improvements and optimizations.
+
+---
+
+## [4.2.2] - 2026-04-16
+
+# Changelog – Fix & Improvements
+
+- Fixed UI by adding a cross (close) button in the Important Notice section for better user control.
+- Added a shuffle button to the Old Music page UI to enhance playback experience.
+
+---
+## [4.2.1] - 2026-04-16
+
+### Features
+- Added `CANVAS_BEARER_TOKEN` and ArchiveTuneCanvas authentication support  
+- Introduced granular YouTube Music sync options  
+- Added lyrics provider selection field  
+- Improved casting functionality  
+- Added optional Cloudflare DNS-over-HTTPS (DoH) resolver  
+- Enabled Cloudflare DNS by default  
+
+### UI / UX Improvements
+- Revamped overall settings UI  
+- Restyled Equalizer dialog  
+- Refactored Equalizer UI and appearance  
+- Improved BottomSheet interaction with Enter/DPAD key support for expansion  
+
+### Fixes
+- Fixed widget local album art issue (PR #207) / @harshal20m
+
+---
+## [4.2.0] - 2026-04-08
+
+### New Features
+- Added PoToken extraction, stream client, and Lyrics v2  
+- Introduced Equalizer UI with persistent canvas cache  
+- Added network troubleshoot settings screen  
+- Implemented host/join UI with participant styling (Listen Together)  
+- Added lyrics romanization and preload support  
+- Introduced new player design toggle (`UseNewPlayerDesign`)  
+- Added old music page UI toggle (`UseOldMusicPageUi`)  
+
+### UI & UX Improvements
+- Updated settings UI  
+- Improved Cast UI and queue handling  
+- Refined floating toolbar and settings gradients  
+- Applied `surfaceContainerHigh` styling and added card borders  
+- Improved Equalizer dialog UI  
+- Added back navigation to Settings and Listen Together  
+- Hid navigation bar and mini-player in Settings and Listen Together screens  
+- Replaced shuffle toggle with a share button  
+- Selecting a song in queue, playlist, or album is now clearly marked  
+
+### Enhancements
+- Improved Cast queue handling  
+- Updated internal components:
+  - `Queue.kt`  
+  - `Items.kt`  
+
+### Changes
+- Disabled SponsorBlock by default  
+- Removed legacy appearance and player preferences  
+- Refactored lyrics animations and removed V2 styles  
+- Applied fixed blur for old music page UI
+
+---
+## [4.1.1] - 2026-04-05
+
+### Improvements
+- Improved playback synchronization for a smoother listening experience
+- Enhanced service binding reliability
+
+### New Features
+- Added Old Navbar style option
+- Introduced Legacy Player toggle for compatibility  
+  - Available in Settings → Appearance → Misc (bottom section)
+
+### Updates
+- Updated AppearanceSettings.kt for improved configuration handling
+
+### Bug Fixes
+- Fixed issues in Listen Together
+- General bug fixes and stability improvements
+
+---
+## [4.1.0] - 2026-04-05
+
+### Highlights
+- Introduced Listen Together for synchronized playback using Protobuf  
+- Added Audio Output Selector for seamless device switching  
+- Integrated Spatial Audio, Pro EQ, and Download Preferences  
+- Optimized user interface for tablet devices and improved Ambient Mode  
+
+### User Interface Improvements
+- Implemented dynamic theming with palette-based gradients  
+- Refined layouts for album, playlist, and player screens  
+- Enhanced lyrics seeking and auto-scroll behavior  
+
+### Core Enhancements
+- Improved queue management and shuffle behavior  
+- Enhanced Spotify import reliability, including paging and rate-limit handling  
+- Increased playback and background service stability  
+
+### Fixes
+- Addressed multiple bugs and improved overall performance  
+- General stability improvements across player and service components
+
+---
 ## [4.0.2] - 2026-03-07
 
-### Changed
+This update focuses on small improvements, UI refinements, and playback adjustments.
+
+**Changes**
 - Refined UI spacing for menus
 - Improvements to Settings and Updater interface
 - Adjusted ExoPlayer buffering for better playback stability
 - Renamed the lyrics button for better clarity
 - Fixed icon issues
 
-### Other
+**Other**
 - Minor code improvements and internal changes
 - General stability improvements
 
 ---
+## [4.0.1] - 2026-03-06
 
-## [4.0.1] - 2026-03-07
-
-### Added
-- Option to force stop the player when the task is cleared
-- Inline lyrics view in the player
+## Added
+- Option to **force stop the player when the task is cleared**
+- **Inline lyrics view** in the player
 - Changed Crossfade icon
-- Crossfade toggle in Music Page
-- Ability to hide lyrics on tap
+- **Crossfade toggle** in Music Page
+- Ability to **hide lyrics on tap**
 
-### Improvements
-- Refined player UI layout
-- Improved UI spacing and alignment
-- Better scroll-to-top behavior
-- Improved back navigation handling
+## Improvements
+- Refined **player UI layout**
+- Improved **UI spacing and alignment**
+- Better **scroll-to-top behavior**
+- Improved **back navigation handling**
 
-### Changed
-- LyricsPlus is now enabled by default
-- SponsorBlock is now disabled by default
-- Adjusted SponsorBlock slider position
-- Switched adaptive launcher icons to drawable resources
+## Changes
+- **LyricsPlus** is now enabled by default
+- **SponsorBlock** is now disabled by default
+- Adjusted **SponsorBlock slider position**
+- Switched **adaptive launcher icons** to drawable resources
 
-### Fixed
-- Fixed crossfade starting incorrectly (now starts from a minimum of 3 seconds)
-- Fixed navigation issue when moving from Local Media to the Library page
+## Fixes
+- Fixed **crossfade starting incorrectly** (now starts from a minimum of 3 seconds)
+- Fixed navigation issue when moving from **Local Media to the Library page**
 
-### Other
+## Other
 - General stability improvements and minor UI tweaks
 
 ---
+## [4.0.0] - 2026-03-05
 
-## [4.0.0] - 2026-03-06
+This release introduces a redesigned interface, new media capabilities, improved lyrics support, and deeper integrations.
 
-### New Features
+## New Features
 - Completely redesigned UI for a cleaner and faster experience
 - Import from Spotify to easily bring your playlists and tracks
 - Podcast support
@@ -73,12 +217,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Music haptics for tactile feedback
 - TTS song announcements
 
-### Smart Playback
+## Smart Playback
 - Pause on mute
 - Resume on Bluetooth connect
 - Keep screen on while playing music
 
-### Customization
+## Customization
 - UI density scale to adjust interface spacing
 - High refresh rate support for smoother UI and animations
 - Hide player thumbnail
@@ -86,50 +230,160 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hide video songs
 - Hide YouTube Shorts
 
-### Improvements
+## Improvements
 - Improved lyrics quality and synchronization
 - Better performance across the app
 - Stability improvements and bug fixes
 - Many under-the-hood optimizations and refinements
 
 ---
-
 ## [3.3.6] - 2026-01-26
 
-### Fixed
+## Fixed
 - Fixed an issue where the app crashed immediately after opening
 
 ---
-
 ## [3.3.5] - 2026-01-23
 
-### Fixed
-- Fixed lyrics translations
-- Resolved an issue where updating the app caused deletion of history, stats, playlists, and downloaded songs
-- Fixed multiple minor bugs and improved overall stability
+- Fixed lyrics translations.
+- Resolved an issue where updating the app caused deletion of history, stats, playlists, and downloaded songs.
+- Fixed multiple minor bugs and improved overall stability.
 
 ---
-
 ## [3.3.4] - 2026-01-23
 
 ### Improvements
-- Removed the Glass UI for a cleaner and more consistent interface
-- Improved music playback polish for a smoother listening experience
-- Reduced app launch time for faster opening and better responsiveness
+- Removed the **Glass UI** for a cleaner and more consistent interface.
+- Improved **music playback polish** for a smoother listening experience.
+- Reduced app launch time for faster opening and better responsiveness.
 
 ### Known Issues
-- Cache, Uploaded & Local Media system is under rework and may not function as expected
+- Cache, Uploaded & Local Media system is under rework and may not function as expected.
 
 ### General
-- Overall UI and performance polished across the app for improved stability and user experience
+- Overall UI and performance polished across the app for improved stability and user experience.
 
 ---
+## [3.3.3] - 2026-01-20
 
-## [3.3.3] - 2026-01-06
-- **Local Media Scanner**: Added ability to scan and import locally stored music files via the Content settings.
-- **Manual Lyrics Fix**: Fixed an issue where manually selected lyrics were overwritten by auto-fetched lyrics.
+## What’s new
+- Glass UI added to the navbar, miniplayer, and menu
+- Music page redesigned with improved lyrics and queue
+- Local media now supports MP3
+- Uploaded songs can now be played
+- Login to Desktop option added on desktop login
+- Chromecast issues fixed
 
+## Fixes and improvements
+- Synced lyrics issue fixed, including translated lyrics
+- OpenRouter issues fixed
+- Performance and stability improvements
+
+---
+## [3.3.2] - 2026-01-04
+
+## What’s New
+- **Echo Wrapped** added  
+- **SponsorBlock** added  
+- **Automatic language mismatch detection for lyrics**, with on-the-fly translation  
+- **Double-tap on the music cover to like a song**  
+- Improved lyrics sharing experience  
+- Glow and bounce effects added to lyrics  
+- Lyrics accuracy improved  
+- **Play All** button added to Quick Picks  
+- Advanced playlist download support added  
+
+## Fixes & Improvements
+- Chromecast issues fixed  
+- Lyrics sync problems resolved  
+- Permission denied message removed  
+- Overall performance and stability improved  
+
+## Privacy Updates
+- New **Permissions** section added in Settings  
+- View all permissions used by the app  
+- Clear explanations for why each permission is required  
+
+
+> ### Support the Project
+> You can support this project here:  
+> https://support.iad1tya.cyou/
+>
+
+---
+## [3.3.1] - 2025-12-22
+
+## What’s New
+• **AI Lyrics Translation** – Translate song lyrics using AI  
+• **Custom Provider Support** – Use a custom provider by setting your own URL  
+• **Advanced Download Options** – Download music to your preferred storage location  
+• **Custom Playlist Covers** – Change and personalize playlist cover images  
+
+## Fixes & Improvements
+• **Slim Navigation Bar Fixed** – Resolved display issues  
+• **DLNA & Wi-Fi Casting Patched** – Improved casting reliability  
+• **Find Widget Bug Fixed** – Restored proper functionality  
+• **Minor Bug Fixes** – Improved overall stability  
+• **Performance Enhancements** – Faster and smoother app experience
+
+---
+## [3.3.0] - 2025-12-19
+
+## Changelog – Echo Music
+
+### What’s New
+- **Echo Find**: Instantly find the song playing in your surroundings.
+- **New Widgets Introduced**: Added the **Echo Find widget** for quicker access.
+- **Player Widget Optimized**: Improved performance and smoother interactions.
+- **Animated Music Accent Background**: A clean, modern look with subtle animations.
+- **Queue Control Enhanced**: You can now change the position of songs directly in the queue.
+- **Overall App Optimizations**: Performance improvements, smoother experience, and stability fixes.
+
+### Thank You
+Thank you for your continued support.  
+Echo Music will continue to receive updates, improvements, and new features in future releases.
+
+**Discord Restored**
+Discord Server has been restored. You can now join the community from here: https://discord.com/invite/EcfV3AxH5c
+
+---
+## [3.2.2] - 2025-12-14
+
+---
+#48 Stop music on task clear - fixed
+
+---
+## [3.2.1] - 2025-12-09
+
+- **Widget** is now resizable.
+- Added **Previous** and **Next** song options.
+- Fixed minor bugs related to **Wi-Fi** and **DLNA casting**.
+
+---
+## [3.2.0] - 2025-12-06
+
+# Change Log
+
+- **Fixed:** An unknown error that impacted overall stability.  
+- **New:** **Ambient Mode** for a minimal, clean desk-style landscape experience.  
+- **New:** **AI-powered lyrics translation** feature.  
+- **Improved:** Faster lyrics loading.  
+- **New:** Long-press any lyric line to share it as an image in your story.  
+- **Restored:** Radio button for music selection has been added back.  
+- **Other:** Minor bug fixes and performance improvements.
+
+---
+## [3.1.4] - 2025-12-02
+
+- **Bottom navbar** is now always visible on all screens.
+- **Playlist** option has been added back to the Library section.
+- **Settings** has been moved inside the **Account** menu.
+- Fixed the **Unknown Error** bug.
+- Fixed the **Search on TV** navigation bug.
+
+---
 ## [3.1.3] - 2025-11-22
+
 - Fixed a database migration issue.  
   The schema was at version 25, but only a **1 → 2** migration was defined.  
   Any install starting from another version had no valid upgrade path, causing the app to crash during migration.  
@@ -137,502 +391,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Thanks to:** pixelated_buttons and justkev_3611
 
+---
 ## [3.1.2] - 2025-11-22
 
+- Bug has been fixed that caused the app to crash.
+
+> ## Note
+> Echo Music now includes Google Cast and DLNA support at the request of owenconnor98 (https://discord.com/channels/1421059997982265448/1422161045119828041/1441590684271251466).
+> 
+> These features require Nearby Devices and Location permissions to discover devices on the network.
+> 
+> Echo Music does not collect or store any information from these permissions; they are used only when you choose to use Google Cast or DLNA.
+
+---
 ## [3.1.1] - 2025-11-22
-- Video Quality: Added support for upto 1080p playback.
-- DLNA: Introduced DLNA streaming support (suggestion by owenconnor98).
-- Lyrics: Improved layout and performance of lyrics on tablet devices.
 
-## [3.1] - 2025-11-22
-- “Switch to Video” Restored
-The switch-to-video button is back, letting you move to the song’s video with a single tap.
-- Nearby Devices Permission Update
-Added required Wi-Fi and Location permissions to improve nearby device discovery.
-- Google Cast Improvements
-Internal refinements to casting functionality. Thanks to owenconnor98 for the contribution.
-- Music Page Visual Update
-Removed the black background behind the artwork for a cleaner, more consistent look.
-- Redesigned Audio Output Window
-The audio output selector has been refreshed for better clarity.
-- Multi-Account Support
-You can now add and switch between multiple accounts easily. Suggested by job_done.
-- Playback Stability Fix
-Fixed an issue where music stopped playing due to URL expiration.
-- Updated Mini Player
-The mini player now features a modern pill-shaped design.
+- **Video Quality:** Added support for upto **1080p playback**.
+- **DLNA:** Introduced **DLNA streaming support** (suggestion by *owenconnor98*).
+- **Lyrics:** Optimised lyrics layout and performance on **tablets**.
 
-## [3.0.0] - 2025-11-x
+---
+## [3.1] - 2025-11-21
 
-## [2.0.8] - 2025-11-11
+- **“Switch to Video” Restored**  
+  The switch-to-video button is back, letting you move to the song’s video with a single tap.
 
-## [2.0.1] - 2025-10-22
+- **Nearby Devices Permission Update**  
+  Added required **Wi-Fi** and **Location** permissions to improve nearby device discovery.
 
-- Fixed Audio routing features for greater flexibility and control
-- Revamped Library Page
-- Fixed Widgets Layout
-- Major bug fixes improving overall stability
-- Enhanced performance for a smoother, more responsive experience
+- **Google Cast Improvements**  
+  Internal refinements to casting functionality. Thanks to **owenconnor98** for the contribution.
 
-## [2.0] - 2025-10-20
+- **Music Page Visual Update**  
+  Removed the black background behind the artwork for a cleaner, more consistent look.
 
-### Changed
-- **🎯 Streamlined Integration**
-  - Removed Discord RPC integration for cleaner codebase
-  - Removed Last.fm scrobbling integration
-  - Removed Spotify integration references
-  - Focused exclusively on YouTube Music streaming
+- **Redesigned Audio Output Window**  
+  The audio output selector has been refreshed for better clarity.
 
-### Added
-- **🔥 Firebase Analytics & Crashlytics**
-  - Integrated Firebase for better app stability monitoring
-  - Added crash reporting for improved debugging
-  - Privacy-focused analytics implementation
+- **Multi-Account Support**  
+  You can now add and switch between multiple accounts easily. Suggested by **job_done**.
 
-### Improved
-- **📱 Enhanced User Experience**
-  - Cleaner settings interface without external integrations
-  - Simplified app architecture
-  - Better performance with reduced dependencies
+- **Playback Stability Fix**  
+  Fixed an issue where music stopped playing due to URL expiration.
 
-## [1.8.1] - 2025-01-27
-
-### Changed
-- **🔧 Settings Improvements**
-  - Hidden the "Fetch Home Data Limit" setting from the settings screen
-  - Removed the "Buy Me a Coffee" button from the About Echo section
-  - Improved settings UI organization and user experience
-
-### Fixed
-- **🎨 UI/UX Enhancements**
-  - Cleaned up settings interface by removing unused options
-  - Streamlined About Echo section for better user experience
-
-## [1.8.0] - 2025-10-12
-
-### Added
-- **🎥 Video/Audio Playback Toggle**
-  - Seamlessly switch between video and audio modes for video tracks
-  - Smart switching logic that maintains playback position
-  - Compact, animated toggle button with visual feedback
-  - Automatic surface management for optimal video rendering
-
-- **📋 Enhanced Playlist Management**
-  - Long-press context menu on playlists in library
-  - Quick actions: Play, Shuffle, Add to Queue, Share, Rename, Delete
-  - Support for both local and YouTube playlists
-  - Direct playlist actions without opening the playlist
-
-- **🔥 Firebase Integration**
-  - Google Analytics for usage insights and engagement tracking
-  - Firebase Crashlytics for comprehensive crash reporting
-  - Privacy-first implementation with user opt-out support
-  - Detailed analytics for music playback patterns
-
-### Fixed
-- **🐛 Critical Crash Fixes**
-  - Fixed DownloadService JobScheduler crash caused by ProGuard obfuscation
-  - Fixed ForegroundServiceStartNotAllowedException on Android 12+ devices
-  - Fixed ActivityNotFoundException when voice search is not available on device
-  - Fixed IndexOutOfBoundsException in queue management when adding tracks
-  - Fixed video player black screen issue after app restart
-  - Fixed song title disappearance in player UI
-  
-### Changed
-- **🔒 Stability Improvements**
-  - Added comprehensive ProGuard keep rules for Media3/ExoPlayer services
-  - Improved error handling with graceful fallbacks
-  - Added bounds checking for queue operations
-  - Enhanced user feedback with helpful error messages
-  - Optimized video player surface initialization
-  - Improved memory management for video playback
-
-### Technical
-- Updated ProGuard rules to prevent service obfuscation
-- Added Android 12+ foreground service permission handling
-- Implemented defensive programming for queue index operations
-- Added try-catch blocks for missing system components
-- Implemented smart video/audio switching with surface ready callbacks
-- Enhanced ExoPlayer integration for seamless media transitions
-
-## [1.7.4] - 2024-12-XX
-
-### Changed
-- Version bump to v1.7.4
-
-## [1.7.2] - 2024-12-XX
-
-### Added
-- **📊 Firebase Analytics & Crashlytics Integration**
-  - Comprehensive analytics tracking for user engagement
-  - Music-specific event tracking (play, pause, skip, playlist operations)
-  - Crash reporting and debugging utilities
-  - Performance monitoring and memory usage tracking
-  - Privacy-compliant data collection with user opt-out support
-  - Detailed documentation and implementation guide
-
-- **🔧 Performance Optimizations**
-  - Improved app responsiveness and smooth animations
-  - Optimized memory usage and resource management
-  - Enhanced error handling and recovery mechanisms
-  - Better build configuration and dependency management
-
-### Changed
-- **🏗️ Build System**
-  - Updated Firebase dependencies to latest stable versions
-  - Improved build configuration for both FOSS and Full variants
-  - Enhanced security with proper keystore management
-  - Better development and production environment separation
-
-### Fixed
-- **🐛 Stability Improvements**
-  - Fixed various compilation issues and build errors
-  - Improved error handling throughout the application
-  - Enhanced crash recovery mechanisms
-  - Better memory management and leak prevention
-
-### Security
-- **🔒 Enhanced Security**
-  - Removed sensitive information from repository
-  - Proper keystore and API key management
-  - Secure Firebase configuration handling
-  - Comprehensive .gitignore for sensitive files
-
-## [1.7.0] - 2025-01-XX
-
-### Added
-- **🌐 Lyrics Translation Feature**
-  - Built-in Google ML Kit translation service
-  - On-device translation for privacy
-  - Support for multiple languages
-  - Translation accuracy varies by content type (60-90%)
-  - Accessible through Settings > Lyrics section
-  - Works offline without internet connection
-
-- **🎨 UI/UX Improvements**
-  - Enhanced spacing between sections
-  - Improved color scheme for better visibility
-  - Professional dark color palette
-  - Better font sizing consistency
-  - Optimized layout for various screen sizes
-
-### Changed
-- **🎵 Home Screen Layout**
-  - Improved spacing between "Moods & Moment" and "Genre" sections
-  - Better visual hierarchy
-  - Enhanced card dimensions and padding
-  - Consistent color scheme across sections
-
-- **🔧 Build Configuration**
-  - Updated app version to v1.7
-  - Enhanced Firebase configuration
-  - Improved build system stability
-
-### Fixed
-- **🐛 Bug Fixes**
-  - Fixed font scaling issues across different devices
-  - Resolved color consistency problems
-  - Improved text visibility with proper contrast
-  - Fixed layout spacing inconsistencies
-
-## [1.6.3] - 2024-12-XX
-
-### Added
-- **🎧 Bit Perfect Playback Support**
-  - USB DAC detection and configuration
-  - Automatic device compatibility checking
-  - Bit-perfect audio output for audiophiles
-  - Smart audio processing control
-  - High-resolution audio support
-
-- **📊 Enhanced Analytics & Crash Reporting**
-  - Firebase Analytics integration
-  - Firebase Crashlytics integration
-  - User-controlled privacy settings
-  - Performance monitoring
-  - Custom event tracking
-
-- **🎨 Performance Optimizations**
-  - Smooth animations and transitions
-  - Jitter-free scrolling experience
-  - Optimized LazyList performance
-  - Enhanced navigation animations
-  - Improved memory management
-
-## [1.5.0] - 2024-11-XX
-
-### Added
-- **🎧 Bit Perfect Playback Support**
-  - USB DAC detection and configuration
-  - Automatic device compatibility checking
-  - Bit-perfect audio output for audiophiles
-  - Smart audio processing control
-  - High-resolution audio support
-
-- **📊 Enhanced Analytics & Crash Reporting**
-  - Firebase Analytics integration
-  - Firebase Crashlytics integration
-  - User-controlled privacy settings
-  - Performance monitoring
-  - Custom event tracking
-
-- **🎨 Performance Optimizations**
-  - Smooth animations and transitions
-  - Jitter-free scrolling experience
-  - Optimized LazyList performance
-  - Enhanced navigation animations
-  - Improved memory management
-
-- **🔧 Settings Improvements**
-  - Reorganized lyrics settings with smart defaults
-  - Conditional visibility for lyrics providers
-  - Enhanced storage visualization with proper labels
-  - Improved settings UI organization
-
-### Changed
-- **Login Experience**
-  - Removed "login failed" popup for cleaner UX
-  - Only shows "login success" confirmation
-  - Improved YouTube login flow
-
-- **Storage Management**
-  - Fixed Spotify Canvas Cache label in storage legend
-  - Improved storage visualization
-  - Better cache management
-
-### Technical Improvements
-- **Audio Processing**
-  - Enhanced ExoPlayer configuration
-  - Improved audio sink handling
-  - Better USB audio device support
-  - Optimized audio processing pipeline
-
-- **Build System**
-  - Updated to version 1.5 (version code 8)
-  - Enhanced build configurations
-  - Improved dependency management
-  - Better error handling
-
-### Security
-- **Privacy Enhancements**
-  - User-controlled analytics
-  - Optional crash reporting
-  - Enhanced data privacy controls
-  - Secure configuration management
-
-## [Unreleased]
-
-### Planned
-- Enhanced AI-powered recommendations
-- Improved offline playback experience
-- Advanced playlist management features
-- Cross-platform synchronization
-- Enhanced accessibility features
-
-## [2.0.0] - 2025-01-XX
-
-### Added
-- **Comprehensive Documentation**
-  - Complete architecture documentation
-  - Detailed API integration guide
-  - Comprehensive features documentation
-  - Troubleshooting guide for common issues
-  - Development roadmap for future releases
-
-- **Enhanced User Experience**
-  - Improved Material Design 3 implementation
-  - Better typography and visual hierarchy
-  - Enhanced empty state handling
-  - Improved navigation and user flow
-
-- **Advanced Features**
-  - AI-powered song recommendations
-  - Enhanced lyrics support with multiple providers
-  - Improved offline download management
-  - Advanced audio quality settings
-
-### Changed
-- **Documentation Overhaul**
-  - Complete rewrite of README.md with professional structure
-  - Enhanced CONTRIBUTING.md with detailed guidelines
-  - Comprehensive SETUP.md with step-by-step instructions
-  - Updated PRIVACY_POLICY.md with detailed privacy information
-
-- **Code Quality Improvements**
-  - Enhanced error handling and state management
-  - Improved code organization and structure
-  - Better separation of concerns
-  - Enhanced testing coverage
-
-### Fixed
-- **Stability Issues**
-  - Resolved memory leaks and performance issues
-  - Fixed crash scenarios and edge cases
-  - Improved error handling and recovery
-  - Enhanced app stability and reliability
-
-- **UI/UX Issues**
-  - Fixed layout issues and visual inconsistencies
-  - Improved accessibility and usability
-  - Enhanced responsive design
-  - Better dark mode implementation
-
-### Technical Improvements
-- **Architecture Enhancements**
-  - Improved MVVM implementation
-  - Better dependency injection with Koin
-  - Enhanced repository pattern usage
-  - Improved state management with StateFlow
-
-- **Performance Optimizations**
-  - Reduced memory usage and battery consumption
-  - Improved app startup time
-  - Enhanced caching mechanisms
-  - Better network optimization
-
-## [1.2] - 2024-12-19
-
-### Added
-- **Spotify Playlist Import Feature**
-  - Added Spotify login flow for playlist import functionality
-  - Created `SpotifyImportScreen` with playlist URL input and preview
-  - Added `SpotifyImportViewModel` for handling import logic
-  - Integrated Spotify import option in Library screen
-  - Added navigation support for Spotify import flow
-  - Implemented login status checking and user authentication
-
-- **Empty State Handling**
-  - Added comprehensive empty state messages for all library sections
-  - Created `EmptyStateMessage` composable for consistent empty state display
-  - Added helpful guidance messages for each empty section:
-    - "No Favorite Songs" with subtitle "Add songs to favorites to see them here"
-    - "No Downloaded Songs" with subtitle "Download songs to listen offline"
-    - "No Followed Artists" with subtitle "Start following artists to see them here"
-    - "No Most Played Songs" with subtitle "Play songs to see your most played tracks"
-
-- **Resource Loading State**
-  - Added `Loading` state to the `Resource` sealed class
-  - Updated all ViewModels to handle the new `Resource.Loading` state
-  - Improved error handling and state management across the app
-
-### Changed
-- **License Compliance**
-  - Updated LICENSE file from MIT to GPL-3.0 to comply with SimpMusic's license
-  - Added proper attribution and modification notices to all source files
-  - Updated README.md with fork acknowledgment and modifications section
-  - Added modification notices to core library files (`Ytmusic.kt`, `YouTube.kt`)
-
-- **UI/UX Improvements**
-  - **Typography System**: Increased font sizes globally for better readability
-    - `titleSmall`: 13sp → 14sp
-    - `titleMedium`: 18sp → 20sp
-    - `titleLarge`: 25sp → 26sp
-    - `bodySmall`: 11sp → 12sp
-    - `bodyMedium`: 13sp → 14sp
-    - `bodyLarge`: 18sp → 18sp (maintained)
-    - `displayLarge`: 20sp → 22sp
-    - `headlineMedium`: 20sp → 22sp
-    - `headlineLarge`: 23sp → 24sp
-    - `labelMedium`: 16sp → 16sp (maintained)
-    - `labelSmall`: 14sp → 14sp (maintained)
-    - Added `headlineSmall`: 20sp
-
-  - **Echo Branding**: Increased "Echo" text size in top app bar (30sp)
-  - **Library Filter Buttons**: Updated font size to 18sp to prevent text wrapping
-  - **Album Screen**: Added large green play button (72dp) positioned on the right side
-  - **About Section**: Changed "Author" to "Modified by" in settings
-  - **Credit Screen**: Updated attribution text to "Modified by iad1tya"
-
-- **Widget Improvements**
-  - **Song Poster Display**: Fixed widget poster display for YouTube videos and general media
-  - **Robust Image Loading**: Implemented multiple fallback URLs for YouTube thumbnails
-  - **HTTP to HTTPS Conversion**: Ensured all image URLs use HTTPS for security
-  - **Play/Pause State**: Fixed poster disappearing on pause/resume
-  - **Song Tracking**: Added SharedPreferences to track last played song ID
-  - **Aggressive Image Loading**: Implemented retry mechanisms and fallback strategies
-
-- **Title Display Fix**
-  - Fixed "Downloads" button showing "Downloaded" in top bar
-  - Updated `LibraryDynamicPlaylistType.name()` to return correct string resource
-
-- **Empty State Centering**
-  - Moved empty state messages to center of screen (both horizontally and vertically)
-  - Removed background cards and icons for cleaner, minimal design
-  - Used Box layout for perfect centering instead of LazyColumn positioning
-
-### Fixed
-- **Build Configuration**
-  - Created `local.properties` file with proper Android SDK path
-  - Added minimal `google-services.json` for FOSS debug build
-  - Fixed package name configuration for debug builds
-  - Resolved compilation errors related to missing Resource.Loading state
-
-- **Widget Poster Issues**
-  - Fixed song poster not showing on home screen widget
-  - Resolved poster disappearing when pausing/resuming songs
-  - Fixed inconsistent poster display for YouTube videos
-  - Implemented proper image loading with fallback mechanisms
-
-- **Navigation and UI**
-  - Fixed Spotify import navigation flow
-  - Resolved compilation errors in ViewModels
-  - Fixed smart cast issues in playlist description handling
-  - Corrected dependency injection for SpotifyImportViewModel
-
-### Technical Improvements
-- **Code Quality**
-  - Added proper error handling for image loading
-  - Implemented coroutine-based image loading with retry logic
-  - Added comprehensive logging for debugging widget issues
-  - Improved state management with proper Resource handling
-
-- **Performance**
-  - Optimized widget update frequency to prevent conflicts
-  - Reduced aggressive delayed updates for better performance
-  - Implemented controlled image loading with proper cancellation
-
-- **Security**
-  - Ensured all image URLs use HTTPS
-  - Added proper API key management for Google Services
-
-### Configuration Updates
-- **Google Services**
-  - Updated to use Firebase project configuration
-  - Configured for analytics and crash reporting (optional)
-
-- **Version Management**
-  - Updated app version to v1.2
-  - Incremented version code to 3
-  - Updated version display throughout the app
-
-## [1.1] - Previous Version
-- Initial fork from SimpMusic
-- Basic Echo Music branding and package name changes
-- Initial customizations and modifications
+- **Updated Mini Player**  
+  The mini player now features a modern pill-shaped design.
 
 ---
 
-## Development Notes
+## Acknowledgements
 
-### Key Features Added in v1.2
-1. **Spotify Integration**: Complete playlist import functionality with authentication
-2. **Enhanced Empty States**: User-friendly messages instead of blank screens
-3. **Improved Typography**: Better readability with increased font sizes
-4. **Widget Reliability**: Robust song poster display with fallback mechanisms
-5. **License Compliance**: Proper GPL-3.0 compliance with attribution
-
-### Technical Debt Addressed
-- Fixed all compilation errors related to Resource state handling
-- Resolved widget image loading inconsistencies
-- Improved error handling and state management
-- Enhanced build configuration and dependency management
-
-### User Experience Improvements
-- Better visual hierarchy with improved typography
-- Clearer empty state guidance
-- More reliable widget functionality
-- Consistent branding and attribution
+Special thanks to all supporters, including **Emagik** and **AdamPoy**, for their continuous supporting.
 
 ---
+## [3.0.0] - 2025-11-11
 
-*This changelog documents all significant changes made to Echo Music v1.2, including new features, bug fixes, and technical improvements.*
+- **Minor UI adjustments** for a cleaner and more consistent experience.
+- **New feature**: Inside Settings → Player & Audio, a new option “**Tap album art for lyrics**” has been added. When enabled, you can view lyrics by simply tapping the album art on the music page. (_Suggested by_ @dins2k2)
+- Added support for **Google Cast SDK**: The app can now detect and connect to Wi-Fi devices that support Google Cast, allowing you to stream music directly.
+- **Enhanced in-app updater**: Updating the app is now easier than ever — no need to open a browser. You can download and install updates directly within the app.
+
+---

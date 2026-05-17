@@ -1341,8 +1341,11 @@ class MusicService :
 
     private fun shouldRebuildPlaybackForAudioRouteChange(): Boolean {
         if (player.currentMediaItem == null) return false
-        if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return false
-        return player.playWhenReady || player.playbackState == Player.STATE_BUFFERING
+        if (player.playbackState == Player.STATE_IDLE ||
+            player.playbackState == Player.STATE_ENDED ||
+            player.playbackState == Player.STATE_BUFFERING
+        ) return false
+        return player.playWhenReady || player.playbackState == Player.STATE_READY
     }
 
     private fun currentAudioOutputDeviceSignature(): String =

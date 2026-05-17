@@ -1046,7 +1046,7 @@ fun RichPresence(
                                 model = when (largeImageType) {
                                     "thumbnail" -> song?.song?.thumbnailUrl
                                     "artist" -> song?.artists?.firstOrNull()?.thumbnailUrl
-                                    "appicon" -> "https://raw.githubusercontent.com/iad1tya/Echo Music/main/fastlane/metadata/android/en-US/images/icon.png"
+                                    "appicon" -> "https://raw.githubusercontent.com/iad1tya/Echo Music/main/assets/icon-nobg.png"
                                     "custom" -> largeImageCustomUrl.ifBlank { song?.song?.thumbnailUrl }
                                     else -> song?.song?.thumbnailUrl
                                 },
@@ -1070,7 +1070,7 @@ fun RichPresence(
                             val smallModel = when (smallImageType.lowercase()) {
                                 "thumbnail" -> songThumb  // Only show song thumbnail, no fallback
                                 "artist" -> artistThumb   // Only show artist thumbnail, no fallback to song
-                                "appicon" -> "https://raw.githubusercontent.com/iad1tya/Echo Music/main/fastlane/metadata/android/en-US/images/icon.png"
+                                "appicon" -> "https://raw.githubusercontent.com/iad1tya/Echo Music/main/assets/icon-nobg.png"
                                 "custom" -> smallImageCustomUrl.takeIf { it.isNotBlank() } ?: songThumb  // Custom with fallback to song only
                                 "dontshow", "none" -> null
                                 else -> artistThumb  // Default to artist without fallback

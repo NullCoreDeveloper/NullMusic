@@ -181,7 +181,7 @@ object DiscordImageResolver {
                     ?: song.artists.firstOrNull()?.thumbnailUrl?.takeIf { it.isValidHttpUrl() }?.let { RpcImage.ExternalImage(it) }
             }
             "appicon" -> {
-                RpcImage.ExternalImage("https://raw.githubusercontent.com/iad1tya/Echo Music/main/fastlane/metadata/android/en-US/images/icon.png")
+                RpcImage.ExternalImage("https://raw.githubusercontent.com/iad1tya/Echo Music/main/assets/icon-nobg.png")
             }
             "custom" -> {
                 val url = customUrl?.takeIf { it.isNotBlank() && it.isValidHttpUrl() }

@@ -134,8 +134,8 @@ class InnerTube {
 
         install(HttpTimeout) {
             requestTimeoutMillis = 15000
-            connectTimeoutMillis = 10000
-            socketTimeoutMillis = 15000
+            connectTimeoutMillis = 5000  // Reduced from 10s to fail faster on broken IPv6
+            socketTimeoutMillis = 10000  // Reduced from 15s for quicker retry
         }
 
         engine {
@@ -194,6 +194,7 @@ class InnerTube {
      * Simple retry wrapper for transient IO errors (socket aborts, timeouts).
      * Retries the given block up to [maxAttempts] times with exponential backoff.
      * Cancellation is respected since [delay] will throw if the coroutine is cancelled.
+     * Has special handling for connection errors which retry more aggressively.
      */
     private suspend fun <T> withRetry(
         maxAttempts: Int = 3,
@@ -203,13 +204,28 @@ class InnerTube {
     ): T {
         var currentDelay = initialDelay
         var attempt = 0
+        
         while (true) {
             try {
                 return block()
             } catch (e: IOException) {
                 attempt++
-                if (attempt >= maxAttempts) throw e
-                delay(currentDelay)
+                
+                // For connection errors, be more aggressive with retries
+                val isConnectionError = e is java.net.ConnectException || 
+                    e is java.net.SocketException ||
+                    e.message?.contains("EHOSTUNREACH", ignoreCase = true) == true ||
+                    e.message?.contains("No route to host", ignoreCase = true) == true
+                
+                val maxRetriesForError = if (isConnectionError) 5 else maxAttempts
+                
+                if (attempt >= maxRetriesForError) {
+                    throw e
+                }
+                
+                // Shorter delay for connection errors to retry faster
+                val delayMs = if (isConnectionError) minOf(currentDelay / 2, 250L) else currentDelay
+                delay(delayMs)
                 currentDelay = (currentDelay * factor).toLong()
             }
         }

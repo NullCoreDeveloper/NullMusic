@@ -87,7 +87,10 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import androidx.compose.material3.Icon
+import iad1tya.echo.music.utils.ImageUtils
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.canvas.echoMusicCanvas
@@ -680,8 +683,13 @@ fun Thumbnail(
                                             cropThumbnailToSquare &&
                                                 playerDesignStyle != PlayerDesignStyle.V7
 
+                                        val artworkUrl = ImageUtils.getHighResThumbnailUrl(item.mediaMetadata.artworkUri?.toString().orEmpty(), 1080) ?: item.mediaMetadata.artworkUri?.toString()
+
                                         AsyncImage(
-                                            model = item.mediaMetadata.artworkUri?.toString(),
+                                            model = ImageRequest.Builder(LocalContext.current)
+                                                .data(artworkUrl)
+                                                .crossfade(true)
+                                                .build(),
                                             contentDescription = null,
                                             contentScale = ContentScale.FillBounds,
                                             modifier = Modifier
@@ -694,7 +702,10 @@ fun Thumbnail(
                                         )
 
                                         AsyncImage(
-                                            model = item.mediaMetadata.artworkUri?.toString(),
+                                            model = ImageRequest.Builder(LocalContext.current)
+                                                .data(artworkUrl)
+                                                .crossfade(true)
+                                                .build(),
                                             contentDescription = null,
                                             contentScale = if (shouldCropArtwork) ContentScale.Crop else ContentScale.Fit,
                                             modifier = Modifier

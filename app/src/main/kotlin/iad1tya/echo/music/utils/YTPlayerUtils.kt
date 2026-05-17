@@ -40,9 +40,11 @@ import iad1tya.echo.music.innertube.models.YouTubeClient.Companion.WEB
 import iad1tya.echo.music.innertube.models.YouTubeClient.Companion.WEB_CREATOR
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
+import iad1tya.echo.music.PreferIpv4Dns
 import timber.log.Timber
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 object YTPlayerUtils {
     private const val logTag = "YTPlayerUtils"
@@ -96,7 +98,11 @@ object YTPlayerUtils {
             if (proxy == current) return client
         }
         val client = OkHttpClient.Builder()
+            .dns(PreferIpv4Dns)
             .proxy(current)
+            .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
             .build()
         streamClientPair = current to client
         return client

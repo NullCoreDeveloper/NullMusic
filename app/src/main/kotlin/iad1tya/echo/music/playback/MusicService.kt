@@ -91,6 +91,8 @@ import iad1tya.echo.music.innertube.models.SongItem
 import iad1tya.echo.music.lyrics.LyricsPreloadManager
 import iad1tya.echo.music.innertube.models.WatchEndpoint
 import iad1tya.echo.music.MainActivity
+import iad1tya.echo.music.App
+import iad1tya.echo.music.PreferIpv4Dns
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.AudioNormalizationKey
 import iad1tya.echo.music.constants.AudioOffload
@@ -235,6 +237,7 @@ import java.net.UnknownHostException
 import java.time.LocalDateTime
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.min
 import kotlin.math.pow
@@ -321,9 +324,13 @@ class MusicService :
     private val mediaOkHttpClient: OkHttpClient by lazy {
         OkHttpClient
             .Builder()
+            .dns(PreferIpv4Dns)
             .proxy(YouTube.streamProxy)
             .followRedirects(true)
             .followSslRedirects(true)
+            .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)  // Fail fast on IPv6
+            .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val request = chain.request()
                 val host = request.url.host
@@ -4639,18 +4646,14 @@ class MusicService :
                 enableAudioTrackPlaybackParams: Boolean,
             ) = DefaultAudioSink
                 .Builder(this@MusicService)
-                .setEnableFloatOutput(false)
+                .setEnableFloatOutput(enableFloatOutput)
                 .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
                 .setAudioProcessorChain(
                     DefaultAudioSink.DefaultAudioProcessorChain(
-                        SilenceSkippingAudioProcessor(
-                            1_500_000L,
-                            0.35f,
-                            500_000L,
-                            10,
-                            150.toShort(),
+                        arrayOf(
+                            CrossfadeAudioProcessor().also { onCrossfadeProcessorCreated?.invoke(it) }
                         ),
-                        CrossfadeAudioProcessor().also { onCrossfadeProcessorCreated?.invoke(it) },
+                        SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
                         SonicAudioProcessor(),
                     ),
                 ).build()

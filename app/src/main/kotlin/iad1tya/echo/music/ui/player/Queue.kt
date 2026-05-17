@@ -814,6 +814,46 @@ fun Queue(
                                                         onRemoveFromQueue = {
                                                             onRemoveWithUndo(window)
                                                         },
+                                                        onMoveUp = {
+                                                            val idx = mutableQueueWindows.indexOf(window)
+                                                            if (idx > 0) {
+                                                                if (!playerConnection.player.shuffleModeEnabled) {
+                                                                    playerConnection.player.moveMediaItem(window.firstPeriodIndex, mutableQueueWindows[idx - 1].firstPeriodIndex)
+                                                                } else {
+                                                                    val from = window.firstPeriodIndex
+                                                                    val to = mutableQueueWindows[idx - 1].firstPeriodIndex
+                                                                    playerConnection.player.setShuffleOrder(
+                                                                        DefaultShuffleOrder(
+                                                                            queueWindows.map { it.firstPeriodIndex }
+                                                                                .toMutableList()
+                                                                                .move(from, to)
+                                                                                .toIntArray(),
+                                                                            System.currentTimeMillis()
+                                                                        )
+                                                                    )
+                                                                }
+                                                            }
+                                                        },
+                                                        onMoveDown = {
+                                                            val idx = mutableQueueWindows.indexOf(window)
+                                                            if (idx < mutableQueueWindows.lastIndex) {
+                                                                if (!playerConnection.player.shuffleModeEnabled) {
+                                                                    playerConnection.player.moveMediaItem(window.firstPeriodIndex, mutableQueueWindows[idx + 1].firstPeriodIndex)
+                                                                } else {
+                                                                    val from = window.firstPeriodIndex
+                                                                    val to = mutableQueueWindows[idx + 1].firstPeriodIndex
+                                                                    playerConnection.player.setShuffleOrder(
+                                                                        DefaultShuffleOrder(
+                                                                            queueWindows.map { it.firstPeriodIndex }
+                                                                                .toMutableList()
+                                                                                .move(from, to)
+                                                                                .toIntArray(),
+                                                                            System.currentTimeMillis()
+                                                                        )
+                                                                    )
+                                                                }
+                                                            }
+                                                        },
                                                         onShowDetailsDialog = {
                                                             window.mediaItem.mediaId.let {
                                                                 bottomSheetPageState.show {

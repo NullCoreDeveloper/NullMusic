@@ -68,6 +68,17 @@ import java.net.Proxy
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import iad1tya.echo.music.utils.toPlaybackAuthState
+import java.net.InetAddress
+import java.net.Inet4Address
+
+object PreferIpv4Dns : Dns {
+    override fun lookup(hostname: String): List<InetAddress> {
+        val addresses = Dns.SYSTEM.lookup(hostname)
+        // Aggressively filter out IPv6 to avoid EHOSTUNREACH errors
+        val ipv4Addresses = addresses.filterIsInstance<Inet4Address>()
+        return if (ipv4Addresses.isNotEmpty()) ipv4Addresses else addresses
+    }
+}
 
 @HiltAndroidApp
 class App : Application(), SingletonImageLoader.Factory {
@@ -209,10 +220,10 @@ class App : Application(), SingletonImageLoader.Factory {
                                 YouTube.dns = YouTube.createDnsOverHttps(url)
                             }
                         } else {
-                            YouTube.dns = Dns.SYSTEM
+                            YouTube.dns = PreferIpv4Dns
                         }
                     } else {
-                        YouTube.dns = Dns.SYSTEM
+                        YouTube.dns = PreferIpv4Dns
                     }
                 }
         }

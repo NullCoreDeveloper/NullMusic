@@ -165,6 +165,8 @@ fun PlayerMenu(
     playerBottomSheetState: BottomSheetState,
     isQueueTrigger: Boolean? = false,
     onRemoveFromQueue: (() -> Unit)? = null,
+    onMoveUp: (() -> Unit)? = null,
+    onMoveDown: (() -> Unit)? = null,
     onShowDetailsDialog: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -801,6 +803,38 @@ fun PlayerMenu(
                             },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         )
+
+                        if (onMoveUp != null) {
+                            ListItem(
+                                headlineContent = { Text(text = stringResource(R.string.move_up)) },
+                                leadingContent = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.arrow_upward),
+                                        contentDescription = null,
+                                    )
+                                },
+                                modifier = Modifier.clickable {
+                                    onMoveUp()
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            )
+                        }
+
+                        if (onMoveDown != null) {
+                            ListItem(
+                                headlineContent = { Text(text = stringResource(R.string.move_down)) },
+                                leadingContent = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.arrow_downward),
+                                        contentDescription = null,
+                                    )
+                                },
+                                modifier = Modifier.clickable {
+                                    onMoveDown()
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            )
+                        }
 
                         HorizontalDivider(
                             modifier = Modifier.padding(start = 56.dp),

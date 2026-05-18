@@ -665,7 +665,7 @@ fun Thumbnail(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
-                                                painter = painterResource(R.drawable.about_splash),
+                                                painter = painterResource(R.drawable.icon_nobg),
                                                 contentDescription = stringResource(R.string.hide_player_thumbnail),
                                                 tint = textBackgroundColor.copy(alpha = 0.7f),
                                                 modifier = Modifier.size(120.dp)
@@ -680,34 +680,44 @@ fun Thumbnail(
                                                 playerDesignStyle != PlayerDesignStyle.V7
 
                                         val artworkUrl = ImageUtils.getHighResThumbnailUrl(item.mediaMetadata.artworkUri?.toString().orEmpty(), 1080) ?: item.mediaMetadata.artworkUri?.toString()
-
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(LocalContext.current)
-                                                .data(artworkUrl)
-                                                .crossfade(true)
-                                                .build(),
+                                        Image(
+                                            painter = painterResource(R.drawable.icon_nobg),
                                             contentDescription = null,
-                                            contentScale = ContentScale.FillBounds,
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .let { if (shouldCropArtwork) it.aspectRatio(1f) else it }
-                                                .graphicsLayer(
-                                                    renderEffect = BlurEffect(radiusX = 60f, radiusY = 60f),
-                                                    alpha = 0.6f
-                                                )
-                                        )
-
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(LocalContext.current)
-                                                .data(artworkUrl)
-                                                .crossfade(true)
-                                                .build(),
-                                            contentDescription = null,
-                                            contentScale = if (shouldCropArtwork) ContentScale.Crop else ContentScale.Fit,
+                                            contentScale = ContentScale.Fit,
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .let { if (shouldCropArtwork) it.aspectRatio(1f) else it }
                                         )
+
+                                        if (!artworkUrl.isNullOrBlank()) {
+                                            AsyncImage(
+                                                model = ImageRequest.Builder(LocalContext.current)
+                                                    .data(artworkUrl)
+                                                    .crossfade(true)
+                                                    .build(),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.FillBounds,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .let { if (shouldCropArtwork) it.aspectRatio(1f) else it }
+                                                    .graphicsLayer(
+                                                        renderEffect = BlurEffect(radiusX = 60f, radiusY = 60f),
+                                                        alpha = 0.6f
+                                                    )
+                                            )
+
+                                            AsyncImage(
+                                                model = ImageRequest.Builder(LocalContext.current)
+                                                    .data(artworkUrl)
+                                                    .crossfade(true)
+                                                    .build(),
+                                                contentDescription = null,
+                                                contentScale = if (shouldCropArtwork) ContentScale.Crop else ContentScale.Fit,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .let { if (shouldCropArtwork) it.aspectRatio(1f) else it }
+                                            )
+                                        }
 
                                         if (shouldAnimateCanvas && (!primaryCanvasUrl.isNullOrBlank() || !fallbackCanvasUrl.isNullOrBlank())) {
                                             SharedCanvasArtworkPlayer(

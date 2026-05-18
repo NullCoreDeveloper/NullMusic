@@ -307,6 +307,11 @@ private fun MiniPlayerArtwork(
         ) {
             val thumbnailUrl = mediaMetadata?.thumbnailUrl
             if (thumbnailUrl != null) {
+                Image(
+                    painter = painterResource(R.drawable.icon_nobg),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
                 AsyncImage(
                     model = thumbnailUrl,
                     contentDescription = null,
@@ -315,7 +320,7 @@ private fun MiniPlayerArtwork(
                 )
             } else {
                 Image(
-                    painter = painterResource(R.drawable.about_splash),
+                    painter = painterResource(R.drawable.icon_nobg),
                     contentDescription = null,
                     modifier = Modifier.size(22.dp)
                 )

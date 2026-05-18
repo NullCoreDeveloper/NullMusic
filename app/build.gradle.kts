@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
 }
 
@@ -25,8 +24,8 @@ android {
     applicationId = "iad1tya.echo.music"
         minSdk = 26
         targetSdk = 37
-        versionCode = 424
-        versionName = "4.3.2"
+        versionCode = 430
+        versionName = "4.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -158,6 +157,10 @@ android {
             excludes += "META-INF/LICENSE.md"
         }
     }
+}
+
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
 }
 
 kotlin {

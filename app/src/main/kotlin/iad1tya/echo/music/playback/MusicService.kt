@@ -1650,6 +1650,7 @@ class MusicService :
                 "Retrying playback after network recovery for %s",
                 currentItem.mediaId,
             )
+            player.seekTo(player.currentMediaItemIndex, player.currentPosition)
             player.prepare()
         }
     }
@@ -1720,6 +1721,8 @@ class MusicService :
             responseException.responseCode,
             requestProfile.variantLabel,
         )
+        val restartPosition = if (responseException.responseCode == 416) 0L else player.currentPosition
+        player.seekTo(player.currentMediaItemIndex, restartPosition)
         player.prepare()
         return true
     }
@@ -4353,6 +4356,7 @@ class MusicService :
             YTPlayerUtils.invalidateCachedStreamUrls(currentMediaId)
             if (playbackStreamRecoveryTracker.registerRetryAttempt(currentMediaId)) {
                 Timber.tag("MusicService").i("Retrying playback for %s after malformed container error", currentMediaId)
+                player.seekTo(player.currentMediaItemIndex, player.currentPosition)
                 player.prepare()
                 return
             }

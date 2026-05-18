@@ -575,7 +575,7 @@ class MusicService :
                     )
 
                 NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.icon_nobg)
+                    .setSmallIcon(R.drawable.music_note)
                     .setContentTitle(getString(R.string.music_player))
                     .setContentText(getString(R.string.app_name))
                     .setContentIntent(contentIntent)
@@ -743,7 +743,7 @@ class MusicService :
                 CHANNEL_ID,
                 R.string.music_player
             ).apply {
-                setSmallIcon(R.drawable.icon_nobg)
+                setSmallIcon(R.drawable.music_note)
             }
         )
         

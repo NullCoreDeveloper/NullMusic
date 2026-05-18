@@ -774,12 +774,7 @@ class MusicService :
                 isNetworkConnected.value = isConnected
                 if (isConnected && waitingForNetworkConnection.value) {
                     waitingForNetworkConnection.value = false
-                    if (player.currentMediaItem != null && player.playWhenReady &&
-                        player.playbackState == Player.STATE_IDLE
-                    ) {
-                        player.prepare()
-                        player.play()
-                    }
+                    retryPlaybackAfterNetworkRecovery()
                 }
             }
         }
@@ -1642,6 +1637,21 @@ class MusicService :
 
     private fun waitOnNetworkError() {
         waitingForNetworkConnection.value = true
+    }
+
+    private fun retryPlaybackAfterNetworkRecovery() {
+        val currentItem = player.currentMediaItem ?: return
+        if (!player.playWhenReady) return
+        if (player.playbackState == Player.STATE_IDLE ||
+            player.playbackState == Player.STATE_BUFFERING ||
+            player.playbackState == Player.STATE_READY
+        ) {
+            Timber.tag("MusicService").d(
+                "Retrying playback after network recovery for %s",
+                currentItem.mediaId,
+            )
+            player.prepare()
+        }
     }
 
     private fun skipOnError() {

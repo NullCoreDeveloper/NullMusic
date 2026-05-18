@@ -303,6 +303,7 @@ class MusicService :
     lateinit var connectivityObserver: NetworkConnectivityObserver
     val waitingForNetworkConnection = MutableStateFlow(false)
     private val isNetworkConnected = MutableStateFlow(false)
+    private var playbackStallRecoveryJob: Job? = null
 
     private val audioQuality by enumPreference(
         this,
@@ -316,6 +317,11 @@ class MusicService :
     )
     private val playbackUrlCache = ConcurrentHashMap<String, AuthScopedCacheValue>()
     private val contentLengthCache = ConcurrentHashMap<String, Long>()
+    private companion object {
+        private const val PLAYBACK_STALL_RECOVERY_TIMEOUT_MS = 15_000L
+        private const val PLAYBACK_STALL_POLL_INTERVAL_MS = 1_000L
+        private const val PLAYBACK_STALL_MAX_RECOVERY_ATTEMPTS = 3
+    }
     private val mediaOkHttpClient: OkHttpClient by lazy {
         OkHttpClient
             .Builder()
@@ -1720,6 +1726,67 @@ class MusicService :
         player.seekTo(player.currentMediaItemIndex, restartPosition)
         player.prepare()
         return true
+    }
+
+    private fun cancelPlaybackStallRecovery() {
+        playbackStallRecoveryJob?.cancel()
+        playbackStallRecoveryJob = null
+    }
+
+    private fun watchForPlaybackStall() {
+        val currentMediaId = player.currentMediaItem?.mediaId ?: return
+        if (!player.playWhenReady || player.playbackState != Player.STATE_BUFFERING) {
+            cancelPlaybackStallRecovery()
+            return
+        }
+        if (playbackStallRecoveryJob?.isActive == true) return
+
+        val stalledPositionMs = player.currentPosition.coerceAtLeast(0L)
+        var stalledAtRealtimeMs = SystemClock.elapsedRealtime()
+
+        playbackStallRecoveryJob = scope.launch {
+            var recoveryAttempts = 0
+            while (isActive) {
+                delay(PLAYBACK_STALL_POLL_INTERVAL_MS)
+
+                if (!::player.isInitialized) return@launch
+
+                val activeMediaId = player.currentMediaItem?.mediaId ?: return@launch
+                if (activeMediaId != currentMediaId) return@launch
+                if (!player.playWhenReady || player.playbackState != Player.STATE_BUFFERING) return@launch
+
+                val elapsedMs = SystemClock.elapsedRealtime() - stalledAtRealtimeMs
+                val currentPositionMs = player.currentPosition.coerceAtLeast(0L)
+                if (elapsedMs < PLAYBACK_STALL_RECOVERY_TIMEOUT_MS || currentPositionMs != stalledPositionMs) {
+                    continue
+                }
+
+                if (recoveryAttempts >= PLAYBACK_STALL_MAX_RECOVERY_ATTEMPTS) {
+                    Timber.tag("MusicService").w(
+                        "Giving up stalled playback recovery for %s after %d attempts",
+                        currentMediaId,
+                        recoveryAttempts,
+                    )
+                    return@launch
+                }
+
+                recoveryAttempts++
+
+                playbackUrlCache.remove(currentMediaId)
+                YTPlayerUtils.invalidateCachedStreamUrls(currentMediaId)
+
+                Timber.tag("MusicService").w(
+                    "Recovering stalled playback for %s after %dms of buffering",
+                    currentMediaId,
+                    elapsedMs,
+                )
+
+                player.seekTo(player.currentMediaItemIndex, currentPositionMs)
+                player.prepare()
+                player.playWhenReady = true
+                stalledAtRealtimeMs = SystemClock.elapsedRealtime()
+            }
+        }
     }
 
     private fun updateNotification() {
@@ -3941,6 +4008,12 @@ class MusicService :
 
     override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
     super.onPlaybackStateChanged(playbackState)
+
+    if (playbackState == Player.STATE_BUFFERING) {
+        watchForPlaybackStall()
+    } else {
+        cancelPlaybackStallRecovery()
+    }
 
     updateHistoryTrackingPlaybackState()
     if (playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE) {

@@ -99,9 +99,14 @@ object UpdateNotificationManager {
 
                 dataStore.edit { it[LastUpdateCheckKey] = now }
 
-                Updater.getLatestVersionName().onSuccess { latestVersion ->
-                    if (!Updater.isSameVersion(latestVersion, BuildConfig.VERSION_NAME)) {
-                        notifyIfNewVersion(context, latestVersion)
+                Updater.getLatestReleaseInfo().onSuccess { latestRelease ->
+                    val latestVersion = Updater.getReleaseVersionName(latestRelease)
+                    if (Updater.isNewerVersion(latestVersion, BuildConfig.VERSION_NAME)) {
+                        notifyIfNewVersion(
+                            context = context,
+                            latestVersion = latestVersion,
+                            downloadUrl = latestRelease.downloadUrl ?: latestRelease.htmlUrl.ifBlank { Updater.getLatestDownloadUrl() },
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -110,13 +115,17 @@ object UpdateNotificationManager {
         }
     }
 
-    suspend fun notifyIfNewVersion(context: Context, latestVersion: String) {
+    suspend fun notifyIfNewVersion(
+        context: Context,
+        latestVersion: String,
+        downloadUrl: String = Updater.getLatestDownloadUrl(),
+    ) {
         try {
             val dataStore = context.dataStore
             val lastNotified = dataStore.data.map { it[LastNotifiedVersionKey] ?: "" }.first()
 
-            if (latestVersion != lastNotified && !Updater.isSameVersion(latestVersion, BuildConfig.VERSION_NAME)) {
-                showUpdateNotification(context, latestVersion)
+            if (latestVersion != lastNotified && Updater.isNewerVersion(latestVersion, BuildConfig.VERSION_NAME)) {
+                showUpdateNotification(context, latestVersion, downloadUrl)
                 dataStore.edit { it[LastNotifiedVersionKey] = latestVersion }
             }
         } catch (e: Exception) {
@@ -124,7 +133,11 @@ object UpdateNotificationManager {
         }
     }
 
-    private fun showUpdateNotification(context: Context, newVersion: String) {
+    private fun showUpdateNotification(
+        context: Context,
+        newVersion: String,
+        downloadUrl: String,
+    ) {
         createNotificationChannel(context)
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
@@ -138,7 +151,7 @@ object UpdateNotificationManager {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val downloadIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Updater.getLatestDownloadUrl()))
+        val downloadIntent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
         val downloadPendingIntent = PendingIntent.getActivity(
             context,
             1,

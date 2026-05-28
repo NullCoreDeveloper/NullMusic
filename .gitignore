@@ -245,3 +245,7 @@ node_modules/
 
 # TernJS port file
 .tern-port
+
+# Graphify
+graphify-out/
+graph.html

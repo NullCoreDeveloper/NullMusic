@@ -5,6 +5,7 @@
 
 package iad1tya.echo.music.ui.screens.settings
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -68,6 +69,7 @@ enum class ActivitySource { ARTIST, ALBUM, SONG, APP }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun DiscordSettings(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -143,7 +145,7 @@ fun DiscordSettings(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-    ) { innerPadding ->
+    ) { _ ->
         Column(
             Modifier
                 .windowInsetsPadding(

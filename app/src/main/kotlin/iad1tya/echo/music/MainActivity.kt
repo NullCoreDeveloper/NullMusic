@@ -490,6 +490,7 @@ class MainActivity : ComponentActivity() {
                     var isDownloading by rememberSaveable { mutableStateOf(false) }
                     var downloadProgress by remember { mutableStateOf(0f) }
                     var downloadedApkFile by remember { mutableStateOf<java.io.File?>(null) }
+                    var updateDownloadError by rememberSaveable { mutableStateOf<String?>(null) }
                     var hasInstallPermission by remember {
                         mutableStateOf(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -509,6 +510,7 @@ class MainActivity : ComponentActivity() {
                         hasInstallPermission = granted
                         if (granted && downloadedApkFile != null) {
                             Updater.installApk(this@MainActivity, downloadedApkFile!!)
+                                .onFailure { updateDownloadError = it.message ?: getString(R.string.error_unknown) }
                         }
                     }
 
@@ -556,11 +558,22 @@ class MainActivity : ComponentActivity() {
 
                         Spacer(Modifier.height(12.dp))
 
+                        updateDownloadError?.takeIf { it.isNotBlank() }?.let { error ->
+                            Text(
+                                text = error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(Modifier.height(12.dp))
+                        }
+
                         if (downloadedApkFile == null) {
                             androidx.compose.material3.Button(
                                 onClick = {
                                     isDownloading = true
                                     downloadProgress = 0f
+                                    updateDownloadError = null
                                     coroutineScope.launch {
                                         Updater.downloadLatestApk { progress ->
                                             downloadProgress = progress
@@ -574,9 +587,12 @@ class MainActivity : ComponentActivity() {
                                                 installPermissionLauncher.launch(intent)
                                             } else {
                                                 Updater.installApk(this@MainActivity, apkFile)
+                                                    .onFailure { updateDownloadError = it.message ?: getString(R.string.error_unknown) }
                                             }
                                         }.onFailure { throwable ->
                                             isDownloading = false
+                                            downloadedApkFile = null
+                                            updateDownloadError = throwable.message ?: getString(R.string.error_unknown)
                                             android.util.Log.e("MainActivity", "Download failed", throwable)
                                         }
                                     }
@@ -612,6 +628,7 @@ class MainActivity : ComponentActivity() {
                                         installPermissionLauncher.launch(intent)
                                     } else {
                                         Updater.installApk(this@MainActivity, downloadedApkFile!!)
+                                            .onFailure { updateDownloadError = it.message ?: getString(R.string.error_unknown) }
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -624,7 +641,7 @@ class MainActivity : ComponentActivity() {
 
                     // fetch release notes and show sheet when a new version is detected
                     LaunchedEffect(latestVersionName) {
-                        if (!Updater.isSameVersion(latestVersionName, BuildConfig.VERSION_NAME)) {
+                        if (Updater.isNewerVersion(latestVersionName, BuildConfig.VERSION_NAME)) {
                             Updater.getLatestReleaseNotes().onSuccess {
                                 releaseNotesState.value = it
                             }.onFailure {
@@ -1433,7 +1450,7 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                     IconButton(onClick = { navController.navigate("settings") }) {
                                                         BadgedBox(badge = {
-                                                            if (!Updater.isSameVersion(latestVersionName, BuildConfig.VERSION_NAME)) {
+                                                            if (Updater.isNewerVersion(latestVersionName, BuildConfig.VERSION_NAME)) {
                                                                 Badge()
                                                             }
                                                         }) {

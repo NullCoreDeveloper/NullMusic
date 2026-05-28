@@ -4,6 +4,7 @@
 
 package iad1tya.echo.music.ui.screens.musicrecognition
 
+import android.annotation.SuppressLint
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -101,6 +102,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -137,7 +139,8 @@ fun MusicRecognitionScreen(
 
     var state by remember { mutableStateOf<MusicRecognitionState>(MusicRecognitionState.Ready) }
     var recognitionJob by remember { mutableStateOf<Job?>(null) }
-    val backStackEntry = remember(navController) { navController.getBackStackEntry(MusicRecognitionRoute) }
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val backStackEntry = remember(currentBackStackEntry) { navController.getBackStackEntry(MusicRecognitionRoute) }
     val autoStartRequestId by backStackEntry.savedStateHandle
         .getStateFlow(MusicRecognitionAutoStartRequestKey, 0L)
         .collectAsState()
@@ -460,6 +463,7 @@ private fun buildMetadata(result: RecognitionResult): String {
     return pieces.joinToString(" • ")
 }
 
+@SuppressLint("MissingPermission")
 private suspend fun recordMicPcm16Mono(
     sampleRateHz: Int,
     recordMs: Long,

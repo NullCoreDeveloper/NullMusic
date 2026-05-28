@@ -353,7 +353,7 @@ object YTPlayerUtils {
             }.distinct()
 
         var lastError: Throwable? = null
-            var guestSessionRetried = false
+        var guestSessionRetried = false
         for (attempt in attempts) {
             val attemptResult =
                 runCatching {
@@ -369,11 +369,11 @@ object YTPlayerUtils {
             if (attemptResult.isSuccess) return@runCatching attemptResult.getOrThrow()
             lastError = attemptResult.exceptionOrNull()
 
-                if (!guestSessionRetried && YouTube.cookie == null) {
+            if (!guestSessionRetried && YouTube.cookie == null) {
                 Timber.tag(logTag).w("Playback failed for guest. Refreshing visitorData and retrying...")
                 YouTube.visitorData = null
                 clearPlaybackAuthCaches()
-                    guestSessionRetried = true
+                guestSessionRetried = true
 
                 val retryResult =
                     runCatching {

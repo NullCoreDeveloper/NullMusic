@@ -46,6 +46,7 @@ import iad1tya.echo.music.R
 import iad1tya.echo.music.extensions.toMediaItem
 import iad1tya.echo.music.extensions.togglePlayPause
 import iad1tya.echo.music.innertube.models.SongItem
+import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.queues.ListQueue
 import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.IconButton
@@ -62,8 +63,10 @@ fun PlaylistSuggestionsSection(
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current
-    val isPlaying by playerConnection?.isPlaying?.collectAsState() ?: androidx.compose.runtime.mutableStateOf(false)
-    val mediaMetadata by playerConnection?.mediaMetadata?.collectAsState() ?: androidx.compose.runtime.mutableStateOf(null)
+    val fallbackIsPlaying = remember { mutableStateOf(false) }
+    val fallbackMediaMetadata = remember { mutableStateOf<MediaMetadata?>(null) }
+    val isPlaying by playerConnection?.isPlaying?.collectAsState() ?: fallbackIsPlaying
+    val mediaMetadata by playerConnection?.mediaMetadata?.collectAsState() ?: fallbackMediaMetadata
     
     val playlistSuggestions by viewModel.playlistSuggestions.collectAsState()
     val isLoading by viewModel.isLoadingSuggestions.collectAsState()

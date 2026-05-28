@@ -96,11 +96,15 @@
 
 ## Queue Persistence Rules
 # Keep queue-related classes to prevent serialization issues in release builds
--keep class moe.koiverse.archivetune.models.PersistQueue { *; }
--keep class moe.koiverse.archivetune.models.PersistPlayerState { *; }
--keep class moe.koiverse.archivetune.models.QueueData { *; }
--keep class moe.koiverse.archivetune.models.QueueType { *; }
--keep class moe.koiverse.archivetune.playback.queues.** { *; }
+-keep class iad1tya.echo.music.models.PersistQueue { *; }
+-keep class iad1tya.echo.music.models.PersistPlayerState { *; }
+-keep class iad1tya.echo.music.models.QueueData { *; }
+-keep class iad1tya.echo.music.models.QueueData$* { *; }
+-keep class iad1tya.echo.music.models.QueueType { *; }
+-keep class iad1tya.echo.music.models.QueueType$* { *; }
+-keep class iad1tya.echo.music.models.MediaMetadata { *; }
+-keep class iad1tya.echo.music.models.MediaMetadata$* { *; }
+-keep class iad1tya.echo.music.playback.queues.** { *; }
 
 # Keep serialization methods for queue persistence
 -keepclassmembers class * implements java.io.Serializable {

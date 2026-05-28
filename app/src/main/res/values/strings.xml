@@ -446,6 +446,7 @@
     <string name="dns_provider">DNS Provider</string>
     <string name="dns_custom_url">Custom DNS DoH URL</string>
     <string name="proxy_type">Proxy type</string>
+    <string name="proxy_url">Proxy URL</string>
     <string name="proxy_host">Proxy host (IP)</string>
     <string name="proxy_port">Proxy port</string>
     <string name="proxy_auth">Proxy Authorization (optional)</string>

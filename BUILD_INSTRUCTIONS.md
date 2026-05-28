@@ -9,30 +9,30 @@
 
 ### Build Universal Debug APK (Recommended)
 ```bash
-./gradlew assembleUniversalDebug
+./gradlew assembleMobileUniversalDebug
 ```
-Output: `app/build/outputs/apk/universal/debug/app-universal-debug.apk`
+Output: `app/build/outputs/apk/mobileUniversal/debug/app-mobile-universal-debug.apk`
 
 ### Build ARM64 Optimized APK
 ```bash
-./gradlew assembleArm64Debug
+./gradlew assembleMobileArm64Debug
 ```
-Output: `app/build/outputs/apk/arm64/debug/app-arm64-debug.apk`
+Output: `app/build/outputs/apk/mobileArm64/debug/app-mobile-arm64-debug.apk`
 
 ### Install on Connected Device
 ```bash
 # Universal build
-adb install -r app/build/outputs/apk/universal/debug/app-universal-debug.apk
+adb install -r app/build/outputs/apk/mobileUniversal/debug/app-mobile-universal-debug.apk
 
 # ARM64 optimized build
-adb install -r app/build/outputs/apk/arm64/debug/app-arm64-debug.apk
+adb install -r app/build/outputs/apk/mobileArm64/debug/app-mobile-arm64-debug.apk
 ```
 
 ### Build and Install in One Command
 ```bash
-./gradlew installUniversalDebug
+./gradlew installMobileUniversalDebug
 # or
-./gradlew installArm64Debug
+./gradlew installMobileArm64Debug
 ```
 
 ## Configuration Files Created
@@ -65,12 +65,12 @@ adb shell getprop ro.product.cpu.abi
 ### Clean Build
 ```bash
 ./gradlew clean
-./gradlew assembleUniversalDebug
+./gradlew assembleMobileUniversalDebug
 ```
 
 ### View Build Logs
 ```bash
-./gradlew assembleUniversalDebug --info
+./gradlew assembleMobileUniversalDebug --info
 ```
 
 ## Notes

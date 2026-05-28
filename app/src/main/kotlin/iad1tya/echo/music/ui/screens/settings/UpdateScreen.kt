@@ -11,9 +11,6 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,13 +38,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -67,19 +57,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.launch
 import android.content.Intent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -90,13 +76,9 @@ import iad1tya.echo.music.constants.EnableUpdateNotificationKey
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.PreferenceGroupTitle
 import iad1tya.echo.music.ui.utils.backToMain
-import iad1tya.echo.music.utils.GitCommit
 import iad1tya.echo.music.utils.UpdateNotificationManager
 import iad1tya.echo.music.utils.Updater
 import iad1tya.echo.music.utils.rememberPreference
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +87,7 @@ fun UpdateScreen(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val context = LocalContext.current
-    val uriHandler = LocalUriHandler.current
+    val unknownError = stringResource(R.string.error_unknown)
 
     val (enableUpdateNotification, onEnableUpdateNotificationChange) = rememberPreference(
         EnableUpdateNotificationKey,
@@ -128,13 +110,14 @@ fun UpdateScreen(
     }
     val isUpdateAvailable by remember(latestVersion) {
         derivedStateOf {
-            latestVersion?.let { !Updater.isSameVersion(it, BuildConfig.VERSION_NAME) } ?: false
+            latestVersion?.let { Updater.isNewerVersion(it, BuildConfig.VERSION_NAME) } ?: false
         }
     }
 
     var isDownloading by rememberSaveable { mutableStateOf(false) }
     var downloadProgress by remember { mutableStateOf(0f) }
     var downloadedApkFile by remember { mutableStateOf<java.io.File?>(null) }
+    var downloadError by rememberSaveable { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
     var hasInstallPermission by remember {
@@ -156,6 +139,7 @@ fun UpdateScreen(
         hasInstallPermission = granted
         if (granted && downloadedApkFile != null) {
             Updater.installApk(context, downloadedApkFile!!)
+                .onFailure { downloadError = it.message ?: unknownError }
         }
     }
 
@@ -272,10 +256,12 @@ fun UpdateScreen(
                     onOpenChangelog = { navController.navigate("settings/changelog") },
                     isDownloading = isDownloading,
                     downloadProgress = downloadProgress,
+                    downloadError = downloadError,
                     downloadedApkFile = downloadedApkFile,
                     onDownloadClick = {
                         isDownloading = true
                         downloadProgress = 0f
+                        downloadError = null
                         coroutineScope.launch {
                             Updater.downloadLatestApk { progress ->
                                 downloadProgress = progress
@@ -289,9 +275,12 @@ fun UpdateScreen(
                                     installPermissionLauncher.launch(intent)
                                 } else {
                                     Updater.installApk(context, apkFile)
+                                        .onFailure { downloadError = it.message ?: unknownError }
                                 }
                             }.onFailure {
                                 isDownloading = false
+                                downloadedApkFile = null
+                                downloadError = it.message ?: unknownError
                             }
                         }
                     },
@@ -303,6 +292,7 @@ fun UpdateScreen(
                             installPermissionLauncher.launch(intent)
                         } else {
                             Updater.installApk(context, downloadedApkFile!!)
+                                .onFailure { downloadError = it.message ?: unknownError }
                         }
                     }
                 )
@@ -369,6 +359,7 @@ private fun UpdateSummaryCard(
     onOpenChangelog: () -> Unit,
     isDownloading: Boolean,
     downloadProgress: Float,
+    downloadError: String?,
     downloadedApkFile: java.io.File?,
     onDownloadClick: () -> Unit,
     onInstallClick: () -> Unit,
@@ -415,6 +406,14 @@ private fun UpdateSummaryCard(
             )
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            if (!downloadError.isNullOrBlank()) {
+                Text(
+                    text = downloadError,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
 
             if (isUpdateAvailable) {
                 if (downloadedApkFile == null) {

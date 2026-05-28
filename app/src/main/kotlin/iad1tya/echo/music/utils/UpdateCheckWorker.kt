@@ -25,9 +25,14 @@ class UpdateCheckWorker(
             val isEnabled = dataStore.data.map { it[EnableUpdateNotificationKey] ?: false }.first()
             if (!isEnabled) return Result.success()
 
-            Updater.getLatestVersionName().onSuccess { latestVersion ->
-                if (!Updater.isSameVersion(latestVersion, BuildConfig.VERSION_NAME)) {
-                    UpdateNotificationManager.notifyIfNewVersion(applicationContext, latestVersion)
+            Updater.getLatestReleaseInfo().onSuccess { latestRelease ->
+                val latestVersion = Updater.getReleaseVersionName(latestRelease)
+                if (Updater.isNewerVersion(latestVersion, BuildConfig.VERSION_NAME)) {
+                    UpdateNotificationManager.notifyIfNewVersion(
+                        context = applicationContext,
+                        latestVersion = latestVersion,
+                        downloadUrl = latestRelease.downloadUrl ?: latestRelease.htmlUrl.ifBlank { Updater.getLatestDownloadUrl() },
+                    )
                 }
             }
 

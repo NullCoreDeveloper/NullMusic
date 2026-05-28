@@ -5,6 +5,15 @@
 
 package iad1tya.echo.music.utils
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Base64
+import androidx.core.content.FileProvider
 import androidx.datastore.preferences.core.edit
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.App
@@ -17,10 +26,16 @@ import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.readBytes
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.Locale
 
 data class GitCommit(
     val sha: String,
@@ -36,7 +51,9 @@ data class ReleaseInfo(
     val body: String?,
     val publishedAt: String,
     val htmlUrl: String,
-    val downloadUrl: String? = null
+    val downloadUrl: String? = null,
+    val downloadAssetName: String? = null,
+    val downloadAssetSize: Long? = null,
 )
 
 private data class ReleasesNetworkResult(
@@ -48,6 +65,18 @@ private data class ReleasesNetworkResult(
 object Updater {
     private val client = HttpClient()
     private const val ReleaseCacheCheckIntervalMs: Long = 6 * 60 * 60 * 1000L
+    private const val LatestReleasePageUrl = "https://github.com/EchoMusicApp/Echo-Music/releases/latest"
+    private const val ApkMimeType = "application/vnd.android.package-archive"
+    private const val MaxRedirects = 5
+    private const val MinApkBytes = 1L * 1024L * 1024L
+    private const val MaxApkBytes = 250L * 1024L * 1024L
+    private val TrustedDownloadHosts =
+        setOf(
+            "github.com",
+            "objects.githubusercontent.com",
+            "release-assets.githubusercontent.com",
+            "github-releases.githubusercontent.com",
+        )
     var lastCheckTime = -1L
         private set
 
@@ -156,6 +185,16 @@ object Updater {
         }
     }
 
+    internal fun isNewerVersion(available: String, current: String): Boolean {
+        val availableSemVer = parseSemVerOrNull(available)
+        val currentSemVer = parseSemVerOrNull(current)
+        return if (availableSemVer != null && currentSemVer != null) {
+            availableSemVer > currentSemVer
+        } else {
+            !isSameVersion(available, current)
+        }
+    }
+
     internal fun findLatestRelease(releases: List<ReleaseInfo>): ReleaseInfo? {
         if (releases.isEmpty()) return null
         val parsed =
@@ -173,6 +212,58 @@ object Updater {
     private fun preferredReleaseVersionNameOrNull(release: ReleaseInfo): String? =
         parseReleaseSemVerOrNull(release)?.normalizedName()
 
+    fun getReleaseVersionName(release: ReleaseInfo): String =
+        preferredReleaseVersionNameOrNull(release) ?: release.name.ifBlank { release.tagName }
+
+    private fun isApkAssetName(nameOrUrl: String): Boolean =
+        nameOrUrl.lowercase(Locale.US).endsWith(".apk")
+
+    private fun apkAssetScore(name: String, url: String, architecture: String): Int {
+        val normalized = "$name $url".lowercase(Locale.US)
+        if (!isApkAssetName(name) && !isApkAssetName(url)) return -1
+
+        val isUniversal = "universal" in normalized || "all" in normalized
+        val architectureMatch =
+            when (architecture.lowercase(Locale.US)) {
+                "universal" -> isUniversal
+                "arm64" -> "arm64" in normalized || "arm64-v8a" in normalized || "aarch64" in normalized
+                "armeabi" -> "armeabi" in normalized || "armv7" in normalized || "armeabi-v7a" in normalized
+                "x86" -> "x86" in normalized && "x86_64" !in normalized && "x86-64" !in normalized
+                "x86_64" -> "x86_64" in normalized || "x86-64" in normalized || "x64" in normalized
+                else -> false
+            }
+
+        return when {
+            architectureMatch -> 300
+            isUniversal -> 200
+            "release" in normalized -> 100
+            else -> 10
+        }
+    }
+
+    private fun selectPreferredApkAsset(assets: JSONArray): JSONObject? {
+        var selected: JSONObject? = null
+        var selectedScore = -1
+        var selectedSize = -1L
+
+        for (j in 0 until assets.length()) {
+            val asset = assets.getJSONObject(j)
+            val name = asset.optString("name", "")
+            val url = asset.optString("browser_download_url", "")
+            val score = apkAssetScore(name = name, url = url, architecture = BuildConfig.ARCHITECTURE)
+            if (score < 0) continue
+
+            val size = asset.optLong("size", 0L)
+            if (score > selectedScore || (score == selectedScore && size > selectedSize)) {
+                selected = asset
+                selectedScore = score
+                selectedSize = size
+            }
+        }
+
+        return selected
+    }
+
     private fun parseReleasesJson(
         json: String,
     ): List<ReleaseInfo> {
@@ -181,18 +272,12 @@ object Updater {
         for (i in 0 until jsonArray.length()) {
             val item = jsonArray.getJSONObject(i)
             
-            var downloadUrl: String? = null
-            if (item.has("assets")) {
-                val assets = item.getJSONArray("assets")
-                for (j in 0 until assets.length()) {
-                    val asset = assets.getJSONObject(j)
-                    val url = asset.optString("browser_download_url", "")
-                    if (url.endsWith(".apk")) {
-                        downloadUrl = url
-                        if (url.contains("Universal", ignoreCase = true) || url.contains("universal")) break
-                    }
+            val apkAsset =
+                if (item.has("assets")) {
+                    selectPreferredApkAsset(item.getJSONArray("assets"))
+                } else {
+                    null
                 }
-            }
 
             releases.add(
                 ReleaseInfo(
@@ -201,7 +286,9 @@ object Updater {
                     body = if (item.has("body")) item.optString("body") else null,
                     publishedAt = item.optString("published_at", ""),
                     htmlUrl = item.optString("html_url", ""),
-                    downloadUrl = downloadUrl
+                    downloadUrl = apkAsset?.optString("browser_download_url", "")?.takeIf { it.isNotBlank() },
+                    downloadAssetName = apkAsset?.optString("name", "")?.takeIf { it.isNotBlank() },
+                    downloadAssetSize = apkAsset?.optLong("size", 0L)?.takeIf { it > 0L },
                 )
             )
         }
@@ -261,7 +348,7 @@ object Updater {
 
     suspend fun getLatestVersionName(): Result<String> =
         getLatestReleaseInfo().map { latest ->
-            preferredReleaseVersionNameOrNull(latest) ?: latest.name.ifBlank { latest.tagName }
+            getReleaseVersionName(latest)
         }
 
     suspend fun getLatestReleaseNotes(): Result<String?> =
@@ -301,54 +388,38 @@ object Updater {
         }
 
     fun getLatestDownloadUrl(): String {
-        val baseUrl = "https://github.com/EchoMusicApp/Echo-Music/releases/latest/download/"
-        val architecture = BuildConfig.ARCHITECTURE
-        return if (architecture == "universal") {
-            baseUrl + "Echo-Music.apk"
-        } else {
-            baseUrl + "app-${architecture}-release.apk"
-        }
+        return LatestReleasePageUrl
     }
 
-    suspend fun downloadLatestApk(onProgress: (Float) -> Unit): Result<java.io.File> =
+    suspend fun downloadLatestApk(onProgress: (Float) -> Unit): Result<File> =
         runCatching {
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                val releases = getAllReleases().getOrNull()
-                val latest = releases?.let { findLatestRelease(it) }
-                val urlString = latest?.downloadUrl ?: getLatestDownloadUrl()
-                
-                var url = java.net.URL(urlString)
-                var connection = url.openConnection() as java.net.HttpURLConnection
-                connection.connect()
-                
-                var status = connection.responseCode
-                while (status in 300..399) {
-                    val redirectUrl = connection.getHeaderField("Location")
-                    url = java.net.URL(redirectUrl)
-                    connection = url.openConnection() as java.net.HttpURLConnection
-                    connection.connect()
-                    status = connection.responseCode
-                }
+            withContext(Dispatchers.IO) {
+                val latest = getLatestReleaseInfo().getOrThrow()
+                val urlString =
+                    latest.downloadUrl
+                        ?: throw IllegalStateException("The latest release has no APK asset")
+                val fileName =
+                    sanitizeApkFileName(
+                        latest.downloadAssetName
+                            ?: "Echo-${getReleaseVersionName(latest)}-${BuildConfig.ARCHITECTURE}.apk"
+                    )
+                val outputDir = File(App.instance.cacheDir, "updates").apply { mkdirs() }
+                val tempFile = File(outputDir, "$fileName.tmp")
+                val apkFile = File(outputDir, fileName)
 
-                val contentLength = connection.contentLength
-                val input = connection.inputStream
-                val file = java.io.File(App.instance.cacheDir, "update.apk")
-                val output = java.io.FileOutputStream(file)
-                
-                val data = ByteArray(8192)
-                var total = 0L
-                var count: Int
-                while (input.read(data).also { count = it } != -1) {
-                    total += count
-                    if (contentLength > 0) {
-                        onProgress(total.toFloat() / contentLength)
-                    }
-                    output.write(data, 0, count)
+                tempFile.delete()
+                downloadToFile(urlString, tempFile, onProgress)
+                validateDownloadedApk(App.instance, tempFile)
+
+                if (apkFile.exists() && !apkFile.delete()) {
+                    throw IllegalStateException("Could not replace previous update APK")
                 }
-                output.flush()
-                output.close()
-                input.close()
-                file
+                if (!tempFile.renameTo(apkFile)) {
+                    tempFile.copyTo(apkFile, overwrite = true)
+                    tempFile.delete()
+                }
+                reportProgress(onProgress, 1f)
+                apkFile
             }
         }
 
@@ -437,22 +508,226 @@ object Updater {
             }
         }
         
-    fun installApk(context: android.content.Context, apkFile: java.io.File) {
-        val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            androidx.core.content.FileProvider.getUriForFile(
-                context,
-                "${context.applicationContext.packageName}.FileProvider",
-                apkFile
+    private suspend fun downloadToFile(
+        urlString: String,
+        outputFile: File,
+        onProgress: (Float) -> Unit,
+    ) {
+        var url = URL(urlString)
+        var redirects = 0
+
+        while (true) {
+            validateDownloadUrl(url)
+            val connection =
+                url.openConnection() as? HttpURLConnection
+                    ?: throw IllegalStateException("Unsupported download connection")
+            connection.instanceFollowRedirects = false
+            connection.connectTimeout = 15_000
+            connection.readTimeout = 30_000
+            connection.setRequestProperty("Accept", "$ApkMimeType, application/octet-stream")
+            connection.setRequestProperty("User-Agent", "Echo Music")
+
+            try {
+                val status = connection.responseCode
+                if (status in 300..399) {
+                    if (redirects >= MaxRedirects) {
+                        throw IllegalStateException("Too many redirects while downloading update")
+                    }
+                    val location =
+                        connection.getHeaderField("Location")
+                            ?: throw IllegalStateException("Update download redirect did not include Location")
+                    url = URL(url, location)
+                    redirects += 1
+                    continue
+                }
+
+                if (status !in 200..299) {
+                    throw IllegalStateException("Update download failed: HTTP $status")
+                }
+
+                val contentType = connection.contentType.orEmpty().lowercase(Locale.US)
+                if ("text/html" in contentType || "text/plain" in contentType) {
+                    throw IllegalStateException("Update download returned $contentType instead of an APK")
+                }
+
+                val contentLength = connection.contentLengthLong
+                if (contentLength > MaxApkBytes) {
+                    throw IllegalStateException("Update APK is too large")
+                }
+
+                connection.inputStream.use { input ->
+                    FileOutputStream(outputFile).use { output ->
+                        val data = ByteArray(32 * 1024)
+                        var total = 0L
+                        var lastReportedProgress = 0f
+                        while (true) {
+                            val count = input.read(data)
+                            if (count == -1) break
+                            total += count
+                            if (total > MaxApkBytes) {
+                                throw IllegalStateException("Update APK exceeded the maximum allowed size")
+                            }
+                            output.write(data, 0, count)
+
+                            if (contentLength > 0) {
+                                val progress = (total.toFloat() / contentLength).coerceIn(0f, 1f)
+                                if (progress - lastReportedProgress >= 0.01f || progress >= 1f) {
+                                    lastReportedProgress = progress
+                                    reportProgress(onProgress, progress)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (outputFile.length() < MinApkBytes) {
+                    throw IllegalStateException("Downloaded update is too small to be a valid APK")
+                }
+                return
+            } finally {
+                connection.disconnect()
+            }
+        }
+    }
+
+    private fun validateDownloadUrl(url: URL) {
+        if (!url.protocol.equals("https", ignoreCase = true)) {
+            throw IllegalStateException("Update downloads must use HTTPS")
+        }
+        val host = url.host.lowercase(Locale.US)
+        val trusted = host in TrustedDownloadHosts || host.endsWith(".githubusercontent.com")
+        if (!trusted) {
+            throw IllegalStateException("Untrusted update download host: $host")
+        }
+    }
+
+    private suspend fun reportProgress(onProgress: (Float) -> Unit, progress: Float) {
+        withContext(Dispatchers.Main.immediate) {
+            onProgress(progress.coerceIn(0f, 1f))
+        }
+    }
+
+    private fun sanitizeApkFileName(name: String): String {
+        val sanitized =
+            name
+                .replace(Regex("""[^A-Za-z0-9._-]"""), "_")
+                .trim('_')
+                .ifBlank { "update.apk" }
+        return if (sanitized.endsWith(".apk", ignoreCase = true)) sanitized else "$sanitized.apk"
+    }
+
+    private fun validateDownloadedApk(context: Context, apkFile: File) {
+        val packageManager = context.packageManager
+        val archiveInfo =
+            getArchivePackageInfo(packageManager, apkFile)
+                ?: throw IllegalStateException("Downloaded update is not a valid APK")
+        if (archiveInfo.packageName != context.packageName) {
+            throw IllegalStateException("Downloaded APK package does not match this app")
+        }
+
+        val installedInfo = getInstalledPackageInfo(packageManager, context.packageName)
+        val archiveVersionCode = versionCodeOf(archiveInfo)
+        val installedVersionCode = versionCodeOf(installedInfo)
+        if (archiveVersionCode <= installedVersionCode) {
+            throw IllegalStateException("Downloaded APK is not newer than the installed app")
+        }
+
+        val archiveCertificates = signingCertificatesOf(archiveInfo)
+        val installedCertificates = signingCertificatesOf(installedInfo)
+        if (archiveCertificates.isNotEmpty() &&
+            installedCertificates.isNotEmpty() &&
+            archiveCertificates.intersect(installedCertificates).isEmpty()
+        ) {
+            throw IllegalStateException("Downloaded APK signature does not match this app")
+        }
+    }
+
+    private fun getPackageInfoFlags(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageManager.GET_SIGNING_CERTIFICATES
+        } else {
+            @Suppress("DEPRECATION")
+            PackageManager.GET_SIGNATURES
+        }
+
+    private fun getArchivePackageInfo(packageManager: PackageManager, apkFile: File): PackageInfo? {
+        val flags = getPackageInfoFlags()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageArchiveInfo(
+                apkFile.absolutePath,
+                PackageManager.PackageInfoFlags.of(flags.toLong())
             )
         } else {
-            android.net.Uri.fromFile(apkFile)
+            @Suppress("DEPRECATION")
+            packageManager.getPackageArchiveInfo(apkFile.absolutePath, flags)
         }
-
-        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/vnd.android.package-archive")
-            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-
-        context.startActivity(intent)
     }
+
+    private fun getInstalledPackageInfo(packageManager: PackageManager, packageName: String): PackageInfo {
+        val flags = getPackageInfoFlags()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(
+                packageName,
+                PackageManager.PackageInfoFlags.of(flags.toLong())
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.getPackageInfo(packageName, flags)
+        }
+    }
+
+    private fun versionCodeOf(packageInfo: PackageInfo): Long =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            packageInfo.longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            packageInfo.versionCode.toLong()
+        }
+
+    private fun signingCertificatesOf(packageInfo: PackageInfo): Set<String> {
+        val signatures =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.signingInfo?.apkContentsSigners
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.signatures
+            }
+
+        return signatures
+            ?.map { Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP) }
+            ?.toSet()
+            .orEmpty()
+    }
+
+    fun installApk(context: Context, apkFile: File): Result<Unit> =
+        runCatching {
+            require(apkFile.isFile) { "Update APK does not exist" }
+            val uri =
+                FileProvider.getUriForFile(
+                    context,
+                    "${context.applicationContext.packageName}.FileProvider",
+                    apkFile,
+                )
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, ApkMimeType)
+                clipData = ClipData.newUri(context.contentResolver, apkFile.name, uri)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                putExtra(Intent.EXTRA_RETURN_RESULT, true)
+            }
+
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                val fallbackIntent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+                    data = uri
+                    clipData = ClipData.newUri(context.contentResolver, apkFile.name, uri)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                    putExtra(Intent.EXTRA_RETURN_RESULT, true)
+                }
+                context.startActivity(fallbackIntent)
+            }
+        }
 }

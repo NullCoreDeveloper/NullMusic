@@ -6,7 +6,9 @@
 package iad1tya.echo.music.lyrics
 
 import android.icu.text.Transliterator
+import android.os.Build
 import android.text.format.DateUtils
+import androidx.annotation.RequiresApi
 import com.atilika.kuromoji.ipadic.Tokenizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,9 +42,7 @@ object LyricsUtils {
         UnicodeScript.HANGUL,
         UnicodeScript.DEVANAGARI,
     )
-    private val genericRomanizationTransliterator = ThreadLocal.withInitial {
-        Transliterator.getInstance(GENERIC_ROMANIZATION_TRANSFORM)
-    }
+    private val genericRomanizationTransliterator = ThreadLocal<Transliterator>()
 
     private val KANA_ROMAJI_MAP: Map<String, String> = mapOf(
         // Digraphs (Yōon - combinations like kya, sho)
@@ -500,8 +500,16 @@ object LyricsUtils {
         return normalizeRomanizedText(text, romanized)
     }
 
-    private suspend fun romanizeWithIcu(text: String): String = withContext(Dispatchers.Default) {
-        genericRomanizationTransliterator.get().transliterate(text)
+    private suspend fun romanizeWithIcu(text: String): String? = withContext(Dispatchers.Default) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@withContext null
+        getGenericRomanizationTransliterator().transliterate(text)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun getGenericRomanizationTransliterator(): Transliterator {
+        return genericRomanizationTransliterator.get()
+            ?: Transliterator.getInstance(GENERIC_ROMANIZATION_TRANSFORM)
+                .also { genericRomanizationTransliterator.set(it) }
     }
 
     private fun normalizeRomanizedText(original: String, romanized: String?): String? {

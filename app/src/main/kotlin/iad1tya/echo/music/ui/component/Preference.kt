@@ -601,7 +601,7 @@ fun CrossfadeSliderPreference(
                         kotlin.math.abs(delta) < 0.001f
                     }
                     val displayValue =
-                        if (isWhole) rounded.roundToInt().toString() else String.format(java.util.Locale.getDefault(), "%.1f", rounded)
+                        if (isWhole) rounded.roundToInt().toString() else String.format(java.util.Locale.ROOT, "%.1f", rounded)
                     Text(
                         text =
                         if (rounded <= 0f) {
@@ -659,7 +659,7 @@ fun CrossfadeSliderPreference(
         kotlin.math.abs(delta) < 0.001f
     }
     val displayValue =
-        if (isWhole) rounded.roundToInt().toString() else String.format(java.util.Locale.getDefault(), "%.1f", rounded)
+        if (isWhole) rounded.roundToInt().toString() else String.format(java.util.Locale.ROOT, "%.1f", rounded)
     val descriptionText =
         if (rounded <= 0f) {
             stringResource(R.string.dark_theme_off)

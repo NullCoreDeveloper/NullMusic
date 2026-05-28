@@ -6,7 +6,7 @@ This document provides instructions for setting up the Echo Music project for de
 
 - Android Studio (latest version recommended)
 - Android SDK (API level as specified in `build.gradle.kts`)
-- JDK 11 or higher
+- JDK 21
 - Git
 
 ## Initial Setup
@@ -20,10 +20,10 @@ cd Echo-Music
 
 ### 2. Configure Local Properties
 
-Create a `local.properties` file from the example template:
+Create a `local.properties` file from the template:
 
 ```bash
-cp local.properties.example local.properties
+cp local.properties.template local.properties
 ```
 
 Edit `local.properties` and set your Android SDK path:
@@ -33,6 +33,7 @@ sdk.dir=/path/to/your/android/sdk
 ```
 
 **Example paths:**
+
 - macOS: `/Users/username/Library/Android/sdk`
 - Linux: `/home/username/Android/sdk`
 - Windows: `C:\\Users\\username\\AppData\\Local\\Android\\sdk`
@@ -45,12 +46,6 @@ Firebase is used for analytics and crash reporting. If you want to use these fea
 2. Add an Android app to your Firebase project
 3. Download the `google-services.json` file
 4. Place it in the `app/` directory
-
-Alternatively, copy the example template and fill in your credentials:
-
-```bash
-cp app/google-services.json.example app/google-services.json
-```
 
 **Note:** If you skip Firebase setup, the app will still build and run, but analytics and crash reporting will be disabled.
 
@@ -81,13 +76,13 @@ Open the project in Android Studio or build from the command line:
 
 ```bash
 # For debug build
-./gradlew assembleDebug
+./gradlew assembleMobileUniversalDebug
 
-# For FOSS debug build (without Firebase)
-./gradlew assembleFossDebug
+# On Windows
+.\gradlew.bat assembleMobileUniversalDebug
 
 # For release build (requires signing configuration)
-./gradlew assembleRelease
+./gradlew assembleMobileUniversalRelease
 ```
 
 ### 6. Configure AI Translation (Optional)
@@ -95,20 +90,22 @@ Open the project in Android Studio or build from the command line:
 Echo Music supports AI-powered lyrics translation. You can configure this in **Settings -> AI Settings**.
 
 #### Option A: Using OpenRouter (Default)
+
 This is the recommended setup for most users.
 
-1.  Get an API Key from [OpenRouter](https://openrouter.ai/).
-2.  In the app, go to **Settings -> AI Settings**.
-3.  Ensure **Provider** is set to **OpenRouter**.
-4.  Enter your **API Key**.
+1. Get an API Key from [OpenRouter](https://openrouter.ai/).
+2. In the app, go to **Settings -> AI Settings**.
+3. Ensure **Provider** is set to **OpenRouter**.
+4. Enter your **API Key**.
 
 #### Option B: Using Custom Provider
+
 Use this for other services like OpenAI, Anthropic, or local LLMs.
 
-1.  In the app, go to **Settings -> AI Settings**.
-2.  Select your **Provider** (e.g., ChatGPT, Gemini, or Custom).
-3.  If using **Custom**, enter your provider's **Base URL**.
-4.  Enter your **API Key**.
+1. In the app, go to **Settings -> AI Settings**.
+2. Select your **Provider** (e.g., ChatGPT, Gemini, or Custom).
+3. If using **Custom**, enter your provider's **Base URL**.
+4. Enter your **API Key**.
 
 ## Important Files
 
@@ -123,8 +120,8 @@ These files are already listed in `.gitignore` and should never be committed to 
 
 ### Template Files (Safe to commit)
 
-- `local.properties.example` - Template for local properties
-- `app/google-services.json.example` - Template for Firebase configuration
+- `local.properties.template` - Template for local properties
+- `app/google-services.json` - Optional Firebase configuration
 
 ## Troubleshooting
 
@@ -134,10 +131,10 @@ Make sure you've created `local.properties` with the correct SDK path.
 
 ### Firebase-related Build Errors
 
-If you're not using Firebase, you can build the FOSS (Free and Open Source) variant:
+If you're not using Firebase, you can build the standard debug variant without `app/google-services.json`:
 
 ```bash
-./gradlew assembleFossDebug
+./gradlew assembleMobileUniversalDebug
 ```
 
 ### Gradle Sync Issues

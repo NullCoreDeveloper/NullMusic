@@ -21,7 +21,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -476,7 +475,7 @@ fun LyricsV2(
         if (showMaxSelectionToast) {
             Toast.makeText(
                 context,
-                context.getString(R.string.max_selection_limit, maxSelectionLimit),
+                "${context.getString(R.string.max_selection_limit)} ($maxSelectionLimit)",
                 Toast.LENGTH_SHORT
             ).show()
             showMaxSelectionToast = false
@@ -493,7 +492,7 @@ fun LyricsV2(
     }
 
     // ── Render ──
-    BoxWithConstraints(
+    Box(
         contentAlignment = Alignment.TopCenter,
         modifier = modifier
             .fillMaxSize()
@@ -511,7 +510,7 @@ fun LyricsV2(
                     textAlign = TextAlign.Center,
                 )
             }
-            return@BoxWithConstraints
+            return@Box
         }
 
         if (lyrics == null) {
@@ -520,7 +519,7 @@ fun LyricsV2(
                     TextPlaceholder()
                 }
             }
-            return@BoxWithConstraints
+            return@Box
         }
 
         if (entriesWithWords.isEmpty()) {
@@ -535,7 +534,7 @@ fun LyricsV2(
                     textAlign = TextAlign.Center,
                 )
             }
-            return@BoxWithConstraints
+            return@Box
         }
 
         LazyColumn(

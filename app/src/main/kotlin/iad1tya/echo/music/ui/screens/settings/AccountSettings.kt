@@ -212,7 +212,7 @@ fun AccountSettings(
         }
     }
 
-    val hasUpdate = !Updater.isSameVersion(latestVersionName, BuildConfig.VERSION_NAME)
+    val hasUpdate = Updater.isNewerVersion(latestVersionName, BuildConfig.VERSION_NAME)
     val tokenActionTitle = when {
         !isLoggedIn -> stringResource(R.string.advanced_login)
         showToken -> stringResource(R.string.token_shown)

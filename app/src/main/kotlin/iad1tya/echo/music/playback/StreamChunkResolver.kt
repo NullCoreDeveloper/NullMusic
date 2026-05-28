@@ -10,13 +10,17 @@ internal fun resolveStreamChunkLength(
 ): Long? {
     if (chunkLength <= 0L || position < 0L) return null
 
-    val remainingLength = knownContentLength?.minus(position)?.takeIf { it > 0L }
+    val remainingLength = knownContentLength?.let { it - position }
+    if (remainingLength != null && remainingLength <= 0L) return null
+
+    val requested = if (requestedLength > 0L) requestedLength else null
+
     val resolvedLength =
         listOfNotNull(
             chunkLength,
-            requestedLength.takeIf { it > 0L },
+            requested,
             remainingLength,
-        ).minOrNull()
+        ).minOrNull() ?: return null
 
-    return resolvedLength?.takeIf { it > 0L }
+    return if (resolvedLength > 0L) resolvedLength else null
 }

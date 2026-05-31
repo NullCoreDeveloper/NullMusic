@@ -190,6 +190,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -2540,7 +2541,13 @@ class MusicService :
             val mediaId = dataSpec.key ?: error("No media id")
 
             
-            val shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
+            var shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
+            if (!shouldBypassCache && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
+                val format = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
+                if (format?.codecs != "flac") {
+                    shouldBypassCache = true
+                }
+            }
 
             if (!shouldBypassCache) {
                 if (downloadCache.isCached(
@@ -2564,10 +2571,19 @@ class MusicService :
 
             Timber.tag("MusicService").i("FETCHING STREAM: $mediaId | quality=$audioQuality")
             val playbackData = runBlocking(Dispatchers.IO) {
+                val dbSong = database.song(mediaId).firstOrNull()
+                val knownArtist = dbSong?.artists?.joinToString { it.name }?.replace(" - Topic", "")
+                val knownTitle = dbSong?.song?.title
+                val knownDuration = dbSong?.song?.duration?.let { if (it > 0) it * 1000L else null }
+
                 YTPlayerUtils.playerResponseForPlayback(
                     mediaId,
                     audioQuality = audioQuality,
                     connectivityManager = connectivityManager,
+                    context = this@MusicService,
+                    knownArtist = knownArtist,
+                    knownTitle = knownTitle,
+                    knownDurationMs = knownDuration
                 )
             }.getOrElse { throwable ->
                 when (throwable) {
@@ -2646,7 +2662,7 @@ class MusicService :
         DefaultMediaSourceFactory(
             createDataSourceFactory(),
             ExtractorsFactory {
-                arrayOf(MatroskaExtractor(), FragmentedMp4Extractor())
+                arrayOf(MatroskaExtractor(), FragmentedMp4Extractor(), androidx.media3.extractor.flac.FlacExtractor())
             },
         )
 

@@ -287,6 +287,21 @@ fun BottomSheetPlayer(
     }
 
     val isPlaying by playerConnection.isPlaying.collectAsState()
+    
+    var currentAudioFormat by remember { mutableStateOf<androidx.media3.common.Format?>(null) }
+    DisposableEffect(playerConnection) {
+        val listener = object : Player.Listener {
+            override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
+                val audioTrack = tracks.groups.firstOrNull { it.type == C.TRACK_TYPE_AUDIO }
+                currentAudioFormat = audioTrack?.getTrackFormat(0)
+            }
+        }
+        playerConnection.player.addListener(listener)
+        currentAudioFormat = playerConnection.player.currentTracks.groups.firstOrNull { it.type == C.TRACK_TYPE_AUDIO }?.getTrackFormat(0)
+        onDispose {
+            playerConnection.player.removeListener(listener)
+        }
+    }
     val swipeLyrics by rememberPreference(SwipeLyricsKey, false)
     val enableLyricsThumbnailPlayPause by rememberPreference(EnableLyricsThumbnailPlayPauseKey, false)
     val isKeepScreenOn by rememberPreference(KeepScreenOn, false)
@@ -333,6 +348,7 @@ fun BottomSheetPlayer(
 
     val playbackState by playerConnection.playbackState.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val currentFormatEntity by database.format(mediaMetadata?.id).collectAsState(initial = null)
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val automix by playerConnection.service.automixItems.collectAsState()
     val repeatMode by playerConnection.repeatMode.collectAsState()
@@ -1545,6 +1561,32 @@ fun BottomSheetPlayer(
                             }
                         }
                     }
+                    val isLossless = audioQuality == AudioQuality.LOSSLESS
+                    val isFlac = currentAudioFormat?.sampleMimeType == "audio/flac" || currentFormatEntity?.codecs == "flac"
+                    if (isLossless && isFlac) {
+                        val formatText = remember(currentAudioFormat, currentFormatEntity) {
+                            val sampleRate = currentAudioFormat?.sampleRate ?: currentFormatEntity?.sampleRate ?: 0
+                            val sampleRateKhz = if (sampleRate > 0) "${sampleRate / 1000f} kHz" else ""
+                            var bitDepthStr = ""
+                            if (currentFormatEntity?.bitrate != null && currentFormatEntity!!.bitrate > 0 && currentFormatEntity?.sampleRate != null && currentFormatEntity!!.sampleRate!! > 0) {
+                                val sr = currentFormatEntity!!.sampleRate!!
+                                val calcBitDepth = currentFormatEntity!!.bitrate / (sr * 2)
+                                if (calcBitDepth == 16 || calcBitDepth == 24) bitDepthStr = "$calcBitDepth-bit"
+                            }
+                            val text = listOf("FLAC", sampleRateKhz, bitDepthStr).filter { it.isNotEmpty() }.joinToString(" • ")
+                            if (text.isEmpty()) "LOSSLESS" else text
+                        }
+                        Text(
+                            text = formatText,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                                fontSize = 10.sp
+                            ),
+                            color = TextBackgroundColor.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -2100,6 +2142,7 @@ fun BottomSheetPlayer(
                                             AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
                                             AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
                                             AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                                            AudioQuality.LOSSLESS -> stringResource(R.string.audio_quality_lossless)
                                         }.uppercase(),
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontSize = 10.sp,

@@ -201,6 +201,7 @@ fun PlayerSettings(
                     AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
                     AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
                     AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                    AudioQuality.LOSSLESS -> stringResource(R.string.audio_quality_lossless)
                 }
             }
         )
@@ -258,6 +259,7 @@ fun PlayerSettings(
                                 AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
                                 AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
                                 AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                                AudioQuality.LOSSLESS -> stringResource(R.string.audio_quality_lossless)
                             }
                         )
                     },

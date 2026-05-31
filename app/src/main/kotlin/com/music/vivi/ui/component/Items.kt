@@ -37,6 +37,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.border
+import androidx.compose.ui.unit.sp
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -372,6 +374,35 @@ fun SongListItem(
     showInLibraryIcon: Boolean = false,
     showDownloadIcon: Boolean = true,
     badges: @Composable RowScope.() -> Unit = {
+        val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.AUTO.name)
+        val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.AUTO)
+        
+        if (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
+            val qobuzMatch by rememberQobuzMatch(
+                id = song.id,
+                artist = song.artists.joinToString { it.name }.replace(" - Topic", ""),
+                title = song.song.title,
+                durationMs = song.song.duration * 1000L,
+                audioQuality = audioQuality,
+                cachedFlac = song.format?.codecs == "flac"
+            )
+            if (qobuzMatch == true) {
+                Text(
+                    text = "LOSSLESS",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                        fontSize = 8.sp
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                        .padding(horizontal = 2.dp)
+                )
+            }
+        }
+
         if (showLikedIcon && song.song.liked) {
             Icon.Favorite()
         }
@@ -995,6 +1026,39 @@ fun YouTubeListItem(
             Icon.Favorite()
         }
         if (item.explicit) Icon.Explicit()
+        
+        if (item is SongItem) {
+            val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.AUTO.name)
+            val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.AUTO)
+            
+            if (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
+                val qobuzMatch by rememberQobuzMatch(
+                    id = item.id,
+                    artist = item.artists.joinToString { it.name }.replace(" - Topic", ""),
+                    title = item.title,
+                    durationMs = item.duration?.times(1000L),
+                    audioQuality = audioQuality,
+                    cachedFlac = false
+                )
+                
+                if (qobuzMatch == true) {
+                    Text(
+                        text = "LOSSLESS",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            fontSize = 8.sp
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                            .padding(horizontal = 2.dp)
+                    )
+                }
+            }
+        }
+        
         if (item is SongItem) {
             val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)
             Icon.Download(download?.state)
@@ -1745,5 +1809,37 @@ object Icon {
                 .size(18.dp)
                 .padding(end = 2.dp)
         )
+    }
+}
+
+@Composable
+fun rememberQobuzMatch(
+    id: String,
+    artist: String,
+    title: String,
+    durationMs: Long?,
+    audioQuality: iad1tya.echo.music.constants.AudioQuality,
+    cachedFlac: Boolean
+): androidx.compose.runtime.State<Boolean?> {
+    return androidx.compose.runtime.produceState<Boolean?>(initialValue = if (cachedFlac) true else null, id) {
+        if (cachedFlac) {
+            value = true
+            return@produceState
+        }
+        kotlinx.coroutines.delay(300) // Debounce fast scrolling
+        val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
+        var found = false
+        for (term in iad1tya.echo.music.utils.qobuzSearchTerms(artist, title)) {
+            val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
+            val candidates = searchResult.tracks?.items.orEmpty()
+            if (candidates.isEmpty()) continue
+            val scored = candidates.map { it to iad1tya.echo.music.utils.confidence(artist, title, durationMs, it) }
+            val match = scored.filter { it.second >= 0.5f }.maxByOrNull { it.second }
+            if (match != null) {
+                found = true
+                break
+            }
+        }
+        value = found
     }
 }

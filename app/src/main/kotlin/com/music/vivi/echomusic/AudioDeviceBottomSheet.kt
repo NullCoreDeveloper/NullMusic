@@ -559,6 +559,10 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                     AudioQualitySelector(context)
 
                     Spacer(modifier = Modifier.height(24.dp))
+                    
+                    DownloadQualitySelector()
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -813,6 +817,73 @@ fun AudioQualitySelector(context: Context) {
                         }
                         onAudioQualityChange(newQuality)
                         applyAudioQuality(context, newQuality)
+                    },
+                    shapes = when (index) {
+                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                        options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .semantics { role = Role.RadioButton }
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun DownloadQualitySelector() {
+    val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
+        key = iad1tya.echo.music.constants.DownloadQualityKey,
+        defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Download Quality",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .padding(bottom = 12.dp)
+                .fillMaxWidth()
+        )
+
+        val options = listOf(
+            "YouTube Music (AAC/Default)",
+            "Lossless"
+        )
+        val selectedIndex = when (downloadQuality) {
+            iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> 0
+            iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> 1
+        }
+
+        androidx.compose.foundation.layout.FlowRow(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEachIndexed { index, label ->
+                ToggleButton(
+                    checked = selectedIndex == index,
+                    onCheckedChange = {
+                        val newQuality = when (index) {
+                            0 -> iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
+                            else -> iad1tya.echo.music.constants.DownloadQuality.LOSSLESS
+                        }
+                        onDownloadQualityChange(newQuality)
                     },
                     shapes = when (index) {
                         0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()

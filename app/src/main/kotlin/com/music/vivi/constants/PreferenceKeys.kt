@@ -103,6 +103,13 @@ enum class AudioQuality {
     LOSSLESS,
 }
 
+val DownloadQualityKey = stringPreferencesKey("downloadQuality")
+
+enum class DownloadQuality {
+    YOUTUBE,
+    LOSSLESS,
+}
+
 val AudioOffload = booleanPreferencesKey("enableOffload")
 
 val PersistentQueueKey = booleanPreferencesKey("persistentQueue")

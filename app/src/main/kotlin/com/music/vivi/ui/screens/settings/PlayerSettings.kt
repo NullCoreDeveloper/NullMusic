@@ -186,6 +186,34 @@ fun PlayerSettings(
         mutableStateOf(false)
     }
 
+    val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
+        iad1tya.echo.music.constants.DownloadQualityKey,
+        defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
+    )
+
+    var showDownloadQualityDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if (showDownloadQualityDialog) {
+        EnumDialog(
+            onDismiss = { showDownloadQualityDialog = false },
+            onSelect = {
+                onDownloadQualityChange(it)
+                showDownloadQualityDialog = false
+            },
+            title = "Download Quality",
+            current = downloadQuality,
+            values = iad1tya.echo.music.constants.DownloadQuality.values().toList(),
+            valueText = {
+                when (it) {
+                    iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
+                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
+                }
+            }
+        )
+    }
+
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
@@ -264,6 +292,19 @@ fun PlayerSettings(
                         )
                     },
                     onClick = { showAudioQualityDialog = true }
+                ))
+                add(Material3SettingsItem(
+                    icon = painterResource(R.drawable.download),
+                    title = { Text("Download Quality") },
+                    description = {
+                        Text(
+                            when (downloadQuality) {
+                                iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
+                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
+                            }
+                        )
+                    },
+                    onClick = { showDownloadQualityDialog = true }
                 ))
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.linear_scale),

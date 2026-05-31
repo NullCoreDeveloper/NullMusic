@@ -263,10 +263,14 @@ fun BottomSheetPlayer(
     )
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(HidePlayerThumbnailKey, false)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
-    val playerBackground by rememberEnumPreference(
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
+
+    val playerBackgroundPref by rememberEnumPreference(
         key = PlayerBackgroundStyleKey,
         defaultValue = PlayerBackgroundStyle.GRADIENT
     )
+    val playerBackground = if (isLocalMedia) PlayerBackgroundStyle.DEFAULT else playerBackgroundPref
     val playerButtonsStyle by rememberEnumPreference(
         key = PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT
@@ -286,9 +290,6 @@ fun BottomSheetPlayer(
             PlayerBackgroundStyle.DEFAULT -> useDarkTheme
         }
     }
-
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
     val isPlaying by playerConnection.isPlaying.collectAsState()
     
     var currentAudioFormat by remember { mutableStateOf<androidx.media3.common.Format?>(null) }

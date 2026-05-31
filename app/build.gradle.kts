@@ -23,6 +23,13 @@ android {
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/spatial/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
     defaultConfig {
         applicationId = "iad1tya.echo.music"
         minSdk = 26

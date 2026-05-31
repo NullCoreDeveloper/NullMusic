@@ -814,6 +814,7 @@ fun AppearanceSettings(
                         Slider(
                             value = sliderValue,
                             valueRange = 0f..1f,
+                                    
                             onValueChange = {  },
                             colors = sliderPreviewColors,
                             enabled = false,
@@ -849,6 +850,7 @@ fun AppearanceSettings(
                         WavySlider(
                             value = sliderValue,
                             valueRange = 0f..1f,
+                                    
                             onValueChange = {  },
                             colors = sliderPreviewColors,
                             modifier = Modifier.weight(1f),
@@ -889,6 +891,7 @@ fun AppearanceSettings(
                         Slider(
                             value = sliderValue,
                             valueRange = 0f..1f,
+                                    
                             onValueChange = {  },
                             thumb = { Spacer(modifier = Modifier.size(0.dp)) },
                             track = { sliderState ->
@@ -932,6 +935,7 @@ fun AppearanceSettings(
                         SquigglySlider(
                             value = sliderValue,
                             valueRange = 0f..1f,
+                                    
                             onValueChange = {  },
                             modifier = Modifier.weight(1f),
                             enabled = false,
@@ -1396,6 +1400,7 @@ fun AppearanceSettings(
                         value = tempSensitivity,
                         onValueChange = { tempSensitivity = it },
                         valueRange = 0f..1f,
+                                    
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

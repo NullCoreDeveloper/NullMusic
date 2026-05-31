@@ -242,6 +242,9 @@ class MusicService :
 
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
+    
+    @Inject
+    lateinit var spatialAudioProcessor: com.music.vivi.playback.audio.spatial.SpatialAudioProcessor
 
     private lateinit var audioManager: AudioManager
     private var audioFocusRequest: AudioFocusRequest? = null
@@ -604,39 +607,21 @@ class MusicService :
 
                     Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality")
 
-                    
+                    Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect for upcoming songs.")
+
                     val mediaId = player.currentMediaItem?.mediaId ?: return@collect
-                    val currentPosition = player.currentPosition
-                    val wasPlaying = player.isPlaying
-                    val currentIndex = player.currentMediaItemIndex
+                    val currentUrl = songUrlCache[mediaId]
 
-                    Timber.tag("MusicService").i("RELOADING STREAM: $mediaId at position ${currentPosition}ms")
-
+                    // Clear cache for upcoming songs so they fetch the new quality
+                    songUrlCache.clear()
                     
-                    songUrlCache.remove(mediaId)
-
-                    
-                    runBlocking(Dispatchers.IO) {
-                        try {
-                            playerCache.removeResource(mediaId)
-                            downloadCache.removeResource(mediaId)
-                            Timber.tag("MusicService").d("Cleared player and download cache for $mediaId")
-                        } catch (e: Exception) {
-                            Timber.tag("MusicService").e(e, "Failed to clear cache for $mediaId")
-                        }
+                    // Restore the currently playing song's URL so it doesn't break
+                    if (currentUrl != null) {
+                        songUrlCache[mediaId] = currentUrl
                     }
 
-                    
-                    bypassCacheForQualityChange.add(mediaId)
-                    Timber.tag("MusicService").d("Set bypass cache flag for $mediaId")
-
-                    
-                    player.stop()
-                    player.seekTo(currentIndex, currentPosition)
-                    player.prepare()
-                    if (wasPlaying) {
-                        player.play()
-                    }
+                    // Re-trigger prefetch to fetch the next songs in the new quality
+                    preloadUpcomingItems()
                 }
         }
 
@@ -775,6 +760,36 @@ class MusicService :
                 crossfadeDuration = duration * 1000f 
                 crossfadeGapless = gapless
             }
+
+        scope.launch {
+            dataStore.data.map { it[iad1tya.echo.music.constants.SpatialAudioEnabledKey] ?: false }.distinctUntilChanged().collect { enabled ->
+                spatialAudioProcessor.setSpatialEnabled(enabled)
+            }
+        }
+        
+        scope.launch {
+            dataStore.data.map { it[iad1tya.echo.music.constants.SpatialAudioStrengthKey] ?: 0.7f }.distinctUntilChanged().collect { strength ->
+                spatialAudioProcessor.setSpatialStrength(strength)
+            }
+        }
+        
+        scope.launch {
+            dataStore.data.map { it[iad1tya.echo.music.constants.CrossfeedEnabledKey] ?: false }.distinctUntilChanged().collect { enabled ->
+                spatialAudioProcessor.setCrossfeedEnabled(enabled)
+            }
+        }
+        
+        scope.launch {
+            dataStore.data.map { it[iad1tya.echo.music.constants.BassBoostKey] ?: 0f }.distinctUntilChanged().collect { strength ->
+                spatialAudioProcessor.setBassBoost(strength)
+            }
+        }
+        
+        scope.launch {
+            dataStore.data.map { it[iad1tya.echo.music.constants.VirtualizerKey] ?: 0f }.distinctUntilChanged().collect { strength ->
+                spatialAudioProcessor.setVirtualizer(strength)
+            }
+        }
 
         if (dataStore.get(PersistentQueueKey, true)) {
             val queueFile = filesDir.resolve(PERSISTENT_QUEUE_FILE)
@@ -1778,6 +1793,7 @@ class MusicService :
 
         lastPlaybackSpeed = -1.0f 
 
+        preloadUpcomingItems()
         setupLoudnessEnhancer()
 
         discordUpdateJob?.cancel()
@@ -2459,10 +2475,8 @@ class MusicService :
                     .Factory()
                     .setCache(playerCache)
                     .setUpstreamDataSourceFactory(
-                        DefaultDataSource.Factory(
-                            this,
-                            OkHttpDataSource.Factory(
-                                OkHttpClient
+                        OkHttpDataSource.Factory(
+                            OkHttpClient
                                     .Builder()
                                     .dns(object : Dns {
                                         override fun lookup(hostname: String): List<InetAddress> {
@@ -2482,10 +2496,9 @@ class MusicService :
                                                 .build()
                                         } ?: response.request
                                     }
-                                    .build(),
-                            ),
-                        ),
-                    ),
+                                    .build()
+                            )
+                    )
             ).setCacheWriteDataSinkFactory(null)
             .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
 
@@ -2538,7 +2551,9 @@ class MusicService :
     }
 
     private fun createDataSourceFactory(): DataSource.Factory {
-        return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
+        return ResolvingDataSource.Factory(
+            DefaultDataSource.Factory(this, createCacheDataSource())
+        ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
             if (mediaId.isLocalMediaId()) return@Factory dataSpec
 
@@ -2691,6 +2706,7 @@ class MusicService :
                         
                         arrayOf(
                             eqProcessor,
+                            spatialAudioProcessor,
                             silenceProcessor,
                         ),
                         SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
@@ -3165,5 +3181,79 @@ class MusicService :
         @Volatile
         var isRunning = false
             private set
+    }
+
+    private var preloadJob: kotlinx.coroutines.Job? = null
+
+    private fun preloadUpcomingItems() {
+        val preloadEnabled = kotlinx.coroutines.runBlocking { dataStore.get(iad1tya.echo.music.constants.PreloadNextSongEnabledKey, true) }
+        if (!preloadEnabled) return
+
+        val preloadLimit = kotlinx.coroutines.runBlocking { dataStore.get(iad1tya.echo.music.constants.PreloadNextSongLimitKey, 1) }
+        val preloadLyrics = kotlinx.coroutines.runBlocking { dataStore.get(iad1tya.echo.music.constants.PreloadLyricsEnabledKey, true) }
+
+        val currentIndex = player.currentMediaItemIndex
+        if (currentIndex == androidx.media3.common.C.INDEX_UNSET) return
+
+        val limit = kotlin.math.min(preloadLimit, player.mediaItemCount - currentIndex - 1)
+        if (limit <= 0) return
+
+        val upcomingMediaIds = mutableListOf<String>()
+        for (i in 1..limit) {
+            upcomingMediaIds.add(player.getMediaItemAt(currentIndex + i).mediaId)
+        }
+
+        preloadJob?.cancel()
+        preloadJob = scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            for (mediaId in upcomingMediaIds) {
+
+                if (!mediaId.isLocalMediaId() && !songUrlCache.containsKey(mediaId)) {
+                    Timber.tag(TAG).d("Preloading stream for $mediaId")
+                    kotlin.runCatching {
+                        val dbSong = database.song(mediaId).firstOrNull()
+                        val knownArtist = dbSong?.artists?.joinToString(separator = ", ") { artist -> artist.name }?.replace(" - Topic", "")
+                        
+                        val playbackData = iad1tya.echo.music.utils.YTPlayerUtils.playerResponseForPlayback(
+                            videoId = mediaId,
+                            audioQuality = audioQuality,
+                            connectivityManager = connectivityManager,
+                            context = this@MusicService,
+                            knownArtist = knownArtist,
+                            knownTitle = dbSong?.song?.title,
+                            knownDurationMs = dbSong?.song?.duration?.let { if (it > 0) it * 1000L else null }
+                        )
+
+                        playbackData.getOrNull()?.streamUrl?.let { streamUrl ->
+                            songUrlCache[mediaId] = Pair(streamUrl, System.currentTimeMillis() + 1000 * 60 * 60)
+                            Timber.tag(TAG).d("Preloaded stream for $mediaId")
+                        }
+                    }
+                }
+
+                if (preloadLyrics) {
+                    val dbLyrics = database.lyrics(mediaId).firstOrNull()
+                    if (dbLyrics == null) {
+                        Timber.tag(TAG).d("Preloading lyrics for $mediaId")
+                        val dbSong = database.song(mediaId).firstOrNull()
+                        if (dbSong != null) {
+                            kotlin.runCatching {
+                                val metadata = iad1tya.echo.music.models.MediaMetadata(
+                                    id = dbSong.song.id,
+                                    title = dbSong.song.title,
+                                    artists = dbSong.artists.map { artist -> iad1tya.echo.music.models.MediaMetadata.Artist(artist.id, artist.name) },
+                                    duration = dbSong.song.duration,
+                                    thumbnailUrl = dbSong.song.thumbnailUrl
+                                )
+                                val lyricsResult = lyricsHelper.getLyrics(metadata)
+                                database.query {
+                                    upsert(iad1tya.echo.music.db.entities.LyricsEntity(id = mediaId, lyrics = lyricsResult.lyrics))
+                                }
+                                Timber.tag(TAG).d("Preloaded lyrics for $mediaId")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -61,6 +61,14 @@ import iad1tya.echo.music.constants.SimilarContent
 import iad1tya.echo.music.constants.SkipSilenceInstantKey
 import iad1tya.echo.music.constants.SkipSilenceKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
+import iad1tya.echo.music.constants.SpatialAudioEnabledKey
+import iad1tya.echo.music.constants.SpatialAudioStrengthKey
+import iad1tya.echo.music.constants.CrossfeedEnabledKey
+import iad1tya.echo.music.constants.BassBoostKey
+import iad1tya.echo.music.constants.VirtualizerKey
+import iad1tya.echo.music.constants.PreloadNextSongEnabledKey
+import iad1tya.echo.music.constants.PreloadNextSongLimitKey
+import iad1tya.echo.music.constants.PreloadLyricsEnabledKey
 import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.EnumDialog
 import iad1tya.echo.music.ui.component.IconButton
@@ -113,6 +121,46 @@ fun PlayerSettings(
     val (audioOffload, onAudioOffloadChange) = rememberPreference(
         key = AudioOffload,
         defaultValue = false
+    )
+
+    val (spatialAudioEnabled, onSpatialAudioEnabledChange) = rememberPreference(
+        key = SpatialAudioEnabledKey,
+        defaultValue = false
+    )
+    
+    val (spatialAudioStrength, onSpatialAudioStrengthChange) = rememberPreference(
+        key = SpatialAudioStrengthKey,
+        defaultValue = 0.7f
+    )
+    
+    val (crossfeedEnabled, onCrossfeedEnabledChange) = rememberPreference(
+        key = CrossfeedEnabledKey,
+        defaultValue = false
+    )
+    
+    val (bassBoost, onBassBoostChange) = rememberPreference(
+        key = BassBoostKey,
+        defaultValue = 0f
+    )
+    
+    val (virtualizer, onVirtualizerChange) = rememberPreference(
+        key = VirtualizerKey,
+        defaultValue = 0f
+    )
+
+    val (preloadNextSongEnabled, onPreloadNextSongEnabledChange) = rememberPreference(
+        key = PreloadNextSongEnabledKey,
+        defaultValue = true
+    )
+
+    val (preloadNextSongLimit, onPreloadNextSongLimitChange) = rememberPreference(
+        key = PreloadNextSongLimitKey,
+        defaultValue = 1
+    )
+
+    val (preloadLyricsEnabled, onPreloadLyricsEnabledChange) = rememberPreference(
+        key = PreloadLyricsEnabledKey,
+        defaultValue = true
     )
 
     val (enableGoogleCast, onEnableGoogleCastChange) = rememberPreference(
@@ -480,6 +528,162 @@ fun PlayerSettings(
                     },
                     onClick = { if (!crossfadeEnabled) onAudioOffloadChange(!audioOffload) }
                 ))
+                
+                add(Material3SettingsItem(
+                    icon = painterResource(R.drawable.graphic_eq),
+                    title = { Text("Spatial Audio AR") },
+                    description = { Text("Apply spatial audio effects to track playback") },
+                    trailingContent = {
+                        Switch(
+                            checked = spatialAudioEnabled,
+                            onCheckedChange = onSpatialAudioEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (spatialAudioEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onSpatialAudioEnabledChange(!spatialAudioEnabled) }
+                ))
+                
+                if (spatialAudioEnabled) {
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.graphic_eq),
+                        title = { Text("Soundstage Depth") },
+                        description = {
+                            Column {
+                                Text("${(spatialAudioStrength * 100).roundToInt()}%")
+                                Slider(
+                                    value = spatialAudioStrength,
+                                    onValueChange = onSpatialAudioStrengthChange,
+                                    valueRange = 0f..1f,
+                                    steps = 9
+                                )
+                            }
+                        }
+                    ))
+                    
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.graphic_eq),
+                        title = { Text("Crossfeed") },
+                        description = { Text("Simulate speaker playback on headphones") },
+                        trailingContent = {
+                            Switch(
+                                checked = crossfeedEnabled,
+                                onCheckedChange = onCrossfeedEnabledChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (crossfeedEnabled) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onCrossfeedEnabledChange(!crossfeedEnabled) }
+                    ))
+                    
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.graphic_eq),
+                        title = { Text("Bass Boost") },
+                        description = {
+                            Column {
+                                Text("${(bassBoost * 100).roundToInt()}%")
+                                Slider(
+                                    value = bassBoost,
+                                    onValueChange = onBassBoostChange,
+                                    valueRange = 0f..1f,
+                                    steps = 9
+                                )
+                            }
+                        }
+                    ))
+                    
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.graphic_eq),
+                        title = { Text("Virtualizer") },
+                        description = {
+                            Column {
+                                Text("${(virtualizer * 100).roundToInt()}%")
+                                Slider(
+                                    value = virtualizer,
+                                    onValueChange = onVirtualizerChange,
+                                    valueRange = 0f..1f,
+                                    steps = 9
+                                )
+                            }
+                        }
+                    ))
+                }
+                
+                add(Material3SettingsItem(
+                    icon = painterResource(R.drawable.skip_next),
+                    title = { Text("Preload Next Song") },
+                    description = { Text("Cache the next song for gapless playback") },
+                    trailingContent = {
+                        Switch(
+                            checked = preloadNextSongEnabled,
+                            onCheckedChange = onPreloadNextSongEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (preloadNextSongEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onPreloadNextSongEnabledChange(!preloadNextSongEnabled) }
+                ))
+
+                if (preloadNextSongEnabled) {
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.library_music),
+                        title = { Text("Preload Limit") },
+                        description = {
+                            Slider(
+                                value = preloadNextSongLimit.toFloat(),
+                                onValueChange = { onPreloadNextSongLimitChange(it.roundToInt()) },
+                                valueRange = 1f..10f,
+                                steps = 9
+                            )
+                        },
+                        trailingContent = {
+                            Text(text = preloadNextSongLimit.toString())
+                        }
+                    ))
+                    
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.queue_music),
+                        title = { Text("Preload Lyrics") },
+                        description = { Text("Also cache lyrics for the preloaded songs") },
+                        trailingContent = {
+                            Switch(
+                                checked = preloadLyricsEnabled,
+                                onCheckedChange = onPreloadLyricsEnabledChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (preloadLyricsEnabled) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onPreloadLyricsEnabledChange(!preloadLyricsEnabled) }
+                    ))
+                }
                 
                 if (BuildConfig.CAST_AVAILABLE) {
                     add(Material3SettingsItem(

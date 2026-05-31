@@ -48,6 +48,7 @@ import java.io.IOException
 object YTPlayerUtils {
     private const val logTag = "YTPlayerUtils"
     private const val TAG = "YTPlayerUtils"
+    private var hasShownLosslessToast = false
 
     private val httpClient: OkHttpClient = OkHttpClient.Builder()
         .dns(object : Dns {
@@ -202,9 +203,12 @@ object YTPlayerUtils {
                 Timber.tag(TAG).e(e, "Lossless resolution failed, falling back to YouTube")
                 if (audioQuality == AudioQuality.LOSSLESS) {
                     context?.let {
-                        android.os.Handler(android.os.Looper.getMainLooper()).post {
-                            val msg = if (isDownload) "Lossless is not available, downloading AAC codec" else "Lossless is not available, playing from YouTube"
-                            android.widget.Toast.makeText(it, msg, android.widget.Toast.LENGTH_SHORT).show()
+                        if (!hasShownLosslessToast) {
+                            hasShownLosslessToast = true
+                            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                val msg = if (isDownload) "Lossless is not available, downloading AAC codec" else "Lossless is not available, playing from YouTube"
+                                android.widget.Toast.makeText(it, msg, android.widget.Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

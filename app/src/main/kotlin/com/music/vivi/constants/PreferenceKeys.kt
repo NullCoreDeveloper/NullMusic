@@ -732,3 +732,12 @@ val SuggestionRegionSlugToName =
         "ae" to "United Arab Emirates",
         "il" to "Israel"
     )
+
+val SpatialAudioEnabledKey = booleanPreferencesKey("spatial_audio_enabled")
+val SpatialAudioStrengthKey = floatPreferencesKey("spatial_audio_strength")
+val CrossfeedEnabledKey = booleanPreferencesKey("crossfeed_enabled")
+val BassBoostKey = floatPreferencesKey("bass_boost")
+val VirtualizerKey = floatPreferencesKey("virtualizer")
+val PreloadNextSongEnabledKey = booleanPreferencesKey("preload_next_song_enabled")
+val PreloadNextSongLimitKey = intPreferencesKey("preload_next_song_limit")
+val PreloadLyricsEnabledKey = booleanPreferencesKey("preload_lyrics_enabled")

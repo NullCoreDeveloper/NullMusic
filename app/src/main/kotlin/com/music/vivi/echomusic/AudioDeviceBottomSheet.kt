@@ -793,8 +793,8 @@ fun AudioQualitySelector(context: Context) {
         )
         val selectedIndex = when (audioQuality) {
             AudioQuality.AUTO -> 0
-            AudioQuality.HIGH -> 1
-            AudioQuality.LOW -> 2
+            AudioQuality.OPUS -> 1
+            AudioQuality.LOSSLESS -> 2
             else -> 0
         }
 
@@ -812,8 +812,8 @@ fun AudioQualitySelector(context: Context) {
                     onCheckedChange = {
                         val newQuality = when (index) {
                             0 -> AudioQuality.AUTO
-                            1 -> AudioQuality.HIGH
-                            else -> AudioQuality.LOW
+                            1 -> AudioQuality.OPUS
+                            else -> AudioQuality.LOSSLESS
                         }
                         onAudioQualityChange(newQuality)
                         applyAudioQuality(context, newQuality)

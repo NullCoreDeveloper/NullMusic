@@ -1600,4 +1600,44 @@ interface DatabaseDao {
     fun checkpoint() {
         raw("PRAGMA wal_checkpoint(FULL)".toSQLiteQuery())
     }
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isLocal = 1 ORDER BY title COLLATE NOCASE, id")
+    fun localSongs(): Flow<List<Song>>
+
+    @Query("SELECT id FROM song WHERE isLocal = 1")
+    suspend fun localSongIds(): List<String>
+
+    @Query("DELETE FROM song WHERE isLocal = 1")
+    fun clearLocalSongs()
+
+    @Query("DELETE FROM album WHERE isLocal = 1 AND id NOT IN (SELECT DISTINCT albumId FROM song WHERE isLocal = 1 AND albumId IS NOT NULL)")
+    fun pruneLocalAlbums()
+
+    @Query("DELETE FROM artist WHERE isLocal = 1 AND id NOT IN (SELECT DISTINCT song_artist_map.artistId FROM song_artist_map JOIN song ON song_artist_map.songId = song.id WHERE song.isLocal = 1)")
+    fun pruneLocalArtists()
+
+    @Query("SELECT * FROM artist WHERE id IN (:ids)")
+    suspend fun getArtistEntitiesByIds(ids: List<String>): List<ArtistEntity>
+
+    @Query("SELECT * FROM album WHERE id IN (:ids)")
+    suspend fun getAlbumEntitiesByIds(ids: List<String>): List<AlbumEntity>
+
+    @Query("DELETE FROM song_album_map WHERE songId = :songId")
+    fun deleteSongAlbumMaps(songId: String)
+
+    @Query("DELETE FROM format WHERE id NOT IN (SELECT id FROM song)")
+    fun pruneFormats()
+
+    @Query("DELETE FROM playCount WHERE song NOT IN (SELECT id FROM song)")
+    fun prunePlayCounts()
+
+    @Query("DELETE FROM song WHERE id IN (:songIds)")
+    fun deleteSongsByIds(songIds: List<String>)
+
+    @Query("DELETE FROM song_artist_map WHERE songId = :songId")
+    fun deleteSongArtistMaps(songId: String)
+
+    @Query("DELETE FROM album_artist_map WHERE albumId IN (:albumIds)")
+    fun deleteAlbumArtistMapsByAlbumIds(albumIds: List<String>)
 }

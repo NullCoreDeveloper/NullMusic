@@ -176,6 +176,7 @@ import iad1tya.echo.music.utils.reportException
 import iad1tya.echo.music.widget.echomusicWidgetManager
 import iad1tya.echo.music.widget.MusicWidgetReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import iad1tya.echo.music.utils.isLocalMediaId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -2539,6 +2540,8 @@ class MusicService :
     private fun createDataSourceFactory(): DataSource.Factory {
         return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
+            if (mediaId.isLocalMediaId()) return@Factory dataSpec
+
 
             
             var shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
@@ -2667,9 +2670,7 @@ class MusicService :
     private fun createMediaSourceFactory() =
         DefaultMediaSourceFactory(
             createDataSourceFactory(),
-            ExtractorsFactory {
-                arrayOf(MatroskaExtractor(), FragmentedMp4Extractor(), androidx.media3.extractor.flac.FlacExtractor())
-            },
+            androidx.media3.extractor.DefaultExtractorsFactory(),
         )
 
     private fun createRenderersFactory(

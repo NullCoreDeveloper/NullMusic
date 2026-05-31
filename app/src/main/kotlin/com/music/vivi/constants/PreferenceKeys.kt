@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -202,6 +203,11 @@ val ArtistSongSortTypeKey = stringPreferencesKey("artistSongSortType")
 val ArtistSongSortDescendingKey = booleanPreferencesKey("artistSongSortDescending")
 val MixSortTypeKey = stringPreferencesKey("mixSortType")
 val MixSortDescendingKey = booleanPreferencesKey("albumSortDescending")
+
+val LocalSongsMinDurationSecondsKey = intPreferencesKey("local_songs_min_duration_seconds")
+val LocalSongsExcludedFoldersKey = stringSetPreferencesKey("local_songs_excluded_folders")
+val LocalSongsSortTypeKey = stringPreferencesKey("local_songs_sort_type")
+val LocalSongsSortDescendingKey = booleanPreferencesKey("local_songs_sort_descending")
 
 val SongFilterKey = stringPreferencesKey("songFilter")
 val ArtistFilterKey = stringPreferencesKey("artistFilter")

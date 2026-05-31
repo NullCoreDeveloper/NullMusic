@@ -110,6 +110,7 @@ import iad1tya.echo.music.extensions.toMediaItem
 import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.queues.LocalAlbumRadio
 import iad1tya.echo.music.ui.utils.resize
+import iad1tya.echo.music.utils.isLocalMediaId
 import iad1tya.echo.music.utils.joinByBullet
 import iad1tya.echo.music.utils.makeTimeString
 import iad1tya.echo.music.utils.rememberEnumPreference
@@ -384,7 +385,7 @@ fun SongListItem(
             val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.AUTO.name)
             val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.AUTO)
             
-            if (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS || audioQuality == iad1tya.echo.music.constants.AudioQuality.AUTO) {
+            if (!song.song.isLocal && (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS || audioQuality == iad1tya.echo.music.constants.AudioQuality.AUTO)) {
                 val qobuzMatch by rememberQobuzMatch(
                     id = song.id,
                     artist = song.artists.joinToString { it.name }.replace(" - Topic", ""),
@@ -998,7 +999,7 @@ fun MediaMetadataListItem(
             val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.AUTO.name)
             val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.AUTO)
             
-            if (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS || audioQuality == iad1tya.echo.music.constants.AudioQuality.AUTO) {
+            if (!mediaMetadata.id.isLocalMediaId() && (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS || audioQuality == iad1tya.echo.music.constants.AudioQuality.AUTO)) {
                 val qobuzMatch by rememberQobuzMatch(
                     id = mediaMetadata.id,
                     artist = mediaMetadata.artists.joinToString { it.name }.replace(" - Topic", ""),

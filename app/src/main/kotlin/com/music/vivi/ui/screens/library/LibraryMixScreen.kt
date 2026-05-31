@@ -368,6 +368,14 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.filter_local),
+                                icon = R.drawable.snippet_folder,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("local_songs") },
+                                modifier = itemModifier
+                            )
+
                             if (showTop) {
                                 AutoPlaylistButton(
                                     title = stringResource(R.string.my_top) + " $topSize",
@@ -611,6 +619,14 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.filter_local),
+                                icon = R.drawable.snippet_folder,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("local_songs") },
+                                modifier = itemModifier
+                            )
+
                             if (showTop) {
                                 AutoPlaylistButton(
                                     title = stringResource(R.string.my_top) + " $topSize",

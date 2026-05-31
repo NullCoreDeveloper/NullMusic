@@ -28,6 +28,7 @@ import iad1tya.echo.music.ui.screens.artist.ArtistScreen
 import iad1tya.echo.music.ui.screens.artist.ArtistSongsScreen
 import iad1tya.echo.music.ui.screens.equalizer.EqScreen
 import iad1tya.echo.music.ui.screens.library.LibraryScreen
+import iad1tya.echo.music.ui.screens.library.LocalSongScreen
 import iad1tya.echo.music.ui.screens.playlist.AutoPlaylistScreen
 import iad1tya.echo.music.ui.screens.playlist.CachePlaylistScreen
 import iad1tya.echo.music.ui.screens.playlist.LocalPlaylistScreen
@@ -108,6 +109,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("history") {
         HistoryScreen(navController)
+    }
+
+    composable("local_songs") {
+        LocalSongScreen(navController)
     }
 
     composable("stats") {

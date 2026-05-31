@@ -204,6 +204,7 @@ import iad1tya.echo.music.ui.theme.PlayerSliderColors
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.ui.utils.ShowOffsetDialog
 import iad1tya.echo.music.utils.makeTimeString
+import iad1tya.echo.music.utils.isLocalMediaId
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import dagger.hilt.android.EntryPointAccessors
@@ -286,6 +287,8 @@ fun BottomSheetPlayer(
         }
     }
 
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
     val isPlaying by playerConnection.isPlaying.collectAsState()
     
     var currentAudioFormat by remember { mutableStateOf<androidx.media3.common.Format?>(null) }
@@ -307,18 +310,16 @@ fun BottomSheetPlayer(
     val isKeepScreenOn by rememberPreference(KeepScreenOn, false)
     val keepScreenOn = isPlaying && isKeepScreenOn
 
-    DisposableEffect(playerBackground, state.isExpanded, useDarkTheme, keepScreenOn) {
+    DisposableEffect(playerBackground, state.isExpanded, useDarkTheme, keepScreenOn, mediaMetadata?.id) {
         val window = (context as? android.app.Activity)?.window
         if (window != null && state.isExpanded) {
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
             
-            when (playerBackground) {
-                PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH -> {
-                    insetsController.isAppearanceLightStatusBars = false
-                }
-                PlayerBackgroundStyle.DEFAULT -> {
-                    insetsController.isAppearanceLightStatusBars = !useDarkTheme
-                }
+            val isLocal = mediaMetadata?.id?.isLocalMediaId() == true
+            if (isLocal || playerBackground in listOf(PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH)) {
+                insetsController.isAppearanceLightStatusBars = false
+            } else {
+                insetsController.isAppearanceLightStatusBars = !useDarkTheme
             }
 
             if (keepScreenOn && state.isExpanded)
@@ -347,7 +348,6 @@ fun BottomSheetPlayer(
         }
 
     val playbackState by playerConnection.playbackState.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val currentFormatEntity by database.format(mediaMetadata?.id).collectAsState(initial = null)
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val automix by playerConnection.service.automixItems.collectAsState()
@@ -535,25 +535,19 @@ fun BottomSheetPlayer(
     }
 
     val TextBackgroundColor by animateColorAsState(
-        targetValue = when (playerBackground) {
-            PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
-            PlayerBackgroundStyle.BLUR -> Color.White
-            PlayerBackgroundStyle.GRADIENT -> Color.White
-            PlayerBackgroundStyle.GLOW_ANIMATED -> Color.White
-            PlayerBackgroundStyle.APPLE_MUSIC -> Color.White
-            PlayerBackgroundStyle.LIVE_MESH -> Color.White
+        targetValue = when {
+            isLocalMedia -> Color.White
+            playerBackground == PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
+            else -> Color.White
         },
         label = "TextBackgroundColor"
     )
 
     val icBackgroundColor by animateColorAsState(
-        targetValue = when (playerBackground) {
-            PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.surface
-            PlayerBackgroundStyle.BLUR -> Color.Black
-            PlayerBackgroundStyle.GRADIENT -> Color.Black
-            PlayerBackgroundStyle.GLOW_ANIMATED -> Color.Black
-            PlayerBackgroundStyle.APPLE_MUSIC -> Color.Black
-            PlayerBackgroundStyle.LIVE_MESH -> Color.Black
+        targetValue = when {
+            isLocalMedia -> Color.Black
+            playerBackground == PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.surface
+            else -> Color.Black
         },
         label = "icBackgroundColor"
     )
@@ -614,6 +608,7 @@ fun BottomSheetPlayer(
     }
 
     val (textButtonColor, iconButtonColor) = when {
+        isLocalMedia ||
         playerBackground == PlayerBackgroundStyle.BLUR || 
         playerBackground == PlayerBackgroundStyle.GRADIENT ||
         playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED ||
@@ -650,6 +645,7 @@ fun BottomSheetPlayer(
 
     
     val (sideButtonContainerColor, sideButtonContentColor) = when {
+        isLocalMedia ||
         playerBackground == PlayerBackgroundStyle.BLUR || 
         playerBackground == PlayerBackgroundStyle.GRADIENT -> {
             when (playerButtonsStyle) {
@@ -667,7 +663,7 @@ fun BottomSheetPlayer(
                 )
             }
         }
-        playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED -> {
+        !isLocalMedia && playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED -> {
             when (playerButtonsStyle) {
                 PlayerButtonsStyle.DEFAULT -> Pair(
                     Color.White.copy(alpha = 0.2f), 
@@ -853,11 +849,11 @@ fun BottomSheetPlayer(
         initialAnchor = 1
     )
 
-    val bottomSheetBackgroundColor = when (playerBackground) {
-        PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC ->
+    val bottomSheetBackgroundColor = when {
+        isLocalMedia -> Color.Black
+        playerBackground in listOf(PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC) ->
             MaterialTheme.colorScheme.surfaceContainer
-        PlayerBackgroundStyle.LIVE_MESH ->
-            Color.Black
+        playerBackground == PlayerBackgroundStyle.LIVE_MESH -> Color.Black
         else ->
             if (useBlackBackground) Color.Black
             else MaterialTheme.colorScheme.surfaceContainer
@@ -1561,7 +1557,7 @@ fun BottomSheetPlayer(
                             }
                         }
                     }
-                    val isLossless = audioQuality == AudioQuality.LOSSLESS
+                    val isLossless = audioQuality == AudioQuality.LOSSLESS && mediaMetadata?.id?.isLocalMediaId() != true
                     val isFlac = currentAudioFormat?.sampleMimeType == "audio/flac" || currentFormatEntity?.codecs == "flac"
                     if (isLossless && isFlac) {
                         val formatText = remember(currentAudioFormat, currentFormatEntity) {
@@ -2140,8 +2136,7 @@ fun BottomSheetPlayer(
                                     Text(
                                         text = when (audioQuality) {
                                             AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
-                                            AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
-                                            AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                                            AudioQuality.OPUS -> stringResource(R.string.audio_quality_high)
                                             AudioQuality.LOSSLESS -> stringResource(R.string.audio_quality_lossless)
                                         }.uppercase(),
                                         style = MaterialTheme.typography.labelSmall.copy(

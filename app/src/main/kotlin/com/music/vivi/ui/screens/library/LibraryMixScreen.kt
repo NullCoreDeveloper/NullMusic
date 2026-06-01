@@ -368,25 +368,24 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
-                            AutoPlaylistButton(
-                                title = stringResource(R.string.filter_local),
-                                icon = R.drawable.snippet_folder,
-                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                onClick = { navController.navigate("local_songs") },
-                                modifier = itemModifier
-                            )
-
                             if (showTop) {
                                 AutoPlaylistButton(
                                     title = stringResource(R.string.my_top) + " $topSize",
                                     icon = R.drawable.trending_up,
                                     iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                                     onClick = { navController.navigate("top_playlist/$topSize") },
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.5f)
-                                        .padding(end = 4.dp)
+                                    modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.filter_local),
+                                icon = R.drawable.snippet_folder,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("local_songs") },
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .padding(end = 4.dp)
+                            )
                         }
                     }
 
@@ -619,25 +618,24 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
-                            AutoPlaylistButton(
-                                title = stringResource(R.string.filter_local),
-                                icon = R.drawable.snippet_folder,
-                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                onClick = { navController.navigate("local_songs") },
-                                modifier = itemModifier
-                            )
-
                             if (showTop) {
                                 AutoPlaylistButton(
                                     title = stringResource(R.string.my_top) + " $topSize",
                                     icon = R.drawable.trending_up,
                                     iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                                     onClick = { navController.navigate("top_playlist/$topSize") },
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.5f)
-                                        .padding(end = 4.dp)
+                                    modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.filter_local),
+                                icon = R.drawable.snippet_folder,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("local_songs") },
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .padding(end = 4.dp)
+                            )
                         }
                     }
 

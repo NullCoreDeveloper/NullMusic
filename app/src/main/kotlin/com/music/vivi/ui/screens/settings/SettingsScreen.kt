@@ -49,10 +49,11 @@ fun SettingsScreen(
     val isAndroid12OrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val isUpdateAvailable = getUpdateAvailableState(context) && iad1tya.echo.music.echomusic.updater.getAutoUpdateCheckSetting(context)
 
+    val scrollState = rememberScrollState()
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(horizontal = 16.dp)
     ) {
         Spacer(
@@ -167,8 +168,17 @@ fun SettingsScreen(
 
     TopAppBar(
         title = {
-
-                },
+            androidx.compose.animation.AnimatedVisibility(
+                visible = scrollState.value > 100,
+                enter = androidx.compose.animation.fadeIn(),
+                exit = androidx.compose.animation.fadeOut()
+            ) {
+                Text(
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+        },
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

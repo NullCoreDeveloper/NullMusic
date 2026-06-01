@@ -120,93 +120,104 @@ object YTPlayerUtils {
         isDownload: Boolean = false
     ): Result<PlaybackData> {
         if (audioQuality == AudioQuality.LOSSLESS) {
-            try {
-                val qobuzAttempt = kotlinx.coroutines.withTimeoutOrNull(15000L) {
-                    val metadata = playerResponseForMetadata(videoId).getOrNull()
-                    val title = knownTitle ?: metadata?.videoDetails?.title
-                    val author = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "")
-                    if (title != null && author != null) {
-                        val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
-                        val queryArtist = author
-                        val queryTitle = title
-                        val durationSeconds = metadata?.videoDetails?.lengthSeconds?.toLongOrNull()
-                        val durationMs = knownDurationMs ?: (if (durationSeconds != null) durationSeconds * 1000L else null)
-                        
-                        var bestMatch: iad1tya.echo.music.utils.qobuz.QobuzTrack? = null
-                        for (term in qobuzSearchTerms(queryArtist, queryTitle)) {
-                            val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
-                            val candidates = searchResult.tracks?.items.orEmpty()
-                            if (candidates.isEmpty()) continue
-
-                            val scored = candidates.map { it to confidence(queryArtist, queryTitle, durationMs, it) }
-                            val match = scored.filter { it.second >= 0.5f }.maxByOrNull { it.second }
-                            if (match != null) {
-                                bestMatch = match.first
-                                break
+            var qobuzAttempt: Result<PlaybackData>? = null
+            var lastException: Exception? = null
+            for (attempt in 1..3) {
+                try {
+                    qobuzAttempt = kotlinx.coroutines.withTimeoutOrNull(15000L) {
+                        val metadata = playerResponseForMetadata(videoId).getOrNull()
+                        val title = knownTitle ?: metadata?.videoDetails?.title
+                        val author = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "")
+                        if (title != null && author != null) {
+                            val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
+                            val queryArtist = author
+                            val queryTitle = title
+                            val durationSeconds = metadata?.videoDetails?.lengthSeconds?.toLongOrNull()
+                            val durationMs = knownDurationMs ?: (if (durationSeconds != null) durationSeconds * 1000L else null)
+                            
+                            var bestMatch: iad1tya.echo.music.utils.qobuz.QobuzTrack? = null
+                            for (term in qobuzSearchTerms(queryArtist, queryTitle)) {
+                                val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
+                                val candidates = searchResult.tracks?.items.orEmpty()
+                                if (candidates.isEmpty()) continue
+    
+                                val scored = candidates.map { it to confidence(queryArtist, queryTitle, durationMs, it) }
+                                val match = scored.filter { it.second >= 0.5f }.maxByOrNull { it.second }
+                                if (match != null) {
+                                    bestMatch = match.first
+                                    break
+                                }
                             }
-                        }
-
-                        if (bestMatch != null) {
-                            val downloadData = qobuzClient.getFileUrl(bestMatch.id)
-                            val url = downloadData.url
-                            if (url != null) {
-                                val format = PlayerResponse.StreamingData.Format(
-                                    itag = 0,
-                                    mimeType = "audio/flac; codecs=\"flac\"",
-                                    bitrate = (bestMatch.maximumSamplingRate * 1000 * bestMatch.maximumBitDepth * 2).toInt(),
-                                    audioSampleRate = (bestMatch.maximumSamplingRate * 1000).toInt(),
-                                    contentLength = 0L,
-                                    url = url,
-                                    cipher = null,
-                                    signatureCipher = null,
-                                    audioQuality = "LOSSLESS",
-                                    fps = null,
-                                    width = null,
-                                    height = null,
-                                    quality = "lossless",
-                                    qualityLabel = null,
-                                    averageBitrate = null,
-                                    approxDurationMs = null,
-                                    audioChannels = null,
-                                    loudnessDb = null,
-                                    lastModified = null,
-                                    audioTrack = null
-                                )
-                                val playbackData = PlaybackData(
-                                    audioConfig = null,
-                                    videoDetails = metadata?.videoDetails,
-                                    playbackTracking = null,
-                                    format = format,
-                                    streamUrl = url,
-                                    streamExpiresInSeconds = 3600 // 1 hour for squid
-                                )
-                                return@withTimeoutOrNull Result.success(playbackData)
+    
+                            if (bestMatch != null) {
+                                val downloadData = qobuzClient.getFileUrl(bestMatch.id)
+                                val url = downloadData.url
+                                if (url != null) {
+                                    val format = PlayerResponse.StreamingData.Format(
+                                        itag = 0,
+                                        mimeType = "audio/flac; codecs=\"flac\"",
+                                        bitrate = (bestMatch.maximumSamplingRate * 1000 * bestMatch.maximumBitDepth * 2).toInt(),
+                                        audioSampleRate = (bestMatch.maximumSamplingRate * 1000).toInt(),
+                                        contentLength = 0L,
+                                        url = url,
+                                        cipher = null,
+                                        signatureCipher = null,
+                                        audioQuality = "LOSSLESS",
+                                        fps = null,
+                                        width = null,
+                                        height = null,
+                                        quality = "lossless",
+                                        qualityLabel = null,
+                                        averageBitrate = null,
+                                        approxDurationMs = null,
+                                        audioChannels = null,
+                                        loudnessDb = null,
+                                        lastModified = null,
+                                        audioTrack = null
+                                    )
+                                    val playbackData = PlaybackData(
+                                        audioConfig = null,
+                                        videoDetails = metadata?.videoDetails,
+                                        playbackTracking = null,
+                                        format = format,
+                                        streamUrl = url,
+                                        streamExpiresInSeconds = 3600 // 1 hour for squid
+                                    )
+                                    return@withTimeoutOrNull Result.success(playbackData)
+                                } else {
+                                    throw Exception("Download URL is null")
+                                }
                             } else {
-                                throw Exception("Download URL is null")
+                                throw Exception("No streamable match found on Qobuz")
                             }
                         } else {
-                            throw Exception("No streamable match found on Qobuz")
+                            throw Exception("Could not fetch metadata for Qobuz search")
                         }
+                    }
+                    
+                    if (qobuzAttempt == null) {
+                        throw Exception("Timeout fetching Qobuz stream")
                     } else {
-                        throw Exception("Could not fetch metadata for Qobuz search")
+                        break // Success!
+                    }
+                } catch (e: Exception) {
+                    lastException = e
+                    if (attempt < 3) {
+                        kotlinx.coroutines.delay(1000L)
                     }
                 }
-                
-                if (qobuzAttempt != null) {
-                    return qobuzAttempt
-                } else {
-                    throw Exception("Timeout fetching Qobuz stream")
-                }
-            } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Lossless resolution failed, falling back to YouTube")
-                if (audioQuality == AudioQuality.LOSSLESS) {
-                    context?.let {
-                        if (!hasShownLosslessToast) {
-                            hasShownLosslessToast = true
-                            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                val msg = if (isDownload) "Lossless is not available, downloading AAC codec" else "Lossless is not available, playing from YouTube"
-                                android.widget.Toast.makeText(it, msg, android.widget.Toast.LENGTH_SHORT).show()
-                            }
+            }
+            
+            if (qobuzAttempt != null) {
+                return qobuzAttempt
+            } else {
+                Timber.tag(TAG).e(lastException, "Lossless resolution failed after 3 attempts, falling back to YouTube")
+                context?.let {
+                    if (!hasShownLosslessToast) {
+                        hasShownLosslessToast = true
+                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                            val msg = if (isDownload) "Lossless is not available, downloading AAC codec" else "Lossless is not available, playing from YouTube"
+                            android.widget.Toast.makeText(it, msg, android.widget.Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

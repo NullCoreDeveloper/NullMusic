@@ -2130,16 +2130,18 @@ fun Lyrics(
 
         BasicAlertDialog(onDismissRequest = { showColorPickerDialog = false }) {
             Card(
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(vertical = 16.dp)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(20.dp)
+                        .padding(horizontal = 24.dp, vertical = 28.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.customize_colors),
@@ -2189,54 +2191,59 @@ fun Lyrics(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(text = stringResource(id = R.string.background_color), style = MaterialTheme.typography.titleMedium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
+                    Text(text = stringResource(id = R.string.background_color), style = MaterialTheme.typography.titleMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), textAlign = TextAlign.Start)
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
                         (paletteColors + listOf(Color(0xFF242424), Color(0xFF121212), Color.White, Color.Black, Color(0xFFF5F5F5), Color(0xFFEC5464), Color(0xFF039BE5), Color(0xFF43A047), Color(0xFF8E24AA))).distinct().take(12).forEach { color ->
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(color, shape = RoundedCornerShape(8.dp))
+                                    .size(40.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(color)
                                     .clickable { previewBackgroundColor = color }
                                     .border(
-                                        2.dp,
-                                        if (previewBackgroundColor == color) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                        RoundedCornerShape(8.dp)
+                                        width = if (previewBackgroundColor == color) 3.dp else 1.dp,
+                                        color = if (previewBackgroundColor == color) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f),
+                                        shape = androidx.compose.foundation.shape.CircleShape
                                     )
                             )
                         }
                     }
 
-                    Text(text = stringResource(id = R.string.text_color), style = MaterialTheme.typography.titleMedium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = stringResource(id = R.string.text_color), style = MaterialTheme.typography.titleMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), textAlign = TextAlign.Start)
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
                         (paletteColors + listOf(Color.White, Color.Black, Color(0xFF1DB954), Color(0xFFEC5464), Color(0xFF039BE5), Color(0xFFFFB300))).distinct().take(12).forEach { color ->
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(color, shape = RoundedCornerShape(8.dp))
+                                    .size(40.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(color)
                                     .clickable { previewTextColor = color }
                                     .border(
-                                        2.dp,
-                                        if (previewTextColor == color) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                        RoundedCornerShape(8.dp)
+                                        width = if (previewTextColor == color) 3.dp else 1.dp,
+                                        color = if (previewTextColor == color) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f),
+                                        shape = androidx.compose.foundation.shape.CircleShape
                                     )
                             )
                         }
                     }
 
-                    Text(text = stringResource(id = R.string.secondary_text_color), style = MaterialTheme.typography.titleMedium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = stringResource(id = R.string.secondary_text_color), style = MaterialTheme.typography.titleMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), textAlign = TextAlign.Start)
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
                         (paletteColors.map { it.copy(alpha = 0.7f) } + listOf(Color.White.copy(alpha = 0.7f), Color.Black.copy(alpha = 0.7f), Color(0xFF1DB954).copy(alpha=0.7f), Color(0xFFEC5464).copy(alpha=0.7f), Color(0xFF039BE5).copy(alpha=0.7f))).distinct().take(12).forEach { color ->
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(color, shape = RoundedCornerShape(8.dp))
+                                    .size(40.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(color)
                                     .clickable { previewSecondaryTextColor = color }
                                     .border(
-                                        2.dp,
-                                        if (previewSecondaryTextColor == color) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                        RoundedCornerShape(8.dp)
+                                        width = if (previewSecondaryTextColor == color) 3.dp else 1.dp,
+                                        color = if (previewSecondaryTextColor == color) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f),
+                                        shape = androidx.compose.foundation.shape.CircleShape
                                     )
                             )
                         }

@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -111,18 +112,22 @@ fun LocalDownloadBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .padding(bottom = 32.dp)
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 48.dp)
         ) {
             Text(
                 text = "Download Format",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
             if (isLoading) {
@@ -132,32 +137,43 @@ fun LocalDownloadBottomSheet(
             } else if (formats.isEmpty()) {
                 Text("No downloadable formats found.", modifier = Modifier.padding(16.dp))
             } else {
-                LazyColumn {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(formats) { format ->
-                        ListItem(
-                            headlineContent = { Text(format.title) },
-                            supportingContent = { Text(format.subtitle) },
-                            modifier = Modifier.clickable {
-                                if (localDownloadDirectory.isEmpty()) {
-                                    Toast.makeText(context, "Please configure Download Destination in Settings first.", Toast.LENGTH_LONG).show()
-                                } else {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        val cleanTitle = mediaMetadata.title.replace(Regex("[\\\\/:*?\"<>|]"), "")
-                                        val cleanArtist = mediaMetadata.artists.firstOrNull()?.name?.replace(Regex("[\\\\/:*?\"<>|]"), "") ?: "Unknown"
-                                        val fileName = "$cleanTitle - $cleanArtist.${format.fileExtension}"
+                        androidx.compose.material3.Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (localDownloadDirectory.isEmpty()) {
+                                        Toast.makeText(context, "Please configure Download Destination in Settings first.", Toast.LENGTH_LONG).show()
+                                    } else {
+                                        coroutineScope.launch(Dispatchers.IO) {
+                                            val cleanTitle = mediaMetadata.title.replace(Regex("[\\\\/:*?\"<>|]"), "")
+                                            val cleanArtist = mediaMetadata.artists.firstOrNull()?.name?.replace(Regex("[\\\\/:*?\"<>|]"), "") ?: "Unknown"
+                                            val fileName = "$cleanTitle - $cleanArtist.${format.fileExtension}"
 
-                                        LocalFileDownloader.download(
-                                            context = context,
-                                            url = format.url,
-                                            destinationDirUriString = localDownloadDirectory,
-                                            fileName = fileName,
-                                            mimeType = format.mimeType,
-                                        )
+                                            LocalFileDownloader.download(
+                                                context = context,
+                                                url = format.url,
+                                                destinationDirUriString = localDownloadDirectory,
+                                                fileName = fileName,
+                                                mimeType = format.mimeType,
+                                            )
+                                        }
+                                        onDismiss()
                                     }
-                                    onDismiss()
-                                }
-                            }
-                        )
+                                },
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                            colors = androidx.compose.material3.CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ),
+                            elevation = androidx.compose.material3.CardDefaults.cardElevation(0.dp)
+                        ) {
+                            ListItem(
+                                headlineContent = { Text(format.title, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
+                                supportingContent = { Text(format.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                                colors = androidx.compose.material3.ListItemDefaults.colors(containerColor = androidx.compose.ui.graphics.Color.Transparent)
+                            )
+                        }
                     }
                 }
             }

@@ -96,13 +96,34 @@ class BackupRestoreViewModel @Inject constructor(
                                 Timber.tag("RESTORE").i("Restoring DB (entry = ${entry.name})")
                                 foundAny = true
                                 
+                                val tempFile = java.io.File(context.cacheDir, "temp_restore.db")
+                                java.io.FileOutputStream(tempFile).use { outputStream ->
+                                    inputStream.copyTo(outputStream)
+                                }
+                                
+                                var backupVersion = 0
+                                runCatching {
+                                    java.io.RandomAccessFile(tempFile, "r").use { raf ->
+                                        raf.seek(60)
+                                        backupVersion = raf.readInt()
+                                    }
+                                }
+                                
+                                if (backupVersion > 35) {
+                                    Timber.tag("RESTORE").e("Backup version ($backupVersion) > current version (35)")
+                                    kotlinx.coroutines.runBlocking(Dispatchers.Main) {
+                                        Toast.makeText(context, context.getString(R.string.restore_failed) + ": Backup is from a newer app version.", Toast.LENGTH_LONG).show()
+                                    }
+                                    tempFile.delete()
+                                    return
+                                }
+                                
                                 val dbPath = database.openHelper.writableDatabase.path
                                 runBlocking(Dispatchers.IO) { database.checkpoint() }
                                 database.close()
                                 Timber.tag("RESTORE").i("Overwriting DB at path: $dbPath")
-                                FileOutputStream(dbPath).use { outputStream ->
-                                    inputStream.copyTo(outputStream)
-                                }
+                                tempFile.copyTo(java.io.File(dbPath), overwrite = true)
+                                tempFile.delete()
                                 Timber.tag("RESTORE").i("DB overwrite complete")
                             }
                             else -> {

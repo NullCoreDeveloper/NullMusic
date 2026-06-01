@@ -45,17 +45,41 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideDatabase(
+        internalDatabase: InternalDatabase,
+    ): MusicDatabase = MusicDatabase(internalDatabase)
+
+    @Singleton
+    @Provides
     fun provideInternalDatabase(
         @ApplicationContext context: Context,
     ): InternalDatabase = Room
         .databaseBuilder(context, InternalDatabase::class.java, InternalDatabase.DB_NAME)
+        .addMigrations(
+            iad1tya.echo.music.db.MIGRATION_1_2,
+            iad1tya.echo.music.db.MIGRATION_21_24,
+            iad1tya.echo.music.db.MIGRATION_22_24,
+            iad1tya.echo.music.db.MIGRATION_24_25,
+            iad1tya.echo.music.db.MIGRATION_27_28,
+        )
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .setJournalMode(androidx.room.RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
+        .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
+        .setQueryExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
+        .addCallback(object : androidx.room.RoomDatabase.Callback() {
+            override fun onOpen(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                super.onOpen(db)
+                try {
+                    db.query("PRAGMA busy_timeout = 60000").close()
+                    db.query("PRAGMA cache_size = -16000").close()
+                    db.query("PRAGMA wal_autocheckpoint = 1000").close()
+                    db.query("PRAGMA synchronous = NORMAL").close()
+                } catch (e: Exception) {
+                    timber.log.Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
+                }
+            }
+        })
         .build()
-
-    @Singleton
-    @Provides
-    fun provideDatabase(
-        internalDatabase: InternalDatabase,
-    ): MusicDatabase = MusicDatabase(internalDatabase)
 
     @Singleton
     @Provides

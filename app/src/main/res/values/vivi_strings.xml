@@ -951,4 +951,24 @@
     <string name="local_songs_no_matches_title">No matching local songs</string>
     <string name="local_songs_empty_desc">Open settings from the top bar and run a device scan to find offline audio on this device.</string>
     <string name="local_songs_no_matches_desc">Try a different song, artist, or album name.</string>
+    <!-- Music Recognizer Widget strings -->
+    <string name="widget_recognizer_name">Music Recognizer</string>
+    <string name="widget_recognizer_description">Identify songs playing around you directly from your home screen</string>
+    <string name="widget_recognizer_tap_to_search">Tap to identify a song</string>
+    <string name="widget_recognizer_listening">Listening…</string>
+    <string name="widget_recognizer_processing">Identifying…</string>
+    <string name="widget_recognizer_no_match">No match found. Try again</string>
+    <string name="widget_recognizer_error">Recognition failed</string>
+    <string name="widget_recognizer_error_generic">Something went wrong. Please try again</string>
+    <string name="widget_recognizer_unknown_song">Unknown song</string>
+    <string name="widget_recognizer_unknown_artist">Unknown artist</string>
+    <string name="widget_recognizer_mic_desc">Identify a song</string>
+    <string name="widget_recognizer_channel_name">Music Recognition</string>
+    <string name="widget_recognizer_channel_desc">Shows a notification while identifying a song from the widget</string>
+    <string name="widget_recognizer_notification_text">Recording audio to identify the song…</string>
+    <string name="widget_playlists">Playlists</string>
+    <string name="widget_playlists_description">Playlist shortcuts with mini-player controls</string>
+
+    <string name="choose_something_below">Choose something below</string>
+
 </resources>

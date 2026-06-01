@@ -173,7 +173,7 @@ import iad1tya.echo.music.utils.YTPlayerUtils
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.get
 import iad1tya.echo.music.utils.reportException
-import iad1tya.echo.music.widget.echomusicWidgetManager
+import iad1tya.echo.music.widget.EchoMusicWidgetManager
 import iad1tya.echo.music.widget.MusicWidgetReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import iad1tya.echo.music.utils.isLocalMediaId
@@ -238,7 +238,7 @@ class MusicService :
     lateinit var eqProfileRepository: EQProfileRepository
 
     @Inject
-    lateinit var widgetManager: echomusicWidgetManager
+    lateinit var widgetManager: EchoMusicWidgetManager
 
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager

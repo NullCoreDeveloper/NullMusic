@@ -387,20 +387,7 @@ fun SongListItem(
         if (showSize) {
             showLosslessTag = isLosslessDownloaded
         } else {
-            val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.OPUS.name)
-            val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.OPUS)
-
-            if (!song.song.isLocal && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
-                val qobuzMatch by rememberQobuzMatch(
-                    id = song.id,
-                    artist = song.artists.joinToString { it.name }.replace(" - Topic", ""),
-                    title = song.song.title,
-                    durationMs = song.song.duration * 1000L,
-                    audioQuality = audioQuality,
-                    cachedFlac = isLosslessDownloaded
-                )
-                showLosslessTag = qobuzMatch == true
-            }
+            showLosslessTag = isLosslessDownloaded
         }
 
         if (showLosslessTag) {
@@ -1003,34 +990,6 @@ fun MediaMetadataListItem(
         },
         badges = {
             if (mediaMetadata.explicit) Icon.Explicit()
-            val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.OPUS.name)
-            val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.OPUS)
-            
-            if (!mediaMetadata.id.isLocalMediaId() && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
-                val qobuzMatch by rememberQobuzMatch(
-                    id = mediaMetadata.id,
-                    artist = mediaMetadata.artists.joinToString { it.name }.replace(" - Topic", ""),
-                    title = mediaMetadata.title,
-                    durationMs = mediaMetadata.duration * 1000L,
-                    audioQuality = audioQuality,
-                    cachedFlac = false
-                )
-                if (qobuzMatch == true) {
-                    Text(
-                        text = "LOSSLESS",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            fontSize = 8.sp
-                        ),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
-                            .padding(horizontal = 2.dp)
-                    )
-                }
-            }
         },
         thumbnailContent = {
             ItemThumbnail(
@@ -1077,38 +1036,6 @@ fun YouTubeListItem(
             Icon.Favorite()
         }
         if (item.explicit) Icon.Explicit()
-        
-        if (item is SongItem) {
-            val audioQualityStr by rememberPreference(iad1tya.echo.music.constants.AudioQualityKey, defaultValue = iad1tya.echo.music.constants.AudioQuality.OPUS.name)
-            val audioQuality = runCatching { iad1tya.echo.music.constants.AudioQuality.valueOf(audioQualityStr) }.getOrDefault(iad1tya.echo.music.constants.AudioQuality.OPUS)
-            
-            if (audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
-                val qobuzMatch by rememberQobuzMatch(
-                    id = item.id,
-                    artist = item.artists.joinToString { it.name }.replace(" - Topic", ""),
-                    title = item.title,
-                    durationMs = item.duration?.times(1000L),
-                    audioQuality = audioQuality,
-                    cachedFlac = false
-                )
-                
-                if (qobuzMatch == true) {
-                    Text(
-                        text = "LOSSLESS",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            fontSize = 8.sp
-                        ),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
-                            .padding(horizontal = 2.dp)
-                    )
-                }
-            }
-        }
         
         if (item is SongItem) {
             val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)

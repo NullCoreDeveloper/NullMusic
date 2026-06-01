@@ -299,6 +299,51 @@
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="iad1tya.echo.music.cast.CastOptionsProvider" />
+        <!-- Music Widget -->
+        <receiver
+            android:name=".widget.MusicWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_music_player">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="iad1tya.echo.music.widget.PLAY_PAUSE" />
+                <action android:name="iad1tya.echo.music.widget.LIKE" />
+                <action android:name="iad1tya.echo.music.widget.UPDATE_WIDGET" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/music_widget_info" />
+        </receiver>
+
+        <!-- Playlist Widget -->
+        <receiver
+            android:name=".widget.PlaylistWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_playlists">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/playlist_widget_info" />
+        </receiver>
+
+        <!-- Turntable Widget -->
+        <receiver
+            android:name=".widget.TurntableWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_turntable">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="iad1tya.echo.music.widget.TURNTABLE_PLAY_PAUSE" />
+                <action android:name="iad1tya.echo.music.widget.TURNTABLE_LIKE" />
+                <action android:name="iad1tya.echo.music.widget.UPDATE_TURNTABLE_WIDGET" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/turntable_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>

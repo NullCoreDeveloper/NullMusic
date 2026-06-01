@@ -314,6 +314,7 @@ object LocalYouTubeDownloader {
             "mp3" -> "audio/mpeg"
             "flac" -> "audio/flac"
             "webm" -> if (isAudioOnly) "audio/webm" else "video/webm"
+            "mp4" -> if (isAudioOnly) "audio/mp4" else "video/mp4"
             else -> "application/octet-stream"
         }
 

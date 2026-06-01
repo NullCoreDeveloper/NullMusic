@@ -32,7 +32,6 @@ import iad1tya.echo.music.ui.component.Material3SettingsGroup
 import iad1tya.echo.music.ui.component.Material3SettingsItem
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.HomeViewModel
-import kotlinx.coroutines.flow.map
 import androidx.compose.ui.layout.ContentScale
 
 @Composable
@@ -54,21 +53,6 @@ fun SettingDialoge(
     val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
     val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
 
-    val likedSongsFlow = remember(homeViewModel.database) {
-        homeViewModel.database.likedSongsCount()
-    }
-    val likedSongsCount by likedSongsFlow.collectAsState(initial = 0)
-
-    val playlistCountFlow = remember(homeViewModel.database) {
-        homeViewModel.database.playlistsByNameAsc().map { it.size }
-    }
-    val playlistCount by playlistCountFlow.collectAsState(initial = 0)
-
-    val albumCountFlow = remember(homeViewModel.database) {
-        homeViewModel.database.albumsByNameAsc().map { it.size }
-    }
-    val albumCount by albumCountFlow.collectAsState(initial = 0)
-
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -82,9 +66,9 @@ fun SettingDialoge(
                 .fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -146,32 +130,6 @@ fun SettingDialoge(
                                 }
                             } else null,
                             onClick = { if (isLoggedIn) onNavigate("settings/account") else onNavigate("login") }
-                        )
-                    )
-                )
-
-                // Stats Group
-                Material3SettingsGroup(
-                    title = "Library Stats",
-                    compact = true,
-                    items = listOf(
-                        Material3SettingsItem(
-                            title = { Text("Playlists") },
-                            icon = painterResource(R.drawable.library_music_outlined),
-                            trailingContent = { Text(playlistCount.toString(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            onClick = {} // No-op, just a stat
-                        ),
-                        Material3SettingsItem(
-                            title = { Text("Albums") },
-                            icon = painterResource(R.drawable.album),
-                            trailingContent = { Text(albumCount.toString(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            onClick = {}
-                        ),
-                        Material3SettingsItem(
-                            title = { Text("Liked Songs") },
-                            icon = painterResource(R.drawable.favorite_border),
-                            trailingContent = { Text(likedSongsCount.toString(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            onClick = {}
                         )
                     )
                 )

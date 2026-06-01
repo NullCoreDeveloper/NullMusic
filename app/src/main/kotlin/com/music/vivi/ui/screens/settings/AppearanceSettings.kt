@@ -1098,15 +1098,20 @@ fun AppearanceSettings(
             items = listOfNotNull(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.palette),
-                    title = { Text(stringResource(R.string.new_player_design)) },
+                    title = { Text("Apple Music Inspired") },
                     trailingContent = {
                         Switch(
-                            checked = useNewPlayerDesign,
-                            onCheckedChange = onUseNewPlayerDesignChange,
+                            checked = !useNewPlayerDesign,
+                            onCheckedChange = { isChecked ->
+                                onUseNewPlayerDesignChange(!isChecked)
+                                if (isChecked) {
+                                    onPlayerBackgroundChange(PlayerBackgroundStyle.APPLE_MUSIC)
+                                }
+                            },
                             thumbContent = {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (useNewPlayerDesign) R.drawable.check else R.drawable.close
+                                        id = if (!useNewPlayerDesign) R.drawable.check else R.drawable.close
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier.size(SwitchDefaults.IconSize)
@@ -1114,7 +1119,13 @@ fun AppearanceSettings(
                             }
                         )
                     },
-                    onClick = { onUseNewPlayerDesignChange(!useNewPlayerDesign) }
+                    onClick = { 
+                        val newAppleMusicInspired = useNewPlayerDesign
+                        onUseNewPlayerDesignChange(!newAppleMusicInspired)
+                        if (newAppleMusicInspired) {
+                            onPlayerBackgroundChange(PlayerBackgroundStyle.APPLE_MUSIC)
+                        }
+                    }
                 ),
                 if (!useNewPlayerDesign) {
                     Material3SettingsItem(
@@ -1143,7 +1154,7 @@ fun AppearanceSettings(
                     title = { Text(stringResource(R.string.player_background_style)) },
                     description = {
                         Text(
-                            when (playerBackground) {
+                            when (if (!useNewPlayerDesign) PlayerBackgroundStyle.APPLE_MUSIC else playerBackground) {
                                 PlayerBackgroundStyle.DEFAULT -> stringResource(R.string.follow_theme)
                                 PlayerBackgroundStyle.GRADIENT -> stringResource(R.string.gradient)
                                 PlayerBackgroundStyle.BLUR -> stringResource(R.string.player_background_blur)
@@ -1153,7 +1164,11 @@ fun AppearanceSettings(
                             }
                         )
                     },
-                    onClick = { showPlayerBackgroundDialog = true }
+                    onClick = { 
+                        if (useNewPlayerDesign) {
+                            showPlayerBackgroundDialog = true 
+                        }
+                    }
                 ),
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.hide_image),

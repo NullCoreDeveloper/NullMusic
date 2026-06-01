@@ -718,7 +718,7 @@ fun SongMenu(
                 ).let { list ->
                     if (localDownloadEnabled) {
                         list + Material3MenuItemData(
-                            title = { Text(text = "Local Download") },
+                            title = { Text(text = "Local Download (Beta)") },
                             description = { Text(text = "Download song to device storage") },
                             icon = {
                                 Icon(

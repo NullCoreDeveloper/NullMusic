@@ -156,7 +156,7 @@ fun ContentSettings(
     val (showWrappedCard, onShowWrappedCardChange) = rememberPreference(key = ShowWrappedCardKey, defaultValue = false)
     val (randomizeHomeOrder, onRandomizeHomeOrderChange) = rememberPreference(
         RandomizeHomeOrderKey,
-        defaultValue = true
+        defaultValue = false
     )
     val (ipVersion, onIpVersionChange) = rememberEnumPreference(
         IpVersionKey,

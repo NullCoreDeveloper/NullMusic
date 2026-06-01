@@ -131,7 +131,7 @@ fun PlayerSettings(
 
     val (preloadNextSongLimit, onPreloadNextSongLimitChange) = rememberPreference(
         key = PreloadNextSongLimitKey,
-        defaultValue = 1
+        defaultValue = 10
     )
 
     val (preloadLyricsEnabled, onPreloadLyricsEnabledChange) = rememberPreference(
@@ -214,7 +214,7 @@ fun PlayerSettings(
     )
     val (stopMusicOnTaskClear, onStopMusicOnTaskClearChange) = rememberPreference(
         StopMusicOnTaskClearKey,
-        defaultValue = false
+        defaultValue = true
     )
     val (pauseOnMute, onPauseOnMuteChange) = rememberPreference(
         PauseOnMute,
@@ -230,12 +230,16 @@ fun PlayerSettings(
     )
     val (historyDuration, onHistoryDurationChange) = rememberPreference(
         HistoryDuration,
-        defaultValue = 30f
+        defaultValue = 1f
     )
 
     var showAudioQualityDialog by remember {
         mutableStateOf(false)
     }
+
+    var showLosslessAudioWarning by remember { mutableStateOf(false) }
+    var showLosslessDownloadWarning by remember { mutableStateOf(false) }
+    var showLocalDownloadWarning by remember { mutableStateOf(false) }
 
     val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
         iad1tya.echo.music.constants.DownloadQualityKey,
@@ -250,7 +254,11 @@ fun PlayerSettings(
         EnumDialog(
             onDismiss = { showDownloadQualityDialog = false },
             onSelect = {
-                onDownloadQualityChange(it)
+                if (it == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS) {
+                    showLosslessDownloadWarning = true
+                } else {
+                    onDownloadQualityChange(it)
+                }
                 showDownloadQualityDialog = false
             },
             title = "Download Quality",
@@ -259,7 +267,7 @@ fun PlayerSettings(
             valueText = {
                 when (it) {
                     iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
-                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
+                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless (Beta)"
                 }
             }
         )
@@ -269,7 +277,11 @@ fun PlayerSettings(
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
             onSelect = {
-                onAudioQualityChange(it)
+                if (it == AudioQuality.LOSSLESS) {
+                    showLosslessAudioWarning = true
+                } else {
+                    onAudioQualityChange(it)
+                }
                 showAudioQualityDialog = false
             },
             title = stringResource(R.string.audio_quality),
@@ -278,7 +290,7 @@ fun PlayerSettings(
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
-                    AudioQuality.LOSSLESS -> "Lossless"
+                    AudioQuality.LOSSLESS -> "Lossless (Beta)"
                 }
             }
         )
@@ -316,6 +328,66 @@ fun PlayerSettings(
             }
         }
 
+        if (showLosslessAudioWarning) {
+            DefaultDialog(
+                onDismiss = { showLosslessAudioWarning = false },
+                title = { Text("Enable Lossless Audio?") },
+                buttons = {
+                    TextButton(onClick = { showLosslessAudioWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showLosslessAudioWarning = false
+                        onAudioQualityChange(AudioQuality.LOSSLESS)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("This feature relies on a third-party service (Qobuz) and may or may not work. Enabling lossless music will also disable crossfade.")
+            }
+        }
+
+        if (showLosslessDownloadWarning) {
+            DefaultDialog(
+                onDismiss = { showLosslessDownloadWarning = false },
+                title = { Text("Enable Lossless Download?") },
+                buttons = {
+                    TextButton(onClick = { showLosslessDownloadWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showLosslessDownloadWarning = false
+                        onDownloadQualityChange(iad1tya.echo.music.constants.DownloadQuality.LOSSLESS)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("Lossless download may or may not work. If it doesn't work, it will switch back to Opus.")
+            }
+        }
+
+        if (showLocalDownloadWarning) {
+            DefaultDialog(
+                onDismiss = { showLocalDownloadWarning = false },
+                title = { Text("Enable Local Download (Beta)?") },
+                buttons = {
+                    TextButton(onClick = { showLocalDownloadWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showLocalDownloadWarning = false
+                        onLocalDownloadEnabledChange(true)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("Currently supports FLAC and depends on a third-party service (Qobuz). It may or may not work. If it fails, it will fall back to Opus.")
+            }
+        }
+
         Spacer(
             Modifier.windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
@@ -334,7 +406,7 @@ fun PlayerSettings(
                         Text(
                             when (audioQuality) {
                                 AudioQuality.OPUS -> "Opus"
-                                AudioQuality.LOSSLESS -> "Lossless"
+                                AudioQuality.LOSSLESS -> "Lossless (Beta)"
                             }
                         )
                     },
@@ -347,7 +419,7 @@ fun PlayerSettings(
                         Text(
                             when (downloadQuality) {
                                 iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
-                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
+                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless (Beta)"
                             }
                         )
                     },
@@ -355,7 +427,7 @@ fun PlayerSettings(
                 ))
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.download),
-                    title = { Text("Local Download") },
+                    title = { Text("Local Download (Beta)") },
                     description = { Text("Enable downloading songs directly to local storage (Only Supports FLAC)") },
                     trailingContent = {
                         Switch(
@@ -363,7 +435,13 @@ fun PlayerSettings(
                             onCheckedChange = null
                         )
                     },
-                    onClick = { onLocalDownloadEnabledChange(!localDownloadEnabled) }
+                    onClick = { 
+                        if (!localDownloadEnabled) {
+                            showLocalDownloadWarning = true
+                        } else {
+                            onLocalDownloadEnabledChange(false)
+                        }
+                    }
                 ))
                 if (localDownloadEnabled) {
                     add(Material3SettingsItem(

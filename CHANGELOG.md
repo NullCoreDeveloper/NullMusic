@@ -29,7 +29,7 @@ This update introduces a complete visual refresh alongside major improvements to
 ### Local Media Enhancements
 - Search bar added for local media
 - Users can now exclude specific files from local media scanning
-- Improved local download support
+- Improved Local Download (Beta) support
 - Added support for third-party apps
 
 ### Settings Changes

@@ -530,7 +530,7 @@ fun PlayerMenu(
                 ).let { list ->
                     if (localDownloadEnabled) {
                         list + Material3MenuItemData(
-                            title = { Text(text = "Local Download") },
+                            title = { Text(text = "Local Download (Beta)") },
                             icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.download),

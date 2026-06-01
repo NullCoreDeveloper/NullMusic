@@ -79,7 +79,9 @@ class OnlinePlaylistViewModel @Inject constructor(
                         startProactiveBackgroundLoading()
                     }
                 }.onFailure { throwable ->
-                    _error.value = throwable.message ?: "Failed to load playlist"
+                    _error.value = throwable.message?.takeIf { it.isNotBlank() }
+                        ?: throwable::class.java.simpleName
+                        ?: "Failed to load playlist"
                     _isLoading.value = false
                     reportException(throwable)
                 }
@@ -149,9 +151,12 @@ class OnlinePlaylistViewModel @Inject constructor(
 
     private fun applySongFilters(songs: List<SongItem>): List<SongItem> {
         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-        return songs
-            .distinctBy { it.id }
-            .filterVideoSongs(hideVideoSongs)
+        val uniqueSongs = songs.distinctBy { it.id }
+        if (!hideVideoSongs) return uniqueSongs
+
+        val filtered = uniqueSongs.filterVideoSongs(true)
+        // If filtering hides everything, keep original list to avoid false "empty playlist" UX.
+        return if (filtered.isEmpty() && uniqueSongs.isNotEmpty()) uniqueSongs else filtered
     }
 
     override fun onCleared() {

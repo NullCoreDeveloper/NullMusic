@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
@@ -142,13 +144,25 @@ fun ThemeScreen(
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(painterResource(R.drawable.arrow_back), contentDescription = stringResource(R.string.cd_back))
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface
+                )
             )
         }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
                 .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -162,10 +176,10 @@ fun ThemeScreen(
                     modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
                 )
                 
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         ThemeModeCard(
                             modifier = Modifier.weight(1f),
@@ -184,7 +198,7 @@ fun ThemeScreen(
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         ThemeModeCard(
                             modifier = Modifier.weight(1f),
@@ -206,8 +220,8 @@ fun ThemeScreen(
 
             item {
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                 )
             }
 
@@ -222,18 +236,19 @@ fun ThemeScreen(
                 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(32.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
                     ),
-                    elevation = CardDefaults.cardElevation(0.dp)
+                    elevation = CardDefaults.cardElevation(0.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     FlowRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
+                            .padding(24.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         PaletteColors.forEach { palette ->
                             val isDynamicPalette = palette.seedColor == Color.Transparent
@@ -267,6 +282,11 @@ fun ThemeModeCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.02f else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "scale"
+    )
     val borderWidth by animateDpAsState(
         targetValue = if (isSelected) 2.dp else 1.dp,
         animationSpec = spring(stiffness = Spring.StiffnessMedium),
@@ -276,37 +296,51 @@ fun ThemeModeCard(
     val borderColor = if (isSelected) {
         MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
     }
     
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+    val backgroundBrush = if (isSelected) {
+        Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            )
+        )
     } else {
-        MaterialTheme.colorScheme.surfaceContainerLow
+        Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surfaceContainerLow,
+                MaterialTheme.colorScheme.surfaceContainerLow
+            )
+        )
     }
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(backgroundColor)
-            .border(borderWidth, borderColor, RoundedCornerShape(20.dp))
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clip(RoundedCornerShape(24.dp))
+            .background(backgroundBrush)
+            .border(borderWidth, borderColor, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp, horizontal = 12.dp),
+            .padding(vertical = 24.dp, horizontal = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(32.dp)
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
@@ -329,7 +363,7 @@ fun PaletteItem(
     )
     
     val cornerRadius by animateDpAsState(
-        targetValue = if (isSelected) 48.dp * 0.3f else 24.dp,
+        targetValue = if (isSelected) 56.dp * 0.3f else 28.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = Spring.StiffnessMedium
@@ -355,7 +389,7 @@ fun PaletteItem(
         label = "scale"
     )
     
-    val shape = RoundedCornerShape(cornerRadius)
+    val cardShape = RoundedCornerShape(cornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
     
     val paletteName = stringResource(palette.nameRes)
@@ -363,18 +397,21 @@ fun PaletteItem(
     
     Box(
         modifier = Modifier
-            .size(46.dp)
+            .size(52.dp)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
+                shadowElevation = if (isSelected) 8f else 2f
+                shape = RoundedCornerShape(cornerRadius)
+                clip = true
             }
-            .clip(shape)
+            .background(colorScheme.primary, cardShape)
             .then(
                 if (borderWidth > 0.dp) {
                     Modifier.border(
                         width = borderWidth,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = shape
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = cardShape
                     )
                 } else {
                     Modifier
@@ -400,32 +437,22 @@ fun PaletteItem(
                     painter = painterResource(R.drawable.palette),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+        }
+        
+        if (isSelected) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.check),
+                    contentDescription = null,
+                    tint = if (palette.seedColor == Color.Transparent) MaterialTheme.colorScheme.onSurfaceVariant else colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
-            }
-        } else {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val width = size.width
-                val height = size.height
-                
-                drawRect(
-                    color = colorScheme.primary,
-                    topLeft = Offset(0f, 0f),
-                    size = Size(width, height)
-                )
-            }
-            if (isSelected) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.check),
-                        contentDescription = null,
-                        tint = colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
             }
         }
     }

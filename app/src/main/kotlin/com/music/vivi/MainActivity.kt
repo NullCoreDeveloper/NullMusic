@@ -880,7 +880,7 @@ class MainActivity : ComponentActivity() {
                                             actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                             navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
-                                        windowInsets = WindowInsets(top = 16.dp),
+                                        windowInsets = WindowInsets(top = 42.dp),
                                         modifier = Modifier
                                             .windowInsetsPadding(
                                             if (showRail) {

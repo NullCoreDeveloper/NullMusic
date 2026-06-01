@@ -455,7 +455,7 @@ fun PlayerSettings(
                             value = historyDuration,
                             onValueChange = { onHistoryDurationChange(it.roundToInt().toFloat()) },
                             valueRange = 1f..100f,
-                            steps = 98
+                            steps = 9
                         )
                     },
                     trailingContent = {

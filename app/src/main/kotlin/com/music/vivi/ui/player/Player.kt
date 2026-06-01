@@ -2206,15 +2206,6 @@ fun BottomSheetPlayer(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = if (isListenTogetherGuest) {
-                                            if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute)
-                                        } else {
-                                            if (effectiveIsPlaying) stringResource(R.string.pause) else stringResource(R.string.play)
-                                        },
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
                                 }
                             }
 

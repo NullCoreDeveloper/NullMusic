@@ -56,7 +56,7 @@ data class AlbumItem(
     val description: String? = null,
 ) : YTItem() {
     override val shareLink: String
-        get() = "https://music.youtube.com/playlist?list=$playlistId"
+        get() = "https://share.echomusic.fun/playlist?list=$playlistId"
 }
 
 data class PlaylistItem(
@@ -73,7 +73,7 @@ data class PlaylistItem(
     override val explicit: Boolean
         get() = false
     override val shareLink: String
-        get() = "https://music.youtube.com/playlist?list=$id"
+        get() = "https://share.echomusic.fun/playlist?list=$id"
 }
 
 data class ArtistItem(
@@ -88,7 +88,7 @@ data class ArtistItem(
     override val explicit: Boolean
         get() = false
     override val shareLink: String
-        get() = "https://music.youtube.com/channel/$id"
+        get() = "https://share.echomusic.fun/channel/$id"
 }
 
 fun <T : YTItem> List<T>.filterExplicit(enabled: Boolean = true) =

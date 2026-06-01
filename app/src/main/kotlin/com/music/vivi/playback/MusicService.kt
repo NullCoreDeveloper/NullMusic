@@ -243,8 +243,6 @@ class MusicService :
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
     
-    @Inject
-    lateinit var spatialAudioProcessor: com.music.vivi.playback.audio.spatial.SpatialAudioProcessor
 
     private lateinit var audioManager: AudioManager
     private var audioFocusRequest: AudioFocusRequest? = null
@@ -761,35 +759,6 @@ class MusicService :
                 crossfadeGapless = gapless
             }
 
-        scope.launch {
-            dataStore.data.map { it[iad1tya.echo.music.constants.SpatialAudioEnabledKey] ?: false }.distinctUntilChanged().collect { enabled ->
-                spatialAudioProcessor.setSpatialEnabled(enabled)
-            }
-        }
-        
-        scope.launch {
-            dataStore.data.map { it[iad1tya.echo.music.constants.SpatialAudioStrengthKey] ?: 0.7f }.distinctUntilChanged().collect { strength ->
-                spatialAudioProcessor.setSpatialStrength(strength)
-            }
-        }
-        
-        scope.launch {
-            dataStore.data.map { it[iad1tya.echo.music.constants.CrossfeedEnabledKey] ?: false }.distinctUntilChanged().collect { enabled ->
-                spatialAudioProcessor.setCrossfeedEnabled(enabled)
-            }
-        }
-        
-        scope.launch {
-            dataStore.data.map { it[iad1tya.echo.music.constants.BassBoostKey] ?: 0f }.distinctUntilChanged().collect { strength ->
-                spatialAudioProcessor.setBassBoost(strength)
-            }
-        }
-        
-        scope.launch {
-            dataStore.data.map { it[iad1tya.echo.music.constants.VirtualizerKey] ?: 0f }.distinctUntilChanged().collect { strength ->
-                spatialAudioProcessor.setVirtualizer(strength)
-            }
-        }
 
         if (dataStore.get(PersistentQueueKey, true)) {
             val queueFile = filesDir.resolve(PERSISTENT_QUEUE_FILE)
@@ -2706,7 +2675,6 @@ class MusicService :
                         
                         arrayOf(
                             eqProcessor,
-                            spatialAudioProcessor,
                             silenceProcessor,
                         ),
                         SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),

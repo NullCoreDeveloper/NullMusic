@@ -330,7 +330,7 @@ fun AppearanceSettings(
     }
 
     val availableMiniPlayerBackgroundStyles = availableBackgroundStyles.filter { 
-        it != PlayerBackgroundStyle.APPLE_MUSIC 
+        it != PlayerBackgroundStyle.APPLE_MUSIC && it != PlayerBackgroundStyle.GRADIENT
     }
 
 

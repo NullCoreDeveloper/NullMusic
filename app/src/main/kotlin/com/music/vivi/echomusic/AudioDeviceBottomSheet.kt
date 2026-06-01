@@ -771,7 +771,7 @@ fun VolumeControlRow(
 fun AudioQualitySelector(context: Context) {
     val (audioQuality, onAudioQualityChange) = rememberEnumPreference(
         key = AudioQualityKey,
-        defaultValue = AudioQuality.AUTO
+        defaultValue = AudioQuality.OPUS
     )
 
     Column(
@@ -787,14 +787,11 @@ fun AudioQualitySelector(context: Context) {
         )
 
         val options = listOf(
-            stringResource(R.string.audio_quality_auto),
-            stringResource(R.string.audio_quality_high),
-            stringResource(R.string.audio_quality_low)
+            "Opus",
+            "Lossless"
         )
         val selectedIndex = when (audioQuality) {
-            AudioQuality.AUTO -> 0
-            AudioQuality.OPUS -> 1
-            AudioQuality.LOSSLESS -> 2
+            AudioQuality.LOSSLESS -> 1
             else -> 0
         }
 
@@ -811,9 +808,8 @@ fun AudioQualitySelector(context: Context) {
                     checked = selectedIndex == index,
                     onCheckedChange = {
                         val newQuality = when (index) {
-                            0 -> AudioQuality.AUTO
-                            1 -> AudioQuality.OPUS
-                            else -> AudioQuality.LOSSLESS
+                            1 -> AudioQuality.LOSSLESS
+                            else -> AudioQuality.OPUS
                         }
                         onAudioQualityChange(newQuality)
                         applyAudioQuality(context, newQuality)

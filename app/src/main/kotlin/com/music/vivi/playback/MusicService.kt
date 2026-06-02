@@ -2250,6 +2250,7 @@ class MusicService :
         retryJob = scope.launch {
             try {
                 
+                val wasPlaying = player.playWhenReady
                 player.pause()
                 Timber.tag(TAG).d("Paused playback due to AudioTrack error")
 
@@ -2273,7 +2274,7 @@ class MusicService :
                     Timber.tag(TAG).d("Retrying playback for $mediaId after AudioTrack error")
 
                     
-                    if (wasPlayingBeforeAudioFocusLoss) {
+                    if (wasPlaying) {
                         delay(500) 
                         if (hasAudioFocus && playerInitialized.value) {
                             if (castConnectionHandler?.isCasting?.value != true) {

@@ -130,7 +130,7 @@ fun LibrarySongsScreen(
                 key = "filter",
                 contentType = CONTENT_TYPE_HEADER,
             ) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(12.dp))
                     FilterChip(
                         label = { Text(stringResource(R.string.songs)) },
@@ -144,6 +144,7 @@ fun LibrarySongsScreen(
                                 contentDescription = ""
                             )
                         },
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
                     ChipsRow(
                         chips =

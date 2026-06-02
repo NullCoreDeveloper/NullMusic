@@ -98,7 +98,7 @@ fun LibraryArtistsScreen(
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
 
     val filterContent = @Composable {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(Modifier.width(12.dp))
             FilterChip(
                 label = { Text(stringResource(R.string.artists)) },
@@ -109,6 +109,7 @@ fun LibraryArtistsScreen(
                 leadingIcon = {
                     Icon(painter = painterResource(R.drawable.close), contentDescription = "")
                 },
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
             )
             ChipsRow(
                 chips =

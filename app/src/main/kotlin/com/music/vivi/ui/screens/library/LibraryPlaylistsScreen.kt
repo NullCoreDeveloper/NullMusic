@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -255,19 +256,7 @@ fun LibraryPlaylistsScreen(
                 color = MaterialTheme.colorScheme.secondary,
             )
 
-            androidx.compose.material3.Surface(
-                shape = androidx.compose.foundation.shape.CircleShape,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-            ) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        painter = painterResource(R.drawable.lock),
-                        contentDescription = null,
-                        tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.width(16.dp))
         }
     }
 

@@ -54,7 +54,7 @@ fun BoxScope.HideOnScrollFAB(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(end = 16.dp, bottom = 64.dp)
         ) {
             if (onRecognitionClick != null) {
                 SmallFloatingActionButton(
@@ -105,7 +105,7 @@ fun BoxScope.HideOnScrollFAB(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(end = 16.dp, bottom = 64.dp)
         ) {
             if (onRecognitionClick != null) {
                 SmallFloatingActionButton(
@@ -156,7 +156,7 @@ fun BoxScope.HideOnScrollFAB(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(end = 16.dp, bottom = 64.dp)
         ) {
             if (onRecognitionClick != null) {
                 SmallFloatingActionButton(

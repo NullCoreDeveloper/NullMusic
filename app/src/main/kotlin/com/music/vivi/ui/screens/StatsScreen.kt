@@ -417,16 +417,6 @@ fun StatsScreen(
                         contentDescription = null,
                     )
                 }
-            },
-            actions = {
-                IconButton(
-                    onClick = { navController.navigate("wrapped") }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.sparks),
-                        contentDescription = null,
-                    )
-                }
             }
         )
     }

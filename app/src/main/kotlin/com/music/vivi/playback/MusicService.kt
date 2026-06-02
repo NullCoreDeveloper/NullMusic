@@ -491,12 +491,11 @@ class MusicService :
         player.addListener(this@MusicService)
         sleepTimer = SleepTimer(scope, player)
         player.addListener(sleepTimer)
-
-        
         playerInitialized.value = true
         Timber.tag(TAG).d("Player successfully initialized")
 
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        abandonAudioFocus()
         setupAudioFocusRequest()
 
         mediaLibrarySessionCallback.apply {

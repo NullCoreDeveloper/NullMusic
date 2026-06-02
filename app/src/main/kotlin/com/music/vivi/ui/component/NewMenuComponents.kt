@@ -165,52 +165,60 @@ fun NewActionGrid(
     modifier: Modifier = Modifier,
     columns: Int = 3
 ) {
-    FlowRow(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        actions.forEachIndexed { index, action ->
-            var performAction by remember { mutableStateOf(false) }
-
-            if (performAction) {
-                action.onClick()
-                LaunchedEffect(Unit) {
-                    performAction = false
-                }
-            }
-
-            val bgColor = if (action.backgroundColor != Color.Unspecified) action.backgroundColor else MaterialTheme.colorScheme.surfaceVariant
-            val contentCol = if (action.contentColor != Color.Unspecified) action.contentColor else MaterialTheme.colorScheme.onSurfaceVariant
-
-            ToggleButton(
-                checked = false,
-                onCheckedChange = { performAction = true },
-                enabled = action.enabled,
-                shapes = when {
-                    actions.size == 1 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    index == actions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                },
-                colors = ToggleButtonDefaults.toggleButtonColors(
-                    containerColor = bgColor,
-                    contentColor = contentCol,
-                    disabledContainerColor = bgColor.copy(alpha = 0.5f),
-                    disabledContentColor = contentCol.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .semantics { role = Role.Button }
+        val indexedActions = actions.mapIndexed { index, action -> index to action }
+        val chunks = indexedActions.chunked(columns)
+        chunks.forEach { rowIndexedActions ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
             ) {
-                action.icon()
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(
-                    text = action.text,
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                rowIndexedActions.forEach { (index, action) ->
+                    var performAction by remember { mutableStateOf(false) }
+
+                    if (performAction) {
+                        action.onClick()
+                        LaunchedEffect(Unit) {
+                            performAction = false
+                        }
+                    }
+
+                    val bgColor = if (action.backgroundColor != Color.Unspecified) action.backgroundColor else MaterialTheme.colorScheme.surfaceVariant
+                    val contentCol = if (action.contentColor != Color.Unspecified) action.contentColor else MaterialTheme.colorScheme.onSurfaceVariant
+
+                    ToggleButton(
+                        checked = false,
+                        onCheckedChange = { performAction = true },
+                        enabled = action.enabled,
+                        shapes = when {
+                            actions.size == 1 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            index == actions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                        },
+                        colors = ToggleButtonDefaults.toggleButtonColors(
+                            containerColor = bgColor,
+                            contentColor = contentCol,
+                            disabledContainerColor = bgColor.copy(alpha = 0.5f),
+                            disabledContentColor = contentCol.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { role = Role.Button }
+                    ) {
+                        action.icon()
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                        Text(
+                            text = action.text,
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
     }

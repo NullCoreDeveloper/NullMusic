@@ -391,7 +391,7 @@ fun SongMenu(
                             Icon(
                                 painter = painterResource(R.drawable.share),
                                 contentDescription = null,
-                                modifier = Modifier.size(28.dp),
+                                modifier = Modifier.size(22.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },

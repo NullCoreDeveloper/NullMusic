@@ -1988,7 +1988,7 @@ fun Lyrics(
                                     action = Intent.ACTION_SEND
                                     type = "text/plain"
                                     val songLink =
-                                        "https://music.youtube.com/watch?v=${mediaMetadata?.id}"
+                                        "https://share.echomusic.fun/watch?v=${mediaMetadata?.id}"
                                     
                                     putExtra(
                                         Intent.EXTRA_TEXT,

@@ -26,14 +26,22 @@ object SearchPage {
                 ?.text
                 ?.runs
                 ?.splitBySeparator()
-                ?: return null
+                ?: return null.also { println("[UPLOAD_DEBUG] SearchPage.toYTItem FAILED: secondaryLine is null for renderer: $renderer") }
         return when {
             renderer.isSong -> {
                 // Extract library tokens using the new method that properly handles multiple toggle items
                 val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
 
                 SongItem(
-                    id = renderer.playlistItemData?.videoId ?: return null,
+                    id = renderer.playlistItemData?.videoId ?: renderer.navigationEndpoint?.watchEndpoint?.videoId
+                    ?: renderer.overlay?.musicItemThumbnailOverlayRenderer
+                        ?.content?.musicPlayButtonRenderer
+                        ?.playNavigationEndpoint?.watchEndpoint?.videoId
+                    ?: renderer.flexColumns.firstOrNull()
+                        ?.musicResponsiveListItemFlexColumnRenderer
+                        ?.text?.runs?.firstOrNull()
+                        ?.navigationEndpoint?.watchEndpoint?.videoId
+                    ?: return null.also { println("[UPLOAD_DEBUG] SearchPage.toYTItem FAILED: id is null for renderer: $renderer") },
                     title =
                         renderer.flexColumns
                             .firstOrNull()
@@ -48,7 +56,7 @@ object SearchPage {
                                 name = it.text,
                                 id = it.navigationEndpoint?.browseEndpoint?.browseId,
                             )
-                        } ?: return null,
+                        } ?: return null.also { println("[UPLOAD_DEBUG] SearchPage.toYTItem FAILED: artists is null for renderer: $renderer") },
                     album =
                         secondaryLine.getOrNull(1)?.firstOrNull()?.takeIf { it.navigationEndpoint?.browseEndpoint != null }?.let {
                             Album(

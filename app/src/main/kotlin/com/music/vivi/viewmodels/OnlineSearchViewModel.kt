@@ -79,7 +79,10 @@ constructor(
                                             .filterExplicit(
                                                 hideExplicit,
                                             )
-                                            .filterVideoSongs(hideVideoSongs)
+                                            .let { items ->
+                                                if (filter.value == YouTube.SearchFilter.FILTER_VIDEO.value) items
+                                                else items.filterVideoSongs(hideVideoSongs)
+                                            }
                                             .filterYoutubeShorts(hideYoutubeShorts),
                                         result.continuation,
                                     )
@@ -106,7 +109,10 @@ constructor(
                 val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
                 val newItems = searchResult.items
                     .filterExplicit(hideExplicit)
-                    .filterVideoSongs(hideVideoSongs)
+                    .let { items ->
+                        if (filter == YouTube.SearchFilter.FILTER_VIDEO.value) items
+                        else items.filterVideoSongs(hideVideoSongs)
+                    }
                     .filterYoutubeShorts(hideYoutubeShorts)
                 viewStateMap[filter] = ItemsPage(
                     (viewState.items + newItems).distinctBy { it.id },

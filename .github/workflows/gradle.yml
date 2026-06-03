@@ -106,6 +106,65 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Send Telegram Notification
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
+        run: |
+          # Read release body
+          BODY=$(cat release-body.md)
+          
+          # Construct HTML formatted message (Telegram supports HTML tags)
+          if echo "$BODY" | grep -q "Support the Project"; then
+            MESSAGE="hello everyone,
+
+          <b>$RELEASE_TITLE</b>
+
+          $BODY
+
+          Note: If you encounter an 'App not installed' error during installation, please uninstall the previous version before installing this update."
+          else
+            MESSAGE="hello everyone,
+
+          <b>$RELEASE_TITLE</b>
+
+          $BODY
+
+          Note: If you encounter an 'App not installed' error during installation, please uninstall the previous version before installing this update.
+
+          Thank you for your continued support. If you encounter any issues, please report them through the usual channels.
+
+          <b>Support the Project</b>
+          If you'd like to support ongoing development, you can do so through any of the following:
+
+          • Buy Me a Coffee: https://buymeacoffee.com/iad1tya
+          • GitHub Sponsors: https://github.com/sponsors/iad1tya
+          • Support Page: https://support.iad1tya.cyou/
+
+          Every contribution helps support continued development, maintenance, and future improvements.
+
+          Thank you for your support, and enjoy the update!"
+          fi
+
+          # Create JSON payload securely using jq
+          jq -n \
+            --arg chat_id "$TELEGRAM_CHAT_ID" \
+            --arg text "$MESSAGE" \
+            --arg parse_mode "HTML" \
+            '{
+              chat_id: $chat_id,
+              text: $text,
+              parse_mode: $parse_mode,
+              disable_web_page_preview: true
+            }' > telegram-payload.json
+
+          # Send message using Telegram Bot API
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d @telegram-payload.json
+
       - name: Send Discord Notification
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && !startsWith(github.ref, 'refs/tags/')
         env:

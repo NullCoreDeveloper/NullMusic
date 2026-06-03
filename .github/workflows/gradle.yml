@@ -74,14 +74,37 @@ jobs:
           echo "App Version: $VERSION_NAME"
           mkdir -p app/build/outputs/apk/release-artifacts
           find app/build/outputs/apk/ -name "*.apk" ! -path "*/release-artifacts/*" | while read -r apk_path; do
-              filename=$(basename "$apk_path")
-              details=$(echo "$filename" | sed -E 's/^app-//' | sed -E 's/-(release|debug)\.apk$//')
-              build_type=$(echo "$filename" | grep -oE "release|debug")
-              if [ "$build_type" = "release" ]; then
-                  target_name="EchoMusic-v${VERSION_NAME}-${details}.apk"
+              lower_path=$(echo "$apk_path" | tr '[:upper:]' '[:lower:]')
+              
+              # 1. Determine variant
+              case "$lower_path" in
+                  *foss*) variant="foss" ;;
+                  *gms*) variant="gms" ;;
+                  *) continue ;;
+              esac
+              
+              # 2. Determine ABI
+              case "$lower_path" in
+                  *universal*) abi="universal" ;;
+                  *arm64*) abi="arm64" ;;
+                  *armeabi*) abi="armeabi" ;;
+                  *x86_64*) abi="x86_64" ;;
+                  *) continue ;;
+              esac
+              
+              # 3. Determine build type
+              case "$lower_path" in
+                  *debug*) build_type="debug" ;;
+                  *) build_type="release" ;;
+              esac
+              
+              # 4. Construct target name
+              if [ "$build_type" = "debug" ]; then
+                  target_name="EchoMusic-v${VERSION_NAME}-${variant}-${abi}-debug.apk"
               else
-                  target_name="EchoMusic-v${VERSION_NAME}-${details}-debug.apk"
+                  target_name="EchoMusic-v${VERSION_NAME}-${variant}-${abi}.apk"
               fi
+              
               cp "$apk_path" "app/build/outputs/apk/release-artifacts/$target_name"
               echo "Copied $apk_path -> app/build/outputs/apk/release-artifacts/$target_name"
           done

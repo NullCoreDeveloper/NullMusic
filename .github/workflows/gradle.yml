@@ -3,9 +3,14 @@ name: Android Build & Sign
 on:
   push:
     branches: [main]
+    tags:
+      - 'v*'
   pull_request:
     branches: [main]
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -55,7 +60,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: ./gradlew assembleUniversalFossDebug assembleArm64FossDebug assembleArmeabiFossDebug assembleX86_64FossDebug assembleUniversalGmsDebug assembleArm64GmsDebug assembleArmeabiGmsDebug assembleX86_64GmsDebug
 
-      - name: Build and Sign Release APKs (Push to main / Dispatch)
+      - name: Build and Sign Release APKs (Push to main / Dispatch / Tag)
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         env:
           STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
@@ -81,16 +86,179 @@ jobs:
               echo "Copied $apk_path -> app/build/outputs/apk/release-artifacts/$target_name"
           done
 
-      - name: Upload Debug APKs
+      - name: Parse Release Info
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          # 1. Read first line and strip the "# " to get the Title
+          TITLE=$(head -n 1 RELEASE_INFO.md | sed 's/^# //')
+          echo "RELEASE_TITLE=$TITLE" >> $GITHUB_ENV
+          
+          # 2. Read from line 3 onwards to get the Description body
+          tail -n +3 RELEASE_INFO.md > release-body.md
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ env.RELEASE_TITLE }}
+          body_path: release-body.md
+          files: app/build/outputs/apk/release-artifacts/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send Discord Notification
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && !startsWith(github.ref, 'refs/tags/')
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
+        run: |
+          # Read release body
+          BODY=$(cat release-body.md)
+          
+          # Fetch version name
+          VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | head -n 1 | awk -F '"' '{print $2}')
+          
+          # Set title and download link parameters
+          TARGET_TITLE="New Beta Build - v$VERSION_NAME"
+          DOWNLOAD_LINK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          LINK_LABEL="Click here to download individual APK ZIPs from GitHub Actions Run Page"
+          
+          # Construct pings and warning messages
+          PING_TEXT="<@&1498758915536584714> New Beta Build Available"
+          WARNING_TEXT="Note: If you encounter an 'App not installed' error during installation, please uninstall the previous version before installing this update."
+          
+          # Create Discord Embed JSON securely using jq
+          jq -n \
+            --arg ping "$PING_TEXT" \
+            --arg warn "$WARNING_TEXT" \
+            --arg title "$TARGET_TITLE" \
+            --arg desc "$BODY" \
+            --arg link "$DOWNLOAD_LINK" \
+            --arg label "$LINK_LABEL" \
+            '{
+              content: $ping,
+              embeds: [{
+                title: $title,
+                description: ($desc + "\n\n" + $warn),
+                color: 7303122,
+                fields: [
+                  { name: "Download APK Artifacts", value: ("[" + $label + "](" + $link + ")"), inline: false }
+                ],
+                footer: { text: "Echo Music Automation System" }
+              }]
+            }' > discord-payload.json
+
+          # Post to Discord Webhook
+          curl -H "Content-Type: application/json" -d @discord-payload.json "$DISCORD_WEBHOOK"
+
+      - name: Upload FOSS Universal Debug APK
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: echo-music-debug-apks
-          path: app/build/outputs/apk/release-artifacts/*.apk
+          name: EchoMusic-foss-universal-debug
+          path: app/build/outputs/apk/release-artifacts/*-foss-universal-debug.apk
 
-      - name: Upload Signed Release APKs
+      - name: Upload FOSS ARM64 Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-arm64-debug
+          path: app/build/outputs/apk/release-artifacts/*-foss-arm64-debug.apk
+
+      - name: Upload FOSS ARMeabi Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-armeabi-debug
+          path: app/build/outputs/apk/release-artifacts/*-foss-armeabi-debug.apk
+
+      - name: Upload FOSS x86_64 Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-x86_64-debug
+          path: app/build/outputs/apk/release-artifacts/*-foss-x86_64-debug.apk
+
+      - name: Upload GMS Universal Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-universal-debug
+          path: app/build/outputs/apk/release-artifacts/*-gms-universal-debug.apk
+
+      - name: Upload GMS ARM64 Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-arm64-debug
+          path: app/build/outputs/apk/release-artifacts/*-gms-arm64-debug.apk
+
+      - name: Upload GMS ARMeabi Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-armeabi-debug
+          path: app/build/outputs/apk/release-artifacts/*-gms-armeabi-debug.apk
+
+      - name: Upload GMS x86_64 Debug APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-x86_64-debug
+          path: app/build/outputs/apk/release-artifacts/*-gms-x86_64-debug.apk
+
+      - name: Upload FOSS Universal Release APK
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: echo-music-signed-apks
-          path: app/build/outputs/apk/release-artifacts/*.apk
+          name: EchoMusic-foss-universal
+          path: app/build/outputs/apk/release-artifacts/*-foss-universal.apk
+
+      - name: Upload FOSS ARM64 Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-arm64
+          path: app/build/outputs/apk/release-artifacts/*-foss-arm64.apk
+
+      - name: Upload FOSS ARMeabi Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-armeabi
+          path: app/build/outputs/apk/release-artifacts/*-foss-armeabi.apk
+
+      - name: Upload FOSS x86_64 Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-foss-x86_64
+          path: app/build/outputs/apk/release-artifacts/*-foss-x86_64.apk
+
+      - name: Upload GMS Universal Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-universal
+          path: app/build/outputs/apk/release-artifacts/*-gms-universal.apk
+
+      - name: Upload GMS ARM64 Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-arm64
+          path: app/build/outputs/apk/release-artifacts/*-gms-arm64.apk
+
+      - name: Upload GMS ARMeabi Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-armeabi
+          path: app/build/outputs/apk/release-artifacts/*-gms-armeabi.apk
+
+      - name: Upload GMS x86_64 Release APK
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-gms-x86_64
+          path: app/build/outputs/apk/release-artifacts/*-gms-x86_64.apk

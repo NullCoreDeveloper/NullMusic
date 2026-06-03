@@ -53,7 +53,7 @@ jobs:
 
       - name: Build Debug APKs (PR / Check)
         if: github.event_name == 'pull_request'
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleUniversalFossDebug assembleArm64FossDebug assembleArmeabiFossDebug assembleX86_64FossDebug assembleUniversalGmsDebug assembleArm64GmsDebug assembleArmeabiGmsDebug assembleX86_64GmsDebug
 
       - name: Build and Sign Release APKs (Push to main / Dispatch)
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -61,7 +61,7 @@ jobs:
           STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleUniversalFossRelease assembleArm64FossRelease assembleArmeabiFossRelease assembleX86_64FossRelease assembleUniversalGmsRelease assembleArm64GmsRelease assembleArmeabiGmsRelease assembleX86_64GmsRelease
 
       - name: Rename and Organize APKs
         run: |

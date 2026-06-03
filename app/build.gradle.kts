@@ -219,9 +219,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
+    // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
+    "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
+    "gmsImplementation"("com.google.firebase:firebase-analytics")
+    "gmsImplementation"("com.google.firebase:firebase-crashlytics")
     
     implementation(libs.guava)
     implementation(libs.coroutines.guava)

@@ -129,19 +129,7 @@ fun PlayerMenu(
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
 
-    val (localDownloadEnabled) = iad1tya.echo.music.utils.rememberPreference(
-        iad1tya.echo.music.constants.LocalDownloadEnabledKey,
-        defaultValue = false
-    )
-    
-    var showLocalDownloadSheet by rememberSaveable { mutableStateOf(false) }
 
-    if (showLocalDownloadSheet) {
-        iad1tya.echo.music.ui.component.LocalDownloadBottomSheet(
-            mediaMetadata = mediaMetadata,
-            onDismiss = { showLocalDownloadSheet = false }
-        )
-    }
 
     val artists =
         remember(mediaMetadata.artists) {
@@ -527,25 +515,7 @@ fun PlayerMenu(
                             )
                         }
                     }
-                ).let { list ->
-                    if (localDownloadEnabled) {
-                        list + Material3MenuItemData(
-                            title = { Text(text = "Local Download (Beta)") },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.download),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            },
-                            onClick = {
-                                showLocalDownloadSheet = true
-                            }
-                        )
-                    } else {
-                        list
-                    }
-                }
+                )
             )
         }
 

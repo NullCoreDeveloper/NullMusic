@@ -47,3 +47,4 @@ include(":paxsenixlyrics")
 //        substitute(module("com.github.teamnewpipe:NewPipeExtractor")).using(project(":extractor"))
 //    }
 //}
+include(":jiosaavn")

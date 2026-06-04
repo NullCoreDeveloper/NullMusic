@@ -65,8 +65,7 @@ import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.PreloadNextSongEnabledKey
 import iad1tya.echo.music.constants.PreloadNextSongLimitKey
 import iad1tya.echo.music.constants.PreloadLyricsEnabledKey
-import iad1tya.echo.music.constants.LocalDownloadEnabledKey
-import iad1tya.echo.music.constants.LocalDownloadDirectoryKey
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import iad1tya.echo.music.ui.component.DefaultDialog
@@ -139,32 +138,9 @@ fun PlayerSettings(
         defaultValue = true
     )
 
-    val (localDownloadEnabled, onLocalDownloadEnabledChange) = rememberPreference(
-        key = LocalDownloadEnabledKey,
-        defaultValue = false
-    )
 
-    val (localDownloadDirectory, onLocalDownloadDirectoryChange) = rememberPreference(
-        key = LocalDownloadDirectoryKey,
-        defaultValue = ""
-    )
 
     val context = androidx.compose.ui.platform.LocalContext.current
-    val directoryPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree()
-    ) { uri ->
-        if (uri != null) {
-            try {
-                context.contentResolver.takePersistableUriPermission(
-                    uri,
-                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            onLocalDownloadDirectoryChange(uri.toString())
-        }
-    }
 
     val (enableGoogleCast, onEnableGoogleCastChange) = rememberPreference(
         key = EnableGoogleCastKey,
@@ -237,48 +213,15 @@ fun PlayerSettings(
         mutableStateOf(false)
     }
 
-    var showLosslessAudioWarning by remember { mutableStateOf(false) }
-    var showLosslessDownloadWarning by remember { mutableStateOf(false) }
-    var showLocalDownloadWarning by remember { mutableStateOf(false) }
+    var showSaavnAudioWarning by remember { mutableStateOf(false) }
 
-    val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
-        iad1tya.echo.music.constants.DownloadQualityKey,
-        defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
-    )
-
-    var showDownloadQualityDialog by remember {
-        mutableStateOf(false)
-    }
-
-    if (showDownloadQualityDialog) {
-        EnumDialog(
-            onDismiss = { showDownloadQualityDialog = false },
-            onSelect = {
-                if (it == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS) {
-                    showLosslessDownloadWarning = true
-                } else {
-                    onDownloadQualityChange(it)
-                }
-                showDownloadQualityDialog = false
-            },
-            title = "Download Quality",
-            current = downloadQuality,
-            values = iad1tya.echo.music.constants.DownloadQuality.values().toList(),
-            valueText = {
-                when (it) {
-                    iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
-                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless (Beta)"
-                }
-            }
-        )
-    }
 
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
             onSelect = {
                 if (it == AudioQuality.LOSSLESS) {
-                    showLosslessAudioWarning = true
+                    showSaavnAudioWarning = true
                 } else {
                     onAudioQualityChange(it)
                 }
@@ -290,7 +233,7 @@ fun PlayerSettings(
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
-                    AudioQuality.LOSSLESS -> "Lossless (Beta)"
+                    AudioQuality.LOSSLESS -> "Saavn (320kbps)"
                 }
             }
         )
@@ -328,65 +271,28 @@ fun PlayerSettings(
             }
         }
 
-        if (showLosslessAudioWarning) {
+        if (showSaavnAudioWarning) {
             DefaultDialog(
-                onDismiss = { showLosslessAudioWarning = false },
-                title = { Text("Enable Lossless Audio?") },
+                onDismiss = { showSaavnAudioWarning = false },
+                title = { Text("Enable Saavn (320kbps)?") },
                 buttons = {
-                    TextButton(onClick = { showLosslessAudioWarning = false }) {
+                    TextButton(onClick = { showSaavnAudioWarning = false }) {
                         Text(stringResource(R.string.cancel))
                     }
                     TextButton(onClick = {
-                        showLosslessAudioWarning = false
+                        showSaavnAudioWarning = false
                         onAudioQualityChange(AudioQuality.LOSSLESS)
                     }) {
                         Text(stringResource(R.string.enable))
                     }
                 }
             ) {
-                Text("This feature uses Qobuz and may not always work. Enabling Lossless Music disables crossfade. If lossless playback fails, the app will automatically fall back to YouTube Music's Opus stream. For the best experience, keep this option disabled—lossless audio uses more data, may buffer on slower connections, and many devices or earbuds won't benefit from it.")
+                Text("This feature uses JioSaavn and may not always work. If Saavn playback fails, the app will automatically fall back to YouTube Music's Opus stream.")
             }
         }
 
-        if (showLosslessDownloadWarning) {
-            DefaultDialog(
-                onDismiss = { showLosslessDownloadWarning = false },
-                title = { Text("Enable Lossless Download?") },
-                buttons = {
-                    TextButton(onClick = { showLosslessDownloadWarning = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showLosslessDownloadWarning = false
-                        onDownloadQualityChange(iad1tya.echo.music.constants.DownloadQuality.LOSSLESS)
-                    }) {
-                        Text(stringResource(R.string.enable))
-                    }
-                }
-            ) {
-                Text("Lossless download may or may not work. If it doesn't work, it will switch back to Opus.")
-            }
-        }
 
-        if (showLocalDownloadWarning) {
-            DefaultDialog(
-                onDismiss = { showLocalDownloadWarning = false },
-                title = { Text("Enable Local Download (Beta)?") },
-                buttons = {
-                    TextButton(onClick = { showLocalDownloadWarning = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showLocalDownloadWarning = false
-                        onLocalDownloadEnabledChange(true)
-                    }) {
-                        Text(stringResource(R.string.enable))
-                    }
-                }
-            ) {
-                Text("Currently supports FLAC and depends on a third-party service (Qobuz). It may or may not work. If it fails, it will fall back to Opus.")
-            }
-        }
+
 
         Spacer(
             Modifier.windowInsetsPadding(
@@ -406,75 +312,36 @@ fun PlayerSettings(
                         Text(
                             when (audioQuality) {
                                 AudioQuality.OPUS -> "Opus"
-                                AudioQuality.LOSSLESS -> "Lossless (Beta)"
+                                AudioQuality.LOSSLESS -> "Saavn (320kbps)"
                             }
                         )
                     },
                     onClick = { showAudioQualityDialog = true }
                 ))
-                add(Material3SettingsItem(
-                    icon = painterResource(R.drawable.download),
-                    title = { Text("Download Quality") },
-                    description = {
-                        Text(
-                            when (downloadQuality) {
-                                iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC)"
-                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless (Beta)"
-                            }
-                        )
-                    },
-                    onClick = { showDownloadQualityDialog = true }
-                ))
-                add(Material3SettingsItem(
-                    icon = painterResource(R.drawable.download),
-                    title = { Text("Local Download (Beta)") },
-                    description = { Text("Enable downloading songs directly to local storage (Only Supports FLAC)") },
-                    trailingContent = {
-                        Switch(
-                            checked = localDownloadEnabled,
-                            onCheckedChange = null
-                        )
-                    },
-                    onClick = { 
-                        if (!localDownloadEnabled) {
-                            showLocalDownloadWarning = true
-                        } else {
-                            onLocalDownloadEnabledChange(false)
-                        }
-                    }
-                ))
-                if (localDownloadEnabled) {
-                    add(Material3SettingsItem(
-                        icon = painterResource(R.drawable.snippet_folder),
-                        title = { Text("Choose Destination") },
-                        description = { Text(if (localDownloadDirectory.isEmpty()) "Not set" else localDownloadDirectory) },
-                        onClick = { directoryPickerLauncher.launch(null) }
-                    ))
-                }
+
+
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.linear_scale),
                     title = { Text(stringResource(R.string.crossfade)) },
                     description = { 
-                        Text(if (audioQuality == AudioQuality.LOSSLESS) "Disabled for Lossless audio" else stringResource(R.string.crossfade_desc)) 
+                        Text(stringResource(R.string.crossfade_desc)) 
                     },
                     showBadge = true,
                     trailingContent = {
                         Switch(
-                            checked = if (audioQuality == AudioQuality.LOSSLESS) false else crossfadeEnabled,
-                            enabled = audioQuality != AudioQuality.LOSSLESS,
+                            checked = crossfadeEnabled,
+                            enabled = true,
                             onCheckedChange = {
-                                if (audioQuality != AudioQuality.LOSSLESS) {
-                                    if (!crossfadeEnabled) {
-                                        showCrossfadeBetaDialog = true
-                                    } else {
-                                        onCrossfadeEnabledChange(false)
-                                    }
+                                if (!crossfadeEnabled) {
+                                    showCrossfadeBetaDialog = true
+                                } else {
+                                    onCrossfadeEnabledChange(false)
                                 }
                             },
                             thumbContent = {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (crossfadeEnabled && audioQuality != AudioQuality.LOSSLESS) R.drawable.check else R.drawable.close
+                                        id = if (crossfadeEnabled) R.drawable.check else R.drawable.close
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier.size(SwitchDefaults.IconSize)
@@ -483,16 +350,14 @@ fun PlayerSettings(
                         )
                     },
                     onClick = {
-                        if (audioQuality != AudioQuality.LOSSLESS) {
-                            if (!crossfadeEnabled) {
-                                showCrossfadeBetaDialog = true
-                            } else {
-                                onCrossfadeEnabledChange(false)
-                            }
+                        if (!crossfadeEnabled) {
+                            showCrossfadeBetaDialog = true
+                        } else {
+                            onCrossfadeEnabledChange(false)
                         }
                     }
                 ))
-                if (crossfadeEnabled && audioQuality != AudioQuality.LOSSLESS) {
+                if (crossfadeEnabled) {
                     add(Material3SettingsItem(
                         icon = painterResource(R.drawable.timer),
                         title = { Text(stringResource(R.string.crossfade_duration)) },

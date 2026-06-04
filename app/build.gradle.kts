@@ -294,6 +294,7 @@ dependencies {
     implementation(project(":applecanvas"))
     implementation(project(":echomusiccanvas"))
     implementation(project(":paxsenixlyrics"))
+    implementation(project(":jiosaavn"))
 
 
     implementation(libs.ktor.client.core)

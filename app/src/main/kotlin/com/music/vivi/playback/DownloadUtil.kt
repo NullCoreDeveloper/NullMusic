@@ -175,7 +175,7 @@ constructor(
                 }
             }
 
-            val streamUrl = if (format.audioQuality == "LOSSLESS") {
+            val streamUrl = if (playbackData.isSaavnStream || format.audioQuality == "LOSSLESS") {
                 playbackData.streamUrl
             } else {
                 playbackData.streamUrl.let {

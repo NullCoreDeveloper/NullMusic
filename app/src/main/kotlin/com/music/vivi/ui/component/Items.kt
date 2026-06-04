@@ -1790,34 +1790,4 @@ object Icon {
     }
 }
 
-@Composable
-fun rememberQobuzMatch(
-    id: String,
-    artist: String,
-    title: String,
-    durationMs: Long?,
-    audioQuality: iad1tya.echo.music.constants.AudioQuality,
-    cachedFlac: Boolean
-): androidx.compose.runtime.State<Boolean?> {
-    return androidx.compose.runtime.produceState<Boolean?>(initialValue = if (cachedFlac) true else null, id) {
-        if (cachedFlac) {
-            value = true
-            return@produceState
-        }
-        kotlinx.coroutines.delay(300) // Debounce fast scrolling
-        val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
-        var found = false
-        for (term in iad1tya.echo.music.utils.qobuzSearchTerms(artist, title)) {
-            val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
-            val candidates = searchResult.tracks?.items.orEmpty()
-            if (candidates.isEmpty()) continue
-            val scored = candidates.map { it to iad1tya.echo.music.utils.confidence(artist, title, durationMs, it) }
-            val match = scored.filter { it.second >= 0.5f }.maxByOrNull { it.second }
-            if (match != null) {
-                found = true
-                break
-            }
-        }
-        value = found
-    }
-}
+

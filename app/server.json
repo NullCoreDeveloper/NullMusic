@@ -1,5 +1,5 @@
 {
   "name": "Echo Music Server",
-  "region": "Global",
+  "region": "Global - Echo Music",
   "serverUrl": "wss://iad1tya-echomusic.hf.space/ws"
 }

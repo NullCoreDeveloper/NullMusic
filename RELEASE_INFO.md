@@ -13,3 +13,9 @@
 - Updated the audio codec display to show codec name, bitrate in kbps, and lossless indicator.
 - The playback queue is now unlocked for rearrangement by default.
 - The Quick Picks carousel is now always pinned to the top of the Home Screen.
+- Adjusted the audio codec display to align horizontally with the music playback timestamps.
+- Updated the previous and next player buttons to maintain a consistent translucent white styling across all themes.
+- Prevented text overflow on the Subscribe, Radio, and Shuffle buttons within the Artist screen.
+- Removed the disc icon from the album title on the Album screen.
+- Repositioned the Listen Together connection controls to the top app bar.
+- Moved the Listen Together usage guide below the settings card.

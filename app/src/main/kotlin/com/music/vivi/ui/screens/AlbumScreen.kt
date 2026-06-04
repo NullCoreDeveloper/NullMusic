@@ -423,13 +423,6 @@ fun AlbumScreen(
                                     horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
                                 ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.album),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(30.dp),
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(Modifier.width(8.dp))
                                     Text(
                                         text = albumWithSongs.album.title,
                                         style = MaterialTheme.typography.headlineMedium,

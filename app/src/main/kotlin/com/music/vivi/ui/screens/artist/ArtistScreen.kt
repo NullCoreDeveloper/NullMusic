@@ -552,7 +552,9 @@ fun ArtistScreen(
                                                     R.string.subscribe
                                                 }
                                             ),
-                                            style = MaterialTheme.typography.labelMedium
+                                            style = MaterialTheme.typography.labelMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
 
@@ -578,7 +580,9 @@ fun ArtistScreen(
                                                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
                                                 Text(
                                                     text = stringResource(R.string.radio),
-                                                    style = MaterialTheme.typography.labelMedium
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
                                                 )
                                             }
                                         }
@@ -610,7 +614,9 @@ fun ArtistScreen(
                                                 Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
                                                 Text(
                                                     text = stringResource(R.string.shuffle),
-                                                    style = MaterialTheme.typography.labelMedium
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
                                                 )
                                             }
                                         }
@@ -642,7 +648,9 @@ fun ArtistScreen(
                                             Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
                                             Text(
                                                 text = stringResource(R.string.shuffle),
-                                                style = MaterialTheme.typography.labelMedium
+                                                style = MaterialTheme.typography.labelMedium,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
                                     }

@@ -836,8 +836,8 @@ fun HomeScreen(
                 
                 
                 val base = when (section) {
+                    HomeSection.QuickPicks -> 10000
                     HomeSection.SpeedDial,
-                    HomeSection.QuickPicks,
                     HomeSection.DailyDiscover -> 500 
 
                     HomeSection.KeepListening,
@@ -851,8 +851,8 @@ fun HomeScreen(
                 val modifier = when (section) {
                     
                     
+                    HomeSection.QuickPicks -> 0
                     HomeSection.SpeedDial,
-                    HomeSection.QuickPicks,
                     HomeSection.DailyDiscover -> sectionRandom.nextInt(-200, 400)
 
                     
@@ -870,8 +870,8 @@ fun HomeScreen(
             }
         } else {
             val defaultOrder = mapOf(
+                HomeSection.QuickPicks to 1000,
                 HomeSection.SpeedDial to 100,
-                HomeSection.QuickPicks to 90,
                 HomeSection.FromTheCommunity to 80,
                 HomeSection.DailyDiscover to 70,
                 HomeSection.KeepListening to 60,

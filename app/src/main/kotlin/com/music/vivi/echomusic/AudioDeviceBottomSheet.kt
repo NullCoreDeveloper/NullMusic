@@ -554,6 +554,8 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                         onDragEnd = { isUserDragging = false }
                     )
 
+                    Spacer(modifier = Modifier.height(24.dp))
+
                     AudioQualitySelector(context)
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -786,8 +788,8 @@ fun AudioQualitySelector(context: Context) {
 
         val options = listOf(
             "Opus",
-            "Saavn (320kbps)",
-            "Qobuz (Lossless)"
+            "320 kbps",
+            "Lossless"
         )
         val selectedIndex = when (audioQuality) {
             AudioQuality.SAAVN -> 1
@@ -856,9 +858,9 @@ fun DownloadQualitySelector() {
         )
 
         val options = listOf(
-            "YouTube Music (AAC/Default)",
-            "Saavn (320kbps)",
-            "Qobuz (Lossless)"
+            "Opus",
+            "320 kbps",
+            "Lossless"
         )
         val selectedIndex = when (downloadQuality) {
             iad1tya.echo.music.constants.DownloadQuality.SAAVN -> 1

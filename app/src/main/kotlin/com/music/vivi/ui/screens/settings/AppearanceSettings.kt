@@ -179,6 +179,14 @@ fun AppearanceSettings(
         UseNewPlayerDesignKey,
         defaultValue = true
     )
+    val (showCodecOnPlayer, onShowCodecOnPlayerChange) = rememberPreference(
+        iad1tya.echo.music.constants.ShowCodecOnPlayerKey,
+        defaultValue = false
+    )
+    val (hidePlayerSlider, onHidePlayerSliderChange) = rememberPreference(
+        iad1tya.echo.music.constants.HidePlayerSliderKey,
+        defaultValue = false
+    )
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(
         HidePlayerThumbnailKey,
         defaultValue = false
@@ -1122,6 +1130,27 @@ fun AppearanceSettings(
                         }
                     }
                 ),
+                if (!useNewPlayerDesign) Material3SettingsItem(
+                    icon = painterResource(R.drawable.linear_scale),
+                    title = { Text("Hide volume slider") },
+                    description = { Text("Hide the volume slider on the Apple Music player") },
+                    trailingContent = {
+                        Switch(
+                            checked = hidePlayerSlider,
+                            onCheckedChange = onHidePlayerSliderChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (hidePlayerSlider) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onHidePlayerSliderChange(!hidePlayerSlider) }
+                ) else null,
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.gradient),
                     title = { Text(stringResource(R.string.player_background_style)) },
@@ -1310,9 +1339,28 @@ fun AppearanceSettings(
                         )
                     },
                     onClick = { onShowCommentButtonChange(!showCommentButton) }
-                )
-            ) + if (swipeThumbnail) listOf(
+                ),
                 Material3SettingsItem(
+                    icon = painterResource(R.drawable.info),
+                    title = { Text("Show codec on player") },
+                    description = { Text("Display audio codec information below the timeline") },
+                    trailingContent = {
+                        Switch(
+                            checked = showCodecOnPlayer,
+                            onCheckedChange = onShowCodecOnPlayerChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (showCodecOnPlayer) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                ),
+                if (swipeThumbnail) Material3SettingsItem(
                     icon = painterResource(R.drawable.tune),
                     title = { Text(stringResource(R.string.swipe_sensitivity)) },
                     description = {
@@ -1324,8 +1372,8 @@ fun AppearanceSettings(
                         )
                     },
                     onClick = { showSensitivityDialog = true }
-                )
-            ) else emptyList()
+                ) else null
+            )
         )
 
         if (showSensitivityDialog) {

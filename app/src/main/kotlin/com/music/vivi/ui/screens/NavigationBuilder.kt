@@ -54,7 +54,6 @@ import iad1tya.echo.music.ui.screens.settings.integrations.ListenTogetherSetting
 import iad1tya.echo.music.ui.screens.recognition.RecognitionScreen
 import iad1tya.echo.music.ui.screens.recognition.RecognitionHistoryScreen
 import iad1tya.echo.music.ui.screens.settings.UpdateSettings
-import iad1tya.echo.music.ui.screens.wrapped.WrappedScreen
 import iad1tya.echo.music.echomusic.updater.UpdateScreen
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
@@ -389,10 +388,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("login") {
         LoginScreen(navController)
-    }
-
-    composable("wrapped") {
-        WrappedScreen(navController)
     }
 
     dialog("equalizer") {

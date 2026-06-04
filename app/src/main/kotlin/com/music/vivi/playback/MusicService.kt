@@ -2306,8 +2306,6 @@ class MusicService :
             
             performAggressiveCacheClear(mediaId)
 
-            
-            delay(RETRY_DELAY_MS)
 
             
             val currentIndex = player.currentMediaItemIndex
@@ -2333,10 +2331,6 @@ class MusicService :
 
             
             performAggressiveCacheClear(mediaId)
-
-            
-            
-            delay(RETRY_DELAY_MS)
 
             
             val currentPosition = player.currentPosition
@@ -2370,7 +2364,6 @@ class MusicService :
 
         retryJob?.cancel()
         retryJob = scope.launch {
-            delay(RETRY_DELAY_MS)
 
             
             val currentPosition = player.currentPosition
@@ -2394,7 +2387,7 @@ class MusicService :
         retryJob?.cancel()
         retryJob = scope.launch {
             performAggressiveCacheClear(mediaId)
-            delay(RETRY_DELAY_MS)
+
 
             val currentPosition = player.currentPosition
             val currentIndex = player.currentMediaItemIndex
@@ -2541,11 +2534,19 @@ class MusicService :
                         mediaId,
                         dataSpec.position,
                         if (dataSpec.length >= 0) dataSpec.length else 1
-                    ) ||
-                    playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH)
+                    )
                 ) {
                     scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
                     return@Factory dataSpec
+                }
+
+                if (playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH)) {
+                    songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
+                        scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+                        return@Factory dataSpec.withUri(it.first.toUri())
+                    }
+                    Timber.tag(TAG).w("Ghost cache entry for $mediaId, re-fetching")
+                    playerCache.removeResource(mediaId)
                 }
 
                 songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {

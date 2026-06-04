@@ -27,8 +27,6 @@ import iad1tya.echo.music.constants.HideYoutubeShortsKey
 import iad1tya.echo.music.constants.InnerTubeCookieKey
 import iad1tya.echo.music.constants.QuickPicks
 import iad1tya.echo.music.constants.QuickPicksKey
-import iad1tya.echo.music.constants.ShowWrappedCardKey
-import iad1tya.echo.music.constants.WrappedSeenKey
 import iad1tya.echo.music.db.MusicDatabase
 import iad1tya.echo.music.db.entities.Album
 import iad1tya.echo.music.db.entities.LocalItem
@@ -37,8 +35,6 @@ import iad1tya.echo.music.db.entities.SpeedDialItem
 import iad1tya.echo.music.extensions.filterVideoSongs
 import iad1tya.echo.music.extensions.toEnum
 import iad1tya.echo.music.models.SimilarRecommendation
-import iad1tya.echo.music.ui.screens.wrapped.WrappedAudioService
-import iad1tya.echo.music.ui.screens.wrapped.WrappedManager
 import iad1tya.echo.music.utils.SyncUtils
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.get
@@ -77,8 +73,6 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val database: MusicDatabase,
     val syncUtils: SyncUtils,
-    val wrappedManager: WrappedManager,
-    private val wrappedAudioService: WrappedAudioService,
 ) : ViewModel() {
     val isRefreshing = MutableStateFlow(false)
     val isLoading = MutableStateFlow(false)
@@ -227,18 +221,6 @@ class HomeViewModel @Inject constructor(
     val accountName = MutableStateFlow("Guest")
     val accountImageUrl = MutableStateFlow<String?>(null)
 
-    val showWrappedCard: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        val showWrappedPref = prefs[ShowWrappedCardKey] ?: false
-        val seen = prefs[WrappedSeenKey] ?: false
-        val isBeforeDate = LocalDate.now().isBefore(LocalDate.of(2026, 2, 1))
-
-        isBeforeDate && (!seen || showWrappedPref)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val wrappedSeen: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[WrappedSeenKey] ?: false
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     fun togglePin(item: YTItem) {
         viewModelScope.launch(Dispatchers.IO) {
             val speedDialItem = SpeedDialItem.fromYTItem(item)
@@ -247,14 +229,6 @@ class HomeViewModel @Inject constructor(
                 database.speedDialDao.delete(speedDialItem.id)
             } else {
                 database.speedDialDao.insert(speedDialItem)
-            }
-        }
-    }
-
-    fun markWrappedAsSeen() {
-        viewModelScope.launch(Dispatchers.IO) {
-            context.dataStore.edit {
-                it[WrappedSeenKey] = true
             }
         }
     }
@@ -682,25 +656,6 @@ class HomeViewModel @Inject constructor(
         
         viewModelScope.launch(Dispatchers.IO) {
             syncUtils.tryAutoSync()
-        }
-
-        
-        viewModelScope.launch(Dispatchers.IO) {
-            showWrappedCard.collect { shouldShow ->
-                if (shouldShow && !wrappedManager.state.value.isDataReady) {
-                    try {
-                        wrappedManager.prepare()
-                        val state = wrappedManager.state.first { it.isDataReady }
-                        val trackMap = state.trackMap
-                        if (trackMap.isNotEmpty()) {
-                            val firstTrackId = trackMap.entries.first().value
-                            wrappedAudioService.prepareTrack(firstTrackId)
-                        }
-                    } catch (e: Exception) {
-                        reportException(e)
-                    }
-                }
-            }
         }
 
         

@@ -90,7 +90,6 @@ import iad1tya.echo.music.constants.ShowMonthlyListenersKey
 import iad1tya.echo.music.constants.ShowArtistVideoKey
 import iad1tya.echo.music.constants.ShowArtistBackgroundVideoKey
 import iad1tya.echo.music.constants.ShowSpeedDialKey
-import iad1tya.echo.music.constants.ShowWrappedCardKey
 import iad1tya.echo.music.constants.TopSize
 import iad1tya.echo.music.ui.component.EnumDialog
 import iad1tya.echo.music.ui.component.IconButton
@@ -155,7 +154,6 @@ fun ContentSettings(
     val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
     val (quickPicks, onQuickPicksChange) = rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
     val (showSpeedDial, onShowSpeedDialChange) = rememberPreference(key = ShowSpeedDialKey, defaultValue = true)
-    val (showWrappedCard, onShowWrappedCardChange) = rememberPreference(key = ShowWrappedCardKey, defaultValue = false)
     val (randomizeHomeOrder, onRandomizeHomeOrderChange) = rememberPreference(
         RandomizeHomeOrderKey,
         defaultValue = false

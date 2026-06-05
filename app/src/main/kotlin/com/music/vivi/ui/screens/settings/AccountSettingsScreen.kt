@@ -156,19 +156,7 @@ fun AccountSettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Material3SettingsGroup(
-                title = stringResource(R.string.integrations),
-                items = listOf(
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.integration),
-                        title = { Text(stringResource(R.string.integrations)) },
-                        onClick = { navController.navigate("settings/integrations") }
-                    )
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+            
             Material3SettingsGroup(
                 title = stringResource(R.string.advanced_login),
                 items = listOf(

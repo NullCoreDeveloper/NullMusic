@@ -809,16 +809,6 @@
     <string name="discord_activity_name_description">Custom name for the activity (leave empty for default)</string>
     <string name="discord_advanced_mode">Advanced mode</string>
     <string name="discord_advanced_mode_description">Show additional customization options for Rich Presence</string>
-    <string name="discord_state">State</string>
-    <string name="discord_details">Details</string>
-    <string name="discord_enable_button_1">Show button 1</string>
-    <string name="discord_enable_button_2">Show button 2</string>
-    <string name="discord_button_label">Label</string>
-    <string name="discord_button_url">URL</string>
-    <string name="discord_placeholders">Available placeholders</string>
-    <string name="discord_placeholder_song">Song name</string>
-    <string name="discord_placeholder_artist">Artist name</string>
-    <string name="discord_placeholder_album">Album name</string>
     <string name="speed_dial">Speed dial</string>
     <string name="pin_to_speed_dial">Pin to Speed dial</string>
     <string name="unpin_from_speed_dial">Unpin from Speed dial</string>
@@ -984,5 +974,4 @@
     <string name="download_quality_title">Download Quality</string>
     <string name="enable_lossless_audio">Enable Lossless Audio</string>
     <string name="lossless_audio_warning">Lossless audio requires a fast connection. It may consume more data and battery. Continue?</string>
-    <string name="discord_gms_only">Discord RPC is only available in GMS builds</string>
 </resources>

@@ -254,12 +254,7 @@ class BackupRestoreViewModel @Inject constructor(
             val restartIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
-            val pendingIntent = android.app.PendingIntent.getActivity(
-                context, 100, restartIntent, 
-                android.app.PendingIntent.FLAG_CANCEL_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
-            )
-            val mgr = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-            mgr.set(android.app.AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
+            context.startActivity(restartIntent)
             exitProcess(0)
         }.onFailure {
             reportException(it)

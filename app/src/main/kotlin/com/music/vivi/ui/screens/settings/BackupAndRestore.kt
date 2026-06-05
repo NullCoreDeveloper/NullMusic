@@ -63,7 +63,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import timber.log.Timber
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -163,19 +162,17 @@ fun BackupAndRestore(
     var signedInAccount by remember { androidx.compose.runtime.mutableStateOf(GoogleDriveSyncManager.getSignedInAccount(context)) }
     
     val signInLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        try {
-            if (result.data != null) {
-                GoogleSignIn.getSignedInAccountFromIntent(result.data).getResult(com.google.android.gms.common.api.ApiException::class.java)
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Sign-in failed")
-        } finally {
-            signedInAccount = GoogleDriveSyncManager.getSignedInAccount(context)
-            if (signedInAccount != null) {
+        if (result.data != null) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+                signedInAccount = GoogleDriveSyncManager.getSignedInAccount(context)
                 Toast.makeText(context, "Signed in successfully!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Sign-in cancelled or failed", Toast.LENGTH_SHORT).show()
+            } catch (e: com.google.android.gms.common.api.ApiException) {
+                Toast.makeText(context, "Sign-in failed: Code ${e.statusCode}", Toast.LENGTH_LONG).show()
             }
+        } else {
+            Toast.makeText(context, "Sign-in cancelled (no data)", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -206,7 +203,7 @@ fun BackupAndRestore(
                         items = listOf(
                             Material3SettingsItem(
                                 title = { Text("Cloud Backup (Google Drive)") },
-                                icon = painterResource(R.drawable.ic_google),
+                                icon = painterResource(R.drawable.cloud),
                                 onClick = { 
                                     Toast.makeText(context, "Soon it will be available", Toast.LENGTH_SHORT).show()
                                 }

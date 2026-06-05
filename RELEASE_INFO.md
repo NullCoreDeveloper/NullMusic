@@ -27,9 +27,3 @@
 - Fixed cloud backup not syncing to Google Drive by properly implementing Auto Backup with `onFullBackup` and setting `android:fullBackupOnly="true"`.
 - Overhauled Cloud Auto-Backup: Replaced the Android OS-managed auto backup with a robust, custom Google Drive REST API integration, enabling instantaneous "Sync to Cloud Now" and "Restore from Cloud" functionalities on demand.
 - Refined the Backup & Restore UI by incorporating official Google and Google Drive vector icons, along with an instant UI refresh fix for Google sign-out events.
-- Fixed an issue where the Backup & Restore screen would not instantly refresh to show cloud options upon a successful Google Drive sign-in.
-- Corrected a bug where restoring a manual backup would abruptly crash the app instead of properly restarting the main activity.
-- Integrated Last.fm scrobbling and Discord Rich Presence settings, porting the full UI and functionality while maintaining the native application branding.
-- **Discord Integration Fixes:** Resolved multiple crashes caused by the Discord SDK (fixed JNI native method signatures matching the new package name, added missing Android Context engine activity binding, and registered the underlying AuthenticationActivity).
-- **OAuth Browser Fix:** Included the `androidx.browser:browser` Custom Tabs dependency to fix `NoClassDefFoundError` during Discord and other integrations OAuth login.
-- **Settings UI:** Updated the Integrations menu icon to a generic `integration` icon instead of the Discord icon.

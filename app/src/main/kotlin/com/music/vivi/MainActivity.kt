@@ -306,10 +306,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            com.music.vivi.discord.DiscordSdkHelper.setEngineActivity(null)
-        } catch (_: Exception) {}
-
         if (dataStore.get(StopMusicOnTaskClearKey, false) &&
             playerConnection?.isPlaying?.value == true &&
             isFinishing
@@ -339,9 +335,6 @@ class MainActivity : ComponentActivity() {
 
         
         listenTogetherManager.initialize()
-        try {
-            com.music.vivi.discord.DiscordSdkHelper.setEngineActivity(this)
-        } catch (_: Exception) {}
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale = dataStore[AppLanguageKey]

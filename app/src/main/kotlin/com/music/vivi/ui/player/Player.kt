@@ -642,57 +642,19 @@ fun BottomSheetPlayer(
     }
 
     
-    val (sideButtonContainerColor, sideButtonContentColor) = when {
-        isLocalMedia ||
-        playerBackground == PlayerBackgroundStyle.BLUR || 
-        playerBackground == PlayerBackgroundStyle.GRADIENT -> {
-            when (playerButtonsStyle) {
-                PlayerButtonsStyle.DEFAULT -> Pair(
-                    Color.White.copy(alpha = 0.2f), 
-                    Color.White
-                )
-                PlayerButtonsStyle.PRIMARY -> Pair(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                PlayerButtonsStyle.TERTIARY -> Pair(
-                    MaterialTheme.colorScheme.tertiaryContainer,
-                    MaterialTheme.colorScheme.onTertiaryContainer
-                )
-            }
-        }
-        !isLocalMedia && playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED -> {
-            when (playerButtonsStyle) {
-                PlayerButtonsStyle.DEFAULT -> Pair(
-                    Color.White.copy(alpha = 0.2f), 
-                    Color.White
-                )
-                PlayerButtonsStyle.PRIMARY -> Pair(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                PlayerButtonsStyle.TERTIARY -> Pair(
-                    MaterialTheme.colorScheme.tertiaryContainer,
-                    MaterialTheme.colorScheme.onTertiaryContainer
-                )
-            }
-        }
-        else -> {
-            when (playerButtonsStyle) {
-                PlayerButtonsStyle.DEFAULT -> Pair(
-                    MaterialTheme.colorScheme.surfaceContainerHighest,
-                    MaterialTheme.colorScheme.onSurface
-                )
-                PlayerButtonsStyle.PRIMARY -> Pair(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                PlayerButtonsStyle.TERTIARY -> Pair(
-                    MaterialTheme.colorScheme.tertiaryContainer,
-                    MaterialTheme.colorScheme.onTertiaryContainer
-                )
-            }
-        }
+    val (sideButtonContainerColor, sideButtonContentColor) = when (playerButtonsStyle) {
+        PlayerButtonsStyle.DEFAULT -> Pair(
+            Color.White.copy(alpha = 0.2f),
+            Color.White
+        )
+        PlayerButtonsStyle.PRIMARY -> Pair(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.onPrimaryContainer
+        )
+        PlayerButtonsStyle.TERTIARY -> Pair(
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.onTertiaryContainer
+        )
     }
 
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata?.id ?: "")
@@ -2000,53 +1962,87 @@ fun BottomSheetPlayer(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                if (!useNewPlayerDesign && sleepTimerEnabled) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(TextBackgroundColor.copy(alpha = 0.08f))
-                            .border(
-                                width = 0.5.dp,
-                                color = TextBackgroundColor.copy(alpha = 0.12f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .clickable {
-                                showSleepTimerDialog = true
-                            }
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        AnimatedContent(
-                            targetState = sleepTimerEnabled,
-                            transitionSpec = {
-                                fadeIn(animationSpec = tween(300)) togetherWith
-                                        fadeOut(animationSpec = tween(300))
-                            },
-                            label = "QualityTimerSwitcher"
-                        ) { isTimerActive ->
-                            if (isTimerActive) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.sleep_timer),
-                                        contentDescription = null,
-                                        tint = TextBackgroundColor.copy(alpha = 0.8f),
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Text(
-                                        text = makeTimeString(sleepTimerTimeLeft.coerceAtLeast(0)),
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            letterSpacing = 1.5.sp
-                                        ),
-                                        color = TextBackgroundColor.copy(alpha = 0.8f),
-                                        maxLines = 1,
-                                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (!useNewPlayerDesign && sleepTimerEnabled) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(TextBackgroundColor.copy(alpha = 0.08f))
+                                .border(
+                                    width = 0.5.dp,
+                                    color = TextBackgroundColor.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .clickable {
+                                    showSleepTimerDialog = true
+                                }
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            AnimatedContent(
+                                targetState = sleepTimerEnabled,
+                                transitionSpec = {
+                                    fadeIn(animationSpec = tween(300)) togetherWith
+                                            fadeOut(animationSpec = tween(300))
+                                },
+                                label = "QualityTimerSwitcher"
+                            ) { isTimerActive ->
+                                if (isTimerActive) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.sleep_timer),
+                                            contentDescription = null,
+                                            tint = TextBackgroundColor.copy(alpha = 0.8f),
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Text(
+                                            text = makeTimeString(sleepTimerTimeLeft.coerceAtLeast(0)),
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                letterSpacing = 1.5.sp
+                                            ),
+                                            color = TextBackgroundColor.copy(alpha = 0.8f),
+                                            maxLines = 1,
+                                        )
+                                    }
                                 }
                             }
+                        }
+                    }
+
+                    if (showCodecOnPlayer) {
+                        val formatText = remember(currentAudioFormat, currentFormatEntity) {
+                            val localAudioFormat = currentAudioFormat
+                            val localFormatEntity = currentFormatEntity
+                            val codecStr = localAudioFormat?.sampleMimeType?.substringAfter("audio/")?.uppercase() ?: localFormatEntity?.codecs?.uppercase() ?: ""
+                            var bitrateStr = ""
+                            if (localFormatEntity?.bitrate != null && localFormatEntity.bitrate > 0) {
+                                bitrateStr = "${localFormatEntity.bitrate / 1000} kbps"
+                            } else if (localAudioFormat?.bitrate != null && localAudioFormat.bitrate > 0) {
+                                bitrateStr = "${localAudioFormat.bitrate / 1000} kbps"
+                            }
+                            val isLossless = codecStr.contains("FLAC") || codecStr.contains("ALAC") || codecStr.contains("WAV")
+                            val losslessStr = if (isLossless) "Lossless" else ""
+                            listOf(codecStr, bitrateStr, losslessStr).filter { it.isNotEmpty() }.joinToString(" • ")
+                        }
+                        if (formatText.isNotEmpty()) {
+                            Text(
+                                text = formatText,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.sp,
+                                    fontSize = 10.sp
+                                ),
+                                color = TextBackgroundColor.copy(alpha = 0.7f),
+                            )
                         }
                     }
                 }
@@ -2058,37 +2054,6 @@ fun BottomSheetPlayer(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-            }
-
-            if (showCodecOnPlayer) {
-                val formatText = remember(currentAudioFormat, currentFormatEntity) {
-                    val localAudioFormat = currentAudioFormat
-                    val localFormatEntity = currentFormatEntity
-                    val codecStr = localAudioFormat?.sampleMimeType?.substringAfter("audio/")?.uppercase() ?: localFormatEntity?.codecs?.uppercase() ?: ""
-                    var bitrateStr = ""
-                    if (localFormatEntity?.bitrate != null && localFormatEntity.bitrate > 0) {
-                        bitrateStr = "${localFormatEntity.bitrate / 1000} kbps"
-                    } else if (localAudioFormat?.bitrate != null && localAudioFormat.bitrate > 0) {
-                        bitrateStr = "${localAudioFormat.bitrate / 1000} kbps"
-                    }
-                    val isLossless = codecStr.contains("FLAC") || codecStr.contains("ALAC") || codecStr.contains("WAV")
-                    val losslessStr = if (isLossless) "Lossless" else ""
-                    listOf(codecStr, bitrateStr, losslessStr).filter { it.isNotEmpty() }.joinToString(" • ")
-                }
-                if (formatText.isNotEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = formatText,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp,
-                                fontSize = 10.sp
-                            ),
-                            color = TextBackgroundColor.copy(alpha = 0.7f),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
-                }
             }
 
             Spacer(Modifier.height(if (useNewPlayerDesign) 24.dp else 12.dp))

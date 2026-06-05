@@ -13,3 +13,17 @@
 - Updated the audio codec display to show codec name, bitrate in kbps, and lossless indicator.
 - The playback queue is now unlocked for rearrangement by default.
 - The Quick Picks carousel is now always pinned to the top of the Home Screen.
+- Adjusted the audio codec display to align horizontally with the music playback timestamps.
+- Updated the previous and next player buttons to maintain a consistent translucent white styling across all themes.
+- Prevented text overflow on the Subscribe, Radio, and Shuffle buttons within the Artist screen.
+- Removed the disc icon from the album title on the Album screen.
+- Repositioned the Listen Together connection controls to the top app bar.
+- Moved the Listen Together usage guide below the settings card.
+- Fixed an issue where restoring from a manual zip backup could cause database corruption and app crashes by explicitly clearing old WAL cache files during restore.
+- Prevented potential data wipes on future app updates by safely disabling destructive Room database migrations.
+- Implemented a custom Cloud Backup Agent to safely checkpoint the database before Android's Auto Backup syncs to Google Drive, ensuring 0% data loss on reinstall or device transfer.
+- Revamped the "How to use Listen Together" instructions with a clean, numbered list within a perfectly styled Material 3 card.
+- Moved "Import from Spotify" back to the "Import" page inside Backup & Restore settings, placing it above the local file import option.
+- Fixed cloud backup not syncing to Google Drive by properly implementing Auto Backup with `onFullBackup` and setting `android:fullBackupOnly="true"`.
+- Overhauled Cloud Auto-Backup: Replaced the Android OS-managed auto backup with a robust, custom Google Drive REST API integration, enabling instantaneous "Sync to Cloud Now" and "Restore from Cloud" functionalities on demand.
+- Refined the Backup & Restore UI by incorporating official Google and Google Drive vector icons, along with an instant UI refresh fix for Google sign-out events.

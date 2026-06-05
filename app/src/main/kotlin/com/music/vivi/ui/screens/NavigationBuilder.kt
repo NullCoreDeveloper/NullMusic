@@ -49,8 +49,9 @@ import iad1tya.echo.music.ui.screens.settings.AccountSettingsScreen
 import iad1tya.echo.music.ui.screens.settings.StorageSettings
 import iad1tya.echo.music.ui.screens.settings.ThemeScreen
 import iad1tya.echo.music.ui.screens.settings.AiSettings
-import iad1tya.echo.music.ui.screens.settings.integrations.IntegrationScreen
-import iad1tya.echo.music.ui.screens.settings.integrations.ListenTogetherSettings
+import com.music.vivi.ui.screens.settings.integrations.IntegrationScreen
+import com.music.vivi.ui.screens.settings.integrations.DiscordSettings
+import com.music.vivi.ui.screens.settings.integrations.LastFMSettings
 import iad1tya.echo.music.ui.screens.recognition.RecognitionScreen
 import iad1tya.echo.music.ui.screens.recognition.RecognitionHistoryScreen
 import iad1tya.echo.music.ui.screens.settings.UpdateSettings
@@ -367,15 +368,17 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable("settings/integrations") {
-        IntegrationScreen(navController, scrollBehavior)
+        IntegrationScreen(navController)
+    }
+    composable("settings/integrations/discord") {
+        DiscordSettings(navController)
+    }
+    composable("settings/integrations/lastfm") {
+        LastFMSettings(navController)
     }
 
     composable("settings/spotify_import") {
         SpotifyImportScreen(navController)
-    }
-
-    composable(route = "settings/integrations/listen_together") {
-        ListenTogetherSettings(navController, scrollBehavior)
     }
 
     composable("settings/about") {

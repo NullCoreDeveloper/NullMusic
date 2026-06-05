@@ -1,11 +1,10 @@
-
-
 package iad1tya.echo.music
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+
 import android.os.Build
 import android.widget.Toast
 import androidx.datastore.preferences.core.edit
@@ -18,6 +17,9 @@ import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import coil3.util.DebugLogger
+import com.metrolist.lastfm.LastFM
+
 import com.music.innertube.YouTube
 import com.music.innertube.models.IpVersion
 import com.music.innertube.models.YouTubeLocale
@@ -56,6 +58,11 @@ class App : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+
+        LastFM.initialize(
+            apiKey = BuildConfig.LASTFM_API_KEY.takeIf { it.isNotEmpty() } ?: "",
+            secret = BuildConfig.LASTFM_SECRET.takeIf { it.isNotEmpty() } ?: "",
+        )
 
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         if (!prefs.getBoolean("cleared_db_v5", false)) {

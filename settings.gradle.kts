@@ -48,3 +48,4 @@ include(":paxsenixlyrics")
 //    }
 //}
 include(":jiosaavn")
+include(":lastfm")

@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.api.file.RelativePath
 import java.util.Properties
 import java.net.URL
 
@@ -43,8 +44,8 @@ android {
 //        val lastFmKey = localProperties.getProperty("LASTFM_API_KEY") ?: System.getenv("LASTFM_API_KEY") ?: ""
 //        val lastFmSecret = localProperties.getProperty("LASTFM_SECRET") ?: System.getenv("LASTFM_SECRET") ?: ""
         
-        val lastFmKey = "694cbaa17c78202a133eac4656dff651"
-        val lastFmSecret = "a0fdaf6060f19128c4a84f297c71e627"
+        val lastFmKey = project.findProperty("LASTFM_API_KEY") as? String ?: System.getenv("LASTFM_API_KEY") ?: "694cbaa17c78202a133eac4656dff651"
+        val lastFmSecret = project.findProperty("LASTFM_SECRET") as? String ?: System.getenv("LASTFM_SECRET") ?: "a0fdaf6060f19128c4a84f297c71e627"
 
         buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
         buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
@@ -52,6 +53,7 @@ android {
 //add nightly build label support
         val isNightly = project.hasProperty("nightly") && project.property("nightly") == "true"
         buildConfigField("Boolean", "IS_NIGHTLY", isNightly.toString())
+        manifestPlaceholders["discordAppId"] = ""
     }
     
 
@@ -62,12 +64,21 @@ android {
             dimension = "variant"
             isDefault = true
             buildConfigField("Boolean", "CAST_AVAILABLE", "false")
+            buildConfigField("Boolean", "DISCORD_RPC_AVAILABLE", "false")
         }
 
         // GMS variant - with Google Cast support (requires Google Play Services)
         create("gms") {
             dimension = "variant"
             buildConfigField("Boolean", "CAST_AVAILABLE", "true")
+            buildConfigField("Boolean", "DISCORD_RPC_AVAILABLE", "true")
+            buildConfigField("Long", "DISCORD_APP_ID", "1447278780795064401L")
+            manifestPlaceholders["discordAppId"] = "1447278780795064401"
+            externalNativeBuild {
+                cmake {
+                    arguments("-DDISCORD_BRIDGE=ON")
+                }
+            }
         }
         
         create("universal") {
@@ -169,6 +180,12 @@ android {
         generateLocaleConfig = true
     }
 
+    externalNativeBuild {
+        cmake {
+            path = file("src/gms/cpp/CMakeLists.txt")
+        }
+    }
+
     packaging {
         jniLibs {
             useLegacyPackaging = true
@@ -220,7 +237,29 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     }
 }
 
+val extractDiscordSo = tasks.register<Copy>("extractDiscordSo") {
+    description = "Extracts libdiscord_partner_sdk.so from the AAR into src/gms/jniLibs"
+    from(zipTree("libs/discord_partner_sdk.aar").matching {
+        include("jni/**/libdiscord_partner_sdk.so")
+    })
+    into(file("src/gms/jniLibs"))
+    eachFile {
+        val parts = relativePath.segments
+        relativePath = RelativePath(true, *parts.drop(1).toTypedArray())
+    }
+    includeEmptyDirs = false
+}
+
+tasks.configureEach {
+    if (name.startsWith("buildCMake") || name.startsWith("configureCMake") || name.startsWith("merge") && name.contains("JniLib")) {
+        dependsOn(extractDiscordSo)
+    }
+}
+
 dependencies {
+    // Discord OAuth Custom Tabs requirement
+    "gmsImplementation"("androidx.browser:browser:1.8.0")
+
     // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
     "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
     "gmsImplementation"("com.google.firebase:firebase-analytics")
@@ -233,6 +272,8 @@ dependencies {
         exclude(group = "org.apache.httpcomponents")
     }
 
+    "gmsImplementation"(files("libs/discord_partner_sdk.aar"))
+
     
     implementation(libs.haze)
     implementation(libs.guava)
@@ -240,6 +281,7 @@ dependencies {
     implementation(libs.concurrent.futures)
 
     implementation(libs.activity)
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation(libs.hilt.navigation)
     implementation(libs.datastore)
 
@@ -306,6 +348,7 @@ dependencies {
     implementation(project(":echomusiccanvas"))
     implementation(project(":paxsenixlyrics"))
     implementation(project(":jiosaavn"))
+    implementation(project(":lastfm"))
 
 
     implementation(libs.ktor.client.core)

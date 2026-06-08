@@ -72,6 +72,7 @@ fun AiSettings(
         "Gemini" to "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
         "XAi" to "https://api.x.ai/v1/chat/completions",
         "Mistral" to "https://api.mistral.ai/v1/chat/completions",
+        "Nvidia" to "https://integrate.api.nvidia.com/v1/chat/completions",
         "DeepL" to "https://api.deepl.com/v2/translate",
         "Custom" to ""
     )
@@ -84,6 +85,7 @@ fun AiSettings(
         "Gemini" to stringResource(R.string.ai_provider_gemini_help),
         "XAi" to stringResource(R.string.ai_provider_xai_help),
         "Mistral" to stringResource(R.string.ai_provider_mistral_help),
+        "Nvidia" to stringResource(R.string.ai_provider_nvidia_help),
         "DeepL" to stringResource(R.string.ai_provider_deepl_help),
         "Custom" to ""
     )
@@ -133,6 +135,13 @@ fun AiSettings(
             "mistral-medium-latest",
             "mistral-small-latest",
             "mistral-tiny-latest"
+        ),
+        "Nvidia" to listOf(
+            "meta/llama-3.1-405b-instruct",
+            "meta/llama-3.1-70b-instruct",
+            "meta/llama-3.1-8b-instruct",
+            "nvidia/nemotron-4-340b-instruct",
+            "mistralai/mixtral-8x22b-instruct-v0.1"
         ),
         "DeepL" to listOf(),
         "Custom" to listOf()

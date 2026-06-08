@@ -75,11 +75,7 @@ constructor(
 
     private val dataSourceFactory =
         ResolvingDataSource.Factory(
-            CacheDataSource
-                .Factory()
-                .setCache(playerCache)
-                .setUpstreamDataSourceFactory(
-                    OkHttpDataSource.Factory(
+            OkHttpDataSource.Factory(
                         OkHttpClient.Builder()
                             .dns(object : Dns {
                                 override fun lookup(hostname: String): List<InetAddress> {
@@ -101,17 +97,10 @@ constructor(
                             }
                             .build(),
                     ),
-                ),
         ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
-            val length = if (dataSpec.length >= 0) dataSpec.length else 1
 
-            val isLosslessDownload = downloadQuality == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS
-            if (!isLosslessDownload && playerCache.isCached(mediaId, dataSpec.position, length)) {
-                return@Factory dataSpec
-            }
-
-            songUrlCache[mediaId]?.takeIf { it.second < System.currentTimeMillis() }?.let {
+            songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                 return@Factory dataSpec.withUri(it.first.toUri())
             }
 

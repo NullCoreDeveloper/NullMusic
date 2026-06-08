@@ -93,7 +93,6 @@ import iad1tya.echo.music.constants.ShowTopPlaylistKey
 import iad1tya.echo.music.constants.ShowUploadedPlaylistKey
 import iad1tya.echo.music.constants.SliderStyle
 import iad1tya.echo.music.constants.SliderStyleKey
-import iad1tya.echo.music.constants.SlimNavBarKey
 import iad1tya.echo.music.constants.SquigglySliderKey
 import iad1tya.echo.music.constants.SwipeSensitivityKey
 import iad1tya.echo.music.constants.SwipeThumbnailKey
@@ -125,6 +124,7 @@ import iad1tya.echo.music.constants.AppleMusicLyricsBlurKey
 import iad1tya.echo.music.constants.LyricsGlowEffectKey
 import iad1tya.echo.music.constants.LyricsLineSpacingKey
 import iad1tya.echo.music.constants.LyricsScrollKey
+import iad1tya.echo.music.constants.HideStatusBarOnFullscreenKey
 import iad1tya.echo.music.constants.MiniPlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.ShowCommentButtonKey
 
@@ -140,12 +140,12 @@ fun AppearanceSettings(
         DynamicThemeKey,
         defaultValue = true
     )
-    val (enableDynamicIcon, onEnableDynamicIconChange) = rememberPreference(
-        EnableDynamicIconKey,
-        defaultValue = true
+    val (enableLegacyIcon, onEnableLegacyIconChange) = rememberPreference(
+        iad1tya.echo.music.constants.EnableLegacyIconKey,
+        defaultValue = false
     )
     val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
-        EnableHighRefreshRateKey,
+        iad1tya.echo.music.constants.EnableHighRefreshRateKey,
         defaultValue = true
     )
     val (selectedThemeColorInt) = rememberPreference(
@@ -156,9 +156,9 @@ fun AppearanceSettings(
     val isUsingCustomColor = selectedThemeColorInt != DefaultThemeColor.toArgb()
     val coroutineScope = rememberCoroutineScope()
 
-    fun handleIconChange(enabled: Boolean) {
-        onEnableDynamicIconChange(enabled)
-        IconUtils.setIcon(activity, enabled)
+    fun handleIconChange(legacyEnabled: Boolean) {
+        onEnableLegacyIconChange(legacyEnabled)
+        IconUtils.setIcon(activity, false, legacyEnabled)
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = "Icon updated, restart to apply",
@@ -235,6 +235,7 @@ fun AppearanceSettings(
     val (lyricsStandardBlur, onLyricsStandardBlurChange) = rememberPreference(LyricsStandardBlurKey, defaultValue = false)
     val (swipeLyrics, onSwipeLyricsChange) = rememberPreference(SwipeLyricsKey, defaultValue = false)
     val (enableLyricsThumbnailPlayPause, onEnableLyricsThumbnailPlayPauseChange) = rememberPreference(EnableLyricsThumbnailPlayPauseKey, defaultValue = false)
+    val (hideStatusBarOnFullscreen, onHideStatusBarOnFullscreenChange) = rememberPreference(HideStatusBarOnFullscreenKey, defaultValue = false)
 
     val (sliderStyle, onSliderStyleChange) = rememberEnumPreference(
         SliderStyleKey,
@@ -263,11 +264,6 @@ fun AppearanceSettings(
     val (gridItemSize, onGridItemSizeChange) = rememberEnumPreference(
         GridItemsSizeKey,
         defaultValue = GridItemSize.SMALL
-    )
-
-    val (slimNav, onSlimNavChange) = rememberPreference(
-        SlimNavBarKey,
-        defaultValue = false
     )
 
     
@@ -1006,6 +1002,30 @@ fun AppearanceSettings(
 
                 add(
                     Material3SettingsItem(
+                        icon = painterResource(R.drawable.legacy_icon_raster),
+                        tintIcon = false,
+                        title = { Text(stringResource(R.string.legacy_icon)) },
+                        description = { Text(stringResource(R.string.legacy_icon_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = enableLegacyIcon,
+                                onCheckedChange = { handleIconChange(it) },
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (enableLegacyIcon) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { handleIconChange(!enableLegacyIcon) }
+                    )
+                )
+                add(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.palette),
                         title = { Text(stringResource(R.string.theme)) },
                         description = { Text(stringResource(R.string.theme_desc)) },
@@ -1655,6 +1675,27 @@ fun AppearanceSettings(
                         )
                     },
                     onClick = { onEnableLyricsThumbnailPlayPauseChange(!enableLyricsThumbnailPlayPause) }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.fullscreen),
+                    title = { Text(stringResource(R.string.hide_status_bar_on_fullscreen)) },
+                    description = { Text(stringResource(R.string.hide_status_bar_on_fullscreen_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = hideStatusBarOnFullscreen,
+                            onCheckedChange = onHideStatusBarOnFullscreenChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (hideStatusBarOnFullscreen) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onHideStatusBarOnFullscreenChange(!hideStatusBarOnFullscreen) }
                 )
             )
         )
@@ -1734,26 +1775,6 @@ fun AppearanceSettings(
                         )
                     },
                     onClick = { onSwipeToRemoveSongChange(!swipeToRemoveSong) }
-                ),
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.nav_bar),
-                    title = { Text(stringResource(R.string.slim_navbar)) },
-                    trailingContent = {
-                        Switch(
-                            checked = slimNav,
-                            onCheckedChange = onSlimNavChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (slimNav) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onSlimNavChange(!slimNav) }
                 ),
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.group_outlined),

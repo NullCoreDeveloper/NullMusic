@@ -242,6 +242,15 @@ fun YouTubeSelectionSongMenu(
                         },
                     ) else null,
                     if (!isGuest) Material3MenuItemData(
+                        icon = { Icon(painterResource(R.drawable.playlist_play), null) },
+                        title = { Text(stringResource(R.string.play_next)) },
+                        onClick = {
+                            playerConnection.playNext(songSelection.map { it.toMediaItem() })
+                            clearAction()
+                            onDismiss()
+                        },
+                    ) else null,
+                    if (!isGuest) Material3MenuItemData(
                         icon = { Icon(painterResource(R.drawable.queue_music), null) },
                         title = { Text(stringResource(R.string.add_to_queue)) },
                         onClick = {

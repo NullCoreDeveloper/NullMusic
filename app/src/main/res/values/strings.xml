@@ -150,6 +150,8 @@
     <string name="file_size">File size</string>
     <string name="unknown">Unknown</string>
     <string name="copied">Copied to clipboard</string>
+    <string name="hide_status_bar_on_fullscreen">Hide status bar on fullscreen</string>
+    <string name="hide_status_bar_on_fullscreen_desc">Hide the status bar when lyrics fullscreen mode is active</string>
 
     <string name="edit_lyrics">Edit lyrics</string>
     <string name="search_lyrics">Search lyrics</string>

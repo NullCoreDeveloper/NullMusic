@@ -2652,14 +2652,7 @@ class MusicService :
     private fun createMediaSourceFactory() =
         DefaultMediaSourceFactory(
             createDataSourceFactory(),
-            ExtractorsFactory {
-                arrayOf(
-                    MatroskaExtractor(),
-                    FragmentedMp4Extractor(),
-                    androidx.media3.extractor.mp4.Mp4Extractor(),
-                    androidx.media3.extractor.flac.FlacExtractor()
-                )
-            }
+            androidx.media3.extractor.DefaultExtractorsFactory()
         )
 
     private fun createRenderersFactory(

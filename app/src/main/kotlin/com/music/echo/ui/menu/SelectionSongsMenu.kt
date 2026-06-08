@@ -711,6 +711,22 @@ fun SelectionMediaMetadataMenu(
                         if (!isGuest) {
                             add(
                                 Material3MenuItemData(
+                                    title = { Text(text = stringResource(R.string.play_next)) },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.playlist_play),
+                                            contentDescription = null,
+                                        )
+                                    },
+                                    onClick = {
+                                        onDismiss()
+                                        playerConnection.playNext(songSelection.map { it.toMediaItem() })
+                                        clearAction()
+                                    }
+                                )
+                            )
+                            add(
+                                Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.add_to_queue)) },
                                     icon = {
                                         Icon(

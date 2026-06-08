@@ -159,6 +159,7 @@ import iad1tya.echo.music.constants.AudioQualityKey
 import iad1tya.echo.music.constants.CropAlbumArtKey
 import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.HidePlayerThumbnailKey
+import iad1tya.echo.music.constants.HideStatusBarOnFullscreenKey
 import iad1tya.echo.music.constants.EnableLyricsThumbnailPlayPauseKey
 import iad1tya.echo.music.constants.KeepScreenOn
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
@@ -227,6 +228,8 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import iad1tya.echo.music.applecanvas.AppleMusicCanvasProvider
 import iad1tya.echo.music.canvas.CanvasArtwork
 import iad1tya.echo.music.canvas.MonochromeApiCanvas
@@ -762,6 +765,28 @@ fun BottomSheetPlayer(
 
     var isFullScreen by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    val hideStatusBarOnFullscreen by rememberPreference(HideStatusBarOnFullscreenKey, defaultValue = false)
+
+    DisposableEffect(isFullScreen, hideStatusBarOnFullscreen) {
+        val window = (context as? android.app.Activity)?.window
+        if (window != null) {
+            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+            if (isFullScreen && hideStatusBarOnFullscreen) {
+                insetsController.hide(WindowInsetsCompat.Type.statusBars())
+                insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                insetsController.show(WindowInsetsCompat.Type.statusBars())
+            }
+        }
+        
+        onDispose {
+            if (window != null) {
+                val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+                insetsController.show(WindowInsetsCompat.Type.statusBars())
+            }
+        }
     }
 
     

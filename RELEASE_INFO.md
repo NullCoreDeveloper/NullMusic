@@ -1,8 +1,9 @@
-# Echo Music v5.1.7
+# Echo Music v5.1.8 - Prebuild
 
-## Bug Fixes
-
-- Fixed an issue where the Local songs screen inside the Library did not display a back button, and corrected its navigation logic to return to the Library home rather than exiting the tab.
-- Fixed system back button behavior on the Library screen to properly return to the mix view instead of the home screen when navigating from library chips.
-- Corrected UI overlapping issue where the back button on the Local Songs screen was hidden under the main navigation bar.
-- Refactored library layout spacing and dynamic top app bar padding across Library tabs.
+- Fixed an issue where songs downloaded with Saavn (320kbps) or YouTube Music quality would fail to play and skip when offline.
+- Corrected the stream URL caching logic during the download resolution process.
+- Added support for playing virtually all standard audio formats (like `.mp3`, `.wav`, `.ogg`, `.aac`, etc.) from the local library by utilizing the native Media3 extractors instead of a restricted set.
+- Added a new setting in Appearance > Lyrics to automatically hide the status bar when entering full-screen lyrics mode.
+- Added a "Play next" option to the multi-selection menu for albums and playlists, allowing you to easily queue multiple selected songs to play immediately after the current one.
+- Removed the "Slim bottom navigation bar" option from the Appearance settings.
+- Added a "Legacy Icon" toggle in Appearance settings to revert the app icon to its original design.

@@ -33,8 +33,8 @@ android {
         applicationId = "iad1tya.echo.music"
         minSdk = 26
         targetSdk = 36
-        versionCode = 509
-        versionName = "5.1.8"
+        versionCode = 510
+        versionName = "5.1.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -77,18 +77,22 @@ android {
         create("arm64") {
             dimension = "abi"
             buildConfigField("String", "ARCHITECTURE", "\"arm64\"")
+            ndk { abiFilters.add("arm64-v8a") }
         }
         create("armeabi") {
             dimension = "abi"
             buildConfigField("String", "ARCHITECTURE", "\"armeabi\"")
+            ndk { abiFilters.add("armeabi-v7a") }
         }
         create("x86") {
             dimension = "abi"
             buildConfigField("String", "ARCHITECTURE", "\"x86\"")
+            ndk { abiFilters.add("x86") }
         }
         create("x86_64") {
             dimension = "abi"
             buildConfigField("String", "ARCHITECTURE", "\"x86_64\"")
+            ndk { abiFilters.add("x86_64") }
         }
     }
 
@@ -324,6 +328,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation(libs.work.runtime.ktx)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.ffmpeg.kit.full)
-    implementation(libs.bundles.youtubedlAndroid)
+    implementation(libs.ffmpeg.kit.audio)
+
 }

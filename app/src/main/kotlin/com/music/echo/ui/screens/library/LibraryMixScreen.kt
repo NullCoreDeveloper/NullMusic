@@ -224,6 +224,8 @@ fun LibraryMixScreen(
                 }
         }.reversed(sortDescending)
 
+    allItems = allItems.filter { it is Playlist && it.playlist.isPinned } + allItems.filterNot { it is Playlist && it.playlist.isPinned }
+
     val coroutineScope = rememberCoroutineScope()
 
     val lazyListState = rememberLazyListState()

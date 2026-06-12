@@ -241,6 +241,8 @@ fun YouTubeAlbumMenu(
 
     YouTubeListItem(
         item = albumItem,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         badges = {},
         trailingContent = {
             IconButton(

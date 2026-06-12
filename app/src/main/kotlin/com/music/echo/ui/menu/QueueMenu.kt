@@ -180,7 +180,8 @@ fun QueueMenu(
     
     MediaMetadataListItem(
         mediaMetadata = mediaMetadata,
-        shape = listItemShape(0, 2),
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         trailingContent = {
             IconButton(
                 onClick = {

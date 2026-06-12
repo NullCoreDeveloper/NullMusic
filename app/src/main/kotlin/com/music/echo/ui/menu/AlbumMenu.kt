@@ -262,6 +262,8 @@ fun AlbumMenu(
 
     AlbumListItem(
         album = album,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         showLikedIcon = false,
         badges = {},
         trailingContent = {

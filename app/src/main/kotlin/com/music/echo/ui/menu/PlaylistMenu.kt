@@ -253,6 +253,8 @@ fun PlaylistMenu(
 
     PlaylistListItem(
         playlist = playlist,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         trailingContent = {
             if (playlist.playlist.isEditable != true) {
                 IconButton(
@@ -457,6 +459,27 @@ fun PlaylistMenu(
                             )
                         )
                     }
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (playlist.playlist.isPinned) stringResource(R.string.unpin_playlist) else stringResource(R.string.pin_playlist)
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(if (playlist.playlist.isPinned) R.drawable.ic_push_pin else R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                database.query {
+                                    update(playlist.playlist.copy(isPinned = !playlist.playlist.isPinned))
+                                }
+                                onDismiss()
+                            }
+                        )
+                    )
                     add(
                         Material3MenuItemData(
                             title = { 

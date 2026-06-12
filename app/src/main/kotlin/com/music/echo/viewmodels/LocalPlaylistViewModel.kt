@@ -6,6 +6,9 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.innertube.YouTube
+import com.music.innertube.models.SongItem
+import com.music.innertube.models.WatchEndpoint
 import iad1tya.echo.music.constants.HideVideoSongsKey
 import iad1tya.echo.music.constants.PlaylistSongSortDescendingKey
 import iad1tya.echo.music.constants.PlaylistSongSortType
@@ -14,12 +17,16 @@ import iad1tya.echo.music.db.MusicDatabase
 import iad1tya.echo.music.db.entities.PlaylistSong
 import iad1tya.echo.music.extensions.reversed
 import iad1tya.echo.music.extensions.toEnum
+import iad1tya.echo.music.models.toMediaMetadata
 import iad1tya.echo.music.utils.SyncUtils
 import iad1tya.echo.music.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -35,7 +42,7 @@ class LocalPlaylistViewModel
 @Inject
 constructor(
     @ApplicationContext context: Context,
-    database: MusicDatabase,
+    private val database: MusicDatabase,
     private val syncUtils: SyncUtils,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -105,6 +112,44 @@ constructor(
                         update(playlistSong.map.copy(position = index))
                     }
                 }
+            }
+        }
+    }
+
+    private val _suggestions = MutableStateFlow<List<SongItem>>(emptyList())
+    val suggestions = _suggestions.asStateFlow()
+
+    private var hasFetchedSuggestions = false
+
+    fun fetchSuggestions() {
+        if (hasFetchedSuggestions) return
+        hasFetchedSuggestions = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val songs = playlistSongs.value
+            if (songs.isNotEmpty()) {
+                val lastSong = songs.last().song.song
+                if (lastSong.id.isNotEmpty()) {
+                    YouTube.next(WatchEndpoint(videoId = lastSong.id)).onSuccess { nextResult ->
+                        val existingIds = songs.map { it.song.song.id }.toSet()
+                        _suggestions.value = nextResult.items
+                            .filterIsInstance<SongItem>()
+                            .filterNot { it.id in existingIds }
+                            .take(10)
+                    }
+                }
+            }
+        }
+    }
+
+    fun addSuggestedSong(song: SongItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlist.value?.let { currentPlaylist ->
+                database.transaction {
+                    insert(song.toMediaMetadata())
+                    addSongToPlaylist(currentPlaylist, listOf(song.id))
+                }
+                _suggestions.value = _suggestions.value.filter { it.id != song.id }
             }
         }
     }

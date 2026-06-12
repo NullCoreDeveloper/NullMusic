@@ -2518,13 +2518,17 @@ class MusicService :
 
             
             var shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
-            if (!shouldBypassCache && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
+            
+            val cachedLength = androidx.media3.datasource.cache.ContentMetadata.getContentLength(downloadCache.getContentMetadata(mediaId))
+            val isFullyDownloaded = cachedLength != androidx.media3.common.C.LENGTH_UNSET.toLong() && cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
+
+            if (!shouldBypassCache && !isFullyDownloaded && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
                 val format = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
                 if (format?.codecs != "flac") {
                     shouldBypassCache = true
                 }
             }
-            if (!shouldBypassCache && audioQuality == iad1tya.echo.music.constants.AudioQuality.SAAVN) {
+            if (!shouldBypassCache && !isFullyDownloaded && audioQuality == iad1tya.echo.music.constants.AudioQuality.SAAVN) {
                 val format = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
                 if (format?.codecs != "mp4a.40.2") {
                     shouldBypassCache = true
@@ -2532,14 +2536,26 @@ class MusicService :
             }
 
             if (!shouldBypassCache) {
+                if (isFullyDownloaded) {
+                    scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+                    return@Factory if (dataSpec.length == androidx.media3.common.C.LENGTH_UNSET.toLong()) {
+                        dataSpec.subrange(dataSpec.position, cachedLength - dataSpec.position)
+                    } else {
+                        dataSpec
+                    }
+                }
+
                 if (downloadCache.isCached(
                         mediaId,
                         dataSpec.position,
                         if (dataSpec.length >= 0) dataSpec.length else 1
                     )
                 ) {
-                    scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
-                    return@Factory dataSpec
+                    songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
+                        scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+                        return@Factory dataSpec.withUri(it.first.toUri())
+                    }
+                    // Fall through to fetch real URL since it's only partially downloaded
                 }
 
                 if (playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH)) {

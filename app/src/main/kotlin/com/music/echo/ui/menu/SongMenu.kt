@@ -315,8 +315,8 @@ fun SongMenu(
     SongListItem(
         song = song,
         badges = {},
-        shape = listItemShape(0, 2),
-        horizontalPadding = 0.dp,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         trailingContent = {
             IconButton(
                 onClick = {

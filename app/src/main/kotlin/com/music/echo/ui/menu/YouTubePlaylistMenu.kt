@@ -139,6 +139,8 @@ fun YouTubePlaylistMenu(
 
     YouTubeListItem(
         item = playlist,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         trailingContent = {
             if (playlist.id != "LM" && !playlist.isEditable) {
                 IconButton(

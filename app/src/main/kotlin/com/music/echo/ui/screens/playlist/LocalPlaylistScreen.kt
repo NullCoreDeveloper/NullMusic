@@ -134,6 +134,7 @@ import iad1tya.echo.music.extensions.toMediaItem
 import iad1tya.echo.music.models.toMediaMetadata
 import iad1tya.echo.music.playback.ExoDownloadService
 import iad1tya.echo.music.playback.queues.ListQueue
+import iad1tya.echo.music.playback.queues.YouTubeQueue
 import iad1tya.echo.music.ui.component.ActionPromptDialog
 import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.DraggableScrollbar
@@ -142,6 +143,7 @@ import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.OverlayEditButton
 import iad1tya.echo.music.ui.component.SongListItem
+import iad1tya.echo.music.ui.component.YouTubeListItem
 import iad1tya.echo.music.ui.component.SortHeader
 import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.ui.menu.CustomThumbnailMenu
@@ -184,6 +186,7 @@ fun LocalPlaylistScreen(
 
     val playlist by viewModel.playlist.collectAsState()
     val songs by viewModel.playlistSongs.collectAsState()
+    val suggestions by viewModel.suggestions.collectAsState()
     val mutableSongs = remember { mutableStateListOf<PlaylistSong>() }
     val playlistLength =
         remember(songs) {
@@ -226,6 +229,12 @@ fun LocalPlaylistScreen(
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(songs) {
+        if (songs.isNotEmpty()) {
+            viewModel.fetchSuggestions()
         }
     }
 
@@ -712,6 +721,44 @@ fun LocalPlaylistScreen(
                     }
                 }
             }
+
+            if (suggestions.isNotEmpty() && editable && !isSearching && !inSelectMode) {
+                item {
+                    Text(
+                        text = stringResource(R.string.suggestions),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                    )
+                }
+                itemsIndexed(
+                    items = suggestions,
+                    key = { _, item -> "suggestion_${item.id}" }
+                ) { index, song ->
+                    YouTubeListItem(
+                        item = song,
+                        isActive = song.id == mediaMetadata?.id,
+                        isPlaying = isPlaying,
+                        trailingContent = {
+                            IconButton(onClick = { viewModel.addSuggestedSong(song) }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.add),
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .combinedClickable(
+                                onClick = {
+                                    playerConnection.playQueue(
+                                        YouTubeQueue.radio(song.toMediaMetadata())
+                                    )
+                                }
+                            )
+                    )
+                }
+            }
+
             item(key = "bottom_spacer") {
                 Spacer(Modifier.height(50.dp))
             }

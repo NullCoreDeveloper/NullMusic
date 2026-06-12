@@ -974,7 +974,10 @@ interface DatabaseDao {
 
         PlaylistSortType.SONG_COUNT -> playlistsBySongCountAsc()
         PlaylistSortType.LAST_UPDATED -> playlistsByUpdatedDateAsc()
-    }.map { it.reversed(descending) }
+    }.map { list ->
+        val reversedList = list.reversed(descending)
+        reversedList.filter { it.playlist.isPinned } + reversedList.filterNot { it.playlist.isPinned }
+    }
 
     @Transaction
     @Query("SELECT *, (SELECT COUNT(*) FROM playlist_song_map WHERE playlistId = playlist.id) AS songCount FROM playlist WHERE id = :playlistId")

@@ -62,6 +62,8 @@ fun YouTubeArtistMenu(
 
     YouTubeListItem(
         item = artist,
+        shape = MaterialTheme.shapes.large,
+        color = androidx.compose.ui.graphics.Color.Transparent,
         trailingContent = {},
     )
 

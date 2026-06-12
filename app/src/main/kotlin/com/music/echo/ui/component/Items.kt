@@ -146,6 +146,7 @@ inline fun ListItem(
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
     horizontalPadding: Dp = 16.dp,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -158,7 +159,7 @@ inline fun ListItem(
                 color = when {
                     isActive -> MaterialTheme.colorScheme.secondaryContainer
                     isSelected == true && drawHighlight -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                    else -> MaterialTheme.colorScheme.surfaceContainer
+                    else -> color
                 }
             )
     ) {
@@ -226,6 +227,7 @@ fun ListItem(
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
     horizontalPadding: Dp = 16.dp,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) = ListItem(
     title = title,
     subtitle = {
@@ -247,7 +249,8 @@ fun ListItem(
     isActive = isActive,
     shape = shape,
     drawHighlight = drawHighlight,
-    horizontalPadding = horizontalPadding
+    horizontalPadding = horizontalPadding,
+    color = color,
 )
 
 
@@ -264,6 +267,7 @@ fun ListItem(
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
     horizontalPadding: Dp = 16.dp,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) = ListItem(
     title = title,
     subtitle = {
@@ -286,7 +290,8 @@ fun ListItem(
     isActive = isActive,
     shape = shape,
     drawHighlight = drawHighlight,
-    horizontalPadding = horizontalPadding
+    horizontalPadding = horizontalPadding,
+    color = color,
 )
 
 @Composable
@@ -437,6 +442,7 @@ fun SongListItem(
     trailingContent: @Composable RowScope.() -> Unit = {},
     drawHighlight: Boolean = true,
     shape: Shape = RectangleShape,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
     horizontalPadding: Dp = 16.dp,
 ) {
     val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
@@ -468,6 +474,7 @@ fun SongListItem(
             isSelected = isSelected,
             isActive = isActive,
             shape = shape,
+            color = color,
             drawHighlight = drawHighlight,
             horizontalPadding = horizontalPadding
         )
@@ -554,6 +561,8 @@ fun SongGridItem(
 fun ArtistListItem(
     artist: Artist,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
+    shape: Shape = RectangleShape,
     badges: @Composable RowScope.() -> Unit = {
         if (artist.artist.bookmarkedAt != null) {
             Icon(
@@ -586,6 +595,8 @@ fun ArtistListItem(
         )
     },
     trailingContent = trailingContent,
+    shape = shape,
+    color = color,
     modifier = modifier,
 )
 
@@ -626,6 +637,8 @@ fun ArtistGridItem(
 fun AlbumListItem(
     album: Album,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
+    shape: Shape = RectangleShape,
     showLikedIcon: Boolean = true,
     badges: @Composable RowScope.() -> Unit = {
         val downloadUtil = LocalDownloadUtil.current
@@ -682,6 +695,8 @@ fun AlbumListItem(
         )
     },
     trailingContent = trailingContent,
+    shape = shape,
+    color = color,
     modifier = modifier
 )
 
@@ -782,6 +797,7 @@ fun AlbumGridItem(
 fun PlaylistListItem(
     playlist: Playlist,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
     autoPlaylist: Boolean = false,
     badges: @Composable RowScope.() -> Unit = {
         val downloadUtil = LocalDownloadUtil.current
@@ -809,6 +825,14 @@ fun PlaylistListItem(
             )
         }
 
+        if (playlist.playlist.isPinned) {
+            Icon(
+                painter = painterResource(R.drawable.ic_push_pin),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp).padding(end = 2.dp)
+            )
+        }
         Icon.Download(downloadState)
     },
     trailingContent: @Composable RowScope.() -> Unit = {},
@@ -892,6 +916,14 @@ fun PlaylistGridItem(
             )
         }
 
+        if (playlist.playlist.isPinned) {
+            Icon(
+                painter = painterResource(R.drawable.ic_push_pin),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp).padding(end = 2.dp)
+            )
+        }
         Icon.Download(downloadState)
     },
     fillMaxWidth: Boolean = false,
@@ -974,6 +1006,7 @@ fun MediaMetadataListItem(
     isActive: Boolean = false,
     isPlaying: Boolean = false,
     shape: Shape = RectangleShape,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
     ListItem(
@@ -1013,7 +1046,8 @@ fun MediaMetadataListItem(
         trailingContent = trailingContent,
         modifier = modifier,
         isActive = isActive,
-        shape = shape
+        shape = shape,
+        color = color
     )
 }
 
@@ -1023,6 +1057,7 @@ fun MediaMetadataListItem(
 fun YouTubeListItem(
     item: YTItem,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
     albumIndex: Int? = null,
     isSelected: Boolean = false,
     isActive: Boolean = false,

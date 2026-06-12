@@ -1299,6 +1299,15 @@ private fun JoinCreateRoomSection(
                     Text(stringResource(R.string.join_room), fontWeight = FontWeight.SemiBold)
                 }
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Note: You may have to click create or join button twice. It will be fixed in a future update.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

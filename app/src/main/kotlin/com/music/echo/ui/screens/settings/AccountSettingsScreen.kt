@@ -300,48 +300,37 @@ fun AccountSettingsScreen(
                 onDismiss = { showLogoutDialog = false },
                 title = { Text(stringResource(R.string.logout_dialog_title)) },
                 buttons = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-                        modifier = Modifier.padding(top = 8.dp)
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        
-                        ToggleButton(
-                            checked = false,
-                            onCheckedChange = { showLogoutDialog = false },
-                            modifier = Modifier.weight(1f),
-                            shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        ) {
-                            Text(stringResource(android.R.string.cancel))
-                        }
-
-                        
-                        ToggleButton(
-                            checked = false,
-                            onCheckedChange = {
-                                accountSettingsViewModel.logoutAndClearSyncedContent(context, onInnerTubeCookieChange)
-                                showLogoutDialog = false
-                            },
-                            modifier = Modifier.weight(1f),
-                            shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
-                            colors = ToggleButtonDefaults.toggleButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(stringResource(R.string.logout_clear_data))
-                        }
-
-                        
-                        ToggleButton(
-                            checked = true,
-                            onCheckedChange = {
+                        Button(
+                            onClick = {
                                 accountSettingsViewModel.logoutKeepData(context, onInnerTubeCookieChange)
                                 showLogoutDialog = false
                                 navController.navigateUp()
                             },
-                            modifier = Modifier.weight(1f),
-                            shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(stringResource(R.string.logout_keep_data))
+                        }
+                        
+                        FilledTonalButton(
+                            onClick = {
+                                accountSettingsViewModel.logoutAndClearSyncedContent(context, onInnerTubeCookieChange)
+                                showLogoutDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text(stringResource(R.string.logout_clear_data))
+                        }
+
+                        TextButton(
+                            onClick = { showLogoutDialog = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(android.R.string.cancel))
                         }
                     }
                 }

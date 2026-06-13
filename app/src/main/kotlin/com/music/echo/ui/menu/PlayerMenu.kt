@@ -113,8 +113,31 @@ fun PlayerMenu(
     val context = LocalContext.current
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val playerVolume = playerConnection.service.playerVolume.collectAsState()
     
+    val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager }
+    var systemVolume by remember { androidx.compose.runtime.mutableFloatStateOf(audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC).toFloat()) }
+    var maxSystemVolume by remember { androidx.compose.runtime.mutableFloatStateOf(audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC).toFloat()) }
+
+    androidx.compose.runtime.DisposableEffect(context) {
+        val volumeChangeReceiver = object : android.content.BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: android.content.Intent) {
+                if (intent.action == "android.media.VOLUME_CHANGED_ACTION") {
+                    val streamType = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE", -1)
+                    if (streamType == android.media.AudioManager.STREAM_MUSIC) {
+                        systemVolume = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC).toFloat()
+                        maxSystemVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC).toFloat()
+                    }
+                }
+            }
+        }
+        context.registerReceiver(
+            volumeChangeReceiver,
+            android.content.IntentFilter("android.media.VOLUME_CHANGED_ACTION")
+        )
+        onDispose {
+            context.unregisterReceiver(volumeChangeReceiver)
+        }
+    }
     
     val castHandler = remember(playerConnection) {
         try {
@@ -261,12 +284,14 @@ fun PlayerMenu(
             }
             
             VolumeSlider(
-                value = if (isCasting) castVolume else playerVolume.value,
+                value = if (isCasting) castVolume else (systemVolume / maxSystemVolume.coerceAtLeast(1f)),
                 onValueChange = { volume ->
                     if (isCasting) {
                         castHandler?.setVolume(volume)
                     } else {
-                        playerConnection.service.playerVolume.value = volume
+                        val newSystemVolume = (volume * maxSystemVolume).toInt()
+                        audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, newSystemVolume, 0)
+                        systemVolume = newSystemVolume.toFloat()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

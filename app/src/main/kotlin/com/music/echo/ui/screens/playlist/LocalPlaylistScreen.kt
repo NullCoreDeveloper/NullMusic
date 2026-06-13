@@ -738,6 +738,10 @@ fun LocalPlaylistScreen(
                         item = song,
                         isActive = song.id == mediaMetadata?.id,
                         isPlaying = isPlaying,
+                        shape = listItemShape(
+                            index = index,
+                            count = suggestions.size
+                        ),
                         trailingContent = {
                             IconButton(onClick = { viewModel.addSuggestedSong(song) }) {
                                 Icon(

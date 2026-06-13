@@ -82,6 +82,7 @@ import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
 import iad1tya.echo.music.echomusic.updater.extractUrls
+import iad1tya.echo.music.ui.component.parseMarkdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -419,14 +420,7 @@ fun ChangelogScreen(
                                         }
                                         
                                         section.items.forEach { item ->
-                                            val urls = item.extractUrls()
-                                            val annotatedText = buildAnnotatedString {
-                                                append(item.trim())
-                                                urls.forEach { (range, url) ->
-                                                    addStringAnnotation("URL", url, range.first, range.last + 1)
-                                                    addStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline), range.first, range.last + 1)
-                                                }
-                                            }
+                                            val annotatedText = item.trim().parseMarkdown()
                                             Row(modifier = Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                                 Box(modifier = Modifier.padding(top = 8.dp).size(6.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
                                                 ClickableText(

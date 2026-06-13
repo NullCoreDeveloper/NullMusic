@@ -882,7 +882,8 @@ fun PlaylistListItem(
     },
     trailingContent = trailingContent,
     modifier = modifier,
-    shape = shape
+    shape = shape,
+    color = color
 )
 
 @Composable

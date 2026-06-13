@@ -96,7 +96,7 @@ import iad1tya.echo.music.listentogether.RoomRole
 import iad1tya.echo.music.ui.component.CastButton
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.constants.CanvasThumbnailAnimationKey
-import iad1tya.echo.music.canvas.MonochromeApiCanvas
+import iad1tya.echo.music.canvas.TidalCanvasProvider
 import iad1tya.echo.music.canvas.CanvasArtwork
 import iad1tya.echo.music.extensions.metadata
 import iad1tya.echo.music.ui.utils.resize
@@ -739,7 +739,7 @@ private fun ThumbnailItem(
                                     song = s,
                                     artist = a
                                 )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-                                    ?: MonochromeApiCanvas.getBySongArtist(
+                                    ?: TidalCanvasProvider.getBySongArtist(
                                         song = s,
                                         artist = a,
                                         album = albumName

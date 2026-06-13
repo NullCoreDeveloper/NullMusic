@@ -1,5 +1,3 @@
-
-
 package iad1tya.echo.music.ui.screens.recognition
 
 import android.Manifest
@@ -34,6 +32,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.animation.core.Animatable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,6 +47,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -57,8 +59,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -82,6 +87,17 @@ import com.music.shazamkit.models.RecognitionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import iad1tya.echo.music.LocalPlayerConnection
+import com.music.innertube.YouTube
+import com.music.innertube.models.SongItem
+import iad1tya.echo.music.models.toMediaMetadata
+import iad1tya.echo.music.playback.queues.YouTubeQueue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,18 +108,15 @@ fun RecognitionScreen(
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     
-    
     LaunchedEffect(Unit) {
         iad1tya.echo.music.recognition.MusicRecognitionService.reset()
     }
-    
     
     DisposableEffect(Unit) {
         onDispose {
             iad1tya.echo.music.recognition.MusicRecognitionService.reset()
         }
     }
-    
     
     val recognitionStatus by iad1tya.echo.music.recognition.MusicRecognitionService.recognitionStatus.collectAsState()
     
@@ -165,89 +178,122 @@ fun RecognitionScreen(
         }
     }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.recognize_music)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.navigateUp() },
-                        onLongClick = { navController.backToMain() }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back),
-                            contentDescription = null
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate("recognition_history") }) {
-                        Icon(
-                            painter = painterResource(R.drawable.history),
-                            contentDescription = stringResource(R.string.recognition_history)
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            AnimatedContent(
-                targetState = recognitionStatus,
-                transitionSpec = {
-                    (fadeIn() + scaleIn()).togetherWith(fadeOut() + scaleOut())
-                },
-                label = "recognition_content"
-            ) { status ->
-                when (status) {
-                    is RecognitionStatus.Ready -> {
-                        ReadyState(onStartRecognition = ::startRecognition)
-                    }
-                    is RecognitionStatus.Listening -> {
-                        ListeningState(
-                            onCancel = { iad1tya.echo.music.recognition.MusicRecognitionService.reset() }
-                        )
-                    }
-                    is RecognitionStatus.Processing -> {
-                        ProcessingState()
-                    }
-                    is RecognitionStatus.Success -> {
-                        SuccessState(
-                            result = status.result,
-                            onPlayOnApp = { result ->
-                                
-                                val searchQuery = "${result.title} ${result.artist}"
-                                navController.navigate("search/${java.net.URLEncoder.encode(searchQuery, "UTF-8")}")
-                            },
-                            onTryAgain = {
-                                startRecognition()
-                            },
-                            onClose = ::resetToReady,
-                            onSaveToHistory = ::saveToHistory
-                        )
-                    }
-                    is RecognitionStatus.NoMatch -> {
-                        NoMatchState(
-                            message = status.message,
-                            onTryAgain = {
-                                startRecognition()
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = recognitionStatus,
+            transitionSpec = {
+                fadeIn().togetherWith(fadeOut())
+            },
+            label = "main_content"
+        ) { status ->
+            if (status is RecognitionStatus.Success) {
+                val playerConnection = LocalPlayerConnection.current
+                SuccessState(
+                    result = status.result,
+                    onPlayOnApp = { result ->
+                        coroutineScope.launch(Dispatchers.IO) {
+                            val searchQuery = "${result.title} ${result.artist}"
+                            YouTube.search(searchQuery, YouTube.SearchFilter.FILTER_SONG)
+                                .onSuccess { searchResult ->
+                                    val song = searchResult.items.firstOrNull() as? SongItem
+                                    song?.let {
+                                        kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                            playerConnection?.playQueue(YouTubeQueue.radio(it.toMediaMetadata()))
+                                        }
+                                    }
+                                }
+                        }
+                    },
+                    onTryAgain = {
+                        startRecognition()
+                    },
+                    onClose = ::resetToReady,
+                    onSaveToHistory = ::saveToHistory
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                        MaterialTheme.colorScheme.background
+                                    ),
+                                    radius = 1500f
+                                )
+                            )
+                    )
+
+                    Scaffold(
+                        containerColor = Color.Transparent,
+                        topBar = {
+                            TopAppBar(
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = Color.Transparent
+                                ),
+                                title = { Text(stringResource(R.string.recognize_music)) },
+                                navigationIcon = {
+                                    androidx.compose.material3.IconButton(
+                                        onClick = { navController.navigateUp() }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.arrow_back),
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                actions = {
+                                    androidx.compose.material3.IconButton(onClick = { navController.navigate("recognition_history") }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.history),
+                                            contentDescription = stringResource(R.string.recognition_history)
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    ) { paddingValues ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            when (status) {
+                                is RecognitionStatus.Ready -> {
+                                    ReadyState(onStartRecognition = ::startRecognition)
+                                }
+                                is RecognitionStatus.Listening -> {
+                                    ListeningState(
+                                        onCancel = { iad1tya.echo.music.recognition.MusicRecognitionService.reset() }
+                                    )
+                                }
+                                is RecognitionStatus.Processing -> {
+                                    ProcessingState()
+                                }
+                                is RecognitionStatus.NoMatch -> {
+                                    NoMatchState(
+                                        message = status.message,
+                                        onTryAgain = {
+                                            startRecognition()
+                                        }
+                                    )
+                                }
+                                is RecognitionStatus.Error -> {
+                                    ErrorState(
+                                        message = status.message,
+                                        onTryAgain = {
+                                            startRecognition()
+                                        }
+                                    )
+                                }
+                                else -> Unit
                             }
-                        )
-                    }
-                    is RecognitionStatus.Error -> {
-                        ErrorState(
-                            message = status.message,
-                            onTryAgain = {
-                                startRecognition()
-                            }
-                        )
+                        }
                     }
                 }
             }
@@ -259,45 +305,42 @@ fun RecognitionScreen(
 private fun ReadyState(
     onStartRecognition: () -> Unit
 ) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.95f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(120.dp)
+                .scale(scale)
+                .shadow(elevation = 16.dp, shape = CircleShape)
                 .clip(CircleShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            Color.Transparent
-                        )
-                    )
-                )
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .clickable { onStartRecognition() },
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.mic),
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
+            Icon(
+                painter = painterResource(R.drawable.music_note),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
         
         Text(
             text = stringResource(R.string.tap_to_recognize),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
     }
@@ -307,65 +350,59 @@ private fun ReadyState(
 private fun ListeningState(
     onCancel: () -> Unit
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale"
-    )
-    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(48.dp)
     ) {
-        
         Box(
-            modifier = Modifier.size(260.dp),
+            modifier = Modifier
+                .height(160.dp)
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            
-            Box(
-                modifier = Modifier
-                    .size(200.dp)
-                    .scale(scale)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-            )
-            
-            
-            Box(
-                modifier = Modifier
-                    .size(180.dp)
-                    .scale(scale * 0.9f)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-            )
-            
-            
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .clickable { onCancel() },
-                contentAlignment = Alignment.Center
+            val bars = 5
+            val animatables = remember { List(bars) { Animatable(0.2f) } }
+
+            LaunchedEffect(Unit) {
+                animatables.forEach { animatable ->
+                    launch {
+                        while (true) {
+                            animatable.animateTo(
+                                targetValue = kotlin.random.Random.nextFloat() * 0.8f + 0.2f,
+                                animationSpec = tween(
+                                    durationMillis = kotlin.random.Random.nextInt(300, 600),
+                                    easing = LinearEasing
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            val colorPrimary = MaterialTheme.colorScheme.primary
+            val colorTertiary = MaterialTheme.colorScheme.tertiary
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(160.dp)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.mic),
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                animatables.forEachIndexed { index, animatable ->
+                    val color = if (index % 2 == 0) colorPrimary else colorTertiary
+                    Box(
+                        modifier = Modifier
+                            .width(24.dp)
+                            .fillMaxHeight(animatable.value)
+                            .clip(CircleShape)
+                            .background(color)
+                    )
+                }
             }
         }
         
         Text(
             text = stringResource(R.string.listening),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )
         
@@ -379,52 +416,37 @@ private fun ListeningState(
 private fun ProcessingState() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        val infiniteTransition = rememberInfiniteTransition(label = "rotate")
-        val rotation by infiniteTransition.animateFloat(
-            initialValue = 0f,
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing)
-            ),
-            label = "rotation"
-        )
-        
         Box(
-            modifier = Modifier.size(160.dp),
+            modifier = Modifier.size(120.dp),
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 4.dp,
-                        brush = Brush.sweepGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                                MaterialTheme.colorScheme.primary
-                            )
-                        ),
-                        shape = CircleShape
-                    )
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 6.dp
             )
             
-            Icon(
-                painter = painterResource(R.drawable.music_note),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.music_note),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
         
         Text(
             text = stringResource(R.string.processing),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
     }
@@ -438,109 +460,147 @@ private fun SuccessState(
     onClose: () -> Unit,
     onSaveToHistory: (RecognitionResult) -> Unit
 ) {
-    
     LaunchedEffect(result) {
         onSaveToHistory(result)
     }
-    
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
+
+    val highResImageUrl = (result.coverArtHqUrl ?: result.coverArtUrl)?.replace("400x400", "1000x1000")
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        
-        Card(
+        // Blurred Background
+        AsyncImage(
+            model = highResImageUrl,
+            contentDescription = null,
             modifier = Modifier
-                .size(180.dp)
-                .aspectRatio(1f),
-            shape = RoundedCornerShape(iad1tya.echo.music.constants.ThumbnailCornerRadius),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .fillMaxSize()
+                .blur(radius = 48.dp)
+                .alpha(0.6f),
+            contentScale = ContentScale.Crop
+        )
+
+        // Gradient Overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                            MaterialTheme.colorScheme.background
+                        )
+                    )
+                )
+        )
+        
+        // Floating Album Art
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 120.dp), // Shift up to clear the bottom text
+            contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                model = result.coverArtHqUrl ?: result.coverArtUrl,
+                model = highResImageUrl,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .aspectRatio(1f)
+                    .shadow(elevation = 32.dp, shape = RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp)),
                 contentScale = ContentScale.Crop
             )
         }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        
-        Text(
-            text = result.title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        
-        Text(
-            text = result.artist,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        
-        result.album?.let { album ->
-            Text(
-                text = album,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = { onPlayOnApp(result) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.play),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.play_on_app))
-            }
-            
-            FilledTonalButton(
-                onClick = onTryAgain,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.mic),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.re_listen))
-            }
-            
-            
-            OutlinedButton(
+            androidx.compose.material3.IconButton(
                 onClick = onClose,
-                modifier = Modifier.fillMaxWidth()
+                colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Icon(
                     painter = painterResource(R.drawable.close),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    contentDescription = stringResource(R.string.close)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.close))
+            }
+            
+            androidx.compose.material3.Surface(
+                onClick = onTryAgain,
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.mic),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.re_listen),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom))
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = result.title,
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = result.artist,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            androidx.compose.material3.FloatingActionButton(
+                onClick = { onPlayOnApp(result) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = CircleShape,
+                modifier = Modifier.size(72.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.play),
+                    contentDescription = stringResource(R.string.play_on_app),
+                    modifier = Modifier.size(36.dp)
+                )
             }
         }
     }
@@ -558,40 +618,45 @@ private fun NoMatchState(
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.errorContainer),
+                .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                .background(Color.Transparent, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(R.drawable.close),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onErrorContainer
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         
         Text(
             text = stringResource(R.string.no_match_found),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
         
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
         
-        Button(onClick = onTryAgain) {
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        FilledTonalButton(
+            onClick = onTryAgain,
+            modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
+        ) {
             Icon(
                 painter = painterResource(R.drawable.refresh),
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.try_again))
+            Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -608,40 +673,45 @@ private fun ErrorState(
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.errorContainer),
+                .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                .background(Color.Transparent, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(R.drawable.error),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onErrorContainer
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         
         Text(
             text = stringResource(R.string.recognition_error),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
         
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
         
-        Button(onClick = onTryAgain) {
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        FilledTonalButton(
+            onClick = onTryAgain,
+            modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
+        ) {
             Icon(
                 painter = painterResource(R.drawable.refresh),
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.try_again))
+            Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
         }
     }
 }

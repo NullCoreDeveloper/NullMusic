@@ -11,8 +11,7 @@ import androidx.compose.runtime.setValue
 import iad1tya.echo.music.applecanvas.AppleMusicCanvasProvider
 import iad1tya.echo.music.echomusiccanvas.echomusicCanvasProvider
 import iad1tya.echo.music.canvas.CanvasArtwork
-import iad1tya.echo.music.canvas.MonochromeAlbumCanvas
-import iad1tya.echo.music.canvas.MonochromeApiCanvas
+import iad1tya.echo.music.canvas.TidalCanvasProvider
 import iad1tya.echo.music.ui.player.CanvasArtworkPlaybackCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -68,24 +67,20 @@ fun rememberAlbumCanvas(
                         song = s,
                         artist = a
                     )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-                    ?: MonochromeAlbumCanvas.getByAlbumArtist(
-                        album = s,
-                        artist = a
-                    ) ?: MonochromeApiCanvas.getBySongArtist(
-                        song = s,
-                        artist = a,
-                        album = albumTitle
-                    )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                     ?: AppleMusicCanvasProvider.getByAlbumArtist(
                         album = s,
                         artist = a,
                         storefront = storefront
                     )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
+                    ?: TidalCanvasProvider.getByAlbumArtist(
+                        album = s,
+                        artist = a
+                    )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 }
         }
 
         
-        val validated = fetched?.let { artwork ->
+        var validated = fetched?.let { artwork ->
             val resultArtist = artwork.artist
             if (resultArtist != null && artistName.isNotBlank()) {
                 if (resultArtist.contains(artistName, ignoreCase = true) || 
@@ -93,6 +88,30 @@ fun rememberAlbumCanvas(
                     artwork
                 } else null
             } else artwork
+        }
+
+        if (validated == null) {
+            val tidalFetched = withContext(Dispatchers.IO) {
+                TidalCanvasProvider.getByAlbumArtist(
+                    album = albumTitle,
+                    artist = artistName
+                )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
+            }
+            validated = tidalFetched?.let { artwork ->
+                val resultArtist = artwork.artist
+                val canvasAlbumName = artwork.albumName
+                
+                val artistMatches = if (resultArtist != null && artistName.isNotBlank()) {
+                    resultArtist.contains(artistName, ignoreCase = true) || 
+                    artistName.contains(resultArtist, ignoreCase = true)
+                } else true
+                
+                val albumMatches = if (canvasAlbumName != null && !albumTitle.isNullOrBlank()) {
+                    canvasAlbumName.trim().equals(albumTitle.trim(), ignoreCase = true)
+                } else false
+                
+                if (artistMatches && albumMatches) artwork else null
+            }
         }
 
         if (validated != null) {

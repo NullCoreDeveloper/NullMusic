@@ -232,7 +232,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import iad1tya.echo.music.applecanvas.AppleMusicCanvasProvider
 import iad1tya.echo.music.canvas.CanvasArtwork
-import iad1tya.echo.music.canvas.MonochromeApiCanvas
+import iad1tya.echo.music.canvas.TidalCanvasProvider
 import iad1tya.echo.music.constants.CanvasThumbnailAnimationKey
 import iad1tya.echo.music.extensions.metadata
 import iad1tya.echo.music.ui.player.CanvasArtworkPlaybackCache
@@ -583,7 +583,7 @@ fun BottomSheetPlayer(
             
             val fetched = echomusicCanvasProvider.getBySongArtist(s, a)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
-                ?: MonochromeApiCanvas.getBySongArtist(s, a, requestedAlbum)
+                ?: TidalCanvasProvider.getBySongArtist(s, a, requestedAlbum)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 ?: AppleMusicCanvasProvider.getBySongArtist(s, a, requestedAlbum, storefront)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
@@ -850,6 +850,7 @@ fun BottomSheetPlayer(
         state = state,
         modifier = modifier,
         background = {
+            val backgroundThumbnailUrl = mediaMetadata?.thumbnailUrl ?: playerConnection.player.currentMediaItem?.mediaMetadata?.artworkUri?.toString()
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -858,7 +859,7 @@ fun BottomSheetPlayer(
                 when (playerBackground) {
                     PlayerBackgroundStyle.BLUR -> {
                         AnimatedContent(
-                            targetState = mediaMetadata?.thumbnailUrl,
+                            targetState = backgroundThumbnailUrl,
                             transitionSpec = {
                                 fadeIn(tween(800)).togetherWith(fadeOut(tween(800)))
                             },
@@ -1077,7 +1078,7 @@ fun BottomSheetPlayer(
                     }
                     PlayerBackgroundStyle.APPLE_MUSIC -> {
                         AnimatedContent(
-                            targetState = mediaMetadata?.thumbnailUrl,
+                            targetState = backgroundThumbnailUrl,
                             transitionSpec = {
                                 fadeIn(tween(1200)).togetherWith(fadeOut(tween(1200)))
                             },
@@ -1203,7 +1204,7 @@ fun BottomSheetPlayer(
                         )
 
                         AnimatedContent(
-                            targetState = mediaMetadata?.thumbnailUrl,
+                            targetState = backgroundThumbnailUrl,
                             transitionSpec = {
                                 fadeIn(tween(1500)).togetherWith(fadeOut(tween(1500)))
                             },

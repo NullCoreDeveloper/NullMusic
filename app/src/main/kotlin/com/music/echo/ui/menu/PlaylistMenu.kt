@@ -36,6 +36,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
+import iad1tya.echo.music.constants.InnerTubeCookieKey
+import iad1tya.echo.music.utils.rememberPreference
+import com.music.innertube.utils.parseCookieString
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.media3.exoplayer.offline.Download
@@ -87,6 +96,14 @@ fun PlaylistMenu(
     var songs by remember {
         mutableStateOf(emptyList<Song>())
     }
+
+    val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
+    val isSignedIn = remember(innerTubeCookie) {
+        "SAPISID" in parseCookieString(innerTubeCookie)
+    }
+    var isSyncing by remember { mutableStateOf(false) }
+    var syncedCount by remember { mutableIntStateOf(0) }
+    var isSyncComplete by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (autoPlaylist == false) {
@@ -596,6 +613,82 @@ fun PlaylistMenu(
                             )
                         )
                     }
+                    val currentBrowseId = dbPlaylist?.playlist?.browseId ?: playlist.playlist.browseId
+                    if (currentBrowseId == null && isSignedIn && !isGuest) {
+                        add(
+                            Material3MenuItemData(
+                                title = { Text(text = stringResource(R.string.sync_playlist)) },
+                                description = { Text(text = stringResource(R.string.sync_playlist_desc)) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.sync),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    isSyncing = true
+                                    syncedCount = 0
+                                    isSyncComplete = false
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        try {
+                                            var browseId: String? = null
+                                            var attempt = 0
+                                            val maxAttempts = 3
+                                            while (attempt < maxAttempts) {
+                                                try {
+                                                    browseId = YouTube.createPlaylist(playlist.playlist.name)
+                                                    if (browseId != null) break
+                                                } catch (e: Exception) {
+                                                    attempt++
+                                                    if (attempt >= maxAttempts) throw e
+                                                    kotlinx.coroutines.delay(1000)
+                                                }
+                                            }
+                                            if (browseId != null) {
+                                                database.query {
+                                                    update(playlist.playlist.copy(browseId = browseId))
+                                                }
+                                                var successCount = 0
+                                                songs.forEachIndexed { index, song ->
+                                                    val result = YouTube.addToPlaylist(browseId, song.id)
+                                                    if (result.isSuccess) {
+                                                        successCount++
+                                                    } else {
+                                                        result.exceptionOrNull()?.printStackTrace()
+                                                    }
+                                                    withContext(Dispatchers.Main) {
+                                                        syncedCount = index + 1
+                                                    }
+                                                    kotlinx.coroutines.delay(200)
+                                                }
+                                                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                                    if (successCount == songs.size) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            context.getString(R.string.sync_completed_success, songs.size),
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    } else {
+                                                        Toast.makeText(
+                                                            context,
+                                                            context.getString(R.string.sync_completed_partial, successCount, songs.size),
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
+                                                    isSyncComplete = true
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            kotlinx.coroutines.withContext(Dispatchers.Main) {
+                                                Toast.makeText(context, e.message ?: "Failed to sync", Toast.LENGTH_SHORT).show()
+                                                isSyncing = false
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        )
+                    }
                     playlist.playlist.shareLink?.let { shareLink ->
                         add(
                             Material3MenuItemData(
@@ -621,6 +714,82 @@ fun PlaylistMenu(
                     }
                 }
             )
+        }
+    }
+
+    if (isSyncing) {
+        DefaultDialog(
+            onDismiss = {
+                if (isSyncComplete) {
+                    isSyncing = false
+                    isSyncComplete = false
+                    onDismiss()
+                }
+            },
+            buttons = {
+                if (isSyncComplete) {
+                    TextButton(
+                        onClick = {
+                            isSyncing = false
+                            isSyncComplete = false
+                            onDismiss()
+                        }
+                    ) {
+                        Text(text = stringResource(android.R.string.ok))
+                    }
+                }
+            }
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(24.dp)
+            ) {
+                if (isSyncComplete) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(100.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { 1f },
+                            modifier = Modifier.size(80.dp)
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.check),
+                            contentDescription = null,
+                            modifier = Modifier.size(36.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Text(
+                        text = stringResource(R.string.playlist_uploaded),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                } else {
+                    val progressValue = if (songs.isEmpty()) 0f else syncedCount.toFloat() / songs.size
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(100.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { progressValue },
+                            modifier = Modifier.size(80.dp)
+                        )
+                        Text(
+                            text = "${(progressValue * 100).toInt()}%",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    Text(
+                        text = if (songs.isEmpty()) {
+                            stringResource(R.string.please_wait)
+                        } else {
+                            stringResource(R.string.syncing_progress, syncedCount, songs.size)
+                        },
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
         }
     }
 }

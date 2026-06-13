@@ -19,6 +19,8 @@ import androidx.compose.material3.*
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -201,18 +203,69 @@ private fun AboutAppCard() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-            Image(
-                painter = painterResource(R.drawable.ic_launcher_nobg),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(if (isDark) Color.White else Color(0xFFEA3829)),
+            
+            var isEasterEggActive by remember { mutableStateOf(false) }
+            val rotation by animateFloatAsState(
+                targetValue = if (isEasterEggActive) 180f else 0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                label = "flip"
+            )
+            
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val scale by animateFloatAsState(
+                targetValue = if (isPressed) 0.85f else 1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
+                ),
+                label = "scale"
+            )
+
+            Box(
                 modifier = Modifier
                     .size(100.dp)
+                    .graphicsLayer {
+                        rotationY = rotation
+                        scaleX = scale
+                        scaleY = scale
+                        cameraDistance = 12f * density
+                    }
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainer),
-            )
+                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = { isEasterEggActive = !isEasterEggActive }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (rotation <= 90f) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_nobg),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(if (isDark) Color.White else Color(0xFFEA3829)),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    coil3.compose.AsyncImage(
+                        model = "https://avatars.githubusercontent.com/u/147871321?v=4",
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer { rotationY = 180f }, // Un-flip the backside image
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                    )
+                }
+            }
+            
             Spacer(Modifier.height(4.dp))
+            
             Text(
-                text = "Echo Music",
+                text = if (rotation <= 90f) "Echo Music" else "Developed by Aditya",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

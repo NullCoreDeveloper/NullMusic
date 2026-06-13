@@ -1,31 +1,29 @@
 # Echo Music v5.1.9
+
 ### New Features
 - **Pin Playlists** — Long-press to pin playlists to the top of your library.
-- **Sync to YouTube Music** — Sync local playlists to YouTube Music via playlist menu.
-- **Settings Search Bar** — Filter settings categories and sub-settings instantly.
+- **Sync to YouTube Music** — Sync local playlists via the playlist menu.
+- **Settings Search** — Filter settings categories and sub-settings instantly.
 - **Song Suggestions** — Discover and add related songs at the bottom of local playlists.
-- **Tidal Canvas Provider** — Animated album canvas via Tidal with better matching accuracy.
+- **Canvas Provider (Tidal)** — Animated album canvas with improved matching accuracy.
+- **Audio Fallback** — Opus failure auto-reroutes to JioSaavn 320 kbps, and vice versa.
 - **Markdown in Changelog** — Bold, italics, inline code, and links rendered natively.
-- **About Easter Egg** — Tap the logo for a 3D flip revealing the developer's avatar.
-- **Audio Fallback Engine** — Opus failure? Auto-reroutes to JioSaavn 320 kbps (and vice versa).
 
 ### UI & Design
 - **Echo Find Screen** — Material You pill button, animated wave visualizer, edge-to-edge blur.
-- **Recognition Success** — Glassmorphism layout with full-square album art and playback FAB.
-- **Logout Dialog** — Vertically stacked buttons fix text clipping.
-- **Online Playlist Header** — Count/duration shown above action buttons.
-- **Suggestions List** — Rounded edges, consistent with songs list.
-- **Bottom Sheet Menu** — Removed grey header backgrounds.
+- **Recognition Screen** — Glassmorphism layout with full-square album art and playback FAB.
+- **Suggestions & Menus** — Rounded edges on suggestions list; removed grey header backgrounds from bottom sheets.
+- **Online Playlist Header** — Count and duration shown above action buttons.
+- **Logout Dialog** — Stacked buttons fix text clipping.
 
 ### Bug Fixes
 - **Crash on Recognition** — Fixed `IllegalStateException` via main thread dispatch.
 - **Offline Playback** — Fixed downloaded songs failing due to bad cache length reads.
 - **Apple Music Black Screen** — Album art now shows for downloaded songs.
-- **Volume Slider** — Now stays in sync with system volume.
-- **Comments Button** — Removed from Listen Together screen.
+- **Volume Slider** — Stays in sync with system volume.
 - **Background Updater** — Runs as background service with auto-retry; fixed notification spam.
+- **Comments Button** — Removed from Listen Together screen.
 
-### Build & Infrastructure
-- **FFmpeg** — Switched to `ffmpeg-kit-audio` to cut overhead.
+### Build
+- **FFmpeg** — Switched to `ffmpeg-kit-audio`; removed unused `aria2c` dependency.
 - **ABI Filters** — Fixed per-arch filters to prevent universal APK generation.
-- **Removed `aria2c`** — Dropped unused dependency to reduce app size.

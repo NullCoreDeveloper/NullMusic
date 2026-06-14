@@ -1,4 +1,4 @@
-# Echo Music v5.1.92 — Maintenance Update
+# Echo Music v5.1.92 — New Servers for Saavn 320kbps
 
 Say goodbye to buffering and playback issues while listening to music in Saavn 320 kbps quality.
 

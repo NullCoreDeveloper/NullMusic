@@ -2098,7 +2098,13 @@ class MusicService :
         return error.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_WRITE_FAILED ||
                 error.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED ||
                 (error.cause as? PlaybackException)?.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_WRITE_FAILED ||
-                (error.cause as? PlaybackException)?.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED
+                (error.cause as? PlaybackException)?.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED ||
+                error.errorCode == PlaybackException.ERROR_CODE_FAILED_RUNTIME_CHECK
+    }
+
+    private fun isCacheOrStreamCorruptionError(error: PlaybackException): Boolean {
+        return error.errorCode == PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED ||
+                error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE
     }
 
     override fun onPlayerError(error: PlaybackException) {
@@ -2137,6 +2143,11 @@ class MusicService :
             isRangeNotSatisfiableError(error) -> {
                 Timber.tag(TAG).d("Range Not Satisfiable (416) detected, performing strict recovery")
                 handleRangeNotSatisfiableError(mediaId)
+                return
+            }
+            isCacheOrStreamCorruptionError(error) -> {
+                Timber.tag(TAG).d("Cache or stream corruption detected, clearing cache and refreshing URL")
+                handleExpiredUrlError(mediaId)
                 return
             }
             isPageReloadError(error) -> {
@@ -2522,16 +2533,33 @@ class MusicService :
             val cachedLength = androidx.media3.datasource.cache.ContentMetadata.getContentLength(downloadCache.getContentMetadata(mediaId))
             val isFullyDownloaded = cachedLength != androidx.media3.common.C.LENGTH_UNSET.toLong() && cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
 
-            if (!shouldBypassCache && !isFullyDownloaded && audioQuality == iad1tya.echo.music.constants.AudioQuality.LOSSLESS) {
-                val format = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
-                if (format?.codecs != "flac") {
-                    shouldBypassCache = true
+            val isCurrentlyPlaying = runBlocking(Dispatchers.Main) { player.currentMediaItem?.mediaId == mediaId }
+            val dbFormat = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
+            
+            val lockedQuality = if (isCurrentlyPlaying && dbFormat != null) {
+                when {
+                    dbFormat.mimeType.contains("flac", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.LOSSLESS
+                    dbFormat.mimeType.contains("mp4", ignoreCase = true) || dbFormat.mimeType.contains("m4a", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.SAAVN
+                    else -> iad1tya.echo.music.constants.AudioQuality.OPUS
                 }
+            } else {
+                audioQuality
             }
-            if (!shouldBypassCache && !isFullyDownloaded && audioQuality == iad1tya.echo.music.constants.AudioQuality.SAAVN) {
-                val format = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
-                if (format?.codecs != "mp4a.40.2") {
+
+            if (!shouldBypassCache && !isFullyDownloaded && dbFormat != null) {
+                val isLosslessCache = dbFormat.codecs == "flac"
+                val isSaavnCache = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
+                
+                val cacheMatchesTarget = when (lockedQuality) {
+                    iad1tya.echo.music.constants.AudioQuality.LOSSLESS -> isLosslessCache
+                    iad1tya.echo.music.constants.AudioQuality.SAAVN -> isSaavnCache
+                    iad1tya.echo.music.constants.AudioQuality.OPUS -> !isLosslessCache && !isSaavnCache
+                }
+                
+                if (!cacheMatchesTarget) {
                     shouldBypassCache = true
+                    Timber.tag(TAG).i("Quality changed to $lockedQuality for $mediaId. Clearing playerCache to prevent container mismatch.")
+                    playerCache.removeResource(mediaId)
                 }
             }
 
@@ -2575,7 +2603,7 @@ class MusicService :
                 Timber.tag("MusicService").i("BYPASSING CACHE for $mediaId due to quality change")
             }
 
-            Timber.tag("MusicService").i("FETCHING STREAM: $mediaId | quality=$audioQuality")
+            Timber.tag("MusicService").i("FETCHING STREAM: $mediaId | quality=$lockedQuality")
             val playbackData = runBlocking(Dispatchers.IO) {
                 val dbSong = database.song(mediaId).firstOrNull()
                 val knownArtist = dbSong?.artists?.joinToString { it.name }?.replace(" - Topic", "")
@@ -2584,7 +2612,7 @@ class MusicService :
 
                 YTPlayerUtils.playerResponseForPlayback(
                     mediaId,
-                    audioQuality = audioQuality,
+                    audioQuality = lockedQuality,
                     connectivityManager = connectivityManager,
                     context = this@MusicService,
                     knownArtist = knownArtist,
@@ -2624,6 +2652,29 @@ class MusicService :
             }
             run {
                 val format = nonNullPlayback.format
+                
+                val isFinalLossless = format.mimeType.contains("flac", ignoreCase = true)
+                val isFinalSaavn = format.mimeType.contains("mp4", ignoreCase = true) || format.mimeType.contains("m4a", ignoreCase = true)
+                
+                if (dbFormat != null && !shouldBypassCache) {
+                    val cacheIsLossless = dbFormat.codecs == "flac"
+                    val cacheIsSaavn = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
+                    
+                    if (isFinalLossless != cacheIsLossless || isFinalSaavn != cacheIsSaavn) {
+                        Timber.tag(TAG).w("Format fallback detected AFTER fetch. Clearing playerCache to prevent mismatch crash.")
+                        playerCache.removeResource(mediaId)
+                        
+                        if (isCurrentlyPlaying) {
+                            Timber.tag(TAG).e("Format changed mid-stream for $mediaId. Throwing to force player restart.")
+                            throw PlaybackException(
+                                "Container format changed mid-stream due to fallback",
+                                null,
+                                PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED
+                            )
+                        }
+                    }
+                }
+
                 val loudnessDb = nonNullPlayback.audioConfig?.loudnessDb
                 val perceptualLoudnessDb = nonNullPlayback.audioConfig?.perceptualLoudnessDb
 

@@ -49,9 +49,6 @@ import kotlinx.coroutines.flow.first
 object YTPlayerUtils {
     private const val logTag = "YTPlayerUtils"
     private const val TAG = "YTPlayerUtils"
-    private var hasShownLosslessToast = false
-    private var hasShownSaavnToast = false
-    private var hasShownOpusToast = false
 
     private val httpClient: OkHttpClient = OkHttpClient.Builder()
         .dns(object : Dns {
@@ -126,6 +123,10 @@ object YTPlayerUtils {
         val showFallbackToast = context?.let { 
             it.dataStore.data.first()[iad1tya.echo.music.constants.ShowAudioFallbackToastKey] 
         } ?: true
+
+        var hasShownLosslessToast = false
+        var hasShownSaavnToast = false
+        var hasShownOpusToast = false
 
         suspend fun tryOpus(): Result<PlaybackData> {
             val firstAttempt = resolvePlaybackData(videoId, playlistId, audioQuality, connectivityManager)

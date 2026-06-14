@@ -3,7 +3,7 @@
  * Licensed under GPL-3.0 | See git history for contributors
  *
  * JioSaavn audio streaming service.
- * Uses the Melo API (meloapi.vercel.app) which is an open wrapper around JioSaavn.
+ * Uses the Melo API (saavn.sumit.co) which is an open wrapper around JioSaavn.
  *
  * API endpoints used:
  *   - GET /api/search/songs?query={q}        → search songs by name+artist
@@ -91,7 +91,7 @@ data class SaavnSongResponse(
 
 object SaavnService {
 
-    private const val BASE_URL = "https://meloapi.vercel.app/api/"
+    private const val BASE_URL = "https://saavn.sumit.co/api/"
 
     private val json = Json {
         isLenient         = true

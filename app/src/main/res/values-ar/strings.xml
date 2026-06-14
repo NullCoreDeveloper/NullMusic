@@ -391,7 +391,6 @@
     <string name="listen_together_smart_resync">إعادة مزامنة الشبكة الذكية</string>
     <string name="listen_together_smart_resync_desc">التقط تلقائيًا مع المضيف بعد انقطاع الاتصال</string>
 
-    <!-- Spotify Import -->
     <string name="spotify_import_title">استيراد من Spotify</string>
     <string name="spotify_import_desc">اربط Spotify، واختر قوائم الأغاني، وانسخها إلى قوائم ArchiveTune المحلية.</string>
     <string name="spotify_connect">ربط Spotify</string>

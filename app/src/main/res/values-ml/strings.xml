@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">സ്മാർട്ട് നെറ്റ്‌വർക്ക് വീണ്ടും സമന്വയിപ്പിക്കൽ</string>
     <string name="listen_together_smart_resync_desc">കണക്ഷൻ തകർന്നതിന് ശേഷം ഹോസ്റ്റുമായി യാന്ത്രികമായി പൊരുത്തപ്പെടുക</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Spotify-ൽ നിന്ന് ഇറക്കുമതി ചെയ്യുക</string>
     <string name="spotify_import_desc">Spotify കണക്റ്റുചെയ്യുക, പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക, അവ പ്രാദേശിക ArchiveTune പ്ലേലിസ്റ്റുകളിലേക്ക് മിറർ ചെയ്യുക.</string>
     <string name="spotify_connect">Spotify കണക്റ്റുചെയ്യുക</string>

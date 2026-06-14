@@ -372,7 +372,7 @@
     <string name="listen_together_smart_resync">Inteligentna resynchronizacja sieci</string>
     <string name="listen_together_smart_resync_desc">Automatycznie dogoń gospodarza po przerwaniu połączenia</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importuj z Spotify</string>
     <string name="spotify_import_desc">Połącz Spotify, wybierz playlisty i odzwierciedl je w lokalnych playlistach ArchiveTune.</string>
     <string name="spotify_connect">Połącz Spotify</string>

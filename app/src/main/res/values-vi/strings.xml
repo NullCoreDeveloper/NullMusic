@@ -332,7 +332,7 @@
     <string name="listen_together_smart_resync">Đồng bộ lại mạng thông minh</string>
     <string name="listen_together_smart_resync_desc">Tự động bắt kịp máy chủ sau khi mất kết nối</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Nhập từ Spotify</string>
     <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát ArchiveTune cục bộ.</string>
     <string name="spotify_connect">Kết nối Spotify</string>

@@ -361,7 +361,7 @@
     <string name="listen_together_smart_resync">Resincronització intel·ligent de xarxa</string>
     <string name="listen_together_smart_resync_desc">Posi’s al dia automàticament amb l’amfitrió després d’una caiguda de la connexió</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importa des de Spotify</string>
     <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’ArchiveTune.</string>
     <string name="spotify_connect">Connecta Spotify</string>

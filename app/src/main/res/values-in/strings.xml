@@ -341,7 +341,7 @@
     <string name="listen_together_smart_resync">Sinkronisasi Ulang Jaringan Cerdas</string>
     <string name="listen_together_smart_resync_desc">Secara otomatis mengejar ketertinggalan dari host setelah putus sambungan</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Impor dari Spotify</string>
     <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar ArchiveTune lokal.</string>
     <string name="spotify_connect">Hubungkan Spotify</string>

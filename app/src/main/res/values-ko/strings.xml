@@ -343,7 +343,7 @@
     <string name="listen_together_smart_resync">스마트 네트워크 재동기화</string>
     <string name="listen_together_smart_resync_desc">연결이 끊긴 후 호스트에 자동으로 따라잡기</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Spotify에서 가져오기</string>
     <string name="spotify_import_desc">Spotify를 연결하고 재생목록을 선택하여 로컬 ArchiveTune 재생목록에 미러링합니다.</string>
     <string name="spotify_connect">Spotify 연결</string>

@@ -287,7 +287,9 @@
     <string name="filter_local">Τοπικά</string>
 
     <!-- Album screen -->
-    <string name="album_description_placeholder">Αυτή είναι μια περιγραφή placeholder για το άλμπουμ. Απολαύστε τα παρακάτω κομμάτια!</string>
+    <string name="album_description_placeholder">
+Αυτή είναι μια περιγραφή για το άλμπουμ. Απολαύστε τα παρακάτω κομμάτια!
+</string>
 
     <!-- Playlist -->
     <string name="you_might_also_like">Σχετική λίστα αναπαραγωγής</string>
@@ -353,7 +355,7 @@
     <string name="listen_together_smart_resync">Έξυπνος επανασυγχρονισμός δικτύου</string>
     <string name="listen_together_smart_resync_desc">Αυτόματη προσαρμογή στον οικοδεσπότη μετά από πτώση σύνδεσης</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Εισαγωγή από Spotify</string>
     <string name="spotify_import_desc">Συνδέστε το Spotify, επιλέξτε λίστες αναπαραγωγής και αντιγράψτε τες σε τοπικές λίστες ArchiveTune.</string>
     <string name="spotify_connect">Σύνδεση Spotify</string>

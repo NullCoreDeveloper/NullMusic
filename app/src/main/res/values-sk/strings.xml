@@ -372,7 +372,7 @@
     <string name="listen_together_smart_resync">Inteligentná resynchronizácia siete</string>
     <string name="listen_together_smart_resync_desc">Po prerušení pripojenia sa automaticky dobehnite s hosťom</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importovať zo Spotify</string>
     <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov ArchiveTune.</string>
     <string name="spotify_connect">Pripojiť Spotify</string>

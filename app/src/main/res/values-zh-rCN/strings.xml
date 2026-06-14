@@ -341,7 +341,7 @@
     <string name="listen_together_smart_resync">智能网络重新同步</string>
     <string name="listen_together_smart_resync_desc">连接断开后自动与主机同步</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">从 Spotify 导入</string>
     <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 ArchiveTune 播放列表。</string>
     <string name="spotify_connect">连接 Spotify</string>

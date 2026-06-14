@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">స్మార్ట్ నెట్‌వర్క్ రీసింక్</string>
     <string name="listen_together_smart_resync_desc">కనెక్షన్ పడిపోయిన తర్వాత హోస్ట్‌తో స్వయంచాలకంగా అనుగుణంగా ఉండండి</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Spotify నుండి దిగుమతి చేయండి</string>
     <string name="spotify_import_desc">Spotify ను కనెక్ట్ చేయండి, ప్లేలిస్ట్‌లను ఎంచుకోండి మరియు వాటిని స్థానిక ArchiveTune ప్లేలిస్ట్‌లలో ప్రతిబింబించండి.</string>
     <string name="spotify_connect">Spotify ను కనెక్ట్ చేయి</string>

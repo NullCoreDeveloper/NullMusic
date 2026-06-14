@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Älykäs verkon uudelleensynkronointi</string>
     <string name="listen_together_smart_resync_desc">Tavoita isäntä automaattisesti yhteyden katkeamisen jälkeen</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Tuo Spotifysta</string>
     <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi ArchiveTune-soittolistoiksi.</string>
     <string name="spotify_connect">Yhdistä Spotify</string>

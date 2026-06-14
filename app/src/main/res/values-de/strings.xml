@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Intelligente Netzwerk-Resynchronisation</string>
     <string name="listen_together_smart_resync_desc">Nach einem Verbindungsabbruch automatisch mit dem Host synchronisieren</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Von Spotify importieren</string>
     <string name="spotify_import_desc">Verbinde Spotify, wähle Playlists aus und spiegele sie in lokale ArchiveTune-Playlists.</string>
     <string name="spotify_connect">Spotify verbinden</string>

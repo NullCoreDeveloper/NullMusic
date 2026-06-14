@@ -361,7 +361,7 @@
     <string name="listen_together_smart_resync">סנכרון מחדש חכם של הרשת</string>
     <string name="listen_together_smart_resync_desc">התעדכן אוטומטית עם המארח לאחר ניתוק חיבור</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">ייבא מספוטיפיי</string>
     <string name="spotify_import_desc">חבר את Spotify, בחר פלייליסטים ושקף אותם לפלייליסטים מקומיים של ArchiveTune.</string>
     <string name="spotify_connect">חבר את Spotify</string>

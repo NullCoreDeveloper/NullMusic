@@ -363,7 +363,7 @@
     <string name="listen_together_smart_resync">Resincronizare inteligentă a rețelei</string>
     <string name="listen_together_smart_resync_desc">Prinde din urmă automat gazda după o cădere a conexiunii</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importă din Spotify</string>
     <string name="spotify_import_desc">Conectează Spotify, alege playlisturile și oglindește-le în playlisturi locale ArchiveTune.</string>
     <string name="spotify_connect">Conectează Spotify</string>

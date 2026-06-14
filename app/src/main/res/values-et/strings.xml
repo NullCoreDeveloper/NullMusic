@@ -307,8 +307,8 @@
     <string name="releases_for_you">Väljaanded sinu jaoks</string>
 
     <!-- Dialog -->
-    <string name="hide_status_bar_on_fullscreen">Peida olekuriik täisekraanil</string>
-    <string name="hide_status_bar_on_fullscreen_desc">Peida olekuriik, kui laulusõnade täisekraani režiim on aktiivne</string>
+    <string name="hide_status_bar_on_fullscreen">Peida olekuriba täisekraanil</string>
+    <string name="hide_status_bar_on_fullscreen_desc">Peida olekuriba, kui laulusõnade täisekraani režiim on aktiivne</string>
     <string name="lyrics_swipe_to_change_song">Loole vahetamiseks pühkige sõrmega</string>
     <string name="lyrics_swipe_to_change_song_desc">Laulusõnade täisekraanil pühkige esitaja ja loo pealkirja osas vasakule või paremale, et lugu vahetada</string>
     <string name="lyrics_thumbnail_play_pause">Näita esitamist/pausi pisipildil</string>
@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Nutikas võrgu uuesti sünkroonimine</string>
     <string name="listen_together_smart_resync_desc">Pärast ühenduse katkemist saavuta automaatselt uuesti hostiga kooskõla</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Impordi Spotify-st</string>
     <string name="spotify_import_desc">Ühenda Spotify, vali esitusloendid ja peegelda need kohalikesse ArchiveTune esitusloenditesse.</string>
     <string name="spotify_connect">Ühenda Spotify</string>

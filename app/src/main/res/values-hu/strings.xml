@@ -332,7 +332,7 @@
     <string name="ip_version_auto">Automatikus</string>
     <string name="ip_version_ipv4">IPv4 kényszerítése</string>
     <string name="ip_version_ipv6">IPv6 kényszerítése</string>
-    <string name="audio_quality_lossless">Veszélytelen zene</string>
+    <string name="audio_quality_lossless">Veszteségmentes hang</string>
     <string name="clear_downloaded_updates">Letöltött frissítések törlése</string>
     <string name="clear_downloaded_updates_desc">Törölje a letöltött APK fájlokat a tárhely felszabadításához</string>
     <string name="bluetooth_permission_required">Bluetooth engedély szükséges az audio eszközök felderítéséhez.</string>
@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Okos hálózati újraszinkronizálás</string>
     <string name="listen_together_smart_resync_desc">Kapcsolat megszakadása után automatikus felzárkózás a gazdagéphez</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importálás Spotify-ból</string>
     <string name="spotify_import_desc">Csatlakoztassa a Spotify-t, válasszon lejátszási listákat, és tükrözze azokat a helyi ArchiveTune lejátszási listákba.</string>
     <string name="spotify_connect">Spotify csatlakoztatása</string>

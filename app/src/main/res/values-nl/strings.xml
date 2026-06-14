@@ -323,7 +323,7 @@
     <!-- Settings -->
     <string name="theme_desc">Pas het thema van de app aan</string>
     <string name="theme_colors">Thema en kleuren</string>
-    <string name="theme_mode">Themodus</string>
+    <string name="theme_mode">Themamodus</string>
     <string name="color_palette">Kleurenpalet</string>
     <string name="use_system_colors">Systeemkleuren gebruiken</string>
     <string name="apple_music">Apple Music</string>
@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Slimme netwerkresynchronisatie</string>
     <string name="listen_together_smart_resync_desc">Loop automatisch weer gelijk met de host na een verbindingsonderbreking</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importeren vanuit Spotify</string>
     <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale ArchiveTune-afspeellijsten.</string>
     <string name="spotify_connect">Spotify verbinden</string>

@@ -300,7 +300,7 @@
     <string name="listen_together_smart_resync">ਸਮਾਰਟ ਨੈੱਟਵਰਕ ਰੀਸਿੰਕ</string>
     <string name="listen_together_smart_resync_desc">ਕਨੈਕਸ਼ਨ ਡਿੱਗਣ ਤੋਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹੋਸਟ ਨਾਲ ਮੇਲ ਕਰੋ</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Spotify ਤੋਂ ਅਯਾਤ ਕਰੋ</string>
     <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ ArchiveTune ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
     <string name="spotify_connect">Spotify ਕਨੈਕਟ ਕਰੋ</string>

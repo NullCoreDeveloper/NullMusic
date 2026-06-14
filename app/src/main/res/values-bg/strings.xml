@@ -351,7 +351,7 @@
     <string name="listen_together_smart_resync">Умна мрежова повторна синхронизация</string>
     <string name="listen_together_smart_resync_desc">Автоматично наваксване на водещия след прекъсване на връзката</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Импортиране от Spotify</string>
     <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на ArchiveTune.</string>
     <string name="spotify_connect">Свързване със Spotify</string>

@@ -337,7 +337,7 @@
     <string name="listen_together_smart_resync">स्मार्ट नेटवर्क पुनः समन्वयन</string>
     <string name="listen_together_smart_resync_desc">कनेक्शन टूटने के बाद स्वचालित रूप से होस्ट के साथ तालमेल बिठाएं</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">स्पॉटिफाई से आयात करें</string>
     <string name="spotify_import_desc">स्पॉटिफाई कनेक्ट करें, प्लेलिस्ट चुनें और उन्हें स्थानीय ArchiveTune प्लेलिस्ट में मिरर करें।</string>
     <string name="spotify_connect">स्पॉटिफाई कनेक्ट करें</string>

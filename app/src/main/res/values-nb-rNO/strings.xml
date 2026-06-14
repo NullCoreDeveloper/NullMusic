@@ -348,7 +348,7 @@
     <string name="listen_together_smart_resync">Smart nettverkssynkronisering</string>
     <string name="listen_together_smart_resync_desc">Ta automatisk igjen verten etter et tilkoblingsbrudd</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importer fra Spotify</string>
     <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale ArchiveTune-spillelister.</string>
     <string name="spotify_connect">Koble til Spotify</string>

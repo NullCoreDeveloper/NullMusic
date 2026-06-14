@@ -344,7 +344,7 @@
     <string name="listen_together_smart_resync">スマートネットワーク再同期</string>
     <string name="listen_together_smart_resync_desc">接続が切れた後にホストに自動的に追いつく</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Spotifyからインポート</string>
     <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのArchiveTuneプレイリストにミラーリングします。</string>
     <string name="spotify_connect">Spotifyに接続</string>

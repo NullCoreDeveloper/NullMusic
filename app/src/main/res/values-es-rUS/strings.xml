@@ -361,7 +361,7 @@
     <string name="listen_together_smart_resync">Resincronización inteligente de red</string>
     <string name="listen_together_smart_resync_desc">Ponte al día automáticamente con el anfitrión después de una caída de la conexión</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Importar desde Spotify</string>
     <string name="spotify_import_desc">Conecta Spotify, elige listas de reproducción y reprodúcelas en listas locales de ArchiveTune.</string>
     <string name="spotify_connect">Conectar Spotify</string>

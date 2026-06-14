@@ -372,7 +372,7 @@
     <string name="listen_together_smart_resync">Умная повторная синхронизация сети</string>
     <string name="listen_together_smart_resync_desc">Автоматически подстраиваться под ведущего после обрыва соединения</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Импорт из Spotify</string>
     <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах ArchiveTune.</string>
     <string name="spotify_connect">Подключить Spotify</string>

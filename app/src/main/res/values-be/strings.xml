@@ -377,7 +377,7 @@
     <string name="listen_together_smart_resync">Разумная перасінхранізацыя сеткі</string>
     <string name="listen_together_smart_resync_desc">Аўтаматычна даганяць вядучага пасля абранання падключэння</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Імпарт з Spotify</string>
     <string name="spotify_import_desc">Падключыце Spotify, абярыце плэй-лісты і адлюструйце іх у лакальныя плэй-лісты ArchiveTune.</string>
     <string name="spotify_connect">Падключыць Spotify</string>

@@ -338,7 +338,7 @@
     <string name="listen_together_smart_resync">智慧網路重新同步</string>
     <string name="listen_together_smart_resync_desc">連線中斷後自動與主持人同步</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">從 Spotify 匯入</string>
     <string name="spotify_import_desc">連接 Spotify，選擇播放清單，並將其鏡像到本機 ArchiveTune 播放清單。</string>
     <string name="spotify_connect">連接 Spotify</string>

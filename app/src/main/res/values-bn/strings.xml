@@ -350,7 +350,7 @@
     <string name="listen_together_smart_resync">স্মার্ট নেটওয়ার্ক রিসিঙ্ক</string>
     <string name="listen_together_smart_resync_desc">সংযোগ বিচ্ছিন্ন হয়ে গেলে স্বয়ংক্রিয়ভাবে হোস্টের সাথে সঙ্গতিপূর্ণ হন</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">স্পটিফাই থেকে ইমপোর্ট করুন</string>
     <string name="spotify_import_desc">স্পটিফাই সংযুক্ত করুন, প্লেলিস্ট বাছাই করুন এবং সেগুলিকে স্থানীয় ArchiveTune প্লেলিস্টে মিরর করুন।</string>
     <string name="spotify_connect">স্পটিফাই সংযুক্ত করুন</string>

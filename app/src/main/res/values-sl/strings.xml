@@ -394,7 +394,7 @@
     <string name="listen_together_smart_resync">Pametna ponovna sinhronizacija omrežja</string>
     <string name="listen_together_smart_resync_desc">Po prekinitvi povezave samodejno sledite gostitelju</string>
 
-    <!-- Spotify Import -->
+
     <string name="spotify_import_title">Uvozi iz Spotifyja</string>
     <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname ArchiveTune.</string>
     <string name="spotify_connect">Poveži Spotify</string>

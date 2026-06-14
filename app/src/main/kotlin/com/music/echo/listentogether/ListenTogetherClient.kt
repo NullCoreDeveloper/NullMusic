@@ -50,6 +50,7 @@ import okhttp3.WebSocketListener
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -349,8 +350,8 @@ class ListenTogetherClient @Inject constructor(
     private var reconnectAttempts = 0
     
     
-    private var sessionToken: String? = null
-    private var storedUsername: String? = null
+    @Volatile private var sessionToken: String? = null
+    @Volatile private var storedUsername: String? = null
     private var storedRoomCode: String? = null
     private var wasHost: Boolean = false
     private var sessionStartTime: Long = 0
@@ -362,10 +363,10 @@ class ListenTogetherClient @Inject constructor(
     private var wakeLock: PowerManager.WakeLock? = null
     
     
-    private val joinRequestNotifications = mutableMapOf<String, Int>()
+    private val joinRequestNotifications = ConcurrentHashMap<String, Int>()
 
-    
-    private val suggestionNotifications = mutableMapOf<String, Int>()
+
+    private val suggestionNotifications = ConcurrentHashMap<String, Int>()
 
     
     private val connectivityObserver: NetworkConnectivityObserver? by lazy {

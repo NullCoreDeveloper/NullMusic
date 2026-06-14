@@ -3,7 +3,7 @@
  * Licensed under GPL-3.0 | See git history for contributors
  *
  * JioSaavn audio streaming service.
- * Uses the Melo API (saavn.sumit.co) which is an open wrapper around JioSaavn.
+ * Uses the Melo API (saavn.echomusic.fun) which is an open wrapper around JioSaavn.
  *
  * API endpoints used:
  *   - GET /api/search/songs?query={q}        → search songs by name+artist
@@ -91,8 +91,6 @@ data class SaavnSongResponse(
 
 object SaavnService {
 
-    private const val BASE_URL = "https://saavn.sumit.co/api/"
-
     private val json = Json {
         isLenient         = true
         ignoreUnknownKeys = true
@@ -110,12 +108,37 @@ object SaavnService {
                 socketTimeoutMillis  = 4_000
             }
             defaultRequest {
-                url(BASE_URL)
                 headers.append(HttpHeaders.Accept, "application/json")
                 headers.append(HttpHeaders.UserAgent, "EchoMusic/1.0")
             }
             expectSuccess = false
         }
+    }
+
+    private suspend fun getWithFallback(
+        endpoint: String,
+        block: io.ktor.client.request.HttpRequestBuilder.() -> Unit = {}
+    ): io.ktor.client.statement.HttpResponse {
+        var attempt = 0
+        var lastException: Exception? = null
+        
+        while (attempt < 3) {
+            try {
+                val url = "${DeviceRouter.getCurrentServer()}/api/$endpoint"
+                val response = client.get(url, block)
+                if (response.status.value in 500..599) {
+                    DeviceRouter.fallbackToNextServer()
+                    attempt++
+                    continue
+                }
+                return response
+            } catch (e: Exception) {
+                lastException = e
+                DeviceRouter.fallbackToNextServer()
+                attempt++
+            }
+        }
+        throw lastException ?: IllegalStateException("All Saavn servers failed")
     }
 
     /**
@@ -125,7 +148,7 @@ object SaavnService {
      *         request fails or returns no results.
      */
     suspend fun searchSongs(query: String): Result<List<SaavnSong>> = runCatching {
-        val response = client.get("search/songs") {
+        val response = getWithFallback("search/songs") {
             parameter("query", query)
             parameter("limit", 5)   // fetch top-5 candidates; we only use #1
         }
@@ -154,7 +177,7 @@ object SaavnService {
      */
     suspend fun getBestStreamUrl(saavnSongId: String, quality: String): String? =
         runCatching {
-            val response = client.get("songs/$saavnSongId")
+            val response = getWithFallback("songs/$saavnSongId")
 
             if (response.status != HttpStatusCode.OK) return@runCatching null
 

@@ -420,4 +420,10 @@
     <string name="spotify_clear_selection">Clear</string>
     <string name="spotify_account">Spotify account</string>
     <string name="spotify_waiting_for_login">Waiting for Spotify login</string>
+    <string name="service_uptime">Service Uptime</string>
+    <string name="service_uptime_desc">Check the status of music providers</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_checking">Checking...</string>
+
 </resources>

@@ -1197,7 +1197,7 @@ private fun AudioDeviceRow(
                 }
             }
 
-            if (isActiveDevice) {
+            if (isActiveDevice && device.type != AudioDeviceType.PHONE_SPEAKER) {
                 val value = ((currentVolume / maxVolume) * 100).toInt()
                 
                 Row(

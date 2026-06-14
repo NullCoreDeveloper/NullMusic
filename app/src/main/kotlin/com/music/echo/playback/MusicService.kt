@@ -2104,7 +2104,8 @@ class MusicService :
 
     private fun isCacheOrStreamCorruptionError(error: PlaybackException): Boolean {
         return error.errorCode == PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED ||
-                error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE
+                error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE ||
+                error.errorCode == PlaybackException.ERROR_CODE_IO_UNSPECIFIED
     }
 
     override fun onPlayerError(error: PlaybackException) {
@@ -2530,11 +2531,12 @@ class MusicService :
             
             var shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
             
-            val cachedLength = androidx.media3.datasource.cache.ContentMetadata.getContentLength(downloadCache.getContentMetadata(mediaId))
-            val isFullyDownloaded = cachedLength != androidx.media3.common.C.LENGTH_UNSET.toLong() && cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
-
             val isCurrentlyPlaying = runBlocking(Dispatchers.Main) { player.currentMediaItem?.mediaId == mediaId }
             val dbFormat = runBlocking(Dispatchers.IO) { database.format(mediaId).firstOrNull() }
+            
+            val cachedLength = androidx.media3.datasource.cache.ContentMetadata.getContentLength(downloadCache.getContentMetadata(mediaId))
+                .takeIf { it != androidx.media3.common.C.LENGTH_UNSET.toLong() } ?: dbFormat?.contentLength ?: -1L
+            val isFullyDownloaded = cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
             
             val lockedQuality = if (isCurrentlyPlaying && dbFormat != null) {
                 when {
@@ -2566,11 +2568,7 @@ class MusicService :
             if (!shouldBypassCache) {
                 if (isFullyDownloaded) {
                     scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
-                    return@Factory if (dataSpec.length == androidx.media3.common.C.LENGTH_UNSET.toLong()) {
-                        dataSpec.subrange(dataSpec.position, cachedLength - dataSpec.position)
-                    } else {
-                        dataSpec
-                    }
+                    return@Factory dataSpec
                 }
 
                 if (downloadCache.isCached(

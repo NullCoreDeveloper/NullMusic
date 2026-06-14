@@ -40,6 +40,7 @@ import iad1tya.echo.music.ui.screens.settings.AboutScreen
 import iad1tya.echo.music.ui.screens.settings.AppearanceSettings
 import iad1tya.echo.music.ui.screens.settings.BackupAndRestore
 import iad1tya.echo.music.ui.screens.settings.ContentSettings
+import iad1tya.echo.music.ui.screens.settings.UptimeScreen
 import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.screens.settings.PlayerSettings
 import iad1tya.echo.music.ui.screens.settings.PrivacySettings
@@ -336,6 +337,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/content") {
         ContentSettings(navController, scrollBehavior)
+    }
+
+    composable("uptime") {
+        UptimeScreen(navController, scrollBehavior)
     }
 
     composable("settings/content/romanization") {

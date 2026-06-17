@@ -1,5 +1,4 @@
-# Echo Music v5.1.92 — New Servers for Saavn 320kbps
+# Echo Music v5.2.0
 
-Say goodbye to buffering and playback issues while listening to music in Saavn 320 kbps quality.
-
-Streaming has been migrated from third-party servers to our own servers, delivering a faster, more reliable, and seamless listening experience with improved stability and performance.
+- Temporarily disabled Lossless (Qobuz) quality option while we transition to a self-hosted server solution; existing settings have been migrated back to standard defaults (Opus/YouTube Music).
+- Fixed stream mismatch issues where changing audio quality mid-playback could play the wrong track or carry over stale audio streams.

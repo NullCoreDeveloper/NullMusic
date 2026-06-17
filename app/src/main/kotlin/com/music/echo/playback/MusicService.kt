@@ -604,18 +604,22 @@ class MusicService :
 
                     Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality")
 
-                    Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect for upcoming songs.")
+                    Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect immediately.")
 
                     val mediaId = player.currentMediaItem?.mediaId ?: return@collect
-                    val currentUrl = songUrlCache[mediaId]
 
                     // Clear cache for upcoming songs so they fetch the new quality
                     songUrlCache.clear()
                     
-                    // Restore the currently playing song's URL so it doesn't break
-                    if (currentUrl != null) {
-                        songUrlCache[mediaId] = currentUrl
-                    }
+                    // Cancel current player state to switch immediately
+                    val currentIndex = player.currentMediaItemIndex
+                    val currentPosition = player.currentPosition
+                    val wasPlaying = player.isPlaying
+
+                    player.stop()
+                    player.seekTo(currentIndex, currentPosition)
+                    player.prepare()
+                    if (wasPlaying) player.play()
 
                     // Re-trigger prefetch to fetch the next songs in the new quality
                     preloadUpcomingItems()
@@ -642,7 +646,7 @@ class MusicService :
                     val wasPlaying = player.isPlaying
 
                     
-                    songUrlCache.remove(mediaId)
+                    songUrlCache.remove("${mediaId}_${audioQuality.name}")
 
                     
                     player.stop()
@@ -2192,7 +2196,7 @@ class MusicService :
         Timber.tag(TAG).d("Performing aggressive cache clear for $mediaId")
 
         
-        songUrlCache.remove(mediaId)
+        songUrlCache.remove("${mediaId}_${audioQuality.name}")
 
         
         try {
@@ -2360,7 +2364,7 @@ class MusicService :
         incrementRetryCount(mediaId)
 
         
-        songUrlCache.remove(mediaId)
+        songUrlCache.remove("${mediaId}_${audioQuality.name}")
         Timber.tag(TAG).d("Cleared cached URL for $mediaId")
 
         
@@ -2577,7 +2581,7 @@ class MusicService :
                         if (dataSpec.length >= 0) dataSpec.length else 1
                     )
                 ) {
-                    songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
+                    songUrlCache["${mediaId}_${lockedQuality.name}"]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                         scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
                         return@Factory dataSpec.withUri(it.first.toUri())
                     }
@@ -2585,7 +2589,7 @@ class MusicService :
                 }
 
                 if (playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH)) {
-                    songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
+                    songUrlCache["${mediaId}_${lockedQuality.name}"]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                         scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
                         return@Factory dataSpec.withUri(it.first.toUri())
                     }
@@ -2593,9 +2597,9 @@ class MusicService :
                     playerCache.removeResource(mediaId)
                 }
 
-                songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
-                    scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
-                    return@Factory dataSpec.withUri(it.first.toUri())
+                songUrlCache["${mediaId}_${lockedQuality.name}"]?.takeIf { it.second > System.currentTimeMillis() }?.let {
+                        scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+                        return@Factory dataSpec.withUri(it.first.toUri())
                 }
             } else {
                 Timber.tag("MusicService").i("BYPASSING CACHE for $mediaId due to quality change")
@@ -2706,7 +2710,7 @@ class MusicService :
 
                 val streamUrl = nonNullPlayback.streamUrl
 
-                songUrlCache[mediaId] =
+                songUrlCache["${mediaId}_${lockedQuality.name}"] =
                     streamUrl to System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
                 
                 return@Factory dataSpec.withUri(streamUrl.toUri())
@@ -3238,7 +3242,7 @@ class MusicService :
         preloadJob = scope.launch(kotlinx.coroutines.Dispatchers.IO) {
             for (mediaId in upcomingMediaIds) {
 
-                if (!mediaId.isLocalMediaId() && !songUrlCache.containsKey(mediaId)) {
+                if (!mediaId.isLocalMediaId() && !songUrlCache.containsKey("${mediaId}_${audioQuality.name}")) {
                     Timber.tag(TAG).d("Preloading stream for $mediaId")
                     kotlin.runCatching {
                         val dbSong = database.song(mediaId).firstOrNull()
@@ -3255,7 +3259,7 @@ class MusicService :
                         )
 
                         playbackData.getOrNull()?.streamUrl?.let { streamUrl ->
-                            songUrlCache[mediaId] = Pair(streamUrl, System.currentTimeMillis() + 1000 * 60 * 60)
+                            songUrlCache["${mediaId}_${audioQuality.name}"] = Pair(streamUrl, System.currentTimeMillis() + 1000 * 60 * 60)
                             Timber.tag(TAG).d("Preloaded stream for $mediaId")
                         }
                     }

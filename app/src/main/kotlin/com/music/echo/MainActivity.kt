@@ -10,9 +10,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
-
 import android.Manifest
 import android.annotation.SuppressLint
+import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.first
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
@@ -384,6 +385,14 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
 
         LaunchedEffect(Unit) {
+            val prefs = context.dataStore.data.first()
+            if (prefs[iad1tya.echo.music.constants.AudioQualityKey] == iad1tya.echo.music.constants.AudioQuality.LOSSLESS.name) {
+                context.dataStore.edit { it[iad1tya.echo.music.constants.AudioQualityKey] = iad1tya.echo.music.constants.AudioQuality.OPUS.name }
+            }
+            if (prefs[iad1tya.echo.music.constants.DownloadQualityKey] == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS.name) {
+                context.dataStore.edit { it[iad1tya.echo.music.constants.DownloadQualityKey] = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE.name }
+            }
+
             if (getAutoUpdateCheckSetting(context)) {
                 
                 delay(2000L)

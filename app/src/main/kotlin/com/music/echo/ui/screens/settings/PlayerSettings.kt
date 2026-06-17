@@ -249,7 +249,7 @@ fun PlayerSettings(
             },
             title = stringResource(R.string.audio_quality),
             current = audioQuality,
-            values = AudioQuality.values().toList(),
+            values = AudioQuality.values().filter { iad1tya.echo.music.constants.LOSSLESS_ENABLED || it != AudioQuality.LOSSLESS },
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
@@ -269,7 +269,7 @@ fun PlayerSettings(
             },
             title = stringResource(R.string.download_quality_title),
             current = downloadQuality,
-            values = iad1tya.echo.music.constants.DownloadQuality.values().toList(),
+            values = iad1tya.echo.music.constants.DownloadQuality.values().filter { iad1tya.echo.music.constants.LOSSLESS_ENABLED || it != iad1tya.echo.music.constants.DownloadQuality.LOSSLESS },
             valueText = {
                 when (it) {
                     iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"

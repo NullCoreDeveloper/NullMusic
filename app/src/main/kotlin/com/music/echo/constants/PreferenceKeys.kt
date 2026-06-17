@@ -101,6 +101,8 @@ val ShowAudioFallbackToastKey = booleanPreferencesKey("show_audio_fallback_toast
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 val IpVersionKey = stringPreferencesKey("ipVersion")
 
+const val LOSSLESS_ENABLED = false
+
 enum class AudioQuality {
     OPUS,
     SAAVN,

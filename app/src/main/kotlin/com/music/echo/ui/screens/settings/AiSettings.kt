@@ -73,6 +73,7 @@ fun AiSettings(
         "XAi" to "https://api.x.ai/v1/chat/completions",
         "Mistral" to "https://api.mistral.ai/v1/chat/completions",
         "Nvidia" to "https://integrate.api.nvidia.com/v1/chat/completions",
+        "Groq" to "https://api.groq.com/openai/v1/chat/completions",
         "DeepL" to "https://api.deepl.com/v2/translate",
         "Custom" to ""
     )
@@ -86,6 +87,7 @@ fun AiSettings(
         "XAi" to stringResource(R.string.ai_provider_xai_help),
         "Mistral" to stringResource(R.string.ai_provider_mistral_help),
         "Nvidia" to stringResource(R.string.ai_provider_nvidia_help),
+        "Groq" to stringResource(R.string.ai_provider_groq_help),
         "DeepL" to stringResource(R.string.ai_provider_deepl_help),
         "Custom" to ""
     )
@@ -142,6 +144,15 @@ fun AiSettings(
             "meta/llama-3.1-8b-instruct",
             "nvidia/nemotron-4-340b-instruct",
             "mistralai/mixtral-8x22b-instruct-v0.1"
+        ),
+        "Groq" to listOf(
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "moonshotai/kimi-k2-instruct",
+            "qwen/qwen3-32b",
+            "gemma2-9b-it"
         ),
         "DeepL" to listOf(),
         "Custom" to listOf()

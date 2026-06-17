@@ -604,22 +604,17 @@ class MusicService :
 
                     Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality")
 
-                    Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect immediately.")
+                    Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect starting from the next song.")
 
-                    val mediaId = player.currentMediaItem?.mediaId ?: return@collect
-
-                    // Clear cache for upcoming songs so they fetch the new quality
+                    // Clear cache for upcoming songs so they fetch the new quality, keeping the currently playing track's URL cache entry intact.
+                    val currentMediaId = player.currentMediaItem?.mediaId
+                    val currentCachedEntry = currentMediaId?.let { mediaId ->
+                        songUrlCache.filter { it.key.startsWith("${mediaId}_") }
+                    }
                     songUrlCache.clear()
-                    
-                    // Cancel current player state to switch immediately
-                    val currentIndex = player.currentMediaItemIndex
-                    val currentPosition = player.currentPosition
-                    val wasPlaying = player.isPlaying
-
-                    player.stop()
-                    player.seekTo(currentIndex, currentPosition)
-                    player.prepare()
-                    if (wasPlaying) player.play()
+                    if (currentCachedEntry != null) {
+                        songUrlCache.putAll(currentCachedEntry)
+                    }
 
                     // Re-trigger prefetch to fetch the next songs in the new quality
                     preloadUpcomingItems()
@@ -2529,7 +2524,15 @@ class MusicService :
             DefaultDataSource.Factory(this, createCacheDataSource())
         ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
-            if (mediaId.isLocalMediaId()) return@Factory dataSpec
+            if (mediaId.isLocalMediaId()) {
+                val localUri = android.content.ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId.removePrefix("L_").toLong())
+                try {
+                    contentResolver.openFileDescriptor(localUri, "r")?.close()
+                } catch (e: java.io.FileNotFoundException) {
+                    throw androidx.media3.common.PlaybackException("Local file deleted", e, androidx.media3.common.PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND)
+                }
+                return@Factory dataSpec
+            }
 
 
             
@@ -3242,7 +3245,8 @@ class MusicService :
         preloadJob = scope.launch(kotlinx.coroutines.Dispatchers.IO) {
             for (mediaId in upcomingMediaIds) {
 
-                if (!mediaId.isLocalMediaId() && !songUrlCache.containsKey("${mediaId}_${audioQuality.name}")) {
+                val isFullyDownloaded = downloadCache.getCachedSpans(mediaId).isNotEmpty()
+                if (!mediaId.isLocalMediaId() && !songUrlCache.containsKey("${mediaId}_${audioQuality.name}") && !isFullyDownloaded) {
                     Timber.tag(TAG).d("Preloading stream for $mediaId")
                     kotlin.runCatching {
                         val dbSong = database.song(mediaId).firstOrNull()

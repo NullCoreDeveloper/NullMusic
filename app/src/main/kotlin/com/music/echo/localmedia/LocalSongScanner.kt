@@ -350,9 +350,7 @@ constructor(
                         ?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneId.systemDefault()) },
                     sizeBytes = cursor.getLong(sizeIndex).coerceAtLeast(0L),
                     mimeType = mimeType,
-                    thumbnailUrl = mediaStoreAlbumId
-                        ?.takeIf { it > 0L }
-                        ?.let { ContentUris.withAppendedId(AlbumArtUri, it).toString() },
+                    thumbnailUrl = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId).toString(),
                 )
             }
         }

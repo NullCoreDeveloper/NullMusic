@@ -139,11 +139,10 @@ constructor(
                 val existing = getSongByIdBlocking(mediaId)?.song
 
                 val updatedSong = if (existing != null) {
-                    if (existing.dateDownload == null) {
-                        existing.copy(dateDownload = now)
-                    } else {
-                        existing
-                    }
+                    existing.copy(
+                        dateDownload = existing.dateDownload ?: now,
+                        thumbnailUrl = existing.thumbnailUrl ?: playbackData.videoDetails?.thumbnail?.thumbnails?.lastOrNull()?.url?.resize(1200, 1200)
+                    )
                 } else {
                     SongEntity(
                         id = mediaId,

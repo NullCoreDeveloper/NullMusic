@@ -386,12 +386,6 @@ class MainActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             val prefs = context.dataStore.data.first()
-            if (prefs[iad1tya.echo.music.constants.AudioQualityKey] == iad1tya.echo.music.constants.AudioQuality.LOSSLESS.name) {
-                context.dataStore.edit { it[iad1tya.echo.music.constants.AudioQualityKey] = iad1tya.echo.music.constants.AudioQuality.OPUS.name }
-            }
-            if (prefs[iad1tya.echo.music.constants.DownloadQualityKey] == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS.name) {
-                context.dataStore.edit { it[iad1tya.echo.music.constants.DownloadQualityKey] = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE.name }
-            }
 
             if (getAutoUpdateCheckSetting(context)) {
                 

@@ -245,9 +245,23 @@ object YTPlayerUtils {
                         audioTrack = null
                     )
 
+                    val saavnImage = bestSong.image.lastOrNull()?.url ?: bestSong.image.firstOrNull()?.url
+                    
+                    val updatedVideoDetails = metadata?.videoDetails?.copy(
+                        thumbnail = com.music.innertube.models.Thumbnails(
+                            thumbnails = listOf(
+                                com.music.innertube.models.Thumbnail(url = saavnImage ?: "", width = 500, height = 500)
+                            )
+                        )
+                    ) ?: com.music.innertube.models.response.PlayerResponse.VideoDetails(
+                        videoId = videoId, title = title, author = artist, lengthSeconds = ytDuration.toString(),
+                        channelId = "", musicVideoType = null, viewCount = null,
+                        thumbnail = com.music.innertube.models.Thumbnails(listOf(com.music.innertube.models.Thumbnail(url = saavnImage ?: "", width = 500, height = 500)))
+                    )
+
                     val playbackData = PlaybackData(
                         audioConfig = metadata?.playerConfig?.audioConfig,
-                        videoDetails = metadata?.videoDetails,
+                        videoDetails = updatedVideoDetails,
                         playbackTracking = metadata?.playbackTracking,
                         format = format,
                         streamUrl = streamUrl,
@@ -283,7 +297,7 @@ object YTPlayerUtils {
                             val durationSeconds = metadata?.videoDetails?.lengthSeconds?.toLongOrNull()
                             val durationMs = knownDurationMs ?: (if (durationSeconds != null) durationSeconds * 1000L else null)
                             
-                            var bestMatch: iad1tya.echo.music.utils.qobuz.QobuzTrack? = null
+                            var resolvedPlaybackData: PlaybackData? = null
                             for (term in qobuzSearchTerms(queryArtist, queryTitle)) {
                                 val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
                                 val candidates = searchResult.tracks?.items ?: continue
@@ -293,55 +307,54 @@ object YTPlayerUtils {
                                     streamable && maxDepth >= 16
                                 }
                                 val sorted = validCandidates.sortedByDescending { confidence(queryArtist, queryTitle, durationMs, it) }
-                                if (sorted.isNotEmpty()) {
-                                    val top = sorted.first()
-                                    if (confidence(queryArtist, queryTitle, durationMs, top) >= 0.5f) {
-                                        bestMatch = top
-                                        break
+                                for (candidate in sorted) {
+                                    if (confidence(queryArtist, queryTitle, durationMs, candidate) >= 0.5f) {
+                                        val downloadData = runCatching { qobuzClient.getFileUrl(candidate.id) }.getOrNull()
+                                        val url = downloadData?.url
+                                        if (url != null) {
+                                            val format = PlayerResponse.StreamingData.Format(
+                                                itag = 0,
+                                                mimeType = "audio/flac; codecs=\"flac\"",
+                                                bitrate = (candidate.maximumSamplingRate * 1000 * candidate.maximumBitDepth * 2).toInt(),
+                                                audioSampleRate = (candidate.maximumSamplingRate * 1000).toInt(),
+                                                contentLength = 0L,
+                                                url = url,
+                                                cipher = null,
+                                                signatureCipher = null,
+                                                audioQuality = "LOSSLESS",
+                                                fps = null,
+                                                width = null,
+                                                height = null,
+                                                quality = "lossless",
+                                                qualityLabel = null,
+                                                averageBitrate = null,
+                                                approxDurationMs = null,
+                                                audioChannels = null,
+                                                loudnessDb = null,
+                                                lastModified = null,
+                                                audioTrack = null
+                                            )
+                                            resolvedPlaybackData = PlaybackData(
+                                                audioConfig = null,
+                                                videoDetails = metadata?.videoDetails,
+                                                playbackTracking = null,
+                                                format = format,
+                                                streamUrl = url,
+                                                streamExpiresInSeconds = 3600
+                                            )
+                                            break
+                                        }
                                     }
+                                }
+                                if (resolvedPlaybackData != null) {
+                                    break
                                 }
                             }
     
-                            if (bestMatch != null) {
-                                val downloadData = qobuzClient.getFileUrl(bestMatch.id)
-                                val url = downloadData.url
-                                if (url != null) {
-                                    val format = PlayerResponse.StreamingData.Format(
-                                        itag = 0,
-                                        mimeType = "audio/flac; codecs=\"flac\"",
-                                        bitrate = (bestMatch.maximumSamplingRate * 1000 * bestMatch.maximumBitDepth * 2).toInt(),
-                                        audioSampleRate = (bestMatch.maximumSamplingRate * 1000).toInt(),
-                                        contentLength = 0L,
-                                        url = url,
-                                        cipher = null,
-                                        signatureCipher = null,
-                                        audioQuality = "LOSSLESS",
-                                        fps = null,
-                                        width = null,
-                                        height = null,
-                                        quality = "lossless",
-                                        qualityLabel = null,
-                                        averageBitrate = null,
-                                        approxDurationMs = null,
-                                        audioChannels = null,
-                                        loudnessDb = null,
-                                        lastModified = null,
-                                        audioTrack = null
-                                    )
-                                    val playbackData = PlaybackData(
-                                        audioConfig = null,
-                                        videoDetails = metadata?.videoDetails,
-                                        playbackTracking = null,
-                                        format = format,
-                                        streamUrl = url,
-                                        streamExpiresInSeconds = 3600
-                                    )
-                                    return@withTimeoutOrNull Result.success(playbackData)
-                                } else {
-                                    throw Exception("Download URL is null")
-                                }
+                            if (resolvedPlaybackData != null) {
+                                return@withTimeoutOrNull Result.success(resolvedPlaybackData)
                             } else {
-                                throw Exception("No streamable match found on Qobuz")
+                                throw Exception("No streamable match resolved on Qobuz")
                             }
                         } else {
                             throw Exception("Missing title or artist for lookup")
@@ -965,14 +978,38 @@ object YTPlayerUtils {
 
 
 
+fun cleanSearchTerm(term: String): String {
+    return term
+        .replace(Regex("(?i)\\b(official video|music video|official audio|lyric video|lyrics|audio|video|hq|high quality)\\b"), "")
+        .replace(Regex("\\([^)]*\\)"), "")
+        .replace(Regex("\\[[^]]*\\]"), "")
+        .replace(Regex("[^\\p{L}\\p{N}\\s]"), " ")
+        .replace(Regex("\\s+"), " ")
+        .trim()
+}
+
 fun qobuzSearchTerms(artist: String, title: String): List<String> {
-    val full = "$artist $title".trim()
-    val primary = artist.substringBefore(",").trim()
-    return if (primary.isNotEmpty() && !primary.equals(artist.trim(), ignoreCase = true)) {
-        listOf(full, "$primary $title".trim())
-    } else {
-        listOf(full)
+    val cleanArtist = cleanSearchTerm(artist)
+    val cleanTitle = cleanSearchTerm(title)
+    
+    val terms = mutableListOf<String>()
+    
+    terms.add("$artist $title".trim())
+    
+    if (cleanArtist.isNotEmpty() && cleanTitle.isNotEmpty()) {
+        terms.add("$cleanArtist $cleanTitle".trim())
     }
+    
+    val primary = artist.substringBefore(",").trim()
+    if (primary.isNotEmpty() && !primary.equals(artist.trim(), ignoreCase = true)) {
+        terms.add("$primary $title".trim())
+        val cleanPrimary = cleanSearchTerm(primary)
+        if (cleanPrimary.isNotEmpty() && cleanTitle.isNotEmpty()) {
+            terms.add("$cleanPrimary $cleanTitle".trim())
+        }
+    }
+    
+    return terms.distinct()
 }
 
 private fun normalize(s: String): String =

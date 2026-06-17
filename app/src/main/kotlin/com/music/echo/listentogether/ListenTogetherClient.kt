@@ -352,12 +352,12 @@ class ListenTogetherClient @Inject constructor(
     
     @Volatile private var sessionToken: String? = null
     @Volatile private var storedUsername: String? = null
-    private var storedRoomCode: String? = null
+    @Volatile private var storedRoomCode: String? = null
     private var wasHost: Boolean = false
     private var sessionStartTime: Long = 0
-    
-    
-    private var pendingAction: PendingAction? = null
+
+
+    @Volatile private var pendingAction: PendingAction? = null
     
     
     private var wakeLock: PowerManager.WakeLock? = null

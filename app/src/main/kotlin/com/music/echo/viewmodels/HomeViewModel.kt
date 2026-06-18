@@ -570,18 +570,28 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             _isLoadingMore.value = true
-            val nextSections = YouTube.home(continuation).getOrNull() ?: run {
-                _isLoadingMore.value = false
-                return@launch
-            }
+            var currentContinuation = continuation
+            var hasNewItems = false
 
-            homePage.value = nextSections.copy(
-                chips = homePage.value?.chips,
-                sections = (homePage.value?.sections.orEmpty() + nextSections.sections).mapNotNull { section ->
+            while (currentContinuation != null && !hasNewItems) {
+                val nextSections = YouTube.home(currentContinuation).getOrNull() ?: break
+                currentContinuation = nextSections.continuation
+
+                val newSections = nextSections.sections.mapNotNull { section ->
                     val filteredItems = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts)
                     if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
                 }
-            )
+
+                if (newSections.isNotEmpty()) {
+                    hasNewItems = true
+                }
+
+                homePage.value = nextSections.copy(
+                    chips = homePage.value?.chips,
+                    continuation = currentContinuation,
+                    sections = homePage.value?.sections.orEmpty() + newSections
+                )
+            }
             _isLoadingMore.value = false
         }
     }

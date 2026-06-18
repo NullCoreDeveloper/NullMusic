@@ -45,8 +45,10 @@ fun ShimmerHost(
     )
 }
 
-val ShimmerTheme =
-    defaultShimmerTheme.copy(
+@Composable
+fun getShimmerTheme(): com.valentinilk.shimmer.ShimmerTheme {
+    val surfaceVariant = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant
+    return defaultShimmerTheme.copy(
         animationSpec =
         infiniteRepeatable(
             animation =
@@ -59,8 +61,9 @@ val ShimmerTheme =
         ),
         shaderColors =
         listOf(
-            Color.Unspecified.copy(alpha = 0.25f),
-            Color.Unspecified.copy(alpha = 0.50f),
-            Color.Unspecified.copy(alpha = 0.25f),
+            surfaceVariant.copy(alpha = 0.25f),
+            surfaceVariant.copy(alpha = 0.50f),
+            surfaceVariant.copy(alpha = 0.25f),
         ),
     )
+}

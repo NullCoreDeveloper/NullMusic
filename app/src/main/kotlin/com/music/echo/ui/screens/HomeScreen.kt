@@ -1284,7 +1284,7 @@ fun HomeScreen(
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                                         modifier = Modifier.animateItem()
                                     ) {
-                                        items(playlists) { item ->
+                                        items(playlists, key = { it.playlist.id }) { item ->
                                             CommunityPlaylistCard(
                                                 item = item,
                                                 onClick = {
@@ -1391,7 +1391,7 @@ fun HomeScreen(
                                             }) * rows)
                                             .animateItem()
                                     ) {
-                                        items(keepListening) {
+                                        items(keepListening, key = { it.id }) {
                                             localGridItem(it)
                                         }
                                     }
@@ -1592,7 +1592,7 @@ fun HomeScreen(
                                             .asPaddingValues(),
                                         modifier = Modifier.animateItem()
                                     ) {
-                                        items(recommendation.items) { item ->
+                                        items(recommendation.items, key = { it.id }) { item ->
                                             ytGridItem(item)
                                         }
                                     }
@@ -1732,7 +1732,7 @@ fun HomeScreen(
                                                 .asPaddingValues(),
                                             modifier = Modifier.animateItem()
                                         ) {
-                                            items(sectionData.items) { item ->
+                                            items(sectionData.items, key = { it.id }) { item ->
                                                 ytGridItem(item)
                                             }
                                         }
@@ -1759,7 +1759,7 @@ fun HomeScreen(
                                             .height((MoodAndGenresButtonHeight + 12.dp) * 4 + 12.dp)
                                             .animateItem()
                                     ) {
-                                        items(moodAndGenres) {
+                                        items(moodAndGenres, key = { it.title }) {
                                             MoodAndGenresButton(
                                                 title = it.title,
                                                 onClick = {

@@ -209,6 +209,7 @@ import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -1993,9 +1994,23 @@ fun BottomSheetPlayer(
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                     modifier = Modifier.weight(1f)
                 ) {
-                    if (!useNewPlayerDesign && sleepTimerEnabled) {
+                    val formatText = remember(currentAudioFormat, currentFormatEntity) {
+                        val localAudioFormat = currentAudioFormat
+                        val localFormatEntity = currentFormatEntity
+                        val codecStr = localAudioFormat?.sampleMimeType?.substringAfter("audio/")?.uppercase() ?: localFormatEntity?.codecs?.uppercase() ?: ""
+                        var bitrateStr = ""
+                        if (localFormatEntity?.bitrate != null && localFormatEntity.bitrate > 0) {
+                            bitrateStr = "${localFormatEntity.bitrate / 1000} kbps"
+                        } else if (localAudioFormat?.bitrate != null && localAudioFormat.bitrate > 0) {
+                            bitrateStr = "${localAudioFormat.bitrate / 1000} kbps"
+                        }
+                        val isLossless = codecStr.contains("FLAC") || codecStr.contains("ALAC") || codecStr.contains("WAV")
+                        val losslessStr = if (isLossless) "Lossless" else ""
+                        listOf(codecStr, bitrateStr, losslessStr).filter { it.isNotEmpty() }.joinToString(" • ")
+                    }
+
+                    if (sleepTimerEnabled || showCodecOnPlayer) {
                         Box(
-                            contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(TextBackgroundColor.copy(alpha = 0.08f))
@@ -2005,7 +2020,9 @@ fun BottomSheetPlayer(
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .clickable {
-                                    showSleepTimerDialog = true
+                                    if (sleepTimerEnabled) {
+                                        showSleepTimerDialog = true
+                                    }
                                 }
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
@@ -2039,36 +2056,19 @@ fun BottomSheetPlayer(
                                             maxLines = 1,
                                         )
                                     }
+                                } else if (showCodecOnPlayer && formatText.isNotEmpty()) {
+                                    Text(
+                                        text = formatText,
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            letterSpacing = 1.sp,
+                                            fontSize = 10.sp
+                                        ),
+                                        color = TextBackgroundColor.copy(alpha = 0.8f),
+                                        maxLines = 1,
+                                    )
                                 }
                             }
-                        }
-                    }
-
-                    if (showCodecOnPlayer) {
-                        val formatText = remember(currentAudioFormat, currentFormatEntity) {
-                            val localAudioFormat = currentAudioFormat
-                            val localFormatEntity = currentFormatEntity
-                            val codecStr = localAudioFormat?.sampleMimeType?.substringAfter("audio/")?.uppercase() ?: localFormatEntity?.codecs?.uppercase() ?: ""
-                            var bitrateStr = ""
-                            if (localFormatEntity?.bitrate != null && localFormatEntity.bitrate > 0) {
-                                bitrateStr = "${localFormatEntity.bitrate / 1000} kbps"
-                            } else if (localAudioFormat?.bitrate != null && localAudioFormat.bitrate > 0) {
-                                bitrateStr = "${localAudioFormat.bitrate / 1000} kbps"
-                            }
-                            val isLossless = codecStr.contains("FLAC") || codecStr.contains("ALAC") || codecStr.contains("WAV")
-                            val losslessStr = if (isLossless) "Lossless" else ""
-                            listOf(codecStr, bitrateStr, losslessStr).filter { it.isNotEmpty() }.joinToString(" • ")
-                        }
-                        if (formatText.isNotEmpty()) {
-                            Text(
-                                text = formatText,
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp,
-                                    fontSize = 10.sp
-                                ),
-                                color = TextBackgroundColor.copy(alpha = 0.7f),
-                            )
                         }
                     }
                 }
@@ -2689,6 +2689,8 @@ fun InlineLyricsView(
             delay(500)
             coroutineScope.launch(Dispatchers.IO) {
                 try {
+                    val existing = database.lyrics(mediaMetadata.id).firstOrNull()
+                    if (existing != null) return@launch
                     val entryPoint = EntryPointAccessors.fromApplication(
                         context.applicationContext,
                         iad1tya.echo.music.di.LyricsHelperEntryPoint::class.java

@@ -1,5 +1,10 @@
 # Echo Music v5.2.0
 
+- Added visible lossless music quality indicators to the player UI.
+- Improved Listen Together synchronization by tracking network latency (RTT) via automatic ping/pong requests.
+- Fixed an issue where network buffering timeouts caused playback to enter an endless loading loop instead of showing a recovery error state.
+- Fixed a crash in music recognition (Shazam) caused by invalid timeout parameters.
+- Fixed a rendering issue in the mini-player where invalid crossfade options prevented the thumbnail from displaying correctly.
 - Re-enabled Lossless quality options with improved stream resolution fallback logic.
 - Fixed stream mismatch issues where changing audio quality mid-playback could play the wrong track or carry over stale audio streams. Audio quality changes now apply seamlessly starting from the next track.
 - Fixed missing album art for downloaded tracks that were saved without a thumbnail link.

@@ -2161,9 +2161,14 @@ class MusicService :
                 return
             }
 
-            !isNetworkConnected.value || isNetworkRelatedError(error) -> {
-                Timber.tag(TAG).d("Network-related error detected, waiting for connection")
+            !isNetworkConnected.value -> {
+                Timber.tag(TAG).d("Network disconnected, waiting for connection")
                 waitOnNetworkError()
+                return
+            }
+            isNetworkRelatedError(error) -> {
+                Timber.tag(TAG).d("Network-related error detected, handling as generic IO error")
+                handleGenericIOError(mediaId)
                 return
             }
         }
@@ -3126,10 +3131,14 @@ class MusicService :
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (isCrossfading && fadingPlayer != null) {
-                    if (isPlaying) {
-                        fadingPlayer?.play()
-                    } else {
-                        fadingPlayer?.pause()
+                    try {
+                        if (isPlaying) {
+                            fadingPlayer?.play()
+                        } else {
+                            fadingPlayer?.pause()
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag(TAG).e(e, "Error syncing fadingPlayer play state")
                     }
                 } else {
                     player.removeListener(this)
@@ -3153,32 +3162,34 @@ class MusicService :
             val duration = crossfadeDuration.toLong()
             val steps = 20
             val stepTime = duration / steps
-            val startVolume = try { fadingPlayer?.volume ?: 1f } catch(e:Exception) { 1f }
-
-            for (i in 0..steps) {
-                if (!isActive) break
-                
-                while (!player.isPlaying && isActive) {
-                    delay(100)
-                }
-
-                val progress = i / steps.toFloat()
-                val fadeIn = 1.0f - (1.0f - progress) * (1.0f - progress)
-                val fadeOut = (1.0f - progress) * (1.0f - progress)
-
-                try {
-                    player.volume = startVolume * fadeIn
-                    fadingPlayer?.volume = startVolume * fadeOut
-                } catch (e: Exception) { break }
-
-                delay(stepTime)
-            }
+            val startVolume = try { fadingPlayer?.volume ?: 1f } catch (e: Exception) { 1f }
 
             try {
-                fadingPlayer?.volume = 0f
-                player.volume = startVolume
+                for (i in 0..steps) {
+                    if (!isActive) break
+
+                    while (!player.isPlaying && isActive) {
+                        delay(100)
+                    }
+
+                    val progress = i / steps.toFloat()
+                    val fadeIn = 1.0f - (1.0f - progress) * (1.0f - progress)
+                    val fadeOut = (1.0f - progress) * (1.0f - progress)
+
+                    try {
+                        player.volume = startVolume * fadeIn
+                        fadingPlayer?.volume = startVolume * fadeOut
+                    } catch (e: Exception) { break }
+
+                    delay(stepTime)
+                }
+            } finally {
+                try {
+                    fadingPlayer?.volume = 0f
+                    player.volume = startVolume
+                } catch (e: Exception) { }
                 cleanupCrossfade()
-            } catch (e: Exception) { }
+            }
         }
     }
 

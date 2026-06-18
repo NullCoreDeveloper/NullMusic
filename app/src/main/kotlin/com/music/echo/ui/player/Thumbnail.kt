@@ -825,13 +825,15 @@ private fun ThumbnailItem(
                     canvasFetchInFlight = false
                 }
 
-                canvasArtwork?.let { artwork ->
-                    CanvasArtworkPlayer(
-                        primaryUrl = artwork.animated,
-                        fallbackUrl = artwork.videoUrl,
-                        isPlaying = isPlaying,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                if (playerBackground != PlayerBackgroundStyle.APPLE_MUSIC) {
+                    canvasArtwork?.let { artwork ->
+                        CanvasArtworkPlayer(
+                            primaryUrl = artwork.animated,
+                            fallbackUrl = artwork.videoUrl,
+                            isPlaying = isPlaying,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
         }

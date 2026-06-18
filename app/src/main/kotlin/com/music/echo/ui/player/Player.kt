@@ -63,6 +63,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -187,6 +188,7 @@ import iad1tya.echo.music.echomusic.isSpeaker
 import iad1tya.echo.music.echomusic.AudioDeviceBottomSheet
 import iad1tya.echo.music.ui.component.BottomSheet
 import iad1tya.echo.music.ui.component.BottomSheetState
+import iad1tya.echo.music.ui.component.CastButton
 import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
 import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.Lyrics
@@ -2628,6 +2630,18 @@ fun BottomSheetPlayer(
                                     isListenTogetherGuest = isListenTogetherGuest
                                 )
                             }
+                        }
+
+
+                        if (playerBackground == PlayerBackgroundStyle.APPLE_MUSIC && !showInlineLyrics) {
+                            CastButton(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .statusBarsPadding()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .size(24.dp),
+                                tintColor = TextBackgroundColor
+                            )
                         }
                     }
 

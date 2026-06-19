@@ -320,10 +320,6 @@ fun AppearanceSettings(
         ShowCachedPlaylistKey,
         defaultValue = true
     )
-    val (showUploadedPlaylist, onShowUploadedPlaylistChange) = rememberPreference(
-        ShowUploadedPlaylistKey,
-        defaultValue = true
-    )
     val (showCommentButton, onShowCommentButtonChange) = rememberPreference(
         ShowCommentButtonKey,
         defaultValue = false
@@ -1925,26 +1921,6 @@ fun AppearanceSettings(
                         )
                     },
                     onClick = { onShowCachedPlaylistChange(!showCachedPlaylist) }
-                ),
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.backup),
-                    title = { Text(stringResource(R.string.show_uploaded_playlist)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showUploadedPlaylist,
-                            onCheckedChange = onShowUploadedPlaylistChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showUploadedPlaylist) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowUploadedPlaylistChange(!showUploadedPlaylist) }
                 )
             )
         )

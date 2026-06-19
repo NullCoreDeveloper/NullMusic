@@ -110,7 +110,7 @@ class MusicDatabase(
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 36,
+    version = 37,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -168,8 +168,8 @@ abstract class InternalDatabase : RoomDatabase() {
                         MIGRATION_22_24,
                         MIGRATION_24_25,
                         MIGRATION_27_28,
+                        MIGRATION_36_37,
                     )
-
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
                     .setQueryExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
@@ -767,5 +767,12 @@ val MIGRATION_27_28 =
             db.execSQL("CREATE VIEW `sorted_song_artist_map` AS SELECT * FROM song_artist_map ORDER BY position")
             db.execSQL("CREATE VIEW `sorted_song_album_map` AS SELECT * FROM song_album_map ORDER BY `index`")
             db.execSQL("CREATE VIEW `playlist_song_map_preview` AS SELECT * FROM playlist_song_map WHERE position <= 3 ORDER BY position")
+        }
+    }
+
+val MIGRATION_36_37 =
+    object : Migration(36, 37) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Empty migration to prevent crash on downgrade from version 37
         }
     }

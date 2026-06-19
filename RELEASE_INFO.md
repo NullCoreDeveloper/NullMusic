@@ -1,6 +1,11 @@
 # Echo Music v5.2.0
 
+- Added "Ambient Mode" accessible from the player menu, featuring landscape orientation, split-screen album art and live lyrics, and gesture-based playback controls.
 - Added visible lossless music quality indicators to the player UI.
+- Fixed an issue where the skeleton loading structure (shimmer effect) was incorrectly fading out and cutting off content across all screens.
+- Removed the Podcasts chip from the Home screen and the Uploaded playlist chip from the Library to streamline the UI.
+- Added background music recognition via Quick Settings tile and widget, allowing songs to be identified without opening the app.
+- Bumped internal database version and added migration to preserve user data.
 - Improved Listen Together synchronization by tracking network latency (RTT) via automatic ping/pong requests.
 - Fixed an issue where network buffering timeouts caused playback to enter an endless loading loop instead of showing a recovery error state.
 - Fixed a crash in music recognition (Shazam) caused by invalid timeout parameters.

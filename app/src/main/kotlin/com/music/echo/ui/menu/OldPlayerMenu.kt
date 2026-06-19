@@ -309,6 +309,24 @@ fun OldPlayerMenu(
             Material3MenuGroup(
                 items = buildList {
                     
+                    add(
+                        Material3MenuItemData(
+                            title = { Text(text = "Ambient Mode") },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.fullscreen),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            onClick = {
+                                navController.navigate("ambient_mode")
+                                playerBottomSheetState.collapseSoft()
+                                onDismiss()
+                            }
+                        )
+                    )
+
                     if (!isListenTogetherGuest) {
                         add(
                             Material3MenuItemData(

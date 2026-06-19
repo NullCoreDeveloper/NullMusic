@@ -228,8 +228,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     companion object {
-        private const val ACTION_SEARCH = "iad1tya.echo.music.action.SEARCH"
-        private const val ACTION_LIBRARY = "iad1tya.echo.music.action.LIBRARY"
+        const val ACTION_SEARCH = "iad1tya.echo.music.action.SEARCH"
+        const val ACTION_LIBRARY = "iad1tya.echo.music.action.LIBRARY"
+        const val ACTION_RECOGNITION = "iad1tya.echo.music.action.RECOGNITION"
+        const val EXTRA_AUTO_START_RECOGNITION = "auto_start_recognition"
     }
 
     @Inject
@@ -321,6 +323,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (::navController.isInitialized) {
             handleDeepLinkIntent(intent, navController)
+            handleRecognitionIntent(intent, navController)
         } else {
             pendingIntent = intent
         }
@@ -591,7 +594,7 @@ class MainActivity : ComponentActivity() {
 
                 val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
 
-                val showRail = isLandscape && !inSearchScreen
+                val showRail = isLandscape && !inSearchScreen && currentRoute != "ambient_mode"
 
                 val navPadding = if (shouldShowNavigationBar && !showRail) {
                     NavigationBarHeight + FloatingToolbarBottomPadding
@@ -765,15 +768,22 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     if (pendingIntent != null) {
                         handleDeepLinkIntent(pendingIntent!!, navController)
+                        handleRecognitionIntent(pendingIntent!!, navController)
                         pendingIntent = null
-                    } else {
+                    } else if (intent != null && intent.action == Intent.ACTION_VIEW) {
                         handleDeepLinkIntent(intent, navController)
+                    } else if (intent != null && intent.action == ACTION_RECOGNITION) {
+                        handleRecognitionIntent(intent, navController)
                     }
                 }
 
                 DisposableEffect(Unit) {
                     val listener = Consumer<Intent> { intent ->
-                        handleDeepLinkIntent(intent, navController)
+                        if (intent.action == Intent.ACTION_VIEW) {
+                            handleDeepLinkIntent(intent, navController)
+                        } else if (intent.action == ACTION_RECOGNITION) {
+                            handleRecognitionIntent(intent, navController)
+                        }
                     }
 
                     addOnNewIntentListener(listener)
@@ -921,7 +931,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat") {
+                            if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode") {
                                 Box {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
@@ -984,7 +994,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             } else {
-                                if (currentRoute != "update" && currentRoute != "listen_together/chat") {
+                                if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode") {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
@@ -1319,12 +1329,25 @@ class MainActivity : ComponentActivity() {
             window.navigationBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
         }
     }
+    private fun handleRecognitionIntent(
+        intent: Intent,
+        navController: NavHostController,
+    ) {
+        if (intent.action != ACTION_RECOGNITION) return
+        val autoStart = intent.getBooleanExtra(EXTRA_AUTO_START_RECOGNITION, false)
+
+        intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
+        navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {
+            launchSingleTop = true
+        }
+    }
 }
 
 val LocalDatabase = staticCompositionLocalOf<MusicDatabase> { error("No database provided") }
 val LocalRingtoneViewModel = compositionLocalOf<RingtoneViewModel> { error("No RingtoneViewModel provided") }
 
 val LocalPlayerConnection = staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
+
 val LocalPlayerAwareWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
 val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
 val LocalSyncUtils = staticCompositionLocalOf<SyncUtils> { error("No SyncUtils provided") }

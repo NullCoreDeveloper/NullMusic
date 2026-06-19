@@ -61,6 +61,7 @@ import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.echomusic.changelog.ChangelogScreen
 import iad1tya.echo.music.echomusic.commitscreen.CommitScreen
 import iad1tya.echo.music.ui.screens.equalizer.axion.AxionEqScreen
+import iad1tya.echo.music.ui.screens.ambient.AmbientModeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.navigationBuilder(
@@ -109,6 +110,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("history") {
         HistoryScreen(navController)
+    }
+
+    composable("ambient_mode") {
+        AmbientModeScreen(navController)
     }
 
     composable("local_songs") {

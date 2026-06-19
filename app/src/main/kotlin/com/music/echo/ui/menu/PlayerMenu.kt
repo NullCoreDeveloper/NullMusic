@@ -467,6 +467,24 @@ fun PlayerMenu(
                             }
                         )
                     )
+                    
+                    add(
+                        Material3MenuItemData(
+                            title = { Text(text = "Ambient Mode") },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.fullscreen),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            onClick = {
+                                navController.navigate("ambient_mode")
+                                playerBottomSheetState.collapseSoft()
+                                onDismiss()
+                            }
+                        )
+                    )
                 }
             )
         }

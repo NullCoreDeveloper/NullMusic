@@ -592,11 +592,10 @@ fun BottomSheetPlayer(
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
 
             val validated = fetched?.let { artwork ->
-                val resultArtist = artwork.artist
-                val artistMatches = if (resultArtist != null && requestedArtist.isNotBlank()) {
-                    resultArtist.contains(requestedArtist, ignoreCase = true) ||
-                    requestedArtist.contains(resultArtist, ignoreCase = true)
-                } else true
+                val localArtists = splitAndNormalizeArtists(requestedArtist)
+                val returnedArtists = splitAndNormalizeArtists(artwork.artist ?: "")
+                val artistMatches = localArtists.isNotEmpty() && returnedArtists.isNotEmpty() &&
+                    (localArtists.any { local -> returnedArtists.any { it.equals(local, ignoreCase = true) } })
                 
                 if (artistMatches) artwork else null
             }

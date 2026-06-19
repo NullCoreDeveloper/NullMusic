@@ -423,7 +423,9 @@
     <string name="service_uptime">Service Uptime</string>
     <string name="service_uptime_desc">Check the status of music providers</string>
     <string name="music_providers">Music Providers</string>
-    <string name="canvas_providers">Canvas</string>
+    <string name="canvas_providers">Canvas Providers</string>
+    <string name="lyrics_providers">Lyrics Providers</string>
+    <string name="other_services">Other Services</string>
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
     <string name="status_checking">Checking...</string>

@@ -1,5 +1,9 @@
 # Echo Music v5.2.0
 
+- Fixed an issue where Canvas animations and Artist Backgrounds stopped working by implementing dynamic Apple Music token extraction.
+- Fixed an issue where playing a song from the Suggestions tab would occasionally play a different song due to incorrect compound artist name matching.
+- Added Lyrics Providers and Other Services (Apple Music API, Echo Find) to the Service Uptime settings screen.
+- Improved track matching in the player to correctly handle songs with multiple artists or featured artists.
 - Added "Ambient Mode" accessible from the player menu, featuring landscape orientation, split-screen album art and live lyrics, and gesture-based playback controls.
 - Added visible lossless music quality indicators to the player UI.
 - Fixed an issue where the skeleton loading structure (shimmer effect) was incorrectly fading out and cutting off content across all screens.

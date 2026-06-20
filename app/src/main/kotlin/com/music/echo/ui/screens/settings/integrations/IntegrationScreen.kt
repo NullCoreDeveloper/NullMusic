@@ -30,7 +30,7 @@ import iad1tya.echo.music.ui.utils.backToMain
 fun IntegrationScreen(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
-) {
+highlightKey: String? = null) {
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)

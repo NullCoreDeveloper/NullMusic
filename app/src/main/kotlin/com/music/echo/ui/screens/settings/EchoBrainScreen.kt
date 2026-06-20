@@ -43,8 +43,9 @@ import java.util.Locale
 fun EchoBrainScreen(
     navController: NavController,
     engine: EchoBrainEngine,
-    repository: EchoBrainRepository
-) {
+    repository: EchoBrainRepository, highlightKey: String? = null) {
+    val scrollState = androidx.compose.foundation.rememberScrollState()
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var userBrain by remember { mutableStateOf<UserBrain?>(null) }
@@ -96,15 +97,16 @@ fun EchoBrainScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(scrollState)
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Spacer(Modifier.height(8.dp))
 
-                    Material3SettingsGroup(
+                    Material3SettingsGroup(scrollState = scrollState, 
                         items = listOf(
                             Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.echo_brain_enable)),
                                 title = { Text(stringResource(R.string.echo_brain_enable)) },
                                 description = { Text(stringResource(R.string.echo_brain_enable_desc)) },
                                 icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
@@ -142,24 +144,28 @@ fun EchoBrainScreen(
                     )
                     
                     val initiateText = stringResource(R.string.echo_brain_initiate)
-                    Material3SettingsGroup(
+                    Material3SettingsGroup(scrollState = scrollState, 
                         items = listOf(
                             Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.echo_brain_learning_level)),
                                 title = { Text(stringResource(R.string.echo_brain_learning_level)) },
                                 description = { Text(persona?.title ?: initiateText) },
                                 icon = rememberVectorPainter(Icons.Outlined.Psychology)
                             ),
                             Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.echo_brain_total_interactions)),
                                 title = { Text(stringResource(R.string.echo_brain_total_interactions)) },
                                 description = { Text(stringResource(R.string.echo_brain_interactions_tracked, brain.totalInteractions)) },
                                 icon = rememberVectorPainter(Icons.Outlined.Analytics)
                             ),
                             Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.echo_brain_discovered_genres)),
                                 title = { Text(stringResource(R.string.echo_brain_discovered_genres)) },
                                 description = { Text(stringResource(R.string.echo_brain_distinct_genres_identified, brain.topicAffinities.size)) },
                                 icon = rememberVectorPainter(Icons.Outlined.LibraryMusic)
                             ),
                             Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.echo_brain_analyzed_artists)),
                                 title = { Text(stringResource(R.string.echo_brain_analyzed_artists)) },
                                 description = { Text(stringResource(R.string.echo_brain_artists_mapped, brain.artistScores.size)) },
                                 icon = rememberVectorPainter(Icons.Outlined.Person)

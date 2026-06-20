@@ -324,32 +324,48 @@ fun NavGraphBuilder.navigationBuilder(
         SettingsScreen(navController, scrollBehavior)
     }
 
-    composable("settings/echo_brain") {
+    composable(
+        route = "settings/echo_brain?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
         iad1tya.echo.music.ui.screens.settings.EchoBrainScreen(
             navController, 
             (activity as iad1tya.echo.music.MainActivity).echoBrainEngine, 
-            (activity as iad1tya.echo.music.MainActivity).echoBrainRepository
+            (activity as iad1tya.echo.music.MainActivity).echoBrainRepository,
+            highlightKey = backStackEntry.arguments?.getString("highlightKey")
         )
     }
 
-    composable("settings/update") {
-       UpdateSettings(navController, scrollBehavior)
+    composable(
+        route = "settings/update?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+       UpdateSettings(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
-    composable("settings/account") {
-        AccountSettingsScreen(navController, scrollBehavior)
+    composable(
+        route = "settings/account?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        AccountSettingsScreen(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
-    composable("settings/appearance") {
-        AppearanceSettings(navController, scrollBehavior, activity, snackbarHostState)
+    composable(
+        route = "settings/appearance?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        AppearanceSettings(navController, scrollBehavior, activity, snackbarHostState, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
     composable("settings/appearance/theme") {
         ThemeScreen(navController)
     }
 
-    composable("settings/content") {
-        ContentSettings(navController, scrollBehavior)
+    composable(
+        route = "settings/content?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        ContentSettings(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
     composable("uptime") {
@@ -360,21 +376,28 @@ fun NavGraphBuilder.navigationBuilder(
         RomanizationSettings(navController, scrollBehavior)
     }
 
-    composable("settings/ai") {
-        AiSettings(navController, scrollBehavior)
+    composable(
+        route = "settings/ai?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        AiSettings(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
     
-    composable("settings/player") {
-        PlayerSettings(navController, scrollBehavior)
+    composable(
+        route = "settings/player?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        PlayerSettings(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
     composable(
-        route = "settings/storage?autoOpenExportPicker={autoOpenExportPicker}",
+        route = "settings/storage?autoOpenExportPicker={autoOpenExportPicker}&highlightKey={highlightKey}",
         arguments = listOf(
             navArgument("autoOpenExportPicker") {
                 type = NavType.BoolType
                 defaultValue = false
-            }
+            },
+            navArgument("highlightKey") { type = NavType.StringType; nullable = true }
         )
     ) { backStackEntry ->
         val autoOpenExportPicker =
@@ -383,6 +406,7 @@ fun NavGraphBuilder.navigationBuilder(
             navController = navController,
             scrollBehavior = scrollBehavior,
             autoOpenExportPicker = autoOpenExportPicker,
+            highlightKey = backStackEntry.arguments?.getString("highlightKey")
         )
     }
 
@@ -390,12 +414,18 @@ fun NavGraphBuilder.navigationBuilder(
         AxionEqScreen(onBackClick = { navController.navigateUp() })
     }
 
-    composable("settings/privacy") {
-        PrivacySettings(navController, scrollBehavior)
+    composable(
+        route = "settings/privacy?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        PrivacySettings(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
-    composable("settings/backup_restore") {
-        BackupAndRestore(navController, scrollBehavior)
+    composable(
+        route = "settings/backup_restore?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        BackupAndRestore(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
     composable("settings/integrations") {
@@ -410,8 +440,11 @@ fun NavGraphBuilder.navigationBuilder(
         ListenTogetherSettings(navController, scrollBehavior)
     }
 
-    composable("settings/about") {
-        AboutScreen(navController, scrollBehavior)
+    composable(
+        route = "settings/about?highlightKey={highlightKey}",
+        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+    ) { backStackEntry ->
+        AboutScreen(navController, scrollBehavior, highlightKey = backStackEntry.arguments?.getString("highlightKey"))
     }
 
     composable("update") {

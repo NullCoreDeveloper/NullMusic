@@ -52,7 +52,7 @@ fun AboutScreen(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
     onBack: (() -> Unit)? = null,
-) {
+highlightKey: String? = null) {
     val uriHandler = LocalUriHandler.current
 
     Scaffold(

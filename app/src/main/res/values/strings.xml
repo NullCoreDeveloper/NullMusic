@@ -283,6 +283,14 @@
     <string name="apple_music">Apple Music</string>
     <string name="squiggly">Squiggly</string>
     <string name="misc">Misc</string>
+    
+    <string name="activity_history">Listening Summary</string>
+    <string name="total_listening_time">Total Listening Time</string>
+    <string name="unique_songs">Unique Songs</string>
+    <string name="unique_artists">Unique Artists</string>
+    <string name="unique_albums">Unique Albums</string>
+    <string name="selected_period">Selected Period</string>
+    <string name="hours_minutes_format">%1$dh %2$dm</string>
     <string name="default_open_tab">Default open tab</string>
     <string name="grid_cell_size">Grid cell size</string>
     <string name="small">Small</string>

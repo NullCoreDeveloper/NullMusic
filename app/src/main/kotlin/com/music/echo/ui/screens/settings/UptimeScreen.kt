@@ -46,7 +46,7 @@ data class ServiceStatus(
 fun UptimeScreen(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
-) {
+highlightKey: String? = null) {
     val client = remember { OkHttpClient() }
     val musicServices = remember {
         mutableStateListOf(

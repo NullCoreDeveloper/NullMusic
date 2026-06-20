@@ -59,7 +59,7 @@ import iad1tya.echo.music.echomusic.updater.getUpdateAvailableState
 fun SettingsScreen(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
-) {
+highlightKey: String? = null) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val isAndroid12OrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
@@ -133,6 +133,7 @@ fun SettingsScreen(
             if (accountText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == accountText),
                         icon = painterResource(R.drawable.account),
                         title = { Text(accountText) },
                         onClick = { navController.navigate("settings/account") }
@@ -142,6 +143,7 @@ fun SettingsScreen(
             if ("echo brain".contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == "Echo Brain (Beta)"),
                         icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
                         title = { Text("Echo Brain (Beta)") },
                         onClick = { navController.navigate("settings/echo_brain") }
@@ -151,6 +153,7 @@ fun SettingsScreen(
             if (appearanceText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == appearanceText),
                         icon = painterResource(R.drawable.palette),
                         title = { Text(appearanceText) },
                         onClick = { navController.navigate("settings/appearance") }
@@ -160,6 +163,7 @@ fun SettingsScreen(
             if (playerText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == playerText),
                         icon = painterResource(R.drawable.play),
                         title = { Text(playerText) },
                         onClick = { navController.navigate("settings/player") }
@@ -169,6 +173,7 @@ fun SettingsScreen(
             if (listenTogetherText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == listenTogetherText),
                         icon = painterResource(R.drawable.group),
                         title = { Text(listenTogetherText) },
                         onClick = { navController.navigate(Screens.ListenTogether.route) }
@@ -178,6 +183,7 @@ fun SettingsScreen(
             if (contentText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == contentText),
                         icon = painterResource(R.drawable.language),
                         title = { Text(contentText) },
                         onClick = { navController.navigate("settings/content") }
@@ -187,6 +193,7 @@ fun SettingsScreen(
             if (aiLyricsText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == aiLyricsText),
                         icon = painterResource(R.drawable.translate),
                         title = { Text(aiLyricsText) },
                         onClick = { navController.navigate("settings/ai") }
@@ -196,6 +203,7 @@ fun SettingsScreen(
             if (privacyText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == privacyText),
                         icon = painterResource(R.drawable.security),
                         title = { Text(privacyText) },
                         onClick = { navController.navigate("settings/privacy") }
@@ -205,6 +213,7 @@ fun SettingsScreen(
             if (storageText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == storageText),
                         icon = painterResource(R.drawable.storage),
                         title = { Text(storageText) },
                         onClick = { navController.navigate("settings/storage") }
@@ -214,6 +223,7 @@ fun SettingsScreen(
             if (backupText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == backupText),
                         icon = painterResource(R.drawable.restore),
                         title = { Text(backupText) },
                         onClick = { navController.navigate("settings/backup_restore") }
@@ -223,6 +233,7 @@ fun SettingsScreen(
             if (systemUpdateText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == systemUpdateText),
                         icon = painterResource(if (isUpdateAvailable) R.drawable.ic_launcher_nobg else R.drawable.update),
                         title = { Text(systemUpdateText) },
                         description = if (isUpdateAvailable) {
@@ -240,6 +251,7 @@ fun SettingsScreen(
             if (aboutText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+    isHighlighted = (highlightKey == aboutText),
                         icon = painterResource(R.drawable.info),
                         title = { Text(aboutText) },
                         onClick = { navController.navigate("settings/about") }
@@ -253,12 +265,19 @@ fun SettingsScreen(
 
             val matchedSubSettings = subSettings
                 .filter { it.first.lowercase().contains(searchLower) }
-                .map { (title, parentTitle, route) ->
+                .groupBy { it.second }
+                .map { (parentTitle, settingsInPage) ->
+                    val route = settingsInPage.first().third
+                    val title = settingsInPage.first().first
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.search),
-                        title = { Text(title) },
-                        description = { Text("in $parentTitle") },
-                        onClick = { navController.navigate(route) }
+                        title = { Text(parentTitle) },
+                        description = { Text("Contains ${settingsInPage.size} matching setting(s)") },
+                        onClick = { 
+                            val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
+                            val finalRoute = if (route.contains("?")) "$route&highlightKey=$encodedTitle" else "$route?highlightKey=$encodedTitle"
+                            navController.navigate(finalRoute)
+                        }
                     )
                 }
             
@@ -277,7 +296,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
         } else {
-            Material3SettingsGroup(items = finalItemsList)
+            Material3SettingsGroup(scrollState = scrollState, items = finalItemsList)
         }
         
         Spacer(modifier = Modifier.height(50.dp))

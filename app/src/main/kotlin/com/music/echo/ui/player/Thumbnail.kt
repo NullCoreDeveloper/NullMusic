@@ -641,15 +641,26 @@ private fun ThumbnailItem(
 
                         val skipAmount = 5000 * skipMultiplier
 
-                        val isLeftSide = (layoutDirection == LayoutDirection.Ltr && offset.x < size.width / 2) ||
-                                (layoutDirection == LayoutDirection.Rtl && offset.x > size.width / 2)
+                        val leftBound = size.width * 0.33f
+                        val rightBound = size.width * 0.66f
+
+                        val isLeftSide = (layoutDirection == LayoutDirection.Ltr && offset.x < leftBound) ||
+                                (layoutDirection == LayoutDirection.Rtl && offset.x > rightBound)
+                        val isRightSide = (layoutDirection == LayoutDirection.Ltr && offset.x > rightBound) ||
+                                (layoutDirection == LayoutDirection.Rtl && offset.x < leftBound)
 
                         if (isLeftSide) {
                             playerConnection.player.seekTo((currentPosition - skipAmount).coerceAtLeast(0))
                             onSeek(context.getString(R.string.seek_backward_dynamic, skipAmount / 1000), true)
-                        } else {
+                        } else if (isRightSide) {
                             playerConnection.player.seekTo((currentPosition + skipAmount).coerceAtMost(duration))
                             onSeek(context.getString(R.string.seek_forward_dynamic, skipAmount / 1000), true)
+                        } else {
+                            if (playerConnection.player.playWhenReady) {
+                                playerConnection.player.pause()
+                            } else {
+                                playerConnection.player.play()
+                            }
                         }
                     }
                 )

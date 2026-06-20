@@ -1031,6 +1031,9 @@ fun MediaMetadataListItem(
             )
         },
         badges = {
+            if (mediaMetadata.source == iad1tya.echo.music.models.QueueItemSource.ECHO_BRAIN) {
+                EchoBrainBadge()
+            }
             if (mediaMetadata.explicit) Icon.Explicit()
         },
         thumbnailContent = {

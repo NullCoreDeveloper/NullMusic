@@ -324,6 +324,14 @@ fun NavGraphBuilder.navigationBuilder(
         SettingsScreen(navController, scrollBehavior)
     }
 
+    composable("settings/echo_brain") {
+        iad1tya.echo.music.ui.screens.settings.EchoBrainScreen(
+            navController, 
+            (activity as iad1tya.echo.music.MainActivity).echoBrainEngine, 
+            (activity as iad1tya.echo.music.MainActivity).echoBrainRepository
+        )
+    }
+
     composable("settings/update") {
        UpdateSettings(navController, scrollBehavior)
     }

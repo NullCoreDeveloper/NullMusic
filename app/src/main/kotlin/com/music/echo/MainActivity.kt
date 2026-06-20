@@ -1,6 +1,8 @@
 
 
 package iad1tya.echo.music
+import iad1tya.echo.music.R
+import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.ui.screens.settings.RingtoneViewModel
 import iad1tya.echo.music.ui.component.RingtoneTrimmerDialog
 import iad1tya.echo.music.ui.component.RingtoneProgressDialog
@@ -246,6 +248,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
 
+    @Inject
+    lateinit var echoBrainEngine: iad1tya.echo.music.engine.EchoBrainEngine
+
+    @Inject
+    lateinit var echoBrainRepository: iad1tya.echo.music.data.EchoBrainRepository
+
     private lateinit var navController: NavHostController
     private var pendingIntent: Intent? = null
 
@@ -259,6 +267,7 @@ class MainActivity : ComponentActivity() {
                     Timber.tag("MainActivity").d("PlayerConnection created successfully")
                     
                     listenTogetherManager.setPlayerConnection(playerConnection)
+                    playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                 } catch (e: Exception) {
                     Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
                     
@@ -267,6 +276,7 @@ class MainActivity : ComponentActivity() {
                         try {
                             playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
                             listenTogetherManager.setPlayerConnection(playerConnection)
+                            playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                         } catch (e2: Exception) {
                             Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
                         }

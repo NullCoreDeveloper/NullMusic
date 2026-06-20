@@ -38,7 +38,7 @@
         </intent>
     </queries>
     <application
-        android:name="iad1tya.echo.music.App"
+        android:name=".App"
         android:allowBackup="true"
         android:appCategory="audio"
         android:banner="@mipmap/tv_banner"

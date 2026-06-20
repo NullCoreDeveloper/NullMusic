@@ -2118,7 +2118,10 @@ class MusicService :
 
         val mediaId = player.currentMediaItem?.mediaId
         Timber.tag(TAG).w(error, "Player error occurred for $mediaId: errorCode=${error.errorCode}, message=${error.message}")
-        reportException(error)
+        val isFallbackError = error.message?.contains("fallback", ignoreCase = true) == true
+        if (!isFallbackError) {
+            reportException(error)
+        }
 
         
         if (mediaId != null && hasExceededRetryLimit(mediaId)) {
@@ -2676,6 +2679,7 @@ class MusicService :
                         
                         if (isCurrentlyPlaying) {
                             Timber.tag(TAG).e("Format changed mid-stream for $mediaId. Throwing to force player restart.")
+                            runBlocking(Dispatchers.IO) { database.query { deleteFormat(mediaId) } }
                             throw PlaybackException(
                                 "Container format changed mid-stream due to fallback",
                                 null,

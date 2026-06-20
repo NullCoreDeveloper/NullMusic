@@ -1,4 +1,7 @@
 package iad1tya.echo.music.ui.screens
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
+
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -941,7 +944,10 @@ fun HomeScreen(
             ) {
                 item {
                     ChipsRow(
-                        chips = homePage?.chips?.filter { !it.title.equals("Podcasts", ignoreCase = true) }?.map { it to it.title } ?: emptyList(),
+                        chips = homePage?.chips?.filter { 
+                            !it.title.equals("Podcasts", ignoreCase = true) && 
+                            !it.title.equals("Uploaded", ignoreCase = true)
+                        }?.map { it to it.title } ?: emptyList(),
                         currentValue = selectedChip,
                         onValueUpdate = {
                             viewModel.toggleChip(it)
@@ -952,14 +958,13 @@ fun HomeScreen(
                 if (isLoading && homePage?.chips.isNullOrEmpty()) {
                     item(key = "chips_shimmer") {
                         ShimmerHost {
-                            LazyRow(
-                                contentPadding = WindowInsets.systemBars
-                                    .only(WindowInsetsSides.Horizontal)
-                                    .asPaddingValues(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(5) {
+                                repeat(5) {
                                     TextPlaceholder(
                                         height = 30.dp,
                                         shape = RoundedCornerShape(16.dp),
@@ -1790,12 +1795,12 @@ fun HomeScreen(
                                         .padding(12.dp)
                                         .width(250.dp),
                                 )
-                                LazyRow(
-                                    contentPadding = WindowInsets.systemBars
-                                        .only(WindowInsetsSides.Horizontal)
-                                        .asPaddingValues(),
+                                Row(
+                                    modifier = Modifier
+                                        .horizontalScroll(rememberScrollState())
+                                        .padding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues())
                                 ) {
-                                    items(4) {
+                                    repeat(4) {
                                         GridItemPlaceHolder()
                                     }
                                 }

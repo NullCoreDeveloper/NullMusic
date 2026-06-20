@@ -20,6 +20,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
@@ -29,6 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -130,6 +136,16 @@ fun SettingsScreen(
                         icon = painterResource(R.drawable.account),
                         title = { Text(accountText) },
                         onClick = { navController.navigate("settings/account") }
+                    )
+                )
+            }
+            if ("echo brain".contains(searchLower)) {
+                add(
+                    Material3SettingsItem(
+                        icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
+                        title = { Text("Echo Brain (Beta)") },
+                        description = { Text("Powered by Flow Neuroengine") },
+                        onClick = { navController.navigate("settings/echo_brain") }
                     )
                 )
             }

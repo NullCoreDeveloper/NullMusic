@@ -1,5 +1,7 @@
 # Echo Music v5.2.0
 
+- Added double-tap to play/pause by tapping the center of the album art.
+
 - Fixed an issue where Canvas animations and Artist Backgrounds stopped working by implementing dynamic Apple Music token extraction.
 - Fixed an issue where playing a song from the Suggestions tab would occasionally play a different song due to incorrect compound artist name matching.
 - Added Lyrics Providers and Other Services (Apple Music API, Echo Find) to the Service Uptime settings screen.
@@ -21,3 +23,13 @@
 - Fixed missing artwork for local media files on Android 10 and newer due to scoped storage changes.
 - Fixed network buffering timeouts during playback of completely downloaded tracks.
 - Fixed a crash (FileNotFoundException) that occurred when attempting to play or crossfade into local media files that have been deleted from the device.
+- Added Echo Brain Flow Neuroengine integration to analyze listening habits and inject intelligent recommendations.
+- Cleaned up the Home screen by removing Uploaded and Podcast chips.
+- Fixed an issue with the skeleton loading structure displaying incorrectly.
+
+### Introducing Echo Brain (Beta)
+Echo Brain is our brand-new active learning engine that makes your music queue incredibly smart. Here is how it works:
+- **Real-Time Active Learning**: It silently monitors your listening behavior. If you skip a track quickly (before 15 seconds), it logs a Negative Signal. If you listen for more than 30 seconds, it considers you engaged.
+- **Dynamic Queue Injection**: Once engaged, Echo Brain fetches tailored recommendations and uses the Flow Neuroengine to rank them based on your exact mood. It seamlessly injects the best-matching song into your queue without you lifting a finger.
+- **Algorithm Insights**: Check out the beautiful new Material You settings page under **Settings > Echo Brain (Beta)**. You can view exactly what the engine has learned about you with comprehensive Algorithm Insights.
+- **Silent Fallbacks**: Handled edge cases perfectly! If a stream changes its container format mid-song due to fallback (e.g., buffering/quality drops), the engine now silently clears the song cache and automatically restarts playback at your selected quality, totally eliminating intrusive error popups.

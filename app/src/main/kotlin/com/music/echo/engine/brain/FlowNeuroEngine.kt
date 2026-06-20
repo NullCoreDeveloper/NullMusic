@@ -1119,12 +1119,13 @@ class FlowNeuroEngine @Inject constructor(@ApplicationContext private val appCon
         val bucket = TimeBucket.current()
         val timeContextVector = brain.timeVectors[bucket] ?: ContentVector()
 
-        // Dynamic temperature (boredom detection)
-        val boredomFactor = (brain.consecutiveSkips / 20.0)
-            .coerceIn(0.0, 0.5)
-        val wPersonality = 0.4 - (boredomFactor * 0.5)
-        val wContext = 0.4 - (boredomFactor * 0.5)
-        val wNovelty = 0.2 + boredomFactor
+        // Dynamic temperature (boredom detection) - More competitive/responsive
+        val boredomFactor = (brain.consecutiveSkips / 5.0)
+            .coerceIn(0.0, 0.8)
+        // If boredom is high (skipping a lot), we want to rely more on familiar/safe personality and context, and less on novelty
+        val wPersonality = 0.5 + (boredomFactor * 0.3)
+        val wContext = 0.3 + (boredomFactor * 0.1)
+        val wNovelty = 0.2 - (boredomFactor * 0.2).coerceAtLeast(0.0)
 
         // Onboarding warmup factor
         val isColdStart = brain.totalInteractions < NeuroScoring.COLD_START_THRESHOLD

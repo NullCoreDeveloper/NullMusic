@@ -374,6 +374,15 @@ class MainActivity : ComponentActivity() {
                 }
         }
 
+        lifecycleScope.launch {
+            dataStore.data
+                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: true }
+                .distinctUntilChanged()
+                .collectLatest { enabled ->
+                    echoBrainEngine.isEnabled.value = enabled
+                }
+        }
+
         setContent {
             echomusicApp(
                 playerConnection = playerConnection,

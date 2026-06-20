@@ -144,7 +144,6 @@ fun SettingsScreen(
                     Material3SettingsItem(
                         icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
                         title = { Text("Echo Brain (Beta)") },
-                        description = { Text("Powered by Flow Neuroengine") },
                         onClick = { navController.navigate("settings/echo_brain") }
                     )
                 )

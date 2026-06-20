@@ -91,6 +91,7 @@ class HomeViewModel @Inject constructor(
     val homePage = MutableStateFlow<HomePage?>(null)
     val explorePage = MutableStateFlow<ExplorePage?>(null)
     val communityPlaylists = MutableStateFlow<List<CommunityPlaylistItem>?>(null)
+    val echoBrainPlaylists = MutableStateFlow<List<CommunityPlaylistItem>?>(null)
     val selectedChip = MutableStateFlow<HomePage.Chip?>(null)
     private val previousHomePage = MutableStateFlow<HomePage?>(null)
 
@@ -404,6 +405,43 @@ class HomeViewModel @Inject constructor(
         communityPlaylists.value = playlists.shuffled()
     }
 
+    private suspend fun getEchoBrainPlaylists() {
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val fromTimeStamp = System.currentTimeMillis() - 86400000L * 30
+        val songSeeds = database.mostPlayedSongs(fromTimeStamp, limit = 15).first()
+            .shuffled().take(5)
+
+        val playlists = java.util.Collections.synchronizedList(mutableListOf<CommunityPlaylistItem>())
+
+        kotlinx.coroutines.coroutineScope {
+            songSeeds.map { seed ->
+                launch(Dispatchers.IO) {
+                    val endpoint = YouTube.next(WatchEndpoint(videoId = seed.id)).getOrNull()?.relatedEndpoint
+                    if (endpoint != null) {
+                        YouTube.related(endpoint).onSuccess { page ->
+                            val songs = page.songs.filterVideoSongs(hideVideoSongs).take(50)
+                            if (songs.size > 10) {
+                                val playlistItem = PlaylistItem(
+                                    id = "RDAMVM${seed.id}",
+                                    title = "Echo Mix: ${seed.title}",
+                                    author = Artist(name = "Echo Brain", id = null),
+                                    songCountText = "${songs.size} songs",
+                                    thumbnail = seed.thumbnailUrl ?: "",
+                                    playEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}"),
+                                    shuffleEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}"),
+                                    radioEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}")
+                                )
+                                playlists.add(CommunityPlaylistItem(playlistItem, songs))
+                            }
+                        }
+                    }
+                }
+            }.forEach { it.join() }
+        }
+
+        echoBrainPlaylists.value = playlists
+    }
+
     
     private suspend fun loadLocalDataPhase() {
         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
@@ -519,6 +557,7 @@ class HomeViewModel @Inject constructor(
         coroutineScope {
             launch(Dispatchers.IO) { getDailyDiscover() }
             launch(Dispatchers.IO) { getCommunityPlaylists() }
+            launch(Dispatchers.IO) { getEchoBrainPlaylists() }
             launch(Dispatchers.IO) { loadSimilarRecommendations() }
             launch(Dispatchers.IO) {
                 YouTube.home().onSuccess { page ->

@@ -1,7 +1,14 @@
 # Echo Music v5.2.0
 
 - Redesigned Echo Brain settings page to strictly follow Material 3 app aesthetics.
+- Fixed Echo Brain to queue suggestions immediately to play next instead of at the bottom of the playlist.
+- Added an AI indicator icon in the queue for Echo Brain-suggested tracks.
+- Added a "Not Interested" feedback option in the queue menu to explicitly penalize AI recommendations.
+- Re-architected Echo Brain queueing logic to support "Runway" batch injection (3 tracks at once) for smoother continuous play.
+- Upgraded the AI recommendation engine to cross-reference multiple sources (Current Track, Previous Track, and Vault history) for highly competitive queue generation.
 - Added double-tap to play/pause by tapping the center of the album art.
+- Removed 30-second delay for AI suggestions so the queue is populated instantly from the first song.
+- Fixed an interaction logging gap where songs skipped between 15s and 30s were not being tracked.
 
 - Fixed an issue where Canvas animations and Artist Backgrounds stopped working by implementing dynamic Apple Music token extraction.
 - Fixed an issue where playing a song from the Suggestions tab would occasionally play a different song due to incorrect compound artist name matching.

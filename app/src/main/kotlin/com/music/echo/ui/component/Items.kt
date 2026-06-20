@@ -1032,7 +1032,7 @@ fun MediaMetadataListItem(
         },
         badges = {
             if (mediaMetadata.source == iad1tya.echo.music.models.QueueItemSource.ECHO_BRAIN) {
-                EchoBrainBadge()
+                // EchoBrainBadge() // Temporarily removed due to missing component
             }
             if (mediaMetadata.explicit) Icon.Explicit()
         },

@@ -47,7 +47,7 @@ import androidx.navigation.NavController
 import iad1tya.echo.music.data.EchoBrainRepository
 import iad1tya.echo.music.engine.EchoBrainEngine
 import iad1tya.echo.music.engine.brain.*
-import iad1tya.echo.music.ui.component.EchoBrainBadge
+
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.Material3SettingsItem
 import iad1tya.echo.music.ui.component.Material3SettingsGroup
@@ -344,12 +344,12 @@ fun EchoBrainScreen(
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.onError
                     )
                 ) {
-                    Icon(Icons.Default.DeleteForever, null, Modifier.size(18.dp), tint = Color.White)
+                    Icon(Icons.Default.DeleteForever, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onError)
                     Spacer(Modifier.width(8.dp))
-                    Text("Erase Everything", color = Color.White)
+                    Text("Erase Everything", color = MaterialTheme.colorScheme.onError)
                 }
             },
             dismissButton = {
@@ -374,7 +374,7 @@ private fun PersonaHeroCard(
     
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(
@@ -384,11 +384,15 @@ private fun PersonaHeroCard(
         ) {
             Text(
                 text = displayPersona.icon,
-                fontSize = 140.sp,
+                style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .offset(x = 20.dp, y = 30.dp)
                     .alpha(0.15f)
+                    .graphicsLayer {
+                        scaleX = 2.5f
+                        scaleY = 2.5f
+                    }
             )
 
             Column(
@@ -398,7 +402,7 @@ private fun PersonaHeroCard(
             ) {
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.small
                 ) {
                     Text(
                         text = "Active Learning",
@@ -437,7 +441,7 @@ private fun PersonaHeroCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp)),
+                            .clip(MaterialTheme.shapes.extraSmall),
                         color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
@@ -490,7 +494,7 @@ private fun ControlCenterProgressCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .clip(RoundedCornerShape(999.dp)),
+                    .clip(CircleShape),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -541,7 +545,7 @@ private fun MetricTile(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -585,7 +589,7 @@ private fun SimpleRankRow(
     progress: Float
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
@@ -603,7 +607,7 @@ private fun SimpleRankRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(4.dp)
-                    .clip(RoundedCornerShape(999.dp)),
+                    .clip(CircleShape),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -737,6 +741,7 @@ private fun NeuralBubbleCloud(brain: UserBrain) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
     val density = LocalDensity.current
     
     val bubbles = remember(topics, density) {
@@ -765,7 +770,7 @@ private fun NeuralBubbleCloud(brain: UserBrain) {
         modifier = Modifier
             .fillMaxWidth()
             .height(350.dp),
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
@@ -892,7 +897,7 @@ private fun NeuralBubbleCloud(brain: UserBrain) {
                     )
                     
                     drawCircle(
-                        color = Color.White.copy(alpha = 0.3f),
+                        color = onPrimaryColor.copy(alpha = 0.3f),
                         radius = bubble.radius * 0.3f,
                         center = Offset(bubble.x - bubble.radius * 0.3f, bubble.y - bubble.radius * 0.3f)
                     )
@@ -931,18 +936,22 @@ private fun NeuralBubbleCloud(brain: UserBrain) {
                 ) {
                     val minRadiusPx = with(density) { 40.dp.toPx() }
                     if (bubble.radius > minRadiusPx) {
+                        val textStyle = when {
+                            bubble.score > 0.8 -> MaterialTheme.typography.labelLarge
+                            bubble.score > 0.4 -> MaterialTheme.typography.labelMedium
+                            else -> MaterialTheme.typography.labelSmall
+                        }
                         Text(
                             bubble.topic.replaceFirstChar { it.uppercase() },
-                            style = MaterialTheme.typography.labelSmall.copy(
+                            style = textStyle.copy(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = (10 + (bubble.score * 4)).sp,
                                 shadow = Shadow(
-                                    color = Color.Black.copy(alpha = 0.5f),
+                                    color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f),
                                     offset = Offset(0f, 2f),
                                     blurRadius = 4f
                                 )
                             ),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Center,
@@ -968,6 +977,7 @@ private fun AdvancedRadarChart(brain: UserBrain) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.onSurface
+    val backgroundColor = MaterialTheme.colorScheme.surface
     
     val animatedProgress by animateFloatAsState(
         targetValue = 1f,
@@ -979,7 +989,7 @@ private fun AdvancedRadarChart(brain: UserBrain) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.1f),
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
@@ -1076,7 +1086,7 @@ private fun AdvancedRadarChart(brain: UserBrain) {
                         center.y + (radius * value.toFloat()) * sin(angle)
                     )
                     drawCircle(primaryColor, 6f, point)
-                    drawCircle(Color.White, 3f, point)
+                    drawCircle(backgroundColor, 3f, point)
                 }
             }
             
@@ -1103,7 +1113,7 @@ private fun AdvancedRadarChart(brain: UserBrain) {
                                 y = with(density) { (labelY - 12f).toDp() }
                             ),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.small
                     ) {
                         Text(
                             label,
@@ -1167,7 +1177,7 @@ private fun LegendChip(text: String, color: Color) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(color.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+            .background(color.copy(alpha = 0.1f), MaterialTheme.shapes.small)
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Box(Modifier.size(8.dp).background(color, CircleShape))
@@ -1189,7 +1199,7 @@ private fun MaintenanceSection(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f))
         ) {
             Row(
@@ -1212,7 +1222,7 @@ private fun MaintenanceSection(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f))
         ) {
             Row(
@@ -1235,7 +1245,7 @@ private fun MaintenanceSection(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f))
         ) {
             Row(
@@ -1262,7 +1272,7 @@ private fun MaintenanceSection(
 private fun EmptyStateCard(message: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(

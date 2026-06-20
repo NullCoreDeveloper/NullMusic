@@ -1,5 +1,6 @@
 # Echo Music v5.2.0
 
+- Redesigned Echo Brain settings page to strictly follow Material 3 app aesthetics.
 - Added double-tap to play/pause by tapping the center of the album art.
 
 - Fixed an issue where Canvas animations and Artist Backgrounds stopped working by implementing dynamic Apple Music token extraction.

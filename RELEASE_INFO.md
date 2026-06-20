@@ -1,6 +1,8 @@
 # Echo Music v5.2.0
 
 - Redesigned Echo Brain settings page to strictly follow Material 3 app aesthetics.
+- Fixed an issue where the app would crash or freeze with a black screen during large local media imports due to heavy memory usage and main-thread synchronous sorting.
+
 - Fixed Echo Brain to queue suggestions immediately to play next instead of at the bottom of the playlist.
 - Added an AI indicator icon in the queue for Echo Brain-suggested tracks.
 - Added a "Not Interested" feedback option in the queue menu to explicitly penalize AI recommendations.
@@ -8,6 +10,7 @@
 - Added listening summary feature for statistics.
 - Grouped search results in settings to help you find what you need faster.
 - Fixed a crash related to ExoPlayer playback stats reporting.
+- Fixed a crash related to `ForegroundServiceStartNotAllowedException` when starting playback from the background.
 - Removed unnecessary Echo Brain data management and branding text.
 - Added Echo Brain documentation to README.
 - Added double-tap to play/pause by tapping the center of the album art.

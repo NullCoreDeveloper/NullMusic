@@ -443,6 +443,14 @@ class MusicService :
         isRunning = true
 
         
+        // Workaround for ForegroundServiceStartNotAllowedException
+        setListener(object : Listener {
+            override fun onForegroundServiceStartNotAllowedException() {
+                Timber.tag(TAG).e("ForegroundServiceStartNotAllowedException caught by MediaSessionService listener")
+                reportException(Exception("ForegroundServiceStartNotAllowedException caught by MediaSessionService listener"))
+            }
+        })
+        
         playerInitialized.value = false
 
         

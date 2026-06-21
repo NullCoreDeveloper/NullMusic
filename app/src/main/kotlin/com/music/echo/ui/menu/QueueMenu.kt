@@ -315,32 +315,19 @@ fun QueueMenu(
                 Material3MenuGroup(
                     items = listOf(
                         Material3MenuItemData(
-                            title = { Text(text = "Why this song?") },
-                            description = { Text(text = "See how Echo Brain chose this") },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.info),
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                showWhyDialog = true
-                            }
-                        ),
-                        Material3MenuItemData(
                             title = { Text(text = "Not Interested") },
                             description = { Text(text = "Improve Echo Brain's recommendations") },
                             icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.remove),
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             },
                             onClick = {
                                 onDismiss()
                                 coroutineScope.launch {
                                     FlowNeuroEngine.markNotInterested(context, mediaMetadata)
-                                    // Remove the item from the queue too!
                                     val index = playerConnection.player.currentTimeline.let { timeline ->
                                         for (i in 0 until timeline.windowCount) {
                                             if (timeline.getWindow(i, androidx.media3.common.Timeline.Window()).mediaItem.mediaId == mediaMetadata.id) {
@@ -355,11 +342,9 @@ fun QueueMenu(
                                 }
                             }
                         )
-                    )
+                    ),
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
                 )
-            }
-            item {
-                HorizontalDivider()
             }
         }
 

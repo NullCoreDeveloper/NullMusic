@@ -432,6 +432,14 @@ fun NavGraphBuilder.navigationBuilder(
         IntegrationScreen(navController, scrollBehavior)
     }
 
+    composable("settings/discord") {
+        iad1tya.echo.music.ui.screens.settings.DiscordSettings(navController, scrollBehavior)
+    }
+
+    composable("settings/discord/experimental") {
+        com.music.echo.ui.screens.settings.DiscordExperimental(navController)
+    }
+
     composable("settings/spotify_import") {
         SpotifyImportScreen(navController)
     }

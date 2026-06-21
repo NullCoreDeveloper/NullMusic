@@ -308,6 +308,13 @@ fun OldPlayerMenu(
         item {
             Material3MenuGroup(
                 items = buildList {
+                    add(
+                        Material3MenuItemData(
+                            customComposable = {
+                                iad1tya.echo.music.ui.component.CastButton(asMenuItem = true)
+                            }
+                        )
+                    )
                     
                     add(
                         Material3MenuItemData(

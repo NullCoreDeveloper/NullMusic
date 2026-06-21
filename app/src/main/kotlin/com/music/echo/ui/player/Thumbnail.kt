@@ -557,12 +557,7 @@ private fun ThumbnailHeader(
             }
         }
 
-        CastButton(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .size(24.dp),
-            tintColor = textColor
-        )
+
     }
 }
 

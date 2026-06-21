@@ -89,14 +89,7 @@ import android.os.Looper
 import android.widget.Toast
 import iad1tya.echo.music.constants.DiscordActivityNameKey
 import iad1tya.echo.music.constants.DiscordActivityTypeKey
-import iad1tya.echo.music.constants.DiscordAdvancedModeKey
-import iad1tya.echo.music.constants.DiscordButton1TextKey
-import iad1tya.echo.music.constants.DiscordButton1VisibleKey
-import iad1tya.echo.music.constants.DiscordButton2TextKey
-import iad1tya.echo.music.constants.DiscordButton2VisibleKey
-import iad1tya.echo.music.constants.DiscordStatusKey
 import iad1tya.echo.music.constants.DiscordTokenKey
-import iad1tya.echo.music.constants.DiscordUseDetailsKey
 import iad1tya.echo.music.constants.EnableDiscordRPCKey
 import iad1tya.echo.music.constants.EnableLastFMScrobblingKey
 import iad1tya.echo.music.constants.HideExplicitKey
@@ -165,7 +158,7 @@ import iad1tya.echo.music.playback.queues.YouTubeQueue
 import iad1tya.echo.music.playback.queues.filterExplicit
 import iad1tya.echo.music.playback.queues.filterVideoSongs
 import iad1tya.echo.music.utils.CoilBitmapLoader
-import iad1tya.echo.music.utils.DiscordRPC
+import iad1tya.echo.music.ui.screens.settings.DiscordPresenceManager
 import iad1tya.echo.music.utils.NetworkConnectivityObserver
 import iad1tya.echo.music.utils.ScrobbleManager
 import iad1tya.echo.music.utils.SyncUtils
@@ -361,12 +354,17 @@ class MusicService :
 
     private var isAudioEffectSessionOpened = false
     private var loudnessEnhancer: LoudnessEnhancer? = null
+    private var lastPresenceToken: String? = null
 
-    private var discordRpc: DiscordRPC? = null
+
     private var lastPlaybackSpeed = 1.0f
     private var discordUpdateJob: kotlinx.coroutines.Job? = null
 
     private var scrobbleManager: ScrobbleManager? = null
+
+    private var listenBrainzEnabled = false
+    private var listenBrainzToken = ""
+    private var listenBrainzCurrentStartTs: Long = 0L
 
     val automixItems = MutableStateFlow<List<MediaItem>>(emptyList())
 
@@ -403,7 +401,7 @@ class MusicService :
                 Intent.ACTION_SCREEN_OFF -> {
                     if (!player.isPlaying) {
                         scope.launch(Dispatchers.IO) {
-                            discordRpc?.closeRPC()
+                            DiscordPresenceManager.stop()
                         }
                     }
                 }
@@ -411,7 +409,7 @@ class MusicService :
                     if (player.isPlaying) {
                         scope.launch {
                             currentSong.value?.let { song ->
-                                updateDiscordRPC(song)
+                                ensurePresenceManager()
                             }
                         }
                     }
@@ -580,11 +578,11 @@ class MusicService :
                     triggerRetry()
                 }
                 
-                if (isConnected && discordRpc != null && player.isPlaying) {
+                if (isConnected && player.isPlaying) {
                     val mediaId = player.currentMetadata?.id
                     if (mediaId != null) {
                         database.song(mediaId).first()?.let { song ->
-                            updateDiscordRPC(song)
+                            ensurePresenceManager()
                         }
                     }
                 }
@@ -592,6 +590,20 @@ class MusicService :
         }
 
         
+        scope.launch {
+            dataStore.data
+                .map { it[iad1tya.echo.music.constants.ListenBrainzEnabledKey] ?: false }
+                .distinctUntilChanged()
+                .collect { listenBrainzEnabled = it }
+        }
+
+        scope.launch {
+            dataStore.data
+                .map { it[iad1tya.echo.music.constants.ListenBrainzTokenKey] ?: "" }
+                .distinctUntilChanged()
+                .collect { listenBrainzToken = it }
+        }
+
         var isFirstQualityEmit = true
         scope.launch {
             dataStore.data
@@ -1770,8 +1782,28 @@ class MusicService :
         discordUpdateJob?.cancel()
 
         scrobbleManager?.onSongStop()
+        if (listenBrainzCurrentStartTs > 0L) {
+            val startTs = listenBrainzCurrentStartTs
+            player.currentMediaItem?.mediaId?.let { mediaId ->
+                scope.launch {
+                    database.song(mediaId).first()?.let { song ->
+                        updateListenBrainz(song, isFinished = true, startMs = startTs, endMs = System.currentTimeMillis())
+                    }
+                }
+            }
+            listenBrainzCurrentStartTs = 0L
+        }
+
         if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
             scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
+            listenBrainzCurrentStartTs = System.currentTimeMillis()
+            player.currentMediaItem?.mediaId?.let { mediaId ->
+                scope.launch {
+                    database.song(mediaId).first()?.let { song ->
+                        updateListenBrainz(song, isFinished = false)
+                    }
+                }
+            }
         }
 
         
@@ -1854,6 +1886,17 @@ class MusicService :
 
         if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
             scrobbleManager?.onSongStop()
+            if (listenBrainzCurrentStartTs > 0L) {
+                val startTs = listenBrainzCurrentStartTs
+                player.currentMediaItem?.mediaId?.let { mediaId ->
+                    scope.launch {
+                        database.song(mediaId).first()?.let { song ->
+                            updateListenBrainz(song, isFinished = true, startMs = startTs, endMs = System.currentTimeMillis())
+                        }
+                    }
+                }
+                listenBrainzCurrentStartTs = 0L
+            }
         }
     }
 
@@ -1914,7 +1957,7 @@ class MusicService :
             }
             if (!player.isPlaying && !events.containsAny(Player.EVENT_POSITION_DISCONTINUITY, Player.EVENT_MEDIA_ITEM_TRANSITION)) {
                 scope.launch {
-                    discordRpc?.close()
+                    DiscordPresenceManager.stop()
                 }
             }
         }
@@ -1926,7 +1969,7 @@ class MusicService :
                 scope.launch {
                     
                     database.song(mediaId).first()?.let { song ->
-                        updateDiscordRPC(song)
+                        ensurePresenceManager()
                     }
                 }
             }
@@ -2034,7 +2077,7 @@ class MusicService :
                 delay(1000)
                 if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
                     currentSong.value?.let { song ->
-                        updateDiscordRPC(song)
+                        ensurePresenceManager()
                     }
                 }
             }
@@ -2532,7 +2575,72 @@ class MusicService :
         }
     }
 
-    private fun updateDiscordRPC(song: Song, showFeedback: Boolean = false) {
+    private fun updateListenBrainz(song: Song, isFinished: Boolean, startMs: Long = 0, endMs: Long = 0, positionMs: Long = 0) {
+        if (!listenBrainzEnabled || listenBrainzToken.isBlank()) return
+        scope.launch {
+            if (isFinished) {
+                com.music.echo.ui.screens.settings.ListenBrainzManager.submitFinished(
+                    context = this@MusicService,
+                    token = listenBrainzToken,
+                    song = song,
+                    startMs = startMs,
+                    endMs = endMs
+                )
+            } else {
+                com.music.echo.ui.screens.settings.ListenBrainzManager.submitPlayingNow(
+                    context = this@MusicService,
+                    token = listenBrainzToken,
+                    song = song,
+                    positionMs = positionMs
+                )
+            }
+        }
+    }
+
+    private fun currentPresenceSong(): Song? {
+        val mediaId = player.currentMediaItem?.mediaId ?: return null
+        return runBlocking(Dispatchers.IO) { database.song(mediaId).firstOrNull() }
+    }
+
+    private fun ensurePresenceManager() {
+        if (DiscordPresenceManager.lastRpcStartTime != null && lastPresenceToken != null) return
+
+        scope.launch {
+            if (!dataStore.get(EnableDiscordRPCKey, true)) {
+                if (DiscordPresenceManager.lastRpcStartTime != null) {
+                    try { DiscordPresenceManager.stop() } catch (_: Exception) {}
+                    lastPresenceToken = null
+                }
+                return@launch
+            }
+
+            val key = dataStore.get(DiscordTokenKey, "")
+            if (key.isBlank()) {
+                if (DiscordPresenceManager.lastRpcStartTime != null) {
+                    try { DiscordPresenceManager.stop() } catch (_: Exception) {}
+                    lastPresenceToken = null
+                }
+                return@launch
+            }
+
+            if (DiscordPresenceManager.lastRpcStartTime != null && lastPresenceToken == key) {
+                return@launch
+            }
+
+            try {
+                DiscordPresenceManager.stop()
+                DiscordPresenceManager.start(
+                    context = this@MusicService,
+                    token = key,
+                    songProvider = { currentPresenceSong() },
+                    positionProvider = { player.currentPosition },
+                    isPausedProvider = { !player.isPlaying }
+                )
+                lastPresenceToken = key
+            } catch (ex: Exception) {
+                Timber.tag(TAG).e(ex, "Failed to start presence manager")
+            }
+        }
     }
 
     private fun createDataSourceFactory(): DataSource.Factory {
@@ -2898,10 +3006,7 @@ class MusicService :
         if (dataStore.get(PersistentQueueKey, true)) {
             saveQueueToDisk()
         }
-        if (discordRpc?.isRpcRunning() == true) {
-            discordRpc?.closeRPC()
-        }
-        discordRpc = null
+        DiscordPresenceManager.stop()
         connectivityObserver.unregister()
         abandonAudioFocus()
         releaseLoudnessEnhancer()

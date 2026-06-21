@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -247,6 +248,36 @@ highlightKey: String? = null) {
                         onClick = { navController.navigate("settings/update") }
                     )
                 )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if ("supported links".contains(searchLower)) {
+                    add(
+                        Material3SettingsItem(
+                            isHighlighted = (highlightKey == "supported links"),
+                            icon = painterResource(R.drawable.link),
+                            title = { Text("Supported Links") },
+                            onClick = {
+                                try {
+                                    val intent = Intent(
+                                        Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
+                                        Uri.parse("package:${context.packageName}")
+                                    )
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    when (e) {
+                                        is ActivityNotFoundException, is SecurityException -> {
+                                            Toast.makeText(context, "Cannot open settings", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else -> {
+                                            Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    )
+                }
             }
             if (aboutText.lowercase().contains(searchLower)) {
                 add(

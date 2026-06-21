@@ -471,4 +471,9 @@
     <string name="echo_brain_export_failed">Export failed</string>
     <string name="echo_brain_profile_imported_successfully">Profile imported successfully</string>
     <string name="echo_brain_import_failed_invalid_file">Import failed — invalid file</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz scrobbling</string>
+    <string name="listenbrainz_scrobbling_description">Automatically submit your listened tracks to ListenBrainz</string>
+    <string name="set_listenbrainz_token">Set ListenBrainz Token</string>
+    <string name="edit_listenbrainz_token">Edit ListenBrainz Token</string>
+    
 </resources>

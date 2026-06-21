@@ -1295,20 +1295,39 @@ fun HomeScreen(
                                             CommunityPlaylistCard(
                                                 item = item,
                                                 onClick = {
-                                                    // Start radio mode for the seed song
-                                                    playerConnection.playQueue(
-                                                        YouTubeQueue(
-                                                            WatchEndpoint(videoId = item.playlist.id.removePrefix("RDAMVM"), playlistId = item.playlist.id)
+                                                    if (item.playlist.id == "echo_brain_mix_local") {
+                                                        playerConnection.playQueue(
+                                                            ListQueue(
+                                                                title = item.playlist.title,
+                                                                items = item.songs.map { it.toMediaMetadata().toMediaItem() }
+                                                            )
                                                         )
-                                                    )
+                                                    } else {
+                                                        playerConnection.playQueue(
+                                                            YouTubeQueue(
+                                                                WatchEndpoint(videoId = item.playlist.id.removePrefix("RDAMVM"), playlistId = item.playlist.id)
+                                                            )
+                                                        )
+                                                    }
                                                 },
                                                 onSongClick = { song ->
-                                                    playerConnection.playQueue(
-                                                        YouTubeQueue(
-                                                            song.endpoint ?: WatchEndpoint(videoId = song.id),
-                                                            song.toMediaMetadata()
+                                                    if (item.playlist.id == "echo_brain_mix_local") {
+                                                        val index = item.songs.indexOf(song).takeIf { it >= 0 } ?: 0
+                                                        playerConnection.playQueue(
+                                                            ListQueue(
+                                                                title = item.playlist.title,
+                                                                items = item.songs.map { it.toMediaMetadata().toMediaItem() },
+                                                                startIndex = index
+                                                            )
                                                         )
-                                                    )
+                                                    } else {
+                                                        playerConnection.playQueue(
+                                                            YouTubeQueue(
+                                                                song.endpoint ?: WatchEndpoint(videoId = song.id),
+                                                                song.toMediaMetadata()
+                                                            )
+                                                        )
+                                                    }
                                                 }
                                             )
                                         }
@@ -1830,41 +1849,62 @@ fun HomeScreen(
                         ShimmerHost(
                             modifier = Modifier.animateItem()
                         ) {
-                            repeat(2) {
-                                TextPlaceholder(
-                                    height = 36.dp,
-                                    modifier = Modifier
-                                        .padding(12.dp)
-                                        .width(250.dp),
-                                )
-                                Row(
-                                    modifier = Modifier
-                                        .horizontalScroll(rememberScrollState())
-                                        .padding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues())
-                                ) {
-                                    repeat(4) {
-                                        GridItemPlaceHolder()
+                            // 1. Quick Picks Skeleton
+                            Row(
+                                modifier = Modifier
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues())
+                            ) {
+                                repeat(3) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp, vertical = 12.dp)
+                                            .width(250.dp)
+                                            .height(290.dp)
+                                            .clip(MaterialTheme.shapes.extraLarge)
+                                            .background(MaterialTheme.colorScheme.onSurface)
+                                    )
+                                }
+                            }
+
+                            // 2. Speed Dial Skeleton
+                            TextPlaceholder(
+                                height = 36.dp,
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .width(200.dp),
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp)
+                            ) {
+                                repeat(2) {
+                                    Row(modifier = Modifier.fillMaxWidth()) {
+                                        repeat(3) {
+                                            GridItemPlaceHolder(
+                                                modifier = Modifier.weight(1f),
+                                                fillMaxWidth = true
+                                            )
+                                        }
                                     }
                                 }
                             }
 
+                            // 3. Generic Row Skeleton
                             TextPlaceholder(
                                 height = 36.dp,
                                 modifier = Modifier
-                                    .padding(vertical = 12.dp, horizontal = 12.dp)
+                                    .padding(12.dp)
                                     .width(250.dp),
                             )
-                            repeat(4) {
-                                Row {
-                                    repeat(2) {
-                                        TextPlaceholder(
-                                            height = MoodAndGenresButtonHeight,
-                                            shape = RoundedCornerShape(6.dp),
-                                            modifier = Modifier
-                                                .padding(horizontal = 12.dp)
-                                                .width(200.dp)
-                                        )
-                                    }
+                            Row(
+                                modifier = Modifier
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues())
+                            ) {
+                                repeat(4) {
+                                    GridItemPlaceHolder()
                                 }
                             }
                         }

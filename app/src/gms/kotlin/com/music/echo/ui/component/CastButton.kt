@@ -45,6 +45,7 @@ import timber.log.Timber
 fun CastButton(
     modifier: Modifier = Modifier,
     tintColor: Color = MaterialTheme.colorScheme.onSurface,
+    asMenuItem: Boolean = false,
 ) {
     val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current
@@ -126,74 +127,134 @@ fun CastButton(
 
     // Show the button if Cast is enabled and SDK is available
     if (enableGoogleCast && castAvailable) {
-        Box(
-            modifier = modifier
-        ) {
-            // Shadow background for cast button
+        if (asMenuItem) {
+            androidx.compose.material3.Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        if (currentMetadata == null && !isCasting) {
+                            Toast.makeText(context, "Play a song first to cast", Toast.LENGTH_SHORT).show()
+                            return@clickable
+                        }
+                        
+                        val currentRoute = if (isCasting) {
+                            mediaRouter?.routes?.find { route ->
+                                routeSelector?.let { selector -> 
+                                    route.matchesSelector(selector) && route.isSelected
+                                } == true
+                            }
+                        } else null
+                        
+                        menuState.show {
+                            CastPickerSheet(
+                                routes = availableRoutes,
+                                isConnecting = isConnecting,
+                                currentlyConnectedRoute = currentRoute,
+                                onRouteSelected = { route ->
+                                    castHandler?.connectToRoute(route)
+                                    menuState.dismiss()
+                                },
+                                onDisconnect = {
+                                    castHandler?.disconnect()
+                                    menuState.dismiss()
+                                },
+                                onDismiss = { menuState.dismiss() }
+                            )
+                        }
+                    },
+                colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = Color.Transparent)
+            ) {
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(if (isCasting) R.drawable.cast_connected else R.drawable.cast),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(16.dp))
+                    androidx.compose.material3.Text(
+                        text = if (isCasting) "Casting to ${castDeviceName ?: "Device"}" else "Cast to...",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+        } else {
             Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .align(Alignment.Center)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.4f),
-                                Color.Transparent
+                modifier = modifier
+            ) {
+                // Shadow background for cast button
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .align(Alignment.Center)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    Color.Black.copy(alpha = 0.4f),
+                                    Color.Transparent
+                                )
                             )
                         )
-                    )
-            )
-            
-            // Cast button
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable {
-                    if (currentMetadata == null && !isCasting) {
-                        Toast.makeText(context, "Play a song first to cast", Toast.LENGTH_SHORT).show()
-                        return@clickable
-                    }
-                    
-                    // Get current connected route if casting
-                    val currentRoute = if (isCasting) {
-                        mediaRouter?.routes?.find { route ->
-                            routeSelector?.let { selector -> 
-                                route.matchesSelector(selector) && route.isSelected
-                            } == true
-                        }
-                    } else null
-                    
-                    // Show bottom sheet with cast picker
-                    menuState.show {
-                        CastPickerSheet(
-                            routes = availableRoutes,
-                            isConnecting = isConnecting,
-                            currentlyConnectedRoute = currentRoute,
-                            onRouteSelected = { route ->
-                                castHandler?.connectToRoute(route)
-                                menuState.dismiss()
-                            },
-                            onDisconnect = {
-                                castHandler?.disconnect()
-                                menuState.dismiss()
-                            }
-                        )
-                    }
-                }
-            ) {
-                Image(
-                    painter = painterResource(
-                        if (isCasting) R.drawable.cast_connected else R.drawable.cast
-                    ),
-                    contentDescription = if (isCasting) "Stop casting" else "Cast",
-                    colorFilter = ColorFilter.tint(
-                        if (isCasting) MaterialTheme.colorScheme.primary else tintColor
-                    ),
-                    modifier = Modifier.size(24.dp)
                 )
+                
+                // Cast button
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .align(Alignment.Center)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable {
+                        if (currentMetadata == null && !isCasting) {
+                            Toast.makeText(context, "Play a song first to cast", Toast.LENGTH_SHORT).show()
+                            return@clickable
+                        }
+                        
+                        // Get current connected route if casting
+                        val currentRoute = if (isCasting) {
+                            mediaRouter?.routes?.find { route ->
+                                routeSelector?.let { selector -> 
+                                    route.matchesSelector(selector) && route.isSelected
+                                } == true
+                            }
+                        } else null
+                        
+                        // Show bottom sheet with cast picker
+                        menuState.show {
+                            CastPickerSheet(
+                                routes = availableRoutes,
+                                isConnecting = isConnecting,
+                                currentlyConnectedRoute = currentRoute,
+                                onRouteSelected = { route ->
+                                    castHandler?.connectToRoute(route)
+                                    menuState.dismiss()
+                                },
+                                onDisconnect = {
+                                    castHandler?.disconnect()
+                                    menuState.dismiss()
+                                },
+                                onDismiss = { menuState.dismiss() }
+                            )
+                        }
+                    }
+                ) {
+                    Image(
+                        painter = painterResource(
+                            if (isCasting) R.drawable.cast_connected else R.drawable.cast
+                        ),
+                        contentDescription = if (isCasting) "Stop casting" else "Cast",
+                        colorFilter = ColorFilter.tint(
+                            if (isCasting) MaterialTheme.colorScheme.primary else tintColor
+                        ),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }

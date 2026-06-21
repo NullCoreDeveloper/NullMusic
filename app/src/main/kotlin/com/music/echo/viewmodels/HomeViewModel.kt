@@ -73,6 +73,7 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val database: MusicDatabase,
     val syncUtils: SyncUtils,
+    val echoBrainEngine: iad1tya.echo.music.engine.EchoBrainEngine
 ) : ViewModel() {
     val isRefreshing = MutableStateFlow(false)
     val isLoading = MutableStateFlow(false)
@@ -406,40 +407,34 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getEchoBrainPlaylists() {
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-        val fromTimeStamp = System.currentTimeMillis() - 86400000L * 30
-        val songSeeds = database.mostPlayedSongs(fromTimeStamp, limit = 15).first()
-            .shuffled().take(5)
-
-        val playlists = java.util.Collections.synchronizedList(mutableListOf<CommunityPlaylistItem>())
-
-        kotlinx.coroutines.coroutineScope {
-            songSeeds.map { seed ->
-                launch(Dispatchers.IO) {
-                    val endpoint = YouTube.next(WatchEndpoint(videoId = seed.id)).getOrNull()?.relatedEndpoint
-                    if (endpoint != null) {
-                        YouTube.related(endpoint).onSuccess { page ->
-                            val songs = page.songs.filterVideoSongs(hideVideoSongs).take(50)
-                            if (songs.size > 10) {
-                                val playlistItem = PlaylistItem(
-                                    id = "RDAMVM${seed.id}",
-                                    title = "Echo Mix: ${seed.title}",
-                                    author = Artist(name = "Echo Brain", id = null),
-                                    songCountText = "${songs.size} songs",
-                                    thumbnail = seed.thumbnailUrl ?: "",
-                                    playEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}"),
-                                    shuffleEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}"),
-                                    radioEndpoint = WatchEndpoint(videoId = seed.id, playlistId = "RDAMVM${seed.id}")
-                                )
-                                playlists.add(CommunityPlaylistItem(playlistItem, songs))
-                            }
-                        }
-                    }
-                }
-            }.forEach { it.join() }
+        val brainMix = echoBrainEngine.generateBrainMix()
+        
+        if (brainMix.isNotEmpty()) {
+            val songs = brainMix.map { meta ->
+                SongItem(
+                    id = meta.id,
+                    title = meta.title,
+                    artists = meta.artists.map { Artist(name = it.name, id = it.id) },
+                    thumbnail = meta.thumbnailUrl ?: "",
+                    explicit = false
+                )
+            }
+            
+            val playlistItem = PlaylistItem(
+                id = "echo_brain_mix_local",
+                title = "Made for You",
+                author = Artist(name = "Echo Brain", id = null),
+                songCountText = "${songs.size} songs",
+                thumbnail = songs.firstOrNull()?.thumbnail ?: "",
+                playEndpoint = WatchEndpoint(videoId = songs.firstOrNull()?.id ?: "", playlistId = "echo_brain_mix_local"),
+                shuffleEndpoint = WatchEndpoint(videoId = songs.firstOrNull()?.id ?: "", playlistId = "echo_brain_mix_local"),
+                radioEndpoint = WatchEndpoint(videoId = songs.firstOrNull()?.id ?: "", playlistId = "echo_brain_mix_local")
+            )
+            
+            echoBrainPlaylists.value = listOf(CommunityPlaylistItem(playlistItem, songs))
+        } else {
+            echoBrainPlaylists.value = emptyList()
         }
-
-        echoBrainPlaylists.value = playlists
     }
 
     

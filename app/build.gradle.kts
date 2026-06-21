@@ -55,6 +55,15 @@ android {
 //add nightly build label support
         val isNightly = project.hasProperty("nightly") && project.property("nightly") == "true"
         buildConfigField("Boolean", "IS_NIGHTLY", isNightly.toString())
+
+        val discordApplicationId = "1165706613961789445"
+        val discordApplicationIdLong = 1165706613961789445L
+        val discordRedirectScheme = "discord-$discordApplicationId"
+
+        buildConfigField("String", "DISCORD_APPLICATION_ID", "\"$discordApplicationId\"")
+        buildConfigField("long", "DISCORD_APPLICATION_ID_LONG", "${discordApplicationIdLong}L")
+        buildConfigField("String", "DISCORD_REDIRECT_SCHEME", "\"$discordRedirectScheme\"")
+        manifestPlaceholders["discordRedirectScheme"] = discordRedirectScheme
     }
     
 
@@ -260,6 +269,7 @@ dependencies {
 
     implementation(libs.viewmodel)
     implementation(libs.viewmodel.compose)
+    implementation(libs.lifecycle.process)
 
     implementation(libs.material3)
     implementation(libs.androidx.adaptive)
@@ -313,6 +323,7 @@ dependencies {
     implementation(project(":echomusiccanvas"))
     implementation(project(":paxsenixlyrics"))
     implementation(project(":jiosaavn"))
+    implementation(project(":unison"))
 
 
     implementation(libs.ktor.client.core)

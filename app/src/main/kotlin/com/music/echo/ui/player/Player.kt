@@ -2632,16 +2632,7 @@ fun BottomSheetPlayer(
                         }
 
 
-                        if (playerBackground == PlayerBackgroundStyle.APPLE_MUSIC && !showInlineLyrics) {
-                            CastButton(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .statusBarsPadding()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .size(24.dp),
-                                tintColor = TextBackgroundColor
-                            )
-                        }
+
                     }
 
                     mediaMetadata?.let {

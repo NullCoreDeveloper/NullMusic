@@ -248,4 +248,41 @@ class EchoBrainEngine @Inject constructor(
 
     suspend fun getBrainSnapshot() = neuroEngine.getBrainSnapshot()
 
+    suspend fun generateBrainMix(): List<MediaMetadata> {
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                // 1. Vault: Top Local Songs (Exploitation)
+                val vaultCandidates = databaseDao.topSongs(20).first().map { it.toMediaMetadata() }
+                
+                // 2. Anchor: Recommendations for Top 3 Songs
+                val anchorDeferreds = vaultCandidates.take(3).map { track ->
+                    async {
+                        com.music.innertube.YouTube.next(WatchEndpoint(videoId = track.id)).getOrNull()?.items?.mapNotNull { it.toMediaItem().metadata } ?: emptyList<MediaMetadata>()
+                    }
+                }
+                
+                val anchorCandidates = anchorDeferreds.awaitAll().flatten()
+                val allCandidates = (anchorCandidates + vaultCandidates).distinctBy { it.id }.shuffled()
+                
+                if (allCandidates.isNotEmpty()) {
+                    val ranked = neuroEngine.rank(allCandidates, emptySet())
+                    ranked.take(30).map {
+                        MediaMetadata(
+                            id = it.id,
+                            title = it.title,
+                            artists = it.artists,
+                            duration = it.duration,
+                            album = it.album,
+                            source = QueueItemSource.ECHO_BRAIN,
+                            suggestedBy = "Echo Brain",
+                            thumbnailUrl = it.thumbnailUrl
+                        )
+                    }
+                } else emptyList()
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+    }
+
 }

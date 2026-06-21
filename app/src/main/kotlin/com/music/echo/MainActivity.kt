@@ -334,6 +334,7 @@ class MainActivity : ComponentActivity() {
         if (::navController.isInitialized) {
             handleDeepLinkIntent(intent, navController)
             handleRecognitionIntent(intent, navController)
+            handleAssistantSearchIntent(intent, navController)
         } else {
             pendingIntent = intent
         }
@@ -376,7 +377,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             dataStore.data
-                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: true }
+                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: false }
                 .distinctUntilChanged()
                 .collectLatest { enabled ->
                     echoBrainEngine.isEnabled.value = enabled
@@ -788,11 +789,14 @@ class MainActivity : ComponentActivity() {
                     if (pendingIntent != null) {
                         handleDeepLinkIntent(pendingIntent!!, navController)
                         handleRecognitionIntent(pendingIntent!!, navController)
+                        handleAssistantSearchIntent(pendingIntent!!, navController)
                         pendingIntent = null
                     } else if (intent != null && intent.action == Intent.ACTION_VIEW) {
                         handleDeepLinkIntent(intent, navController)
                     } else if (intent != null && intent.action == ACTION_RECOGNITION) {
                         handleRecognitionIntent(intent, navController)
+                    } else if (intent != null && intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+                        handleAssistantSearchIntent(intent, navController)
                     }
                 }
 
@@ -802,6 +806,8 @@ class MainActivity : ComponentActivity() {
                             handleDeepLinkIntent(intent, navController)
                         } else if (intent.action == ACTION_RECOGNITION) {
                             handleRecognitionIntent(intent, navController)
+                        } else if (intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+                            handleAssistantSearchIntent(intent, navController)
                         }
                     }
 
@@ -1358,6 +1364,16 @@ class MainActivity : ComponentActivity() {
         intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
         navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {
             launchSingleTop = true
+        }
+    }
+
+    private fun handleAssistantSearchIntent(
+        intent: Intent,
+        navController: NavHostController,
+    ) {
+        if (intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+            val query = intent.getStringExtra(android.app.SearchManager.QUERY) ?: return
+            navController.navigate("search/${URLEncoder.encode(query, "UTF-8")}")
         }
     }
 }

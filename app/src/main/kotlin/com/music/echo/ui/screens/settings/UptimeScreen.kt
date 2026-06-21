@@ -67,6 +67,7 @@ highlightKey: String? = null) {
         mutableStateListOf(
             ServiceStatus("LRCLib", { "https://lrclib.net" }),
             ServiceStatus("BetterLyrics", { "https://lyrics-api.boidu.dev" }),
+            ServiceStatus("Unison", { "https://unison.boidu.dev" }),
             ServiceStatus("Paxsenix", { "https://lyrics.paxsenix.org" }),
             ServiceStatus("KuGou", { "https://lyrics.kugou.com" }),
             ServiceStatus("YouLyPlus", { "https://lyricsplus.prjktla.my.id" }),

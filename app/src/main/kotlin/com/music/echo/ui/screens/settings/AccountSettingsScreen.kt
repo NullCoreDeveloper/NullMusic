@@ -243,6 +243,26 @@ fun AccountSettingsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
+
+            Material3SettingsGroup(scrollState = scrollState, 
+                title = stringResource(R.string.integrations),
+                items = listOf(
+                    Material3SettingsItem(
+                        isHighlighted = (highlightKey == "Discord"),
+                        icon = painterResource(R.drawable.discord),
+                        title = { Text("Discord Rich Presence") },
+                        onClick = { navController.navigate("settings/discord") }
+                    ),
+                    Material3SettingsItem(
+                        isHighlighted = (highlightKey == "ListenBrainz"),
+                        icon = painterResource(R.drawable.token),
+                        title = { Text(stringResource(R.string.listenbrainz_scrobbling)) },
+                        onClick = { navController.navigate("settings/integrations") }
+                    )
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         if (showTokenEditor) {

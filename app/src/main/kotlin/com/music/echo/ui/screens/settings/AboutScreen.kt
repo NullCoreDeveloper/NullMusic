@@ -46,6 +46,14 @@ import iad1tya.echo.music.R
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.utils.backToMain
 
+import androidx.compose.ui.platform.LocalContext
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import android.os.Build
+import android.widget.Toast
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
@@ -54,6 +62,7 @@ fun AboutScreen(
     onBack: (() -> Unit)? = null,
 highlightKey: String? = null) {
     val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier

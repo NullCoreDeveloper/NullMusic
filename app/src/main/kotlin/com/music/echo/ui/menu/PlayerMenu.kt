@@ -467,6 +467,13 @@ fun PlayerMenu(
                             }
                         )
                     )
+                    add(
+                        Material3MenuItemData(
+                            customComposable = {
+                                iad1tya.echo.music.ui.component.CastButton(asMenuItem = true)
+                            }
+                        )
+                    )
                     
                     add(
                         Material3MenuItemData(

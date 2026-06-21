@@ -79,6 +79,8 @@ import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import kotlin.math.roundToInt
+import android.content.Intent
+import android.net.Uri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -319,6 +321,12 @@ highlightKey: String? = null) {
                 onDismiss = { showSaavnAudioWarning = false },
                 title = { Text("Enable Saavn (320kbps)?") },
                 buttons = {
+                    TextButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        context.startActivity(intent)
+                    }) {
+                        Text("Donate")
+                    }
                     TextButton(onClick = { showSaavnAudioWarning = false }) {
                         Text(stringResource(R.string.cancel))
                     }
@@ -330,7 +338,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("This feature uses JioSaavn and may not always work. If Saavn playback fails, the app will automatically fall back to YouTube Music's Opus stream.")
+                Text("Saavn (320kbps) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
             }
         }
 
@@ -339,6 +347,12 @@ highlightKey: String? = null) {
                 onDismiss = { showLosslessAudioWarning = false },
                 title = { Text(stringResource(R.string.enable_lossless_audio)) },
                 buttons = {
+                    TextButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        context.startActivity(intent)
+                    }) {
+                        Text("Donate")
+                    }
                     TextButton(onClick = { showLosslessAudioWarning = false }) {
                         Text(stringResource(R.string.cancel))
                     }
@@ -354,7 +368,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text(stringResource(R.string.lossless_audio_warning))
+                Text("Lossless (Qobuz) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating — it directly helps cover server costs.\n\n" + stringResource(R.string.lossless_audio_warning))
             }
         }
 

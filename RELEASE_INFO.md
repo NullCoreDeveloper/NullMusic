@@ -16,7 +16,6 @@
 
 ## Echo Brain Improvements
 
-- Echo Brain is now off by default for new users.
 - Re-architected Echo Brain queueing to use "Runway" batch injection (3 tracks at once) for smoother continuous playback.
 - Echo Brain suggestions now queue immediately to play next instead of at the bottom of the playlist.
 - Removed the 30-second delay — the queue is populated instantly from the first song.

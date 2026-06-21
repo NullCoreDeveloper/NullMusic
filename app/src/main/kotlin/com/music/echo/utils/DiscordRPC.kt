@@ -191,7 +191,7 @@ class DiscordRPC(
 
         val activity =
             DiscordPresenceActivity(
-                applicationId = 1518210534070292541L,
+                applicationId = BuildConfig.DISCORD_APPLICATION_ID_LONG,
                 name = activityName.toDiscordText(maxLength = 128, fallback = appName),
                 type = activityType,
                 details = activityDetails,

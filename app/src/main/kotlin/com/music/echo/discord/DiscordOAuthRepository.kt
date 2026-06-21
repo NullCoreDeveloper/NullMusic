@@ -74,7 +74,7 @@ object DiscordOAuthRepository {
         get() = BuildConfig.DISCORD_APPLICATION_ID_LONG
 
     val redirectUri: String
-        get() = "${BuildConfig.DISCORD_REDIRECT_SCHEME}:/authorize/callback"
+        get() = "${BuildConfig.DISCORD_REDIRECT_SCHEME}://authorize/callback"
 
     fun createAuthorizationSession(): DiscordAuthorizationSession {
         val state = randomUrlSafeString(byteCount = 32)
@@ -84,7 +84,6 @@ object DiscordOAuthRepository {
             listOf(
                 "openid",
                 "identify",
-                "sdk.social_layer_presence",
             ).joinToString(separator = " ")
 
         val uri =
@@ -117,7 +116,7 @@ object DiscordOAuthRepository {
                 require(redirect.scheme == BuildConfig.DISCORD_REDIRECT_SCHEME) {
                     "Unexpected Discord redirect scheme"
                 }
-                require(redirect.path == "/authorize/callback") {
+                require(redirect.path == "/authorize/callback" || (redirect.host == "authorize" && redirect.path == "/callback")) {
                     "Unexpected Discord redirect target"
                 }
                 require(redirect.getQueryParameter("state") == session.state) {

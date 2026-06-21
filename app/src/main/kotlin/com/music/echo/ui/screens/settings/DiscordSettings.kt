@@ -186,11 +186,8 @@ fun DiscordSettings(
         authorizationUiModeName = DiscordAuthorizationUiMode.Waiting.name
 
         runCatching {
-            context.startActivity(
-                Intent(Intent.ACTION_VIEW, session.authorizationUri).apply {
-                    addCategory(Intent.CATEGORY_BROWSABLE)
-                },
-            )
+            val intent = Intent(Intent.ACTION_VIEW, session.authorizationUri)
+            context.startActivity(intent)
         }.onFailure {
             authorizationUiModeName = DiscordAuthorizationUiMode.Failure.name
             authorizationMessage = it.message ?: context.getString(R.string.discord_authorization_failed)

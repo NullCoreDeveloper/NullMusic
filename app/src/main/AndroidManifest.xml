@@ -390,7 +390,7 @@
         </receiver>
 
         <activity
-            android:name=".discord.DiscordOAuthCallbackActivity"
+            android:name="com.music.echo.discord.DiscordOAuthCallbackActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:noHistory="true">
@@ -399,8 +399,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="${discordRedirectScheme}" />
-                <data android:host="authorize" />
-                <data android:path="/callback" />
             </intent-filter>
         </activity>
 

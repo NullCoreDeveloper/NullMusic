@@ -350,7 +350,7 @@
 
 
     <string name="spotify_import_title">Importer fra Spotify</string>
-    <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale ArchiveTune-spillelister.</string>
+    <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale Echo Music-spillelister.</string>
     <string name="spotify_connect">Koble til Spotify</string>
     <string name="spotify_refresh">Oppdater Spotify-biblioteket</string>
     <string name="spotify_select_sources">Velg Spotify-spillelister</string>

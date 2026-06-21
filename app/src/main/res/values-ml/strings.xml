@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Spotify-ൽ നിന്ന് ഇറക്കുമതി ചെയ്യുക</string>
-    <string name="spotify_import_desc">Spotify കണക്റ്റുചെയ്യുക, പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക, അവ പ്രാദേശിക ArchiveTune പ്ലേലിസ്റ്റുകളിലേക്ക് മിറർ ചെയ്യുക.</string>
+    <string name="spotify_import_desc">Spotify കണക്റ്റുചെയ്യുക, പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക, അവ പ്രാദേശിക Echo Music പ്ലേലിസ്റ്റുകളിലേക്ക് മിറർ ചെയ്യുക.</string>
     <string name="spotify_connect">Spotify കണക്റ്റുചെയ്യുക</string>
     <string name="spotify_refresh">Spotify ലൈബ്രറി പുതുക്കുക</string>
     <string name="spotify_select_sources">Spotify പ്ലേലിസ്റ്റുകൾ തിരഞ്ഞെടുക്കുക</string>

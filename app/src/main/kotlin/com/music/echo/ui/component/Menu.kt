@@ -43,21 +43,28 @@ fun Material3MenuGroup(
                 else -> RoundedCornerShape(6.dp)
             }
 
-            if (item.customComposable != null) {
-                item.customComposable.invoke()
-            } else {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .animateContentSize(),
-                    shape = shape,
-                    colors = item.cardColors ?: CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                ) {
+            val content = @Composable {
+                if (item.customComposable != null) {
+                    item.customComposable.invoke()
+                } else {
                     Material3MenuItemRow(item = item)
                 }
+            }
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize()
+                    .let { mod ->
+                        if (item.onClick != null) mod.clickable(onClick = item.onClick) else mod
+                    },
+                shape = shape,
+                colors = item.cardColors ?: CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                content()
             }
         }
     }

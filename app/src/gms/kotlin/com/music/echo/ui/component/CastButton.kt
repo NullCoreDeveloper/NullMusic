@@ -131,11 +131,9 @@ fun CastButton(
     // Show the button if Cast is enabled and SDK is available
     if (enableGoogleCast && castAvailable) {
         if (asMenuItem) {
-            androidx.compose.material3.Card(
+            androidx.compose.foundation.layout.Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                    .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         if (currentMetadata == null && !isCasting) {
                             Toast.makeText(context, "Play a song first to cast", Toast.LENGTH_SHORT).show()
@@ -165,26 +163,20 @@ fun CastButton(
                                 }
                             )
                         }
-                    },
-                colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = Color.Transparent)
+                    }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.foundation.layout.Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    androidx.compose.material3.Icon(
-                        painter = painterResource(if (isCasting) R.drawable.cast_connected else R.drawable.cast),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(16.dp))
-                    androidx.compose.material3.Text(
-                        text = if (isCasting) "Casting to ${castDeviceName ?: "Device"}" else "Cast to...",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
+                androidx.compose.material3.Icon(
+                    painter = painterResource(if (isCasting) R.drawable.cast_connected else R.drawable.cast),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(16.dp))
+                androidx.compose.material3.Text(
+                    text = if (isCasting) "Casting to ${castDeviceName ?: "Device"}" else "Cast to...",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         } else {
             Box(

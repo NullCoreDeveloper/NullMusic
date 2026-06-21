@@ -340,7 +340,7 @@
 
 
     <string name="spotify_import_title">從 Spotify 匯入</string>
-    <string name="spotify_import_desc">連接 Spotify，選擇播放清單，並將其鏡像到本機 ArchiveTune 播放清單。</string>
+    <string name="spotify_import_desc">連接 Spotify，選擇播放清單，並將其鏡像到本機 Echo Music 播放清單。</string>
     <string name="spotify_connect">連接 Spotify</string>
     <string name="spotify_refresh">重新整理 Spotify 媒體庫</string>
     <string name="spotify_select_sources">選擇 Spotify 播放清單</string>

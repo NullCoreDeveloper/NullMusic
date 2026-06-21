@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Tuo Spotifysta</string>
-    <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi ArchiveTune-soittolistoiksi.</string>
+    <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi Echo Music-soittolistoiksi.</string>
     <string name="spotify_connect">Yhdistä Spotify</string>
     <string name="spotify_refresh">Päivitä Spotify-kirjasto</string>
     <string name="spotify_select_sources">Valitse Spotify-soittolistat</string>

@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Importálás Spotify-ból</string>
-    <string name="spotify_import_desc">Csatlakoztassa a Spotify-t, válasszon lejátszási listákat, és tükrözze azokat a helyi ArchiveTune lejátszási listákba.</string>
+    <string name="spotify_import_desc">Csatlakoztassa a Spotify-t, válasszon lejátszási listákat, és tükrözze azokat a helyi Echo Music lejátszási listákba.</string>
     <string name="spotify_connect">Spotify csatlakoztatása</string>
     <string name="spotify_refresh">Spotify könyvtár frissítése</string>
     <string name="spotify_select_sources">Spotify lejátszási listák kiválasztása</string>

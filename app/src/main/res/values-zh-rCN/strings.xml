@@ -343,7 +343,7 @@
 
 
     <string name="spotify_import_title">从 Spotify 导入</string>
-    <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 ArchiveTune 播放列表。</string>
+    <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 Echo Music 播放列表。</string>
     <string name="spotify_connect">连接 Spotify</string>
     <string name="spotify_refresh">刷新 Spotify 媒体库</string>
     <string name="spotify_select_sources">选择 Spotify 播放列表</string>

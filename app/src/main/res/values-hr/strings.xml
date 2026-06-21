@@ -365,7 +365,7 @@
 
 
     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
-    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne ArchiveTune playliste.</string>
+    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne Echo Music playliste.</string>
     <string name="spotify_connect">Poveži Spotify</string>
     <string name="spotify_refresh">Osvježi Spotify biblioteku</string>
     <string name="spotify_select_sources">Odaberite Spotify playliste</string>

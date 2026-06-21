@@ -1,9 +1,4 @@
-/*
- * ArchiveTune (2026)
- * © Rukamori — github.com/rukamori
- * GPL-3.0 License | Contributors: see git history
- * Do not remove or alter this notice. - Per GPL-3.0 Section 4 & Section 5
- */
+
 
 package iad1tya.echo.music.utils
 
@@ -99,7 +94,7 @@ object DiscordImageResolver {
             }
 
             "appicon" -> {
-                "https://raw.githubusercontent.com/koiverse/ArchiveTune/main/fastlane/metadata/android/en-US/images/icon.png"
+                "https://avatars.githubusercontent.com/u/258176326?s=200&v=4"
             }
 
             "custom" -> {

@@ -409,7 +409,7 @@
 
 
     <string name="spotify_import_title">Importer depuis Spotify</string>
-    <string name="spotify_import_desc">Connectez Spotify, choisissez des playlists et reflétez-les dans des playlists ArchiveTune locales.</string>
+    <string name="spotify_import_desc">Connectez Spotify, choisissez des playlists et reflétez-les dans des playlists Echo Music locales.</string>
     <string name="spotify_connect">Connecter Spotify</string>
     <string name="spotify_refresh">Actualiser la bibliothèque Spotify</string>
     <string name="spotify_select_sources">Sélectionner les playlists Spotify</string>

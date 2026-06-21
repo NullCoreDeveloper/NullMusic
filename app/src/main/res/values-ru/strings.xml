@@ -374,7 +374,7 @@
 
 
     <string name="spotify_import_title">Импорт из Spotify</string>
-    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах ArchiveTune.</string>
+    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах Echo Music.</string>
     <string name="spotify_connect">Подключить Spotify</string>
     <string name="spotify_refresh">Обновить библиотеку Spotify</string>
     <string name="spotify_select_sources">Выбрать плейлисты Spotify</string>

@@ -374,7 +374,7 @@
 
 
     <string name="spotify_import_title">Importovať zo Spotify</string>
-    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov ArchiveTune.</string>
+    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov Echo Music.</string>
     <string name="spotify_connect">Pripojiť Spotify</string>
     <string name="spotify_refresh">Obnoviť knižnicu Spotify</string>
     <string name="spotify_select_sources">Vybrať playlisty Spotify</string>

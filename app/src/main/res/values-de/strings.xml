@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Von Spotify importieren</string>
-    <string name="spotify_import_desc">Verbinde Spotify, wähle Playlists aus und spiegele sie in lokale ArchiveTune-Playlists.</string>
+    <string name="spotify_import_desc">Verbinde Spotify, wähle Playlists aus und spiegele sie in lokale Echo Music-Playlists.</string>
     <string name="spotify_connect">Spotify verbinden</string>
     <string name="spotify_refresh">Spotify-Bibliothek aktualisieren</string>
     <string name="spotify_select_sources">Spotify-Playlists auswählen</string>

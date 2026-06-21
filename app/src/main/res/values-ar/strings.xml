@@ -392,7 +392,7 @@
     <string name="listen_together_smart_resync_desc">التقط تلقائيًا مع المضيف بعد انقطاع الاتصال</string>
 
     <string name="spotify_import_title">استيراد من Spotify</string>
-    <string name="spotify_import_desc">اربط Spotify، واختر قوائم الأغاني، وانسخها إلى قوائم ArchiveTune المحلية.</string>
+    <string name="spotify_import_desc">اربط Spotify، واختر قوائم الأغاني، وانسخها إلى قوائم Echo Music المحلية.</string>
     <string name="spotify_connect">ربط Spotify</string>
     <string name="spotify_refresh">تحديث مكتبة Spotify</string>
     <string name="spotify_select_sources">اختر قوائم أغاني Spotify</string>

@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Spotify இலிருந்து இறக்குமதி செய்க</string>
-    <string name="spotify_import_desc">Spotify ஐ இணைக்கவும், பிளேலிஸ்ட்களைத் தேர்வுசெய்க மற்றும் அவற்றை உள்ளூர் ArchiveTune பிளேலிஸ்ட்களில் பிரதிபலிக்கவும்.</string>
+    <string name="spotify_import_desc">Spotify ஐ இணைக்கவும், பிளேலிஸ்ட்களைத் தேர்வுசெய்க மற்றும் அவற்றை உள்ளூர் Echo Music பிளேலிஸ்ட்களில் பிரதிபலிக்கவும்.</string>
     <string name="spotify_connect">Spotify ஐ இணை</string>
     <string name="spotify_refresh">Spotify நூலகத்தைப் புதுப்பி</string>
     <string name="spotify_select_sources">Spotify பிளேலிஸ்ட்களைத் தேர்ந்தெடு</string>

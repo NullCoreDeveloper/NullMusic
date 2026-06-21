@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Импортиране от Spotify</string>
-    <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на ArchiveTune.</string>
+    <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на Echo Music.</string>
     <string name="spotify_connect">Свързване със Spotify</string>
     <string name="spotify_refresh">Обновяване на библиотеката на Spotify</string>
     <string name="spotify_select_sources">Избор на плейлисти от Spotify</string>

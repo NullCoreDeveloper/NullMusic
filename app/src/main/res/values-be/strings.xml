@@ -379,7 +379,7 @@
 
 
     <string name="spotify_import_title">Імпарт з Spotify</string>
-    <string name="spotify_import_desc">Падключыце Spotify, абярыце плэй-лісты і адлюструйце іх у лакальныя плэй-лісты ArchiveTune.</string>
+    <string name="spotify_import_desc">Падключыце Spotify, абярыце плэй-лісты і адлюструйце іх у лакальныя плэй-лісты Echo Music.</string>
     <string name="spotify_connect">Падключыць Spotify</string>
     <string name="spotify_refresh">Абнавіць бібліятэку Spotify</string>
     <string name="spotify_select_sources">Выбраць плэй-лісты Spotify</string>

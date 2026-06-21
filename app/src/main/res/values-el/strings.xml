@@ -355,7 +355,7 @@
 
 
     <string name="spotify_import_title">Εισαγωγή από Spotify</string>
-    <string name="spotify_import_desc">Συνδέστε το Spotify, επιλέξτε λίστες αναπαραγωγής και αντιγράψτε τες σε τοπικές λίστες ArchiveTune.</string>
+    <string name="spotify_import_desc">Συνδέστε το Spotify, επιλέξτε λίστες αναπαραγωγής και αντιγράψτε τες σε τοπικές λίστες Echo Music.</string>
     <string name="spotify_connect">Σύνδεση Spotify</string>
     <string name="spotify_refresh">Ανανέωση βιβλιοθήκης Spotify</string>
     <string name="spotify_select_sources">Επιλογή λιστών αναπαραγωγής Spotify</string>

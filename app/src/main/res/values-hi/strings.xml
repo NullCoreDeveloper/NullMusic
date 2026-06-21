@@ -339,7 +339,7 @@
 
 
     <string name="spotify_import_title">स्पॉटिफाई से आयात करें</string>
-    <string name="spotify_import_desc">स्पॉटिफाई कनेक्ट करें, प्लेलिस्ट चुनें और उन्हें स्थानीय ArchiveTune प्लेलिस्ट में मिरर करें।</string>
+    <string name="spotify_import_desc">स्पॉटिफाई कनेक्ट करें, प्लेलिस्ट चुनें और उन्हें स्थानीय Echo Music प्लेलिस्ट में मिरर करें।</string>
     <string name="spotify_connect">स्पॉटिफाई कनेक्ट करें</string>
     <string name="spotify_refresh">स्पॉटिफाई लाइब्रेरी ताज़ा करें</string>
     <string name="spotify_select_sources">स्पॉटिफाई प्लेलिस्ट चुनें</string>

@@ -365,7 +365,7 @@
 
 
     <string name="spotify_import_title">Importă din Spotify</string>
-    <string name="spotify_import_desc">Conectează Spotify, alege playlisturile și oglindește-le în playlisturi locale ArchiveTune.</string>
+    <string name="spotify_import_desc">Conectează Spotify, alege playlisturile și oglindește-le în playlisturi locale Echo Music.</string>
     <string name="spotify_connect">Conectează Spotify</string>
     <string name="spotify_refresh">Reîmprospătează biblioteca Spotify</string>
     <string name="spotify_select_sources">Selectează playlisturile Spotify</string>

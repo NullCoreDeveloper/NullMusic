@@ -374,7 +374,7 @@
     <string name="listen_together_smart_resync">Smart Network Resync</string>
     <string name="listen_together_smart_resync_desc">Awtomatikong humabol sa host pagkatapos ng pagkawala ng koneksyon</string>
     <string name="spotify_import_title">Mag-import Mula sa Spotify</string>
-    <string name="spotify_import_desc">Ikonekta ang Spotify, pumili ng mga playlist, at i-mirror ang mga ito sa mga lokal na ArchiveTune playlist.</string>
+    <string name="spotify_import_desc">Ikonekta ang Spotify, pumili ng mga playlist, at i-mirror ang mga ito sa mga lokal na Echo Music playlist.</string>
     <string name="spotify_connect">Ikonekta ang Spotify</string>
     <string name="spotify_refresh">I-refresh ang Spotify library</string>
     <string name="spotify_select_sources">Pumili ng mga Spotify playlist</string>

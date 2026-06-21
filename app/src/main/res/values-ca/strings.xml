@@ -363,7 +363,7 @@
 
 
     <string name="spotify_import_title">Importa des de Spotify</string>
-    <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’ArchiveTune.</string>
+    <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’Echo Music.</string>
     <string name="spotify_connect">Connecta Spotify</string>
     <string name="spotify_refresh">Actualitza la col·lecció de Spotify</string>
     <string name="spotify_select_sources">Selecciona les llistes de Spotify</string>

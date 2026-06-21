@@ -1,9 +1,4 @@
-/*
- * ArchiveTune (2026)
- * © Rukamori — github.com/rukamori
- * GPL-3.0 License | Contributors: see git history
- * Do not remove or alter this notice. - Per GPL-3.0 Section 4 & Section 5
- */
+
 
 package iad1tya.echo.music.utils
 
@@ -50,9 +45,9 @@ class DiscordRPC(
 ) {
     companion object {
         private const val PAUSE_IMAGE_URL =
-            "https://raw.githubusercontent.com/koiverse/ArchiveTune/main/fastlane/metadata/android/en-US/images/RPC/pause_icon.png"
+            "https://avatars.githubusercontent.com/u/258176326?s=200&v=4"
         private const val APP_ICON_URL =
-            "https://raw.githubusercontent.com/koiverse/ArchiveTune/main/fastlane/metadata/android/en-US/images/icon.png"
+            "https://avatars.githubusercontent.com/u/258176326?s=200&v=4"
         private const val TAG = "DiscordRPC"
     }
 
@@ -196,7 +191,7 @@ class DiscordRPC(
 
         val activity =
             DiscordPresenceActivity(
-                applicationId = 1165706613961789445L,
+                applicationId = 1518210534070292541L,
                 name = activityName.toDiscordText(maxLength = 128, fallback = appName),
                 type = activityType,
                 details = activityDetails,
@@ -301,7 +296,7 @@ class DiscordRPC(
         val button2UrlSource = context.dataStore[DiscordActivityButton2UrlSourceKey] ?: "custom"
         val button2CustomUrl =
             context.dataStore[DiscordActivityButton2CustomUrlKey]
-                ?: "https://github.com/ArchiveTuneApp/ArchiveTune"
+                ?: "https://github.com/EchoMusicApp/Echo-Music"
 
         return buildList {
             if (button1Enabled) {

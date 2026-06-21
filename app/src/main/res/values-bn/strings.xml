@@ -352,7 +352,7 @@
 
 
     <string name="spotify_import_title">স্পটিফাই থেকে ইমপোর্ট করুন</string>
-    <string name="spotify_import_desc">স্পটিফাই সংযুক্ত করুন, প্লেলিস্ট বাছাই করুন এবং সেগুলিকে স্থানীয় ArchiveTune প্লেলিস্টে মিরর করুন।</string>
+    <string name="spotify_import_desc">স্পটিফাই সংযুক্ত করুন, প্লেলিস্ট বাছাই করুন এবং সেগুলিকে স্থানীয় Echo Music প্লেলিস্টে মিরর করুন।</string>
     <string name="spotify_connect">স্পটিফাই সংযুক্ত করুন</string>
     <string name="spotify_refresh">স্পটিফাই লাইব্রেরি রিফ্রেশ করুন</string>
     <string name="spotify_select_sources">স্পটিফাই প্লেলিস্ট বাছাই করুন</string>

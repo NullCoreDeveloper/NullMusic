@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Importeren vanuit Spotify</string>
-    <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale ArchiveTune-afspeellijsten.</string>
+    <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale Echo Music-afspeellijsten.</string>
     <string name="spotify_connect">Spotify verbinden</string>
     <string name="spotify_refresh">Spotify-bibliotheek vernieuwen</string>
     <string name="spotify_select_sources">Selecteer Spotify-afspeellijsten</string>

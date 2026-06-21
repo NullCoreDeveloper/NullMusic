@@ -346,7 +346,7 @@
 
 
     <string name="spotify_import_title">Spotifyからインポート</string>
-    <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのArchiveTuneプレイリストにミラーリングします。</string>
+    <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのEcho Musicプレイリストにミラーリングします。</string>
     <string name="spotify_connect">Spotifyに接続</string>
     <string name="spotify_refresh">Spotifyライブラリを更新</string>
     <string name="spotify_select_sources">Spotifyプレイリストを選択</string>

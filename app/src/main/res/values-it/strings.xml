@@ -363,7 +363,7 @@
 
 
     <string name="spotify_import_title">Importa da Spotify</string>
-    <string name="spotify_import_desc">Collega Spotify, scegli le playlist e specchiale in playlist ArchiveTune locali.</string>
+    <string name="spotify_import_desc">Collega Spotify, scegli le playlist e specchiale in playlist Echo Music locali.</string>
     <string name="spotify_connect">Collega Spotify</string>
     <string name="spotify_refresh">Aggiorna la libreria Spotify</string>
     <string name="spotify_select_sources">Seleziona le playlist Spotify</string>

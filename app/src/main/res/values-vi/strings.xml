@@ -334,7 +334,7 @@
 
 
     <string name="spotify_import_title">Nhập từ Spotify</string>
-    <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát ArchiveTune cục bộ.</string>
+    <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát Echo Music cục bộ.</string>
     <string name="spotify_connect">Kết nối Spotify</string>
     <string name="spotify_refresh">Làm mới thư viện Spotify</string>
     <string name="spotify_select_sources">Chọn danh sách phát Spotify</string>

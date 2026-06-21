@@ -363,7 +363,7 @@
     <string name="listen_together_smart_resync_desc">Automatski se uskladite sa domaćinom nakon prekida veze</string>
 
     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
-    <string name="spotify_import_desc">Povežite Spotify, izaberite plejliste i preslikajte ih u lokalne ArchiveTune plejliste.</string>
+    <string name="spotify_import_desc">Povežite Spotify, izaberite plejliste i preslikajte ih u lokalne Echo Music plejliste.</string>
     <string name="spotify_connect">Poveži Spotify</string>
     <string name="spotify_refresh">Osveži Spotify biblioteku</string>
     <string name="spotify_select_sources">Izaberite Spotify plejliste</string>

@@ -363,7 +363,7 @@
 
 
     <string name="spotify_import_title">ייבא מספוטיפיי</string>
-    <string name="spotify_import_desc">חבר את Spotify, בחר פלייליסטים ושקף אותם לפלייליסטים מקומיים של ArchiveTune.</string>
+    <string name="spotify_import_desc">חבר את Spotify, בחר פלייליסטים ושקף אותם לפלייליסטים מקומיים של Echo Music.</string>
     <string name="spotify_connect">חבר את Spotify</string>
     <string name="spotify_refresh">רענן את ספריית Spotify</string>
     <string name="spotify_select_sources">בחר פלייליסטים של Spotify</string>

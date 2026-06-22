@@ -203,6 +203,7 @@ object YTPlayerUtils {
                         val saavnArtists = candidate.artists.primary.joinToString(" ") { it.name }
                         score += wordOverlapScore(artist, saavnArtists, maxPts = 20)
                         if (candidate.explicitContent) score += 5
+                        score += com.music.jiosaavn.SaavnMatcher.variantPenalty(title, candidate.name)
                         ScoredSong(candidate, score)
                     }
 

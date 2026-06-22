@@ -120,7 +120,7 @@ class MusicDatabase(
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 38,
+    version = 39,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -182,6 +182,7 @@ abstract class InternalDatabase : RoomDatabase() {
                         MIGRATION_27_28,
                         MIGRATION_36_37,
                         MIGRATION_37_38,
+                        MIGRATION_38_39,
                     )
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
@@ -798,5 +799,40 @@ val MIGRATION_37_38 =
             db.execSQL("CREATE TABLE IF NOT EXISTS `brain_activity_log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `action` TEXT NOT NULL, `reason` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)")
             db.execSQL("CREATE TABLE IF NOT EXISTS `play_event` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `trackId` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `durationMs` INTEGER NOT NULL, `skipped` INTEGER NOT NULL, `engaged` INTEGER NOT NULL)")
             db.execSQL("CREATE TABLE IF NOT EXISTS `taste_profile` (`id` INTEGER NOT NULL, `genres` TEXT NOT NULL, `confidence` REAL NOT NULL, `patternsFound` INTEGER NOT NULL, `modelVersion` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+
+            // Fix missing format.perceptualLoudnessDb column if needed
+            var columnExists = false
+            db.query("PRAGMA table_info(format)").use { cursor ->
+                val nameIndex = cursor.getColumnIndex("name")
+                while (cursor.moveToNext()) {
+                    if (nameIndex >= 0 && cursor.getString(nameIndex) == "perceptualLoudnessDb") {
+                        columnExists = true
+                        break
+                    }
+                }
+            }
+            if (!columnExists) {
+                db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
+            }
+        }
+    }
+
+val MIGRATION_38_39 =
+    object : Migration(38, 39) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Fix missing format.perceptualLoudnessDb column if needed
+            var columnExists = false
+            db.query("PRAGMA table_info(format)").use { cursor ->
+                val nameIndex = cursor.getColumnIndex("name")
+                while (cursor.moveToNext()) {
+                    if (nameIndex >= 0 && cursor.getString(nameIndex) == "perceptualLoudnessDb") {
+                        columnExists = true
+                        break
+                    }
+                }
+            }
+            if (!columnExists) {
+                db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
+            }
         }
     }

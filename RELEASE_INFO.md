@@ -2,3 +2,4 @@
 
 ## Bug Fixes
 - Fixed Spotify login / import failing with a HTTP 403 API Rate Limit Exceeded error by fetching TOTP secrets directly from raw gist content.
+- Fixed a playback crash (NumberFormatException) when attempting to play local music files.

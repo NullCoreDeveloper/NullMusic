@@ -2649,7 +2649,7 @@ class MusicService :
         ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
             if (mediaId.isLocalMediaId()) {
-                val localUri = android.content.ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId.removePrefix("L_").toLong())
+                val localUri = android.net.Uri.parse(mediaId)
                 try {
                     contentResolver.openFileDescriptor(localUri, "r")?.close()
                 } catch (e: java.io.FileNotFoundException) {

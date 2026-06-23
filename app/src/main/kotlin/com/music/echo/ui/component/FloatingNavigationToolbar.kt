@@ -89,6 +89,9 @@ fun FloatingNavigationToolbar(
     shuffleContentDescription: String = "",
     onMusicRecognitionClick: (() -> Unit)? = null,
     musicRecognitionContentDescription: String = "",
+    onSettingsClick: (() -> Unit)? = null,
+    settingsIconRes: Int? = null,
+    settingsContentDescription: String = "",
     scrollBehavior: FloatingToolbarScrollBehavior? = null,
     isSelected: (Screens) -> Boolean,
     onItemClick: (Screens, Boolean) -> Unit,
@@ -104,7 +107,7 @@ fun FloatingNavigationToolbar(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        val showSelectedLabels = true
+        val showSelectedLabels = false
 
         if (hasOverflowMenu) {
             HorizontalFloatingToolbar(
@@ -115,8 +118,9 @@ fun FloatingNavigationToolbar(
                         onShuffleClick = onShuffleClick,
                         shuffleIconRes = shuffleIconRes,
                         shuffleContentDescription = shuffleContentDescription,
-                        onMusicRecognitionClick = onMusicRecognitionClick,
-                        musicRecognitionContentDescription = musicRecognitionContentDescription,
+                        onSettingsClick = onSettingsClick,
+                        settingsIconRes = settingsIconRes,
+                        settingsContentDescription = settingsContentDescription,
                     )
                 },
                 modifier = Modifier.widthIn(max = 480.dp),
@@ -128,6 +132,8 @@ fun FloatingNavigationToolbar(
                     items = items,
                     pureBlack = pureBlack,
                     showSelectedLabels = showSelectedLabels,
+                    onMusicRecognitionClick = onMusicRecognitionClick,
+                    musicRecognitionContentDescription = musicRecognitionContentDescription,
                     isSelected = isSelected,
                     onItemClick = onItemClick
                 )
@@ -152,6 +158,8 @@ fun FloatingNavigationToolbar(
                     items = items,
                     pureBlack = pureBlack,
                     showSelectedLabels = showSelectedLabels,
+                    onMusicRecognitionClick = onMusicRecognitionClick,
+                    musicRecognitionContentDescription = musicRecognitionContentDescription,
                     isSelected = isSelected,
                     onItemClick = onItemClick
                 )
@@ -167,6 +175,8 @@ fun FloatingNavigationToolbar(
                     items = items,
                     pureBlack = pureBlack,
                     showSelectedLabels = showSelectedLabels,
+                    onMusicRecognitionClick = onMusicRecognitionClick,
+                    musicRecognitionContentDescription = musicRecognitionContentDescription,
                     isSelected = isSelected,
                     onItemClick = onItemClick
                 )
@@ -180,6 +190,8 @@ private fun ToolbarItemsContainer(
     items: List<Screens>,
     pureBlack: Boolean,
     showSelectedLabels: Boolean,
+    onMusicRecognitionClick: (() -> Unit)?,
+    musicRecognitionContentDescription: String,
     isSelected: (Screens) -> Boolean,
     onItemClick: (Screens, Boolean) -> Unit
 ) {
@@ -210,21 +222,32 @@ private fun ToolbarItemsContainer(
     )
 
     Box(modifier = Modifier.height(IntrinsicSize.Min)) {
-        if (targetWidth > 0.dp) {
-            Box(
-                modifier = Modifier
-                    .offset(x = slidingPillOffset)
-                    .width(slidingPillWidth)
-                    .fillMaxHeight()
-                    .background(
-                        color = floatingToolbarSelectedItemContainerColor(pureBlack),
-                        shape = RoundedCornerShape(24.dp)
-                    )
-            )
+        Box(modifier = Modifier.matchParentSize()) {
+            if (targetWidth > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .offset(x = slidingPillOffset)
+                        .width(slidingPillWidth)
+                        .fillMaxHeight()
+                        .background(
+                            color = floatingToolbarSelectedItemContainerColor(pureBlack),
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                )
+            }
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             items.forEach { screen ->
+                if (screen == Screens.Library && onMusicRecognitionClick != null) {
+                    FloatingNavigationToolbarActionItem(
+                        iconRes = R.drawable.mic,
+                        contentDescription = musicRecognitionContentDescription,
+                        pureBlack = pureBlack,
+                        onClick = onMusicRecognitionClick
+                    )
+                }
+
                 val selected = isSelected(screen)
                 FloatingNavigationToolbarItem(
                     screen = screen,
@@ -248,8 +271,9 @@ private fun FloatingToolbarOverflowMenuButton(
     onShuffleClick: (() -> Unit)?,
     shuffleIconRes: Int?,
     shuffleContentDescription: String,
-    onMusicRecognitionClick: (() -> Unit)?,
-    musicRecognitionContentDescription: String,
+    onSettingsClick: (() -> Unit)?,
+    settingsIconRes: Int?,
+    settingsContentDescription: String,
 ) {
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -302,12 +326,12 @@ private fun FloatingToolbarOverflowMenuButton(
                 )
             }
 
-            if (onMusicRecognitionClick != null) {
+            if (onSettingsClick != null && settingsIconRes != null) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.recognition)) },
+                    text = { Text(settingsContentDescription) },
                     onClick = {
                         menuExpanded = false
-                        onMusicRecognitionClick()
+                        onSettingsClick()
                     },
                     leadingIcon = {
                         Surface(
@@ -318,8 +342,8 @@ private fun FloatingToolbarOverflowMenuButton(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    painter = painterResource(R.drawable.mic),
-                                    contentDescription = musicRecognitionContentDescription.ifEmpty { stringResource(R.string.recognition) },
+                                    painter = painterResource(settingsIconRes),
+                                    contentDescription = settingsContentDescription,
                                 )
                             }
                         }
@@ -392,8 +416,8 @@ private fun FloatingNavigationToolbarItem(
     val horizontalPadding by transition.animateDp(
         transitionSpec = {
             spring(
-                dampingRatio = Spring.DampingRatioLowBouncy,
-                stiffness = Spring.StiffnessMedium,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMediumLow,
             )
         },
         label = "horizontalPadding",
@@ -452,8 +476,8 @@ private fun FloatingNavigationToolbarItem(
                 ),
             ) + expandHorizontally(
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMedium,
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMediumLow,
                 ),
                 expandFrom = Alignment.Start,
             ),
@@ -463,7 +487,10 @@ private fun FloatingNavigationToolbarItem(
                     stiffness = Spring.StiffnessMediumLow,
                 ),
             ) + shrinkHorizontally(
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMediumLow,
+                ),
                 shrinkTowards = Alignment.Start,
             ),
         ) {
@@ -524,4 +551,46 @@ private fun floatingToolbarMenuIconContainerColor(pureBlack: Boolean): Color {
 @Composable
 private fun floatingToolbarMenuIconContentColor(pureBlack: Boolean): Color {
     return MaterialTheme.colorScheme.onSecondaryContainer
+}
+
+@Composable
+private fun FloatingNavigationToolbarActionItem(
+    iconRes: Int,
+    contentDescription: String,
+    pureBlack: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.91f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium,
+        ),
+        label = "pressScale",
+    )
+
+    Row(
+        modifier = modifier
+            .scale(pressScale)
+            .clip(RoundedCornerShape(24.dp))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                role = Role.Button,
+                onClick = onClick,
+            )
+            .widthIn(min = 48.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = contentDescription,
+            tint = floatingToolbarItemContentColor(pureBlack),
+        )
+    }
 }

@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -143,6 +144,42 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import iad1tya.echo.music.ui.component.Icon as MIcon
 
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlin.math.cos
+import kotlin.math.sin
+
+private data class PolygonCookieShape(
+    val sides: Int,
+    val indent: Float
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val path = Path()
+        val maxRadius = minOf(size.width, size.height) / 2f
+        val cx = size.width / 2f
+        val cy = size.height / 2f
+
+        val steps = 120
+        for (i in 0..steps) {
+            val angle = i * Math.PI * 2 / steps
+            val r = maxRadius * (1f - indent + indent * cos(sides * angle))
+            val x = cx + r * cos(angle)
+            val y = cy + r * sin(angle)
+            if (i == 0) path.moveTo(x.toFloat(), y.toFloat())
+            else path.lineTo(x.toFloat(), y.toFloat())
+        }
+        path.close()
+        return Outline.Generic(path)
+    }
+}
 
 @Stable
 class ProgressState(
@@ -390,28 +427,17 @@ private fun NewMiniPlayer(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
 
-                IconButton(
-                    enabled = canSkipPrevious && !isListenTogetherGuest,
-                    onClick = if (isListenTogetherGuest) ({}) else ({ playerConnection.player.seekToPreviousMediaItem() }),
-                ) {
-                    Icon(painter = painterResource(R.drawable.skip_previous), contentDescription = null, tint = onSurfaceColor)
-                }
-
-                LegacyPlayPauseButton(
+                MiniPlayerControls(
+                    playerConnection = playerConnection,
                     playbackState = playbackState,
                     isCasting = isCasting,
                     castHandler = castHandler,
-                    playerConnection = playerConnection,
                     listenTogetherManager = listenTogetherManager,
-                    tint = onSurfaceColor
+                    canSkipPrevious = canSkipPrevious,
+                    canSkipNext = canSkipNext,
+                    onSurfaceColor = onSurfaceColor,
+                    primaryColor = primaryColor
                 )
-
-                IconButton(
-                    enabled = canSkipNext && !isListenTogetherGuest,
-                    onClick = if (isListenTogetherGuest) ({}) else ({ playerConnection.player.seekToNext() }),
-                ) {
-                    Icon(painter = painterResource(R.drawable.skip_next), contentDescription = null, tint = onSurfaceColor)
-                }
             }
         }
     }
@@ -1105,5 +1131,109 @@ private fun MiniPlayerBackgroundLayer(
             }
         }
         else -> {}
+    }
+}
+
+@Composable
+private fun MiniPlayerControls(
+    playerConnection: PlayerConnection,
+    playbackState: Int,
+    isCasting: Boolean,
+    castHandler: CastConnectionHandler?,
+    listenTogetherManager: ListenTogetherManager?,
+    canSkipPrevious: Boolean,
+    canSkipNext: Boolean,
+    onSurfaceColor: Color,
+    primaryColor: Color
+) {
+    val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
+    val isPlaying by playerConnection.isPlaying.collectAsState()
+    val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
+    val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+    val isMuted by playerConnection.isMuted.collectAsState()
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(
+            enabled = canSkipPrevious && !isListenTogetherGuest,
+            onClick = if (isListenTogetherGuest) ({}) else ({ playerConnection.player.seekToPreviousMediaItem() }),
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(painter = painterResource(R.drawable.skip_previous), contentDescription = null, tint = onSurfaceColor, modifier = Modifier.size(20.dp))
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        val cookieIndent by androidx.compose.animation.core.animateFloatAsState(
+            targetValue = if (effectiveIsPlaying) 0.08f else 0f,
+            animationSpec = androidx.compose.animation.core.tween(durationMillis = 300, easing = androidx.compose.animation.core.LinearEasing),
+            label = "cookieIndent",
+        )
+
+        val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "rotation")
+        val rotation by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                animation = androidx.compose.animation.core.tween(8000, easing = androidx.compose.animation.core.LinearEasing),
+                repeatMode = androidx.compose.animation.core.RepeatMode.Restart
+            ),
+            label = "rotation"
+        )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable {
+                    if (isListenTogetherGuest) {
+                        playerConnection.toggleMute()
+                        return@clickable
+                    }
+                    if (isCasting) {
+                        if (castIsPlaying) castHandler?.pause() else castHandler?.play()
+                    } else if (playbackState == Player.STATE_ENDED) {
+                        playerConnection.player.seekTo(0, 0)
+                        playerConnection.player.playWhenReady = true
+                    } else {
+                        playerConnection.togglePlayPause()
+                    }
+                }
+        ) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer {
+                        rotationZ = rotation
+                        clip = true
+                        shape = PolygonCookieShape(sides = 9, indent = cookieIndent)
+                    }
+                    .background(primaryColor)
+            )
+
+            Icon(
+                painter = painterResource(
+                    when {
+                        isListenTogetherGuest -> if (isMuted) R.drawable.volume_off else R.drawable.volume_up
+                        playbackState == Player.STATE_ENDED -> R.drawable.replay
+                        effectiveIsPlaying -> R.drawable.pause
+                        else -> R.drawable.play
+                    }
+                ),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        IconButton(
+            enabled = canSkipNext && !isListenTogetherGuest,
+            onClick = if (isListenTogetherGuest) ({}) else ({ playerConnection.player.seekToNext() }),
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(painter = painterResource(R.drawable.skip_next), contentDescription = null, tint = onSurfaceColor, modifier = Modifier.size(20.dp))
+        }
     }
 }

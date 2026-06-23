@@ -243,6 +243,48 @@ import iad1tya.echo.music.ui.player.normalizeCanvasArtistName
 import iad1tya.echo.music.ui.player.normalizeCanvasSongTitle
 import iad1tya.echo.music.echomusiccanvas.echomusicCanvasProvider
 import java.util.Locale
+import kotlin.math.cos
+import kotlin.math.sin
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.geometry.Size
+
+private data class WavyShape(
+    val sides: Int,
+    val indent: Float,
+    val rotationDegrees: Float
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val path = Path()
+        val maxRadiusX = size.width / 2f
+        val maxRadiusY = size.height / 2f
+        val cx = size.width / 2f
+        val cy = size.height / 2f
+
+        val steps = 120
+        val rotationRad = rotationDegrees * Math.PI / 180.0
+        for (i in 0..steps) {
+            val angle = i * Math.PI * 2 / steps
+            val bumpAngle = angle - rotationRad
+            val r = 1f - indent + indent * cos(sides * bumpAngle)
+            val x = cx + maxRadiusX * r * cos(angle)
+            val y = cy + maxRadiusY * r * sin(angle)
+            if (i == 0) path.moveTo(x.toFloat(), y.toFloat())
+            else path.lineTo(x.toFloat(), y.toFloat())
+        }
+        path.close()
+        return Outline.Generic(path)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BottomSheetPlayer(
@@ -2107,45 +2149,36 @@ fun BottomSheetPlayer(
                             val isBackPressed by backInteractionSource.collectIsPressedAsState()
                             val isNextPressed by nextInteractionSource.collectIsPressedAsState()
 
-                            val playPauseWeight by animateFloatAsState(
-                                targetValue = if (isPlayPausePressed) 1.9f else if (isBackPressed || isNextPressed) 1.1f else 1.3f,
-                                animationSpec = spring(
-                                    dampingRatio = 0.6f,
-                                    stiffness = 500f
-                                ),
-                                label = "playPauseWeight"
+                            val playPauseScale by animateFloatAsState(
+                                targetValue = if (isPlayPausePressed) 0.9f else 1f,
+                                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                                label = "playPauseScale"
                             )
 
-                            val backButtonWeight by animateFloatAsState(
-                                targetValue = if (isBackPressed) 0.65f else if (isPlayPausePressed) 0.35f else 0.45f,
-                                animationSpec = spring(
-                                    dampingRatio = 0.6f,
-                                    stiffness = 500f
-                                ),
-                                label = "backButtonWeight"
+                            val backButtonScale by animateFloatAsState(
+                                targetValue = if (isBackPressed) 0.9f else 1f,
+                                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                                label = "backButtonScale"
                             )
 
-                            val nextButtonWeight by animateFloatAsState(
-                                targetValue = if (isNextPressed) 0.65f else if (isPlayPausePressed) 0.35f else 0.45f,
-                                animationSpec = spring(
-                                    dampingRatio = 0.6f,
-                                    stiffness = 500f
-                                ),
-                                label = "nextButtonWeight"
+                            val nextButtonScale by animateFloatAsState(
+                                targetValue = if (isNextPressed) 0.9f else 1f,
+                                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                                label = "nextButtonScale"
                             )
 
                             FilledIconButton(
                                 onClick = playerConnection::seekToPrevious,
                                 enabled = canSkipPrevious && !isListenTogetherGuest,
-                                shape = RoundedCornerShape(50),
+                                shape = CircleShape,
                                 interactionSource = backInteractionSource,
                                 colors = IconButtonDefaults.filledIconButtonColors(
                                     containerColor = sideButtonContainerColor,
                                     contentColor = sideButtonContentColor,
                                 ),
                                 modifier = Modifier
-                                    .height(68.dp)
-                                    .weight(backButtonWeight)
+                                    .size(68.dp)
+                                    .graphicsLayer { scaleX = backButtonScale; scaleY = backButtonScale }
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.skip_previous),
@@ -2154,7 +2187,24 @@ fun BottomSheetPlayer(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(24.dp))
+
+                            val cookieIndent by animateFloatAsState(
+                                targetValue = if (effectiveIsPlaying) 0.08f else 0f,
+                                animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+                                label = "cookieIndent",
+                            )
+
+                            val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+                            val rotation by infiniteTransition.animateFloat(
+                                initialValue = 0f,
+                                targetValue = 360f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(8000, easing = LinearEasing),
+                                    repeatMode = RepeatMode.Restart
+                                ),
+                                label = "rotation"
+                            )
 
                             FilledIconButton(
                                 onClick = {
@@ -2175,15 +2225,15 @@ fun BottomSheetPlayer(
                                         playerConnection.togglePlayPause()
                                     }
                                 },
-                                shape = RoundedCornerShape(50),
+                                shape = if (cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else CircleShape,
                                 interactionSource = playPauseInteractionSource,
                                 colors = IconButtonDefaults.filledIconButtonColors(
                                     containerColor = textButtonColor,
                                     contentColor = iconButtonColor,
                                 ),
                                 modifier = Modifier
-                                    .height(68.dp)
-                                    .weight(playPauseWeight)
+                                    .size(84.dp)
+                                    .graphicsLayer { scaleX = playPauseScale; scaleY = playPauseScale }
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -2202,26 +2252,25 @@ fun BottomSheetPlayer(
                                         } else {
                                             if (effectiveIsPlaying) stringResource(R.string.pause) else stringResource(R.string.play)
                                         },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.size(36.dp)
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(24.dp))
 
                             FilledIconButton(
                                 onClick = playerConnection::seekToNext,
                                 enabled = canSkipNext && !isListenTogetherGuest,
-                                shape = RoundedCornerShape(50),
+                                shape = CircleShape,
                                 interactionSource = nextInteractionSource,
                                 colors = IconButtonDefaults.filledIconButtonColors(
                                     containerColor = sideButtonContainerColor,
                                     contentColor = sideButtonContentColor,
                                 ),
                                 modifier = Modifier
-                                    .height(68.dp)
-                                    .weight(nextButtonWeight
-                                    )
+                                    .size(68.dp)
+                                    .graphicsLayer { scaleX = nextButtonScale; scaleY = nextButtonScale }
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.skip_next),

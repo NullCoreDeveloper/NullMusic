@@ -326,7 +326,7 @@ highlightKey: String? = null) {
 
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(
@@ -468,6 +468,8 @@ highlightKey: String? = null) {
         }
         
         Spacer(modifier = Modifier.height(16.dp))
+    
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
     TopAppBar(

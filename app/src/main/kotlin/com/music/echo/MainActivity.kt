@@ -956,7 +956,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode") {
+                            if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute?.startsWith("settings") != true) {
                                 Box {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
@@ -990,6 +990,13 @@ class MainActivity : ComponentActivity() {
                                             shuffleContentDescription = stringResource(R.string.shuffle),
                                             onMusicRecognitionClick = onMusicRecognitionClick,
                                             musicRecognitionContentDescription = stringResource(R.string.recognition),
+                                            onSettingsClick = { 
+                                                navController.navigate("settings") {
+                                                    launchSingleTop = true
+                                                }
+                                            },
+                                            settingsIconRes = R.drawable.settings,
+                                            settingsContentDescription = stringResource(R.string.settings),
                                             isSelected = { screen ->
                                                 currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
                                             },
@@ -1019,7 +1026,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             } else {
-                                if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode") {
+                                if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute?.startsWith("settings") != true) {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,

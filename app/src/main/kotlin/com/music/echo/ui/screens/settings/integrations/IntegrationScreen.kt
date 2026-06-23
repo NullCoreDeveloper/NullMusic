@@ -3,6 +3,9 @@
 package iad1tya.echo.music.ui.screens.settings.integrations
 
 import androidx.compose.foundation.layout.Column
+
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -42,10 +45,11 @@ highlightKey: String? = null) {
 
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
+            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
     ) {
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
         Spacer(modifier = Modifier.padding(top = 16.dp))
 
         iad1tya.echo.music.ui.component.SwitchPreference(
@@ -69,6 +73,8 @@ highlightKey: String? = null) {
             icon = { Icon(painterResource(R.drawable.edit), null) },
             onClick = { showListenBrainzTokenEditor.value = true },
         )
+    
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
     TopAppBar(

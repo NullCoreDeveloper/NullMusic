@@ -102,14 +102,14 @@ highlightKey: String? = null) {
                 .fillMaxSize()
                 .windowInsetsPadding(
                     LocalPlayerAwareWindowInsets.current.only(
-                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                        WindowInsetsSides.Horizontal,
                     ),
                 ),
             contentPadding = PaddingValues(
                 start = 16.dp,
                 top = innerPadding.calculateTopPadding() + 8.dp,
                 end = 16.dp,
-                bottom = 32.dp,
+                bottom = androidx.compose.foundation.layout.WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 32.dp,
             ),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {

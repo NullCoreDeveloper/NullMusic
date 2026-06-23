@@ -151,7 +151,7 @@ fun BackupAndRestore(
     Crossfade(targetState = currentScreen, label = "BackupSubScreen") { screen ->
         Column(
             Modifier
-                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
         ) {
@@ -229,7 +229,9 @@ fun BackupAndRestore(
                     )
                 }
             }
-        }
+        
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
+    }
     }
     val titleRes = when (currentScreen) {
         BackupSubScreen.MAIN -> stringResource(R.string.backup_restore)

@@ -84,7 +84,7 @@ highlightKey: String? = null) {
     val scrollState = rememberScrollState()
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp)
     ) {
@@ -331,6 +331,11 @@ highlightKey: String? = null) {
         }
         
         Spacer(modifier = Modifier.height(50.dp))
+        Spacer(
+            Modifier.windowInsetsPadding(
+                LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
+            )
+        )
     }
 
     TopAppBar(

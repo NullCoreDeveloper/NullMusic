@@ -1,6 +1,9 @@
 package iad1tya.echo.music.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
+
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -85,10 +88,11 @@ fun UpdateSettings(
 
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
+            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp),
     ) {
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.app_updates_title),
             items = listOf(
@@ -258,6 +262,8 @@ fun UpdateSettings(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+    
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
     TopAppBar(

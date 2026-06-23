@@ -430,13 +430,13 @@ fun DiscordSettings(
                     .fillMaxSize()
                     .windowInsetsPadding(
                         LocalPlayerAwareWindowInsets.current.only(
-                            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                            WindowInsetsSides.Horizontal,
                         ),
                     ),
             contentPadding =
                 PaddingValues(
                     top = innerPadding.calculateTopPadding() + 16.dp,
-                    bottom = 32.dp,
+                    bottom = androidx.compose.foundation.layout.WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 32.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

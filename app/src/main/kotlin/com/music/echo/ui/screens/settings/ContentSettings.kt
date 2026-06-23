@@ -3,6 +3,9 @@
 package iad1tya.echo.music.ui.screens.settings
 
 import android.content.Intent
+
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
@@ -599,10 +602,11 @@ highlightKey: String? = null) {
 
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
+            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp),
     ) {
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.general),
             items = listOf(
@@ -1208,6 +1212,8 @@ highlightKey: String? = null) {
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
+    
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
     TopAppBar(

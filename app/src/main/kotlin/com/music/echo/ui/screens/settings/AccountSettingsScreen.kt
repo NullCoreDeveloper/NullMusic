@@ -99,7 +99,7 @@ fun AccountSettingsScreen(
             modifier = Modifier
                 .padding(padding)
                 .windowInsetsPadding(
-                    LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                    LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
                 )
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp)
@@ -349,5 +349,7 @@ fun AccountSettingsScreen(
                 )
             }
         }
+        
+        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 }

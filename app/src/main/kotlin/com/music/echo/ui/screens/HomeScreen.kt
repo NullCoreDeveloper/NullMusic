@@ -1825,7 +1825,7 @@ fun HomeScreen(
                                             .height((MoodAndGenresButtonHeight + 12.dp) * 4 + 12.dp)
                                             .animateItem()
                                     ) {
-                                        items(moodAndGenres, key = { it.title }) {
+                                        items(moodAndGenres.distinctBy { it.title }, key = { it.title }) {
                                             MoodAndGenresButton(
                                                 title = it.title,
                                                 onClick = {

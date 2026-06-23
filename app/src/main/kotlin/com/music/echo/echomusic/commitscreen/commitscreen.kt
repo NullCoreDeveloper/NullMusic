@@ -187,8 +187,8 @@ fun CommitScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
                 .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
         ) {
             when {

@@ -33,8 +33,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.withContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.music.innertube.YouTube
 import com.music.innertube.utils.parseCookieString
@@ -68,6 +71,7 @@ fun AddToPlaylistDialog(
     viewModel: PlaylistsViewModel = hiltViewModel()
 ) {
     val database = LocalDatabase.current
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         AddToPlaylistSortTypeKey,
@@ -239,6 +243,9 @@ fun AddToPlaylistDialog(
                                         YouTube.addToPlaylist(plist, it)
                                     }
                                 }
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, context.getString(R.string.added_to_playlist, playlist.playlist.name), Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
@@ -272,6 +279,7 @@ fun AddToPlaylistDialog(
                                     }
                                 )
                             }
+                            Toast.makeText(context, context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name), Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Text(stringResource(R.string.skip_duplicates))
@@ -284,6 +292,7 @@ fun AddToPlaylistDialog(
                             database.transaction {
                                 addSongToPlaylist(selectedPlaylist!!, songIds!!)
                             }
+                            Toast.makeText(context, context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name), Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Text(stringResource(R.string.add_anyway))

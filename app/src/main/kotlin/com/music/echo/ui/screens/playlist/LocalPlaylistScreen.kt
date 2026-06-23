@@ -1018,9 +1018,15 @@ fun LocalPlaylistHeader(
                         }
                     }.onFailure {
                         if (it is ClientRequestException) {
-                            snackbarHostState.showSnackbar("${it.response.status.value} ${it.response.status.description}")
+                            snackbarHostState.showSnackbar("Applied locally (${it.response.status.value} ${it.response.status.description})")
                         }
                         reportException(it)
+                        
+                        overrideThumbnail.value = uri.toString()
+                        isCustomThumbnail = true
+                        database.query {
+                            update(playlist.playlist.copy(thumbnailUrl = uri.toString()))
+                        }
                     }
                 }
             }
@@ -1140,6 +1146,11 @@ fun LocalPlaylistHeader(
                                                                     database.query {
                                                                         update(playlist.playlist.copy(thumbnailUrl = newThumbnailUrl))
                                                                     }
+                                                                }.onFailure {
+                                                                    overrideThumbnail.value = null
+                                                                    database.query {
+                                                                        update(playlist.playlist.copy(thumbnailUrl = null))
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -1203,6 +1214,11 @@ fun LocalPlaylistHeader(
                                                                     overrideThumbnail.value = newThumbnailUrl
                                                                     database.query {
                                                                         update(playlist.playlist.copy(thumbnailUrl = newThumbnailUrl))
+                                                                    }
+                                                                }.onFailure {
+                                                                    overrideThumbnail.value = null
+                                                                    database.query {
+                                                                        update(playlist.playlist.copy(thumbnailUrl = null))
                                                                     }
                                                                 }
                                                             }

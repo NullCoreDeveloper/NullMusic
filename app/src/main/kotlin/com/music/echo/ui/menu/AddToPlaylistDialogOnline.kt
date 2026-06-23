@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
@@ -81,6 +83,7 @@ fun AddToPlaylistDialogOnline(
     viewModel: PlaylistsViewModel = hiltViewModel()
 ) {
     val database = LocalDatabase.current
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val viewStateMap = remember { mutableStateMapOf<String, ItemsPage?>() }
     val (sortType, onSortTypeChange) = rememberEnumPreference(
@@ -282,6 +285,9 @@ fun AddToPlaylistDialogOnline(
 
                                         if (songsIdx.toInt() == songsTot.toInt() - 1) {
                                             onProgressStart(false)
+                                            withContext(Dispatchers.Main) {
+                                                Toast.makeText(context, context.getString(R.string.added_to_playlist, playlist.playlist.name), Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                         onPercentageChange(((songsIdx / songsTot) * 100).toInt())
 
@@ -351,6 +357,9 @@ fun AddToPlaylistDialogOnline(
 
                                         if (songsIdx.toInt() == songsTot.toInt() - 1) {
                                             onProgressStart(false)
+                                            withContext(Dispatchers.Main) {
+                                                Toast.makeText(context, context.getString(R.string.added_to_playlist, context.getString(R.string.liked_songs)), Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                         onPercentageChange(((songsIdx / songsTot) * 100).toInt())
 
@@ -412,6 +421,7 @@ fun AddToPlaylistDialogOnline(
                                 }
                             )
                         }
+                        Toast.makeText(context, context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name), Toast.LENGTH_SHORT).show()
                     }
                 ) {
                     Text(stringResource(R.string.skip_duplicates))
@@ -424,6 +434,7 @@ fun AddToPlaylistDialogOnline(
                         database.transaction {
                             addSongToPlaylist(selectedPlaylist!!, songIds!!)
                         }
+                        Toast.makeText(context, context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name), Toast.LENGTH_SHORT).show()
                     }
                 ) {
                     Text(stringResource(R.string.add_anyway))

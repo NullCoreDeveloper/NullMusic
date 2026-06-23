@@ -111,6 +111,7 @@
     <string name="remove_download">Remove download</string>
     <string name="import_playlist">Import playlist</string>
     <string name="add_to_playlist">Add to playlist</string>
+    <string name="added_to_playlist">Added to %s</string>
     <string name="start_an_radio">Radio</string>
     <string name="add_to_an_playlist">Add</string>
     <string name="view_artist">View artist</string>

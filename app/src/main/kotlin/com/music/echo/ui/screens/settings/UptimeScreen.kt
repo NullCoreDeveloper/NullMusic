@@ -34,7 +34,9 @@ data class ServiceStatus(
     val url: () -> String, 
     val displayUrl: () -> String = url,
     var status: Status = Status.CHECKING,
-    var latencyMs: Long? = null
+    var latencyMs: Long? = null,
+    val offlineMessage: String? = null,
+    val fallbackUrls: () -> List<String> = { emptyList() }
 ) {
     enum class Status {
         ONLINE, OFFLINE, CHECKING
@@ -51,8 +53,16 @@ highlightKey: String? = null) {
     val musicServices = remember {
         mutableStateListOf(
             ServiceStatus("YouTube Music", { "https://music.youtube.com" }),
-            ServiceStatus("JioSaavn", { com.music.jiosaavn.DeviceRouter.getCurrentServer() }, { "Server ${com.music.jiosaavn.DeviceRouter.getCurrentServerIndex() + 1}" }),
-            ServiceStatus("Qobuz", { "https://qobuz.kennyy.com.br" })
+            ServiceStatus(
+                "JioSaavn",
+                { com.music.jiosaavn.DeviceRouter.getCurrentServer() },
+                { "Server ${com.music.jiosaavn.DeviceRouter.getCurrentServerIndex() + 1}" },
+                offlineMessage = "Server hits its daily limit, we'll get you tomorrow!"
+            ),
+            ServiceStatus(
+                "Qobuz",
+                { "https://qobuz.kennyy.com.br" }
+            )
         )
     }
 
@@ -70,7 +80,18 @@ highlightKey: String? = null) {
             ServiceStatus("Unison", { "https://unison.boidu.dev" }),
             ServiceStatus("Paxsenix", { "https://lyrics.paxsenix.org" }),
             ServiceStatus("KuGou", { "https://lyrics.kugou.com" }),
-            ServiceStatus("YouLyPlus", { "https://lyricsplus.prjktla.my.id" }),
+            ServiceStatus(
+                "YouLyPlus", 
+                { "https://lyricsplus.prjktla.my.id" },
+                fallbackUrls = { 
+                    listOf(
+                        "https://lyricsplus.atomix.one",
+                        "https://lyricsplus.binimum.org",
+                        "https://lyricsplus.prjktla.workers.dev",
+                        "https://lyricsplus-seven.vercel.app"
+                    ) 
+                }
+            ),
             ServiceStatus("SimpMusic", { "https://api-lyrics.simpmusic.org" })
         )
     }
@@ -91,12 +112,24 @@ highlightKey: String? = null) {
                     var latency: Long? = null
                     val isOnline = withContext(Dispatchers.IO) {
                         try {
-                            val startTime = System.currentTimeMillis()
-                            val request = Request.Builder().url(service.url()).head().build()
-                            client.newCall(request).execute().use { response ->
-                                latency = System.currentTimeMillis() - startTime
-                                response.isSuccessful || response.isRedirect || response.code in 200..405
+                            val urlsToTry = listOf(service.url()) + service.fallbackUrls()
+                            var success = false
+                            for (urlToTry in urlsToTry) {
+                                try {
+                                    val startTime = System.currentTimeMillis()
+                                    val request = Request.Builder().url(urlToTry).head().build()
+                                    client.newCall(request).execute().use { response ->
+                                        if (response.isSuccessful || response.isRedirect || response.code in 200..405) {
+                                            latency = System.currentTimeMillis() - startTime
+                                            success = true
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    // continue to next url
+                                }
+                                if (success) break
                             }
+                            success
                         } catch (e: Exception) {
                             false
                         }
@@ -127,7 +160,7 @@ highlightKey: String? = null) {
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = LocalPlayerAwareWindowInsets.current
+        contentWindowInsets = WindowInsets.systemBars
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -196,74 +229,107 @@ fun ServiceStatusCard(service: ServiceStatus) {
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp)
         ) {
-            Column {
-                Text(
-                    text = service.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = service.displayUrl(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = service.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = service.displayUrl(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val statusColor = when (service.status) {
+                        ServiceStatus.Status.ONLINE -> Color(0xFF4CAF50)
+                        ServiceStatus.Status.OFFLINE -> Color(0xFFF44336)
+                        ServiceStatus.Status.CHECKING -> MaterialTheme.colorScheme.primary
+                    }
+                    val statusText = when (service.status) {
+                        ServiceStatus.Status.ONLINE -> stringResource(R.string.status_online) + if (service.latencyMs != null) " (${service.latencyMs}ms)" else ""
+                        ServiceStatus.Status.OFFLINE -> stringResource(R.string.status_offline)
+                        ServiceStatus.Status.CHECKING -> stringResource(R.string.status_checking)
+                    }
+                    
+                    AnimatedContent(
+                        targetState = service.status,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
+                        },
+                        label = "statusIcon"
+                    ) { status ->
+                        if (status == ServiceStatus.Status.CHECKING) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = statusColor,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (status == ServiceStatus.Status.ONLINE) R.drawable.check else R.drawable.error
+                                ),
+                                contentDescription = null,
+                                tint = statusColor,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = statusText,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = statusColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            androidx.compose.animation.AnimatedVisibility(
+                visible = service.status == ServiceStatus.Status.OFFLINE && service.offlineMessage != null
             ) {
-                val statusColor = when (service.status) {
-                    ServiceStatus.Status.ONLINE -> Color(0xFF4CAF50)
-                    ServiceStatus.Status.OFFLINE -> Color(0xFFF44336)
-                    ServiceStatus.Status.CHECKING -> MaterialTheme.colorScheme.primary
-                }
-                val statusText = when (service.status) {
-                    ServiceStatus.Status.ONLINE -> stringResource(R.string.status_online) + if (service.latencyMs != null) " (${service.latencyMs}ms)" else ""
-                    ServiceStatus.Status.OFFLINE -> stringResource(R.string.status_offline)
-                    ServiceStatus.Status.CHECKING -> stringResource(R.string.status_checking)
-                }
-                
-                AnimatedContent(
-                    targetState = service.status,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
-                    },
-                    label = "statusIcon"
-                ) { status ->
-                    if (status == ServiceStatus.Status.CHECKING) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            color = statusColor,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
+                Column {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         Icon(
-                            painter = painterResource(
-                                id = if (status == ServiceStatus.Status.ONLINE) R.drawable.check else R.drawable.error
-                            ),
+                            painter = painterResource(R.drawable.info),
                             contentDescription = null,
-                            tint = statusColor,
-                            modifier = Modifier.size(16.dp)
+                            tint = Color(0xFFF44336).copy(alpha = 0.8f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = service.offlineMessage ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFFF44336).copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
-
-                Text(
-                    text = statusText,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = statusColor,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
     }

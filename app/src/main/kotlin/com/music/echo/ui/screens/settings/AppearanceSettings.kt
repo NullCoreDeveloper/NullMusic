@@ -1201,7 +1201,7 @@ highlightKey: String? = null) {
                         showPlayerBackgroundDialog = true 
                     }
                 ),
-                Material3SettingsItem(
+                if (playerBackground != PlayerBackgroundStyle.APPLE_MUSIC) Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.hide_player_thumbnail)),
                     icon = painterResource(R.drawable.hide_image),
                     title = { Text(stringResource(R.string.hide_player_thumbnail)) },
@@ -1222,8 +1222,8 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onHidePlayerThumbnailChange(!hidePlayerThumbnail) }
-                ),
-                Material3SettingsItem(
+                ) else null,
+                if (playerBackground != PlayerBackgroundStyle.APPLE_MUSIC) Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.thumbnail_corner_radius)),
                     icon = painterResource(R.drawable.image),
                     title = { Text(stringResource(R.string.thumbnail_corner_radius)) },
@@ -1236,8 +1236,8 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { showThumbnailCornerRadiusDialog = true }
-                ),
-                Material3SettingsItem(
+                ) else null,
+                if (playerBackground != PlayerBackgroundStyle.APPLE_MUSIC) Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.crop_album_art)),
                     icon = painterResource(R.drawable.crop),
                     title = { Text(stringResource(R.string.crop_album_art)) },
@@ -1258,7 +1258,7 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onCropAlbumArtChange(!cropAlbumArt) }
-                ),
+                ) else null,
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.player_buttons_style)),
                     icon = painterResource(R.drawable.palette),

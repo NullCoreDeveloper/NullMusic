@@ -2017,7 +2017,6 @@ fun BottomSheetPlayer(
             Spacer(Modifier.height(4.dp))
 
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
                 Modifier
@@ -2030,12 +2029,12 @@ fun BottomSheetPlayer(
                     color = TextBackgroundColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                    modifier = Modifier.weight(1f)
                 ) {
                     val formatText = remember(currentAudioFormat, currentFormatEntity) {
                         val localAudioFormat = currentAudioFormat
@@ -2052,7 +2051,9 @@ fun BottomSheetPlayer(
                         listOf(codecStr, bitrateStr, losslessStr).filter { it.isNotEmpty() }.joinToString(" • ")
                     }
 
-                    if (sleepTimerEnabled || showCodecOnPlayer) {
+                    val isBuffering = playbackState == androidx.media3.common.Player.STATE_BUFFERING
+                    val shouldShowCodecBox = showCodecOnPlayer && (formatText.isNotEmpty() || isBuffering)
+                    if (sleepTimerEnabled || shouldShowCodecBox) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
@@ -2099,17 +2100,40 @@ fun BottomSheetPlayer(
                                             maxLines = 1,
                                         )
                                     }
-                                } else if (showCodecOnPlayer && formatText.isNotEmpty()) {
-                                    Text(
-                                        text = formatText,
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            letterSpacing = 1.sp,
-                                            fontSize = 10.sp
-                                        ),
-                                        color = TextBackgroundColor.copy(alpha = 0.8f),
-                                        maxLines = 1,
-                                    )
+                                } else if (shouldShowCodecBox) {
+                                    if (isBuffering) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            androidx.compose.material3.CircularProgressIndicator(
+                                                modifier = Modifier.size(10.dp),
+                                                color = TextBackgroundColor.copy(alpha = 0.8f),
+                                                strokeWidth = 1.5.dp
+                                            )
+                                            Text(
+                                                text = stringResource(R.string.loading),
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = 1.sp
+                                                ),
+                                                color = TextBackgroundColor.copy(alpha = 0.8f),
+                                                maxLines = 1,
+                                            )
+                                        }
+                                    } else {
+                                        Text(
+                                            text = formatText,
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                letterSpacing = 1.sp,
+                                                fontSize = 10.sp
+                                            ),
+                                            color = TextBackgroundColor.copy(alpha = 0.8f),
+                                            maxLines = 1,
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -2122,6 +2146,8 @@ fun BottomSheetPlayer(
                     color = TextBackgroundColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f)
                 )
             }
 

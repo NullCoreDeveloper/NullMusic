@@ -304,6 +304,7 @@ private fun NewMiniPlayer(
     val backgroundColor = if (pureBlack && useDarkTheme) Color.Black else MaterialTheme.colorScheme.surfaceContainer
     
     val primaryColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.primary
+    val onPrimaryColor = if (isDynamicBackground) Color.Black else MaterialTheme.colorScheme.onPrimary
     val outlineColor = if (isDynamicBackground) Color.White.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline
     val onSurfaceColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
     val errorColor = MaterialTheme.colorScheme.error
@@ -436,7 +437,8 @@ private fun NewMiniPlayer(
                     canSkipPrevious = canSkipPrevious,
                     canSkipNext = canSkipNext,
                     onSurfaceColor = onSurfaceColor,
-                    primaryColor = primaryColor
+                    primaryColor = primaryColor,
+                    onPrimaryColor = onPrimaryColor
                 )
             }
         }
@@ -1144,7 +1146,8 @@ private fun MiniPlayerControls(
     canSkipPrevious: Boolean,
     canSkipNext: Boolean,
     onSurfaceColor: Color,
-    primaryColor: Color
+    primaryColor: Color,
+    onPrimaryColor: Color
 ) {
     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
     val isPlaying by playerConnection.isPlaying.collectAsState()
@@ -1221,7 +1224,7 @@ private fun MiniPlayerControls(
                     }
                 ),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = onPrimaryColor,
                 modifier = Modifier.size(24.dp)
             )
         }

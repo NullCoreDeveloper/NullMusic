@@ -72,10 +72,12 @@ if(NOT FFTW3_STATIC_LIB OR NOT EXISTS "${FFTW3_STATIC_LIB}")
     message(STATUS "FFTW3 not found locally. Fetching and building from source...")
     include(FetchContent)
     
-    set(FFTW_LOCAL_DIR "${CMAKE_SOURCE_DIR}/../third_party/fftw-3.3.10")
+    # Use the locally downloaded tarball if available
+    set(FFTW_LOCAL_TARBALL "${CMAKE_SOURCE_DIR}/../third_party/fftw-3.3.10.tar.gz")
     FetchContent_Declare(
       fftw3
-      SOURCE_DIR "${FFTW_LOCAL_DIR}"
+      URL "${FFTW_LOCAL_TARBALL}"
+      URL_HASH MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
     )
     
     # Configure FFTW options for a minimal static build

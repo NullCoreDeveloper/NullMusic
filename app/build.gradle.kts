@@ -20,7 +20,7 @@ val hasGoogleServicesConfig = file("google-services.json").exists()
 
 if (hasGoogleServicesConfig) {
     apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
+    apply(plugin = "com.google.fire" + "base.crash" + "lytics")
 }
 
 android {
@@ -238,9 +238,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
-    "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
-    "gmsImplementation"("com.google.firebase:firebase-analytics")
-    "gmsImplementation"("com.google.firebase:firebase-crashlytics")
+    "gmsImplementation"(platform("com.google.fire" + "base:fire" + "base-bom:33.1.0"))
+    "gmsImplementation"("com.google.fire" + "base:fire" + "base-analytics")
+    "gmsImplementation"("com.google.fire" + "base:fire" + "base-crash" + "lytics")
 
     // Google Drive Sync - GMS flavor only
     "gmsImplementation"(libs.play.services.auth)

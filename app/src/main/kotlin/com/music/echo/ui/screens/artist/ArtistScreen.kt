@@ -989,7 +989,7 @@ fun ArtistScreen(
                     )
                     
                     
-                    .padding(bottom = if (showLocalFab) 64.dp else 0.dp)
+                    .padding(bottom = if (showLocalFab) 120.dp else 0.dp)
             ) {
                 val onPlayAllClick: () -> Unit = {
                      if (showLocal) {
@@ -1061,27 +1061,15 @@ fun ArtistScreen(
                     }
                 }
 
-                if (showLocalFab) {
-                     androidx.compose.material3.SmallFloatingActionButton(
-                        modifier = Modifier.padding(16.dp).offset(x = (-4).dp), 
-                        onClick = onPlayAllClick
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.play),
-                            contentDescription = "Play All",
-                        )
-                    }
-                } else {
-                    androidx.compose.material3.FloatingActionButton(
-                        modifier = Modifier.padding(16.dp),
-                        onClick = onPlayAllClick
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.play),
-                            contentDescription = "Play All",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                androidx.compose.material3.FloatingActionButton(
+                    modifier = Modifier.padding(16.dp),
+                    onClick = onPlayAllClick
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.play),
+                        contentDescription = "Play All",
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
             }
         }

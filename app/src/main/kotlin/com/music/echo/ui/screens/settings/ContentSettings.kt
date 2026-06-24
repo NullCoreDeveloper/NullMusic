@@ -191,10 +191,11 @@ highlightKey: String? = null) {
                 Text(stringResource(R.string.config_proxy))
             },
             text = {
+                val dialogScrollState = androidx.compose.foundation.rememberScrollState()
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(scrollState),
+                        .verticalScroll(dialogScrollState),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     ExposedDropdownMenuBox(

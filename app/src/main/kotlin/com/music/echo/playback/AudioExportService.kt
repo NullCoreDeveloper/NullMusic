@@ -149,16 +149,37 @@ class AudioExportService : Service() {
                 error("Exported MP3 file is empty")
             }
 
-            val destinationDir = DocumentFile.fromTreeUri(this, Uri.parse(targetDirectoryUri))
-                ?: error("Export directory unavailable")
-            val outputFile = destinationDir.createFile("audio/mpeg", "$safeTitle.mp3")
-                ?: error("Unable to create output file")
+            val uri = Uri.parse(targetDirectoryUri)
 
-            tempMp3File.inputStream().use { input ->
-                contentResolver.openOutputStream(outputFile.uri, "w")?.use { output ->
-                    input.copyTo(output)
-                    output.flush()
-                } ?: error("Unable to open output stream")
+            if (uri.scheme == "file") {
+
+                val path = uri.path ?: error("Invalid export directory")
+
+                val folder = File(path)
+
+                if (!folder.exists() && !folder.mkdirs()) {
+                    error("Unable to create export directory")
+                }
+
+                val outputFile = File(folder, "$safeTitle.mp3")
+
+                tempMp3File.copyTo(outputFile, overwrite = true)
+
+            } else {
+
+                val destinationDir =
+                    DocumentFile.fromTreeUri(this, uri)
+                        ?: error("Export directory unavailable")
+
+                val outputFile =
+                    destinationDir.createFile("audio/mpeg", "$safeTitle.mp3")
+                        ?: error("Unable to create output file")
+
+                tempMp3File.inputStream().use { input ->
+                    contentResolver.openOutputStream(outputFile.uri, "w")!!.use {
+                        input.copyTo(it)
+                    }
+                }
             }
 
             tempSourceFile.delete()

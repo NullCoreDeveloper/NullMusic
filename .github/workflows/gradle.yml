@@ -244,4 +244,8 @@ jobs:
             }' > discord-payload.json
 
           # Post to Discord Webhook
-          curl -H "Content-Type: application/json" -d @discord-payload.json "$DISCORD_WEBHOOK"
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" -d @discord-payload.json "$DISCORD_WEBHOOK"
+          else
+            echo "DISCORD_WEBHOOK is not set, skipping notification."
+          fi

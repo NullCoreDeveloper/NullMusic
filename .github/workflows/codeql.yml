@@ -24,8 +24,6 @@ jobs:
         include:
         - language: actions
           build-mode: none
-        - language: c-cpp
-          build-mode: manual
         - language: java-kotlin
           build-mode: manual
         - language: javascript-typescript

@@ -116,6 +116,7 @@ highlightKey: String? = null) {
             item { AboutAppCard() }
 
 
+            item {
                 AboutSectionCard(title = "App") {
                     AboutActionRow(
                         icon = painterResource(R.drawable.github),

@@ -35,6 +35,14 @@ jobs:
           git checkout main
           # We try to merge upstream/main. If there are conflicts, we prefer our changes
           git merge upstream/main -X ours --allow-unrelated-histories -m "chore: sync with upstream EchoMusicApp/Echo-Music"
+          
+          # Remove analytics if they were re-introduced
+          sed -i '/firebase-crashlytics/d' app/build.gradle.kts
+          sed -i '/firebase-analytics/d' app/build.gradle.kts
+          sed -i '/google-services/d' build.gradle.kts
+          sed -i '/firebase-crashlytics-gradle/d' build.gradle.kts
+          
+          git commit -am "chore: strip analytics from upstream changes" || true
           git push origin main
           
       - name: Sync Tags and Trigger Release

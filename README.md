@@ -9,7 +9,7 @@
   [![GitHub Release](https://img.shields.io/github/v/release/NullCoreDeveloper/NullMusic?style=for-the-badge&color=6f42c1)](https://github.com/NullCoreDeveloper/NullMusic/releases)
   [![GitHub Stars](https://img.shields.io/github/stars/NullCoreDeveloper/NullMusic?style=for-the-badge&color=e3b341)](https://github.com/NullCoreDeveloper/NullMusic/stargazers)
   [![License](https://img.shields.io/github/license/NullCoreDeveloper/NullMusic?style=for-the-badge&color=28a745)](LICENSE)
-  [![Telegram](https://img.shields.io/badge/Telegram-Join-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/EchoMusicApp)
+  [![Telegram](https://img.shields.io/badge/Telegram-Join-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/NullCoreDeveloper)
   [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/EcfV3AxH5c)
 
   
@@ -192,7 +192,7 @@ Join the community for updates, discussions, and help.
     <img src="assets/discord.png" alt="Discord Logo" width="140"/>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://t.me/EchoMusicApp">
+  <a href="https://t.me/NullCoreDeveloper">
     <img src="assets/telegram.png" alt="Telegram Logo" width="130"/>
   </a>
 </div>
@@ -204,15 +204,15 @@ Join the community for updates, discussions, and help.
 If Echo Music has been useful to you, consider supporting its development.
 
 <div align="center">
-  <a href="https://buymeacoffee.com/iad1tya">
+  <a href="https://github.com/NullCoreDeveloper">
     <img src="assets/bmac.png" alt="Buy Me A Coffee Logo" width="140"/>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You">
+  <a href="https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You">
     <img src="assets/upi.svg" alt="UPI Logo" width="100"/>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.patreon.com/cw/iad1tya">
+  <a href="https://www.t.me/NullCoreDeveloper">
     <img src="assets/patreon3.png" alt="Patreon Logo" width="100"/>
   </a>
 </div>

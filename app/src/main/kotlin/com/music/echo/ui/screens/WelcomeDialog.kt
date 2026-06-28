@@ -70,8 +70,8 @@ fun WelcomeDialog(
                     WelcomeActionRow(
                         icon = painterResource(R.drawable.ic_instagram_new),
                         title = "Instagram",
-                        subtitle = "@iad1tya",
-                        onClick = { uriHandler.openUri("https://instagram.com/iad1tya") }
+                        subtitle = "@NullCoreDeveloper",
+                        onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") }
                     )
                     WelcomeDivider()
                     WelcomeActionRow(
@@ -93,22 +93,22 @@ fun WelcomeDialog(
                     WelcomeActionRow(
                         icon = painterResource(R.drawable.coffee),
                         title = "Buy Me a Coffee",
-                        subtitle = "buymeacoffee.com/iad1tya",
-                        onClick = { uriHandler.openUri("https://buymeacoffee.com/iad1tya") }
+                        subtitle = "github.com/NullCoreDeveloper",
+                        onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") }
                     )
                     WelcomeDivider()
                     WelcomeActionRow(
                         icon = painterResource(R.drawable.ic_patreon_new),
                         title = "Patreon",
-                        subtitle = "patreon.com/cw/iad1tya",
-                        onClick = { uriHandler.openUri("https://www.patreon.com/cw/iad1tya") }
+                        subtitle = "t.me/NullCoreDeveloper",
+                        onClick = { uriHandler.openUri("https://www.t.me/NullCoreDeveloper") }
                     )
                     WelcomeDivider()
                     WelcomeActionRow(
                         icon = painterResource(R.drawable.upi_new),
                         title = "UPI",
-                        subtitle = "iad1tya@upi",
-                        onClick = { uriHandler.openUri("https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support") }
+                        subtitle = "nullcore@upi",
+                        onClick = { uriHandler.openUri("https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support") }
                     )
                 }
 
@@ -117,7 +117,7 @@ fun WelcomeDialog(
                         icon = painterResource(R.drawable.ic_telegram_new),
                         title = "Telegram",
                         subtitle = "t.me/EchoMusicApp",
-                        onClick = { uriHandler.openUri("https://t.me/EchoMusicApp") }
+                        onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") }
                     )
                     WelcomeDivider()
                     WelcomeActionRow(

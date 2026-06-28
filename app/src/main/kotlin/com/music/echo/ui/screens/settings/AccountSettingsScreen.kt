@@ -43,7 +43,9 @@ import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.AccountSettingsViewModel
 import iad1tya.echo.music.viewmodels.HomeViewModel
+import iad1tya.echo.music.viewmodels.BackupRestoreViewModel
 import iad1tya.echo.music.R
+import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AccountSettingsScreen(
@@ -75,6 +77,13 @@ fun AccountSettingsScreen(
     var showToken by remember { mutableStateOf(false) }
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val backupRestoreViewModel: BackupRestoreViewModel = hiltViewModel()
+    val coroutineScope = rememberCoroutineScope()
+    var showYandexDialog by rememberSaveable { mutableStateOf(false) }
+    var yandexUrl by rememberSaveable { mutableStateOf("") }
+    var isYandexImporting by rememberSaveable { mutableStateOf(false) }
+    var yandexProgress by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -244,6 +253,19 @@ fun AccountSettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+            Material3SettingsGroup(scrollState = scrollState, 
+                title = "App",
+                items = listOf(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.playlist_add),
+                        title = { Text("Import from Yandex Music") },
+                        onClick = { showYandexDialog = true }
+                    )
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -351,5 +373,56 @@ fun AccountSettingsScreen(
         }
         
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
+    }
+
+    if (showYandexDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!isYandexImporting) showYandexDialog = false },
+            title = { Text("Import from Yandex Music") },
+            text = {
+                Column {
+                    if (isYandexImporting) {
+                        Text("Importing... $yandexProgress")
+                    } else {
+                        Text("Paste the link to your public Yandex Music playlist.")
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        OutlinedTextField(
+                            value = yandexUrl,
+                            onValueChange = { yandexUrl = it },
+                            label = { Text("Playlist URL") },
+                            singleLine = true
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                if (!isYandexImporting) {
+                    TextButton(
+                        onClick = {
+                            if (yandexUrl.isNotBlank()) {
+                                isYandexImporting = true
+                                coroutineScope.launch {
+                                    backupRestoreViewModel.importFromYandexUrl(context, yandexUrl) { current, total ->
+                                        yandexProgress = "$current / $total"
+                                    }
+                                    isYandexImporting = false
+                                    showYandexDialog = false
+                                    yandexUrl = ""
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Import")
+                    }
+                }
+            },
+            dismissButton = {
+                if (!isYandexImporting) {
+                    TextButton(onClick = { showYandexDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
     }
 }

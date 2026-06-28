@@ -115,57 +115,7 @@ highlightKey: String? = null) {
         ) {
             item { AboutAppCard() }
 
-            item {
-                AboutSectionCard(title = "Developer") {
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.website),
-                        title = "Website",
-                        subtitle = "NullCoreDeveloper",
-                        onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") },
-                    )
-                    AboutDivider()
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.ic_instagram_new),
-                        title = "Instagram",
-                        subtitle = "@NullCoreDeveloper",
-                        onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") },
-                    )
-                    AboutDivider()
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.ic_x_new),
-                        title = "X (Twitter)",
-                        subtitle = "@xad1tya",
-                        onClick = { uriHandler.openUri("https://x.com/xad1tya") },
-                    )
-                }
-            }
 
-            item {
-                AboutSectionCard(title = "Support") {
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.coffee),
-                        title = "Buy Me a Coffee",
-                        subtitle = "github.com/NullCoreDeveloper",
-                        onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") },
-                    )
-                    AboutDivider()
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.ic_patreon_new),
-                        title = "Patreon",
-                        subtitle = "t.me/NullCoreDeveloper",
-                        onClick = { uriHandler.openUri("https://www.t.me/NullCoreDeveloper") },
-                    )
-                    AboutDivider()
-                    AboutActionRow(
-                        icon = painterResource(R.drawable.upi_new),
-                        title = "UPI",
-                        subtitle = "nullcore@upi",
-                        onClick = { uriHandler.openUri("https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support") },
-                    )
-                }
-            }
-
-            item {
                 AboutSectionCard(title = "App") {
                     AboutActionRow(
                         icon = painterResource(R.drawable.github),
@@ -175,16 +125,9 @@ highlightKey: String? = null) {
                     )
                     AboutDivider()
                     AboutActionRow(
-                        icon = painterResource(R.drawable.ic_discord_new),
-                        title = "Discord",
-                        subtitle = "discord.gg/EcfV3AxH5c",
-                        onClick = { uriHandler.openUri("https://discord.gg/EcfV3AxH5c") },
-                    )
-                    AboutDivider()
-                    AboutActionRow(
                         icon = painterResource(R.drawable.ic_telegram_new),
                         title = "Telegram",
-                        subtitle = "t.me/EchoMusicApp",
+                        subtitle = "t.me/NullCoreDeveloper",
                         onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") },
                     )
                 }
@@ -274,7 +217,7 @@ private fun AboutAppCard() {
             Spacer(Modifier.height(4.dp))
             
             Text(
-                text = if (rotation <= 90f) "Echo Music" else "Developed by Aditya",
+                text = if (rotation <= 90f) "NullMusic" else "Developed by NullCoreDeveloper",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

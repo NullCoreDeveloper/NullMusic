@@ -338,7 +338,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("Saavn (320kbps) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
+                Text("Saavn (320kbps) streams run through NullMusic's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
             }
         }
 
@@ -368,7 +368,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("Lossless (Qobuz) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating — it directly helps cover server costs.\n\n" + stringResource(R.string.lossless_audio_warning))
+                Text("Lossless (Qobuz) streams run through NullMusic's servers and cost real money to keep running. If you find it useful, please consider donating — it directly helps cover server costs.\n\n" + stringResource(R.string.lossless_audio_warning))
             }
         }
 

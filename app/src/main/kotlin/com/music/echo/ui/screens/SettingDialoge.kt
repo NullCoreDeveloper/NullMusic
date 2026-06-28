@@ -86,7 +86,7 @@ fun SettingDialoge(
                     Spacer(modifier = Modifier.size(24.dp))
                     
                     Text(
-                        text = "Echo Music",
+                        text = "NullMusic",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp

@@ -72,7 +72,7 @@ jobs:
           echo "App Version: $VERSION_NAME"
           mkdir -p app/build/outputs/apk/release-artifacts
           find app/build/outputs/apk/ -name "*.apk" ! -path "*/release-artifacts/*" | while read -r apk_path; do
-              target_name="Echo-${VERSION_NAME}-Universal.apk"
+              target_name="NullMusic-${VERSION_NAME}-Universal.apk"
               cp "$apk_path" "app/build/outputs/apk/release-artifacts/$target_name"
               echo "Copied $apk_path -> app/build/outputs/apk/release-artifacts/$target_name"
           done
@@ -80,7 +80,7 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Echo-Universal
+          name: NullMusic-Universal
           path: app/build/outputs/apk/release-artifacts/*.apk
 
       - name: Parse Release Info

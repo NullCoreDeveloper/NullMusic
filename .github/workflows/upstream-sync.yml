@@ -54,7 +54,9 @@ jobs:
               "patreon.com/cw/iad1tya": "t.me/NullCoreDeveloper",
               "iad1tya@upi": "nullcore@upi",
               "iad1tya/Echo-Music": "NullCoreDeveloper/NullMusic",
-              "EchoMusicApp/Echo-Music": "NullCoreDeveloper/NullMusic"
+              "EchoMusicApp/Echo-Music": "NullCoreDeveloper/NullMusic",
+              "Echo Music": "NullMusic",
+              "echomusic": "nullmusic"
           }
           for root, dirs, files in os.walk("."):
               if ".git" in root or "build" in root or ".gradle" in root:

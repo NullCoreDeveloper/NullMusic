@@ -3,7 +3,7 @@
 <!-- Upstream InnerTune strings -->
 <!-- Do not add new features here -->
 <!-- Try to re-use strings here, but be careful on its usage e.g. verb vs noun -->
-<!-- "InnerTune" is replaced with "echomusic" -->
+<!-- "InnerTune" is replaced with "nullmusic" -->
 <!-- Translators: Do not modify this file for translations, use InnerTune's Weblate instead. -->
 
 <resources>
@@ -381,7 +381,7 @@
     <string name="restore_failed">Failed to restore backup</string>
 
     <string name="discord_integration">Discord Integration</string>
-    <string name="discord_information">echomusic uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s TOS. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\n\echomusic will only extract your token, and everything else is stored locally.</string>
+    <string name="discord_information">nullmusic uses the KizzyRPC library to set your Discord account\'s status. This involves using the Discord Gateway connection, which may be considered a violation of Discord\'s TOS. However, there are no known cases of user accounts being suspended for this reason. Use at your own risk.\n\nullmusic will only extract your token, and everything else is stored locally.</string>
     <string name="dismiss">Dismiss</string>
     <string name="options">Options</string>
     <string name="preview">Preview</string>
@@ -409,7 +409,7 @@
     <string name="listen_together_smart_resync">Smart Network Resync</string>
     <string name="listen_together_smart_resync_desc">Automatically catch up with the host after a connection drop</string>
     <string name="spotify_import_title">Import From Spotify</string>
-    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them into local Echo Music playlists.</string>
+    <string name="spotify_import_desc">Connect Spotify, choose playlists, and mirror them into local NullMusic playlists.</string>
     <string name="spotify_connect">Connect Spotify</string>
     <string name="spotify_refresh">Refresh Spotify library</string>
     <string name="spotify_select_sources">Select Spotify playlists</string>
@@ -449,10 +449,10 @@
     <string name="recognition_notification_processing">Identifying…</string>
     <string name="recognition_notification_no_match">No match found</string>
     <string name="recognition_notification_failed">Recognition failed</string>
-    <string name="listen_on_echo_music">Listen on Echo Music</string>
+    <string name="listen_on_echo_music">Listen on NullMusic</string>
     <string name="qs_tile_music_recognizer">Recognize music</string>
-    <string name="echo_brain_beta">Echo Brain (Beta)</string>
-    <string name="echo_brain_enable">Enable Echo Brain</string>
+    <string name="echo_brain_beta">Null Brain (Beta)</string>
+    <string name="echo_brain_enable">Enable Null Brain</string>
     <string name="echo_brain_enable_desc">Automatically inject AI recommendations based on your listening habits</string>
     <string name="echo_brain_profile_statistics">Profile Statistics</string>
     <string name="echo_brain_learning_level">Learning Level</string>

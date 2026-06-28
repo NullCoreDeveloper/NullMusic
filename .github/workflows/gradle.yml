@@ -190,7 +190,7 @@ jobs:
                 title: "Release Changelog",
                 description: $desc,
                 color: 16738660,
-                footer: { text: "Echo Music Automation System" }
+                footer: { text: "NullMusic Automation System" }
               }]
             }' > discord-release-payload.json
 
@@ -239,7 +239,7 @@ jobs:
                 fields: [
                   { name: "Download APK", value: ("[" + $label + "](" + $link + ")"), inline: false }
                 ],
-                footer: { text: "Echo Music Automation System" }
+                footer: { text: "NullMusic Automation System" }
               }]
             }' > discord-payload.json
 

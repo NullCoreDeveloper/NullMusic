@@ -44,57 +44,79 @@ class YandexImportRepository @Inject constructor(
     private val client = OkHttpClient()
     private val mapperMutex = Mutex()
 
-    suspend fun fetchYandexPlaylist(username: String, playlistId: String): YandexPlaylist? =
+    suspend fun fetchYandexPlaylist(url: String): YandexPlaylist? =
         withContext(Dispatchers.IO) {
             try {
-                val pageUrl = "https://music.yandex.ru/users/$username/playlists/$playlistId"
-                val apiUrl = "https://music.yandex.ru/handlers/playlist.jsx?owner=$username&kinds=$playlistId"
+                // Ensure it is a full URL
+                val targetUrl = if (url.contains("music.yandex.ru")) url else "https://music.yandex.ru/playlists/$url"
                 
-                // Fetch page to get cookies
                 val pageRequest = Request.Builder()
-                    .url(pageUrl)
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0")
+                    .url(targetUrl)
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
                     .build()
-                client.newCall(pageRequest).execute().use { }
-
-                // Fetch API
-                val apiRequest = Request.Builder()
-                    .url(apiUrl)
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0")
-                    .header("X-Requested-With", "XMLHttpRequest")
-                    .header("Referer", pageUrl)
-                    .build()
-                    
-                val responseBody = client.newCall(apiRequest).execute().use { it.body?.string() }
-                if (responseBody.isNullOrBlank()) return@withContext null
                 
-                val json = JSONObject(responseBody)
-                if (!json.has("playlist")) return@withContext null
+                val html = client.newCall(pageRequest).execute().use { it.body?.string() }
+                if (html.isNullOrBlank()) return@withContext null
                 
-                val playlistJson = json.getJSONObject("playlist")
-                val title = playlistJson.optString("title", "Без названия")
-                val tracksArray = playlistJson.optJSONArray("tracks") ?: return@withContext null
+                var title = "Без названия"
+                val titleRegex = Regex("<title>(.*?)</title>")
+                val titleMatch = titleRegex.find(html)
+                if (titleMatch != null && !titleMatch.groupValues[1].contains("Яндекс", ignoreCase = true)) {
+                    title = titleMatch.groupValues[1].replace(" — Яндекс Музыка", "").trim()
+                }
+                
+                val htmlReplaced = html.replace("\\u002F", "/")
+                
+                // Regex 1: for system / lk.UUID
+                val trackIdsRegex1 = Regex("\"path\":\"/playlist/items/\\d+\",\"value\":\\{\"id\":\"(\\d+)\"")
+                var matchResults = trackIdsRegex1.findAll(htmlReplaced).map { it.groupValues[1] }.toList()
+                
+                // Regex 2: for normal users playlists
+                if (matchResults.isEmpty()) {
+                    val trackIdsRegex2 = Regex("\\\\\"id\\\\\":(\\d+),\\\\\"albumId\\\\\":")
+                    matchResults = trackIdsRegex2.findAll(html).map { it.groupValues[1] }.toList()
+                }
+                
+                val uniqueIds = matchResults.distinct()
+                if (uniqueIds.isEmpty()) return@withContext null
                 
                 val tracks = mutableListOf<YandexTrack>()
-                for (i in 0 until tracksArray.length()) {
-                    val trackItem = tracksArray.getJSONObject(i)
-                    val trackData = if (trackItem.has("track")) trackItem.getJSONObject("track") else trackItem
+                
+                // Batch requests (chunks of 100)
+                val chunkedIds = uniqueIds.chunked(100)
+                for (chunk in chunkedIds) {
+                    val idsStr = chunk.joinToString(",")
+                    val apiUrl = "https://api.music.yandex.net/tracks?trackIds=$idsStr"
                     
-                    val trackTitle = trackData.optString("title", "Unknown")
-                    val version = trackData.optString("version", "")
-                    val fullTitle = if (version.isNotEmpty()) "$trackTitle ($version)" else trackTitle
-                    
-                    val artistsArray = trackData.optJSONArray("artists")
-                    val artistsList = mutableListOf<String>()
-                    if (artistsArray != null) {
-                        for (j in 0 until artistsArray.length()) {
-                            artistsList.add(artistsArray.getJSONObject(j).optString("name", "Unknown"))
+                    val apiRequest = Request.Builder()
+                        .url(apiUrl)
+                        .header("User-Agent", "Mozilla/5.0")
+                        .build()
+                        
+                    val apiResponse = client.newCall(apiRequest).execute().use { it.body?.string() }
+                    if (!apiResponse.isNullOrBlank()) {
+                        val json = JSONObject(apiResponse)
+                        val resultArray = json.optJSONArray("result")
+                        if (resultArray != null) {
+                            for (i in 0 until resultArray.length()) {
+                                val trackData = resultArray.getJSONObject(i)
+                                val trackTitle = trackData.optString("title", "Unknown")
+                                val version = trackData.optString("version", "")
+                                val fullTitle = if (version.isNotEmpty()) "$trackTitle ($version)" else trackTitle
+                                
+                                val artistsArray = trackData.optJSONArray("artists")
+                                val artistsList = mutableListOf<String>()
+                                if (artistsArray != null) {
+                                    for (j in 0 until artistsArray.length()) {
+                                        artistsList.add(artistsArray.getJSONObject(j).optString("name", "Unknown"))
+                                    }
+                                }
+                                
+                                val durationMs = trackData.optLong("durationMs", 0L)
+                                tracks.add(YandexTrack(fullTitle, artistsList.joinToString(", "), durationMs))
+                            }
                         }
                     }
-                    
-                    val durationMs = trackData.optLong("durationMs", 0L)
-                    
-                    tracks.add(YandexTrack(fullTitle, artistsList.joinToString(", "), durationMs))
                 }
                 
                 return@withContext YandexPlaylist(title, tracks)
@@ -105,22 +127,20 @@ class YandexImportRepository @Inject constructor(
         }
 
     suspend fun importFromUrl(url: String, onProgress: (Int, Int) -> Unit): Boolean {
-        val regex = Regex("users/([^/]+)/playlists/(\\d+)")
-        val match = regex.find(url) ?: return false
-        val username = match.groupValues[1]
-        val playlistId = match.groupValues[2]
-        return importPlaylist(username, playlistId, onProgress)
+        // Now handles any URL format natively by delegating entirely to HTML parsing
+        if (!url.contains("music.yandex.ru")) return false
+        return importPlaylist(url, onProgress)
     }
 
     suspend fun importPlaylist(
-        username: String,
-        playlistId: String,
+        url: String,
         onProgress: (Int, Int) -> Unit
     ): Boolean = withContext(Dispatchers.IO) {
-        val yandexPlaylist = fetchYandexPlaylist(username, playlistId) ?: return@withContext false
+        val yandexPlaylist = fetchYandexPlaylist(url) ?: return@withContext false
         val matchedTracks = matchTracks(yandexPlaylist.tracks, onProgress)
         
-        val localPlaylistId = "YANDEX_PLAYLIST_${username}_$playlistId"
+        // Generate a simple ID hash based on URL
+        val localPlaylistId = "YANDEX_PLAYLIST_${url.hashCode()}"
         mirrorPlaylist(localPlaylistId, yandexPlaylist.title, matchedTracks.map { it.metadata })
         return@withContext true
     }

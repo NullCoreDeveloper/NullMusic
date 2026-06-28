@@ -104,6 +104,14 @@ class YandexImportRepository @Inject constructor(
             }
         }
 
+    suspend fun importFromUrl(url: String, onProgress: (Int, Int) -> Unit): Boolean {
+        val regex = Regex("users/([^/]+)/playlists/(\\d+)")
+        val match = regex.find(url) ?: return false
+        val username = match.groupValues[1]
+        val playlistId = match.groupValues[2]
+        return importPlaylist(username, playlistId, onProgress)
+    }
+
     suspend fun importPlaylist(
         username: String,
         playlistId: String,

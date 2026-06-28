@@ -159,7 +159,7 @@ class YandexImportRepository @Inject constructor(
                 SpotifyMapper.matchScore(
                     spotifyTitle = track.title,
                     spotifyArtist = track.artists,
-                    spotifyDurationMs = track.durationMs,
+                    spotifyDurationMs = track.durationMs.toInt(),
                     candidateTitle = candidate.title,
                     candidateArtist = candidate.artists.joinToString(" ") { it.name },
                     candidateDurationSec = candidate.duration,

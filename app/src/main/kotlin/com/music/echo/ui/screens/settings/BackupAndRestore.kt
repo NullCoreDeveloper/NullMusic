@@ -60,6 +60,9 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.LocalDateTime
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import java.time.format.DateTimeFormatter
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
@@ -99,6 +102,11 @@ fun BackupAndRestore(
     var csvImportProgress by rememberSaveable { mutableIntStateOf(0) }
     val csvRecentLogs = remember { mutableStateListOf<ConvertedSongLog>() }
     var pendingCsvUri by remember { mutableStateOf<android.net.Uri?>(null) }
+
+    var showYandexDialog by rememberSaveable { mutableStateOf(false) }
+    var yandexUrl by rememberSaveable { mutableStateOf("") }
+    var isYandexImporting by rememberSaveable { mutableStateOf(false) }
+    var yandexProgress by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -203,6 +211,11 @@ fun BackupAndRestore(
                                 title = { Text("Import from Spotify") },
                                 icon = painterResource(R.drawable.ic_spotify),
                                 onClick = { navController.navigate("settings/spotify_import") }
+                            ),
+                            Material3SettingsItem(
+                                title = { Text("Import from Yandex Music") },
+                                icon = painterResource(R.drawable.playlist_add),
+                                onClick = { showYandexDialog = true }
                             ),
                             Material3SettingsItem(
                                 title = { Text("Import from local file") },
@@ -334,5 +347,56 @@ fun BackupAndRestore(
             
         },
     )
+
+    if (showYandexDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!isYandexImporting) showYandexDialog = false },
+            title = { Text("Import from Yandex Music") },
+            text = {
+                Column {
+                    if (isYandexImporting) {
+                        Text("Importing... $yandexProgress")
+                    } else {
+                        Text("Paste the link to your public Yandex Music playlist.")
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        OutlinedTextField(
+                            value = yandexUrl,
+                            onValueChange = { yandexUrl = it },
+                            label = { Text("Playlist URL") },
+                            singleLine = true
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                if (!isYandexImporting) {
+                    TextButton(
+                        onClick = {
+                            if (yandexUrl.isNotBlank()) {
+                                isYandexImporting = true
+                                coroutineScope.launch {
+                                    viewModel.importFromYandexUrl(context, yandexUrl) { current, total ->
+                                        yandexProgress = "$current / $total"
+                                    }
+                                    isYandexImporting = false
+                                    showYandexDialog = false
+                                    yandexUrl = ""
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Import")
+                    }
+                }
+            },
+            dismissButton = {
+                if (!isYandexImporting) {
+                    TextButton(onClick = { showYandexDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
+    }
 }
 

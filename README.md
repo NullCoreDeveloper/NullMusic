@@ -1,7 +1,7 @@
 <div align="center">
   <h1>NullMusic</h1>
   <p><strong>Современный и быстрый музыкальный плеер для Android с удобным интерфейсом.</strong></p>
-  <img src="https://visitor-badge.laobi.icu/badge?page_id=NullCoreDeveloper.NullMusic&left_text=Просмотры" alt="Просмотры" />
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=NullCoreDeveloper.NullMusic&left_text=Views" alt="Views" />
 </div>
 
 ---

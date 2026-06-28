@@ -109,9 +109,9 @@ android {
         }
         create("release") {
             storeFile = System.getenv("STORE_PASSWORD")?.let { file("keystore/release.keystore") } ?: file("keystore/debug.keystore")
-            storePassword = System.getenv("STORE_PASSWORD") ?: "android"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "androiddebugkey"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
+            storePassword = System.getenv("STORE_PASSWORD")?.trim() ?: "android"
+            keyAlias = System.getenv("KEY_ALIAS")?.trim() ?: "androiddebugkey"
+            keyPassword = System.getenv("KEY_PASSWORD")?.trim() ?: "android"
         }
         getByName("debug") {
             keyAlias = "androiddebugkey"

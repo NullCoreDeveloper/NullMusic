@@ -55,7 +55,7 @@ jobs:
           RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
         run: |
           mkdir -p app/keystore
-          echo "$RELEASE_KEYSTORE_BASE64" | base64 --decode > app/keystore/release.keystore
+          echo "$RELEASE_KEYSTORE_BASE64" | tr -d '\n\r ' | base64 --decode > app/keystore/release.keystore
 
       - name: Build and Sign Release APK (Push to main / Dispatch / Tag)
         env:

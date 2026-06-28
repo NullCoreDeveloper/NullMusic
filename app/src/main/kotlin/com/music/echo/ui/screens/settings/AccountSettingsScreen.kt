@@ -360,4 +360,4 @@ fun AccountSettingsScreen(
         
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
-
+}

@@ -1,0 +1,57 @@
+name: Upstream Sync & Release
+on:
+  schedule:
+    - cron:  '0 2 * * *' # Run at 2 AM UTC daily
+  workflow_dispatch:
+
+jobs:
+  sync_and_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }} # Use PAT to trigger other workflows if provided
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Upstream Remote
+        run: git remote add upstream https://github.com/EchoMusicApp/Echo-Music.git || true
+
+      - name: Fetch Upstream
+        run: git fetch upstream --tags
+
+      - name: Merge Upstream into Main
+        run: |
+          git checkout main
+          # We try to merge upstream/main. If there are conflicts, we prefer our changes
+          git merge upstream/main -X ours --allow-unrelated-histories -m "chore: sync with upstream EchoMusicApp/Echo-Music"
+          git push origin main
+          
+      - name: Sync Tags and Trigger Release
+        run: |
+          # Get latest tag from upstream
+          LATEST_TAG=$(git describe --tags --abbrev=0 upstream/main 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ]; then
+            echo "Latest upstream tag is $LATEST_TAG"
+            # Check if we already have this tag
+            if git show-ref --tags | grep -q "refs/tags/$LATEST_TAG"; then
+              echo "Tag $LATEST_TAG already exists locally. No new release needed."
+            else
+              echo "New tag found! Creating and pushing tag $LATEST_TAG"
+              git tag $LATEST_TAG
+              git push origin $LATEST_TAG
+              echo "Pushed tag $LATEST_TAG to origin. This should trigger the gradle.yml release workflow."
+            fi
+          else
+            echo "No tags found in upstream."
+          fi

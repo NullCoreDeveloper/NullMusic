@@ -6,9 +6,9 @@
   <p><strong>A modern Android music app with ad-free streaming, synced lyrics, offline playback, and an intuitive user experience.
 </strong></p>
 
-  [![GitHub Release](https://img.shields.io/github/v/release/iad1tya/Echo-Music?style=for-the-badge&color=6f42c1)](https://github.com/iad1tya/Echo-Music/releases)
-  [![GitHub Stars](https://img.shields.io/github/stars/iad1tya/Echo-Music?style=for-the-badge&color=e3b341)](https://github.com/iad1tya/Echo-Music/stargazers)
-  [![License](https://img.shields.io/github/license/iad1tya/Echo-Music?style=for-the-badge&color=28a745)](LICENSE)
+  [![GitHub Release](https://img.shields.io/github/v/release/NullCoreDeveloper/NullMusic?style=for-the-badge&color=6f42c1)](https://github.com/NullCoreDeveloper/NullMusic/releases)
+  [![GitHub Stars](https://img.shields.io/github/stars/NullCoreDeveloper/NullMusic?style=for-the-badge&color=e3b341)](https://github.com/NullCoreDeveloper/NullMusic/stargazers)
+  [![License](https://img.shields.io/github/license/NullCoreDeveloper/NullMusic?style=for-the-badge&color=28a745)](LICENSE)
   [![Telegram](https://img.shields.io/badge/Telegram-Join-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/EchoMusicApp)
   [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/EcfV3AxH5c)
 
@@ -148,13 +148,13 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 
 ### Android Installation
 
-Download the latest pre-compiled APK from the [Releases Page](https://github.com/iad1tya/Echo-Music/releases/latest).
+Download the latest pre-compiled APK from the [Releases Page](https://github.com/NullCoreDeveloper/NullMusic/releases/latest).
 
 ### Building from Source
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/iad1tya/Echo-Music.git
+   git clone https://github.com/NullCoreDeveloper/NullMusic.git
    cd Echo-Music
    ```
 
@@ -244,7 +244,7 @@ Echo Music stands on the shoulders of several excellent open-source projects. Si
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=EchoMusicApp/Echo-Music&type=timeline&legend=top-left)](https://www.star-history.com/#EchoMusicApp/Echo-Music&type=timeline&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=NullCoreDeveloper/NullMusic&type=timeline&legend=top-left)](https://www.star-history.com/#NullCoreDeveloper/NullMusic&type=timeline&legend=top-left)
 
 ---
 

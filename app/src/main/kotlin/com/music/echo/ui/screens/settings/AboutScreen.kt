@@ -170,8 +170,8 @@ highlightKey: String? = null) {
                     AboutActionRow(
                         icon = painterResource(R.drawable.github),
                         title = "GitHub",
-                        subtitle = "EchoMusicApp/Echo-Music",
-                        onClick = { uriHandler.openUri("https://github.com/EchoMusicApp/Echo-Music") },
+                        subtitle = "NullCoreDeveloper/NullMusic",
+                        onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper/NullMusic") },
                     )
                     AboutDivider()
                     AboutActionRow(

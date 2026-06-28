@@ -14,7 +14,7 @@ This document provides instructions for setting up the Echo Music project for de
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/iad1tya/Echo-Music.git
+git clone https://github.com/NullCoreDeveloper/NullMusic.git
 cd Echo-Music
 ```
 

@@ -11,6 +11,7 @@
 
 **Playback Engine**
 - Added a self-healing remote configuration system synced with zemer-cipher for seamless YouTube player signature updates without needing a new APK version.
+- Integrated SponsorBlock API to automatically skip sponsorships, intros, outros, and other non-music segments during playback (can be toggled in Content Settings).
 - Disabled "320 kbps" (Saavn) and "Lossless" (Qobuz) audio and download quality options due to server maintenance; existing users will be automatically migrated to "Opus" or "YouTube Music".
 
 **ListenBrainz**

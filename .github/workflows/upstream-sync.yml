@@ -32,19 +32,21 @@ jobs:
 
       - name: Merge Upstream into Main
         run: |
+          git config --global gc.auto 0
+          rm -f .git/index.lock
           git checkout main
           # We try to merge upstream/main. If there are conflicts, we prefer our changes
           git merge upstream/main -X ours --allow-unrelated-histories -m "chore: sync with upstream EchoMusicApp/Echo-Music" || {
             echo "Merge conflicts detected (e.g. rename/delete). Resolving in favor of HEAD..."
             git diff --name-only --diff-filter=U | while read -r file; do
               if git rev-parse HEAD:"$file" >/dev/null 2>&1; then
-                git checkout HEAD -- "$file"
-                git add -- "$file"
+                git checkout HEAD -- "$file" || true
+                git add -- "$file" || true
               else
-                git rm -rf -- "$file"
+                git rm -rf -- "$file" || true
               fi
             done
-            git commit --no-edit
+            git commit --no-edit || true
           }
           
           # Remove analytics if they were re-introduced

@@ -111,7 +111,12 @@ jobs:
               git tag -d $LATEST_TAG || true
               git tag $LATEST_TAG
               git push origin $LATEST_TAG
-              echo "Pushed tag $LATEST_TAG to origin. This should trigger the gradle.yml release workflow."
+              echo "Pushed tag $LATEST_TAG to origin."
+              
+              # GITHUB_TOKEN pushes do not trigger other workflows automatically.
+              # We explicitly trigger the build workflow using the gh CLI.
+              echo "Triggering Android Build & Sign workflow for tag $LATEST_TAG..."
+              env GH_TOKEN=${{ secrets.GITHUB_TOKEN }} gh workflow run gradle.yml --ref $LATEST_TAG || echo "Warning: Failed to trigger gradle.yml automatically."
             fi
           else
             echo "No tags found in upstream."

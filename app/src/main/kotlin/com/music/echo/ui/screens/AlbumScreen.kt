@@ -935,7 +935,7 @@ fun AlbumScreen(
                                     type = "text/plain"
                                     putExtra(
                                         android.content.Intent.EXTRA_TEXT,
-                                        "https://share.echomusic.fun/playlist?list=${albumWithSongs.album.playlistId}"
+                                        "https://share.nullmusic.fun/playlist?list=${albumWithSongs.album.playlistId}"
                                     )
                                 }
                                 context.startActivity(

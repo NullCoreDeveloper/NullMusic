@@ -274,7 +274,7 @@
     <string name="enable_lrclib">LrcLib গানের লিরিক্স প্রদানকারী সক্রিয় করুন</string>
     <string name="hide_explicit">স্পষ্ট বিষয়বস্তু লুকান</string>
     <string name="discord_integration">ডিসকর্ড ইন্টিগ্রেশন</string>
-    <string name="discord_information">echomusic আপনার Discord অ্যাকাউন্টের স্ট্যাটাস সেট করার জন্য KizzyRPC লাইব্রেরি ব্যবহার করে। এর মধ্যে Discord Gateway সংযোগ ব্যবহার করা হয়, যা Discord-এর পরিষেবার শর্তাবলীর (TOS) লঙ্ঘন হিসেবে বিবেচিত হতে পারে। তবে, এই কারণে ব্যবহারকারীর অ্যাকাউন্ট সাসপেন্ড হওয়ার কোনো পরিচিত ঘটনা নেই। ব্যবহার আপনার নিজের ঝুঁকিতে করুন।\n\nechomusic শুধুমাত্র আপনার টোকেন সংগ্রহ করবে, এবং বাকী সবকিছু স্থানীয়ভাবে সংরক্ষিত থাকবে।</string>
+    <string name="discord_information">nullmusic আপনার Discord অ্যাকাউন্টের স্ট্যাটাস সেট করার জন্য KizzyRPC লাইব্রেরি ব্যবহার করে। এর মধ্যে Discord Gateway সংযোগ ব্যবহার করা হয়, যা Discord-এর পরিষেবার শর্তাবলীর (TOS) লঙ্ঘন হিসেবে বিবেচিত হতে পারে। তবে, এই কারণে ব্যবহারকারীর অ্যাকাউন্ট সাসপেন্ড হওয়ার কোনো পরিচিত ঘটনা নেই। ব্যবহার আপনার নিজের ঝুঁকিতে করুন।\n\nnullmusic শুধুমাত্র আপনার টোকেন সংগ্রহ করবে, এবং বাকী সবকিছু স্থানীয়ভাবে সংরক্ষিত থাকবে।</string>
     <string name="dismiss">বাতিল করুন</string>
     <string name="options">বিকল্পসমূহ</string>
     <string name="preview">প্রিভিউ</string>
@@ -352,7 +352,7 @@
 
 
     <string name="spotify_import_title">স্পটিফাই থেকে ইমপোর্ট করুন</string>
-    <string name="spotify_import_desc">স্পটিফাই সংযুক্ত করুন, প্লেলিস্ট বাছাই করুন এবং সেগুলিকে স্থানীয় Echo Music প্লেলিস্টে মিরর করুন।</string>
+    <string name="spotify_import_desc">স্পটিফাই সংযুক্ত করুন, প্লেলিস্ট বাছাই করুন এবং সেগুলিকে স্থানীয় NullMusic প্লেলিস্টে মিরর করুন।</string>
     <string name="spotify_connect">স্পটিফাই সংযুক্ত করুন</string>
     <string name="spotify_refresh">স্পটিফাই লাইব্রেরি রিফ্রেশ করুন</string>
     <string name="spotify_select_sources">স্পটিফাই প্লেলিস্ট বাছাই করুন</string>

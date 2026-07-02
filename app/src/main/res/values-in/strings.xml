@@ -263,7 +263,7 @@
     <string name="disable_screenshot_desc">Ketika pilihan ini diaktifkan, tangkapan layar dan tampilan aplikasi di Terkini dinonaktifkan.</string>
     <string name="enable_lrclib">Aktifkan penyedia lirik LrcLib</string>
     <string name="discord_integration">Integrasi Discord</string>
-    <string name="discord_information">echomusic menggunakan pustaka KizzyRPC untuk mengatur status akun Discord Anda. Hal ini melibatkan penggunaan sambungan Discord Gateway, yang dapat dianggap sebagai pelanggaran TOS Discord. Namun, tidak ada kasus yang diketahui tentang akun pengguna yang ditangguhkan karena alasan ini. Gunakan dengan risiko Anda sendiri.\n\nechomusic hanya akan mengekstrak token Anda, dan yang lainnya disimpan secara lokal.</string>
+    <string name="discord_information">nullmusic menggunakan pustaka KizzyRPC untuk mengatur status akun Discord Anda. Hal ini melibatkan penggunaan sambungan Discord Gateway, yang dapat dianggap sebagai pelanggaran TOS Discord. Namun, tidak ada kasus yang diketahui tentang akun pengguna yang ditangguhkan karena alasan ini. Gunakan dengan risiko Anda sendiri.\n\nnullmusic hanya akan mengekstrak token Anda, dan yang lainnya disimpan secara lokal.</string>
     <string name="dismiss">Singkirkan</string>
     <string name="preview">Pratinjau</string>
     <string name="enable_discord_rpc">Aktifkan Rich Presence</string>
@@ -343,7 +343,7 @@
 
 
     <string name="spotify_import_title">Impor dari Spotify</string>
-    <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar Echo Music lokal.</string>
+    <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar NullMusic lokal.</string>
     <string name="spotify_connect">Hubungkan Spotify</string>
     <string name="spotify_refresh">Segarkan pustaka Spotify</string>
     <string name="spotify_select_sources">Pilih daftar putar Spotify</string>

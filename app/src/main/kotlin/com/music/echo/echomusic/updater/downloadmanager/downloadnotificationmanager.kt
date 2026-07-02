@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.updater.downloadmanager
+package iad1tya.echo.music.nullmusic.updater.downloadmanager
 
 import android.app.Notification
 import android.app.NotificationChannel

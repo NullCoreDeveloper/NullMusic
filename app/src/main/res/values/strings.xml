@@ -162,6 +162,7 @@
     <string name="lyrics_thumbnail_play_pause">Show play/pause on thumbnail</string>
     <string name="lyrics_thumbnail_play_pause_desc">Show a play/pause button overlay on the song thumbnail in full-screen lyrics</string>
 
+    <string name="picker_not_available">Document picker is not available on this device. Using app\'s default export directory.</string>
     <string name="edit_song">Edit song</string>
     <string name="song_title">Song title</string>
     <string name="song_artists">Song artists</string>
@@ -311,6 +312,8 @@
 
     <string name="content_language">Default content language</string>
     <string name="content_country">Default content country</string>
+    <string name="content_sponsor_block">SponsorBlock (Auto-skip)</string>
+    <string name="content_sponsor_block_desc">Automatically skip sponsorships, intros, and non-music sections in videos</string>
     <string name="system_default">System default</string>
     <string name="enable_proxy">Enable proxy</string>
     <string name="proxy_type">Proxy type</string>

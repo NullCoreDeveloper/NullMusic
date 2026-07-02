@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic
+package iad1tya.echo.music.nullmusic
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -32,9 +32,9 @@ object UpdateNotificationHelper {
 
         
         val apkUrl = if (versionName.contains("nightly", ignoreCase = true)) {
-            "https://nightly.link/EchoMusicApp/workflows/nightly.yml/main/echomusic-gms-nightly.zip"
+            "https://nightly.link/EchoMusicApp/workflows/nightly.yml/main/nullmusic-gms-nightly.zip"
         } else {
-            "https://github.com/NullCoreDeveloper/NullMusic/releases/download/$versionName/echomusic.apk"
+            "https://github.com/NullCoreDeveloper/NullMusic/releases/download/$versionName/nullmusic.apk"
         }
         val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
 

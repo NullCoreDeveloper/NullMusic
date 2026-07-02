@@ -103,8 +103,8 @@
     <string name="thumbnail_corner_radius_desc">تغییر میزان گردی گوشه‌های تصویر کاور آلبوم</string>
     <string name="crop_album_art">برش کاور آلبوم</string>
     <string name="crop_album_art_desc">اجبار به استفاده از نسبت ابعاد مربعی با برش دادن کاورهای ویدیویی</string>
-    <string name="echomusic_canvas">کاور متحرک (Canvas)</string>
-    <string name="echomusic_canvas_desc">نمایش کاورهای انیمیشنی آلبوم در صورت موجود بودن</string>
+    <string name="nullmusic_canvas">کاور متحرک (Canvas)</string>
+    <string name="nullmusic_canvas_desc">نمایش کاورهای انیمیشنی آلبوم در صورت موجود بودن</string>
     <string name="show_album_canvas">نمایش کاور متحرک در آلبوم</string>
     <string name="show_album_canvas_desc">نمایش کاور متحرک در بخش آلبوم</string>
     <string name="rotating_thumbnail">کاور چرخان</string>
@@ -425,7 +425,7 @@
     <string name="karaoke">کارائوکه</string>
     <string name="apple_music_style">اپل موزیک</string>
     <string name="apple_music_style_letter">اپل موزیک نسخه ۲ (حرف به حرف)</string>
-    <string name="echomusic_1">Echo Music (روان)</string>
+    <string name="nullmusic_1">NullMusic (روان)</string>
     <string name="apple_music_lyrics_blur">تاری متن به سبک اپل موزیک</string>
     <string name="apple_music_lyrics_blur_desc">اعمال افکت تاری روی خطوط غیرفعال متن برای تمرکز عالی روی لاین در حال پخش</string>
     <string name="lyrics_v2_fluid">متن آهنگ نسخه ۲ (روان)</string>
@@ -455,19 +455,19 @@
     <string name="wrapped_total_artists_subtitle">هنرمند متمایز</string>
     <string name="wrapped_total_songs_title">شما گوش داده‌اید به</string>
     <string name="wrapped_total_songs_subtitle">آهنگ متمایز</string>
-    <string name="wrapped_intro_title">مرور سالانه echomusic</string>
+    <string name="wrapped_intro_title">مرور سالانه nullmusic</string>
     <string name="wrapped_intro_subtitle">وقتشه ببینیم امسال به چه چیزهایی گوش دادی</string>
     <string name="wrapped_intro_button">بزن بریم!</string>
-    <string name="wrapped_end_thanks">ممنون که با echomusic همراه بودید!</string>
+    <string name="wrapped_end_thanks">ممنون که با nullmusic همراه بودید!</string>
     <string name="wrapped_end_create_playlist">ساخت لیست پخش مرور سالانه شما</string>
     <string name="wrapped_end_creating_playlist">در حال ساخت…</string>
     <string name="wrapped_end_playlist_saved">لیست پخش ذخیره شد</string>
-    <string name="wrapped_logo_content_description">لوگوی echomusic</string>
+    <string name="wrapped_logo_content_description">لوگوی nullmusic</string>
     <string name="wrapped_year">۲۰۲۵</string>
     <string name="wrapped_ready_title">مرور سالانه شما آماده است!</string>
     <string name="wrapped_ready_subtitle">زمان دیدن چیزهایی که امسال عاشقشون بودی فرا رسید.</string>
     <string name="wrapped_thank_you">از همراهی و شنیدن شما سپاسگزاریم</string>
-    <string name="wrapped_special_thanks">تشکر ویژه از echodh برای خلق echomusic</string>
+    <string name="wrapped_special_thanks">تشکر ویژه از echodh برای خلق nullmusic</string>
     <string name="wrapped_close">بستن مرور سالانه</string>
     <string name="wrapped_playlist_title">مرور سالانه %s شما</string>
     <string name="wrapped_create_playlist">ساخت لیست پخش</string>
@@ -541,9 +541,9 @@
     <string name="plays">بار پخش</string>
     <string name="casting_to">در حال پخش روی %s</string>
     <string name="progress_percent">پیشرفت %s%%</string>
-    <string name="listening_to_echomusic">در حال گوش دادن در echomusic</string>
+    <string name="listening_to_nullmusic">در حال گوش دادن در nullmusic</string>
     <string name="listen_on_youtube_music">شنیدن در یوتیوب موزیک</string>
-    <string name="visit_echomusic">مشاهده echomusic</string>
+    <string name="visit_nullmusic">مشاهده nullmusic</string>
     <string name="open">باز کردن</string>
     <string name="failed_to_create_image">خطا در ساخت تصویر: %s</string>
     <string name="copied_title">عنوان کپی شد</string>
@@ -560,13 +560,13 @@
     <!-- Widget strings -->
     <string name="album_art">کاور آلبوم</string>
     <string name="no_song_playing">آهنگی در حال پخش نیست</string>
-    <string name="tap_to_open">برای باز کردن echomusic ضربه بزنید</string>
+    <string name="tap_to_open">برای باز کردن nullmusic ضربه بزنید</string>
     <string name="previous">قبلی</string>
     <string name="play_pause">پخش/توقف</string>
     <string name="next">بعدی</string>
     <string name="like">پسندیدن</string>
     <string name="not_playing">آهنگی در حال پخش نیست</string>
-    <string name="tap_to_play">برای باز کردن echomusic ضربه بزنید</string>
+    <string name="tap_to_play">برای باز کردن nullmusic ضربه بزنید</string>
     <string name="widget_description">ویجت پلیر موسیقی به همراه کنترل‌های پخش</string>
     <string name="queue_widget_description">ویجت پلیر موسیقی با امکان پیش‌نمایش صف پخش</string>
     <string name="turntable_widget_description">ویجت دایره‌ای موسیقی با کنترل‌های پخش و لایک</string>
@@ -725,7 +725,7 @@
     <string name="crash_share_logs">اشتراک‌گذاری لاگ‌ها</string>
     <string name="copy_logs">کپی کردن لاگ‌ها</string>
     <string name="crash_share_title">اشتراک‌گذاری گزارش خرابی</string>
-    <string name="crash_report_subject">گزارش خرابی echomusic</string>
+    <string name="crash_report_subject">گزارش خرابی nullmusic</string>
     <string name="crash_close">بستن</string>
     <string name="crash_no_log">هیچ لاگی از خرابی برنامه در دسترس نیست</string>
 
@@ -777,7 +777,7 @@
     <string name="delete_from_history">حذف از تاریخچه</string>
     <string name="re_listen">گوش دادن مجدد</string>
     <string name="hold_to_recognize">برای تشخیص موسیقی، آیکون جستجو را نگه دارید</string>
-    <string name="play_on_app">پخش در Echo Music</string>
+    <string name="play_on_app">پخش در NullMusic</string>
     <string name="recognized_track">آهنگ شناسایی شده</string>
 
     <!-- CSV Import Strings -->
@@ -816,9 +816,9 @@
     <string name="discord_rpc_preview">پیش‌نمایش Rich Presence</string>
     <string name="discord_presence">حضور (Presence)</string>
     <string name="discord_connect_description">برای اشتراک‌گذاری موزیک‌های در حال پخش، وارد حساب دیسکورد خود شوید</string>
-    <string name="discord_playing_echomusic">در حال اجرای echomusic</string>
-    <string name="discord_watching_echomusic">در حال تماشای echomusic</string>
-    <string name="discord_competing_echomusic">در حال رقابت در echomusic</string>
+    <string name="discord_playing_nullmusic">در حال اجرای nullmusic</string>
+    <string name="discord_watching_nullmusic">در حال تماشای nullmusic</string>
+    <string name="discord_competing_nullmusic">در حال رقابت در nullmusic</string>
     <string name="discord_activity_name">نام فعالیت</string>
     <string name="discord_activity_name_description">نام سفارشی برای فعالیت (برای حالت پیش‌فرض خالی بگذارید)</string>
     <string name="discord_advanced_mode">حالت پیشرفته</string>
@@ -876,7 +876,7 @@
 
     <string name="perm_required">الزامی</string>
     <string name="perm_permissions">دسترسی‌ها</string>
-    <string name="perm_intro_text">این دسترسی‌ها برای کارکرد صحیح echomusic الزامی هستند. لطفاً برای ادامه آن‌ها را اعطا کنید.</string>
+    <string name="perm_intro_text">این دسترسی‌ها برای کارکرد صحیح nullmusic الزامی هستند. لطفاً برای ادامه آن‌ها را اعطا کنید.</string>
 
     <string name="perm_notif_title">اعلان‌ها</string>
     <string name="perm_notif_desc">بلافاصله از پخش موسیقی مطلع شوید و آن را از طریق نوار اعلان‌ها کنترل کنید.</string>
@@ -886,7 +886,7 @@
 
     <string name="feat_discover">کشف کردن</string>
     <string name="feat_features">قابلیت‌ها</string>
-    <string name="feat_intro">تمام چیزهایی که echomusic برای سفر موسیقیایی شما ارائه می‌دهد را کاوش کنید.</string>
+    <string name="feat_intro">تمام چیزهایی که nullmusic برای سفر موسیقیایی شما ارائه می‌دهد را کاوش کنید.</string>
 
     <string name="feat_lyrics_title">متن آهنگ هوشمند</string>
     <string name="feat_lyrics_desc">از متن‌های همگام‌سازی‌شده کلمه به کلمه برای میلیون‌ها آهنگ لذت ببرید.</string>
@@ -910,7 +910,7 @@
     <string name="welcome_update_status">به‌روز باشید</string>
     <string name="welcome_update_intro">اطمینان از اینکه آخرین قابلیت‌ها و بهبودهای امنیتی را در اختیار دارید.</string>
     <string name="welcome_checking_updates">در حال بررسی برای به‌روزرسانی‌ها…</string>
-    <string name="welcome_up_to_date">برنامه echomusic به‌روز است!</string>
+    <string name="welcome_up_to_date">برنامه nullmusic به‌روز است!</string>
     <string name="welcome_update_available">نسخه جدید در دسترس است: %s</string>
     <string name="welcome_everything_ready">اکنون همه‌چیز به‌روز است</string>
     <string name="commits_title">کامیت‌ها (Commits)</string>

@@ -311,7 +311,7 @@
     <string name="backup_create_failed">बैकअप नहीं बनाया जा सका</string>
     <string name="restore_failed">बैकअप पुनर्स्थापित करने में विफल</string>
     <string name="discord_integration">डिस्कॉर्ड एकीकरण</string>
-    <string name="discord_information">echomusic आपके Discord खाते की स्थिति सेट करने के लिए KizzyRPC लाइब्रेरी का उपयोग करता है। इसमें Discord Gateway कनेक्शन का उपयोग करना शामिल है, जिसे Discord की सेवा शर्तों का उल्लंघन माना जा सकता है। हालाँकि, इस कारण से उपयोगकर्ता खाते निलंबित होने के कोई ज्ञात मामले नहीं हैं। अपने जोखिम पर उपयोग करें।\n\nechomusic केवल आपका टोकन निकालेगा, और बाकी सब कुछ स्थानीय रूप से संग्रहीत किया जाता है।</string>
+    <string name="discord_information">nullmusic आपके Discord खाते की स्थिति सेट करने के लिए KizzyRPC लाइब्रेरी का उपयोग करता है। इसमें Discord Gateway कनेक्शन का उपयोग करना शामिल है, जिसे Discord की सेवा शर्तों का उल्लंघन माना जा सकता है। हालाँकि, इस कारण से उपयोगकर्ता खाते निलंबित होने के कोई ज्ञात मामले नहीं हैं। अपने जोखिम पर उपयोग करें।\n\nnullmusic केवल आपका टोकन निकालेगा, और बाकी सब कुछ स्थानीय रूप से संग्रहीत किया जाता है।</string>
     <string name="dismiss">खारिज करें</string>
     <string name="options">विकल्प</string>
     <string name="preview">पूर्वावलोकन</string>
@@ -339,7 +339,7 @@
 
 
     <string name="spotify_import_title">स्पॉटिफाई से आयात करें</string>
-    <string name="spotify_import_desc">स्पॉटिफाई कनेक्ट करें, प्लेलिस्ट चुनें और उन्हें स्थानीय Echo Music प्लेलिस्ट में मिरर करें।</string>
+    <string name="spotify_import_desc">स्पॉटिफाई कनेक्ट करें, प्लेलिस्ट चुनें और उन्हें स्थानीय NullMusic प्लेलिस्ट में मिरर करें।</string>
     <string name="spotify_connect">स्पॉटिफाई कनेक्ट करें</string>
     <string name="spotify_refresh">स्पॉटिफाई लाइब्रेरी ताज़ा करें</string>
     <string name="spotify_select_sources">स्पॉटिफाई प्लेलिस्ट चुनें</string>

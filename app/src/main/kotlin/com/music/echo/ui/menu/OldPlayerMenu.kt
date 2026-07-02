@@ -289,7 +289,7 @@ fun OldPlayerMenu(
                                 type = "text/plain"
                                 putExtra(
                                     android.content.Intent.EXTRA_TEXT,
-                                    "https://share.echomusic.fun/watch?v=${mediaMetadata.id}"
+                                    "https://share.nullmusic.fun/watch?v=${mediaMetadata.id}"
                                 )
                             }
                             context.startActivity(android.content.Intent.createChooser(intent, null))

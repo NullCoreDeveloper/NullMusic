@@ -157,12 +157,12 @@ import iad1tya.echo.music.constants.MiniPlayerBottomSpacing
 import iad1tya.echo.music.constants.MiniPlayerHeight
 import iad1tya.echo.music.constants.NavigationBarAnimationSpec
 import iad1tya.echo.music.constants.NavigationBarHeight
-import iad1tya.echo.music.echomusic.updater.checkForUpdate
-import iad1tya.echo.music.echomusic.updater.getAutoUpdateCheckSetting
-import iad1tya.echo.music.echomusic.updater.isNewerVersion
-import iad1tya.echo.music.echomusic.updater.saveUpdateAvailableState
-import iad1tya.echo.music.echomusic.updater.getUpdateNotificationsSetting
-import iad1tya.echo.music.echomusic.UpdateNotificationHelper
+import iad1tya.echo.music.nullmusic.updater.checkForUpdate
+import iad1tya.echo.music.nullmusic.updater.getAutoUpdateCheckSetting
+import iad1tya.echo.music.nullmusic.updater.isNewerVersion
+import iad1tya.echo.music.nullmusic.updater.saveUpdateAvailableState
+import iad1tya.echo.music.nullmusic.updater.getUpdateNotificationsSetting
+import iad1tya.echo.music.nullmusic.UpdateNotificationHelper
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import iad1tya.echo.music.constants.PauseListenHistoryKey
@@ -199,7 +199,7 @@ import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.screens.settings.NavigationTab
 import iad1tya.echo.music.ui.theme.ColorSaver
 import iad1tya.echo.music.ui.theme.DefaultThemeColor
-import iad1tya.echo.music.ui.theme.echomusicTheme
+import iad1tya.echo.music.ui.theme.nullmusicTheme
 import iad1tya.echo.music.ui.theme.extractThemeColor
 import iad1tya.echo.music.ui.utils.appBarScrollBehavior
 import iad1tya.echo.music.ui.utils.resetHeightOffset
@@ -385,7 +385,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            echomusicApp(
+            nullmusicApp(
                 playerConnection = playerConnection,
                 database = database,
                 downloadUtil = downloadUtil,
@@ -397,7 +397,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
     @Composable
-    private fun echomusicApp(
+    private fun nullmusicApp(
         playerConnection: PlayerConnection?,
         database: MusicDatabase,
         downloadUtil: DownloadUtil,
@@ -521,7 +521,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        echomusicTheme(
+        nullmusicTheme(
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
             themeColor = themeColor,

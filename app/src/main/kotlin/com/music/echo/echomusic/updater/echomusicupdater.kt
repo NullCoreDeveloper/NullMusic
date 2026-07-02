@@ -1,6 +1,6 @@
 
 
-package iad1tya.echo.music.echomusic.updater
+package iad1tya.echo.music.nullmusic.updater
 
 
 import android.content.Context
@@ -64,8 +64,8 @@ import iad1tya.echo.music.R
 import coil3.compose.AsyncImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import iad1tya.echo.music.echomusic.updater.downloadmanager.UpdateDownloadWorker
-import iad1tya.echo.music.echomusic.updater.downloadmanager.DownloadNotificationManager
+import iad1tya.echo.music.nullmusic.updater.downloadmanager.UpdateDownloadWorker
+import iad1tya.echo.music.nullmusic.updater.downloadmanager.DownloadNotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -335,7 +335,7 @@ fun UpdateScreen(navController: NavHostController) {
                                                 ContextCompat.startActivity(context, installIntent, null)
                                             }
                                         } else {
-                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/NullCoreDeveloper/NullMusic/releases/download/${currentStatus.version}/echomusic.apk"
+                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/NullCoreDeveloper/NullMusic/releases/download/${currentStatus.version}/nullmusic.apk"
                                             
                                             val constraints = Constraints.Builder()
                                                 .setRequiredNetworkType(NetworkType.CONNECTED)

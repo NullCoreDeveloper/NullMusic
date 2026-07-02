@@ -182,10 +182,10 @@ import iad1tya.echo.music.extensions.toggleRepeatMode
 import iad1tya.echo.music.listentogether.RoomRole
 import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.ExoDownloadService
-import iad1tya.echo.music.echomusic.getConnectedBluetoothDeviceName
-import iad1tya.echo.music.echomusic.isBuds
-import iad1tya.echo.music.echomusic.isSpeaker
-import iad1tya.echo.music.echomusic.AudioDeviceBottomSheet
+import iad1tya.echo.music.nullmusic.getConnectedBluetoothDeviceName
+import iad1tya.echo.music.nullmusic.isBuds
+import iad1tya.echo.music.nullmusic.isSpeaker
+import iad1tya.echo.music.nullmusic.AudioDeviceBottomSheet
 import iad1tya.echo.music.ui.component.BottomSheet
 import iad1tya.echo.music.ui.component.BottomSheetState
 import iad1tya.echo.music.ui.component.CastButton
@@ -241,7 +241,7 @@ import iad1tya.echo.music.extensions.metadata
 import iad1tya.echo.music.ui.player.CanvasArtworkPlaybackCache
 import iad1tya.echo.music.ui.player.normalizeCanvasArtistName
 import iad1tya.echo.music.ui.player.normalizeCanvasSongTitle
-import iad1tya.echo.music.echomusiccanvas.echomusicCanvasProvider
+import iad1tya.echo.music.nullmusiccanvas.nullmusicCanvasProvider
 import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
@@ -626,7 +626,7 @@ fun BottomSheetPlayer(
             val s = normalizeCanvasSongTitle(requestedTitle)
             val a = normalizeCanvasArtistName(requestedArtist)
             
-            val fetched = echomusicCanvasProvider.getBySongArtist(s, a)
+            val fetched = nullmusicCanvasProvider.getBySongArtist(s, a)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 ?: TidalCanvasProvider.getBySongArtist(s, a, requestedAlbum)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }

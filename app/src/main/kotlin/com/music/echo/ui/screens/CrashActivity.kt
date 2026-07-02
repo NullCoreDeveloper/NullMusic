@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import iad1tya.echo.music.R
-import iad1tya.echo.music.ui.theme.echomusicTheme
+import iad1tya.echo.music.ui.theme.nullmusicTheme
 import iad1tya.echo.music.utils.CrashHandler
 import java.io.File
 import java.text.SimpleDateFormat
@@ -57,7 +57,7 @@ class CrashActivity : ComponentActivity() {
         
         setContent {
             val darkTheme = isSystemInDarkTheme()
-            echomusicTheme(darkTheme = darkTheme) {
+            nullmusicTheme(darkTheme = darkTheme) {
                 CrashScreen(
                     crashLog = crashLog,
                     onClose = { finishAffinity() },
@@ -79,7 +79,7 @@ class CrashActivity : ComponentActivity() {
         try {
             
             val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-            val fileName = "echomusic_crash_$timestamp.txt"
+            val fileName = "nullmusic_crash_$timestamp.txt"
             val crashFile = File(cacheDir, fileName)
             crashFile.writeText(crashLog)
             

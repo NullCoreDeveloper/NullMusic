@@ -260,7 +260,7 @@
     <string name="your_youtube_playlists">Deine Youtube-Playlists</string>
     <string name="library_playlist_empty">Deine Playlists werden hier angezeigt</string>
     <string name="disable_screenshot_desc">Wenn diese Option aktiviert ist, sind Screenshots und die App-Ansicht in „Zuletzt gesehen“ deaktiviert.</string>
-    <string name="discord_information">echomusic verwendet die KizzyRPC-Bibliothek, um den Status deines Discord-Kontos zu setzen. Dazu wird die Discord-Gateway-Verbindung verwendet, was als Verstoß gegen die AGB von Discord angesehen werden kann. Es sind jedoch keine Fälle bekannt, in denen Benutzerkonten aus diesem Grund gesperrt wurden. Die Verwendung erfolgt auf eigene Gefahr.\n\nechomusic extrahiert nur dein Token, alles andere wird lokal gespeichert.</string>
+    <string name="discord_information">nullmusic verwendet die KizzyRPC-Bibliothek, um den Status deines Discord-Kontos zu setzen. Dazu wird die Discord-Gateway-Verbindung verwendet, was als Verstoß gegen die AGB von Discord angesehen werden kann. Es sind jedoch keine Fälle bekannt, in denen Benutzerkonten aus diesem Grund gesperrt wurden. Die Verwendung erfolgt auf eigene Gefahr.\n\nnullmusic extrahiert nur dein Token, alles andere wird lokal gespeichert.</string>
     <string name="squiggly">Schnörkelig</string>
     <string name="grid_cell_size">Größe der Rasterzellen</string>
     <string name="search_history">Suchverlauf</string>
@@ -353,7 +353,7 @@
 
 
     <string name="spotify_import_title">Von Spotify importieren</string>
-    <string name="spotify_import_desc">Verbinde Spotify, wähle Playlists aus und spiegele sie in lokale Echo Music-Playlists.</string>
+    <string name="spotify_import_desc">Verbinde Spotify, wähle Playlists aus und spiegele sie in lokale NullMusic-Playlists.</string>
     <string name="spotify_connect">Spotify verbinden</string>
     <string name="spotify_refresh">Spotify-Bibliothek aktualisieren</string>
     <string name="spotify_select_sources">Spotify-Playlists auswählen</string>

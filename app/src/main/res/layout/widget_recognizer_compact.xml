@@ -12,7 +12,7 @@
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:gravity="center_vertical"
-    android:theme="@style/Theme.Widget.echomusic">
+    android:theme="@style/Theme.Widget.nullmusic">
 
     <!-- Album art (only visible in SUCCESS state) -->
     <ImageView

@@ -1,6 +1,6 @@
 # Echo Brain Documentation
 
-**Echo Brain** is an intelligent, on-device contextual music engine integrated into Echo Music. Designed to maintain the momentum and vibe of your current listening session, it continually analyzes your queue and proactively injects seamless, personalized track recommendations. 
+**Echo Brain** is an intelligent, on-device contextual music engine integrated into NullMusic. Designed to maintain the momentum and vibe of your current listening session, it continually analyzes your queue and proactively injects seamless, personalized track recommendations. 
 
 ---
 

@@ -1,9 +1,9 @@
 /**
- * echomusic Project (C) 2026
+ * nullmusic Project (C) 2026
  * Licensed under GPL-3.0 | See git history for contributors
  *
  * JioSaavn audio streaming service.
- * Uses the Melo API (saavn.echomusic.fun) which is an open wrapper around JioSaavn.
+ * Uses the Melo API (saavn.nullmusic.fun) which is an open wrapper around JioSaavn.
  *
  * API endpoints used:
  *   - GET /api/search/songs?query={q}        → search songs by name+artist

@@ -356,7 +356,7 @@
     <string name="enable_lrclib">Уключыць правайдар тэкстаў LrcLib</string>
     <string name="hide_explicit">Схаваць адкрыты змест</string>
     <string name="discord_integration">Інтэграцыя з Discord</string>
-    <string name="discord_information">echomusic выкарыстоўвае бібліятэку KizzyRPC для ўстаноўкі статусу вашага акаўнта Discord. Гэта прадугледжвае выкарыстанне падключэння Discord Gateway, што можа лічыцца парушэннем ліцэнзійнага пагаднення Discord. Аднак няма вядомых выпадкаў прыпынення ўліковых запісаў карыстальнікаў па гэтай прычыне. Выкарыстоўвайце на свой страх і рызыку.\n\nechomusic будзе вымаўляць толькі ваш токен, усё астатняе захоўваецца лакальна.</string>
+    <string name="discord_information">nullmusic выкарыстоўвае бібліятэку KizzyRPC для ўстаноўкі статусу вашага акаўнта Discord. Гэта прадугледжвае выкарыстанне падключэння Discord Gateway, што можа лічыцца парушэннем ліцэнзійнага пагаднення Discord. Аднак няма вядомых выпадкаў прыпынення ўліковых запісаў карыстальнікаў па гэтай прычыне. Выкарыстоўвайце на свой страх і рызыку.\n\nnullmusic будзе вымаўляць толькі ваш токен, усё астатняе захоўваецца лакальна.</string>
     <string name="dismiss">Адхіліць</string>
     <string name="options">Опцыі</string>
     <string name="preview">Прадпрагляд</string>
@@ -379,7 +379,7 @@
 
 
     <string name="spotify_import_title">Імпарт з Spotify</string>
-    <string name="spotify_import_desc">Падключыце Spotify, абярыце плэй-лісты і адлюструйце іх у лакальныя плэй-лісты Echo Music.</string>
+    <string name="spotify_import_desc">Падключыце Spotify, абярыце плэй-лісты і адлюструйце іх у лакальныя плэй-лісты NullMusic.</string>
     <string name="spotify_connect">Падключыць Spotify</string>
     <string name="spotify_refresh">Абнавіць бібліятэку Spotify</string>
     <string name="spotify_select_sources">Выбраць плэй-лісты Spotify</string>

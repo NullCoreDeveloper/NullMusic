@@ -287,7 +287,7 @@
     <string name="backup_create_failed">Nepodarilo sa vytvoriť zálohu</string>
     <string name="restore_failed">Nepodarilo sa obnoviť zálohu</string>
     <string name="discord_integration">Integrácia Discordu</string>
-    <string name="discord_information">echomusic používa knižnicu KizzyRPC na nastavenie stavu vášho účtu Discord. To zahŕňa použitie pripojenia Discord Gateway, čo môže byť považované za porušenie TOS Discordu. Zatiaľ však nie sú známe prípady pozastavenia účtov používateľov z tohto dôvodu. Používanie na vlastné riziko.\n\nechomusic bude extrahovať iba váš token, všetko ostatné sa ukladá lokálne.</string>
+    <string name="discord_information">nullmusic používa knižnicu KizzyRPC na nastavenie stavu vášho účtu Discord. To zahŕňa použitie pripojenia Discord Gateway, čo môže byť považované za porušenie TOS Discordu. Zatiaľ však nie sú známe prípady pozastavenia účtov používateľov z tohto dôvodu. Používanie na vlastné riziko.\n\nnullmusic bude extrahovať iba váš token, všetko ostatné sa ukladá lokálne.</string>
     <string name="dismiss">Zatvoriť</string>
     <string name="options">Možnosťi</string>
     <string name="preview">Náhľad</string>
@@ -374,7 +374,7 @@
 
 
     <string name="spotify_import_title">Importovať zo Spotify</string>
-    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov Echo Music.</string>
+    <string name="spotify_import_desc">Pripojte Spotify, vyberte playlisty a zrkadlite ich do miestnych playlistov NullMusic.</string>
     <string name="spotify_connect">Pripojiť Spotify</string>
     <string name="spotify_refresh">Obnoviť knižnicu Spotify</string>
     <string name="spotify_select_sources">Vybrať playlisty Spotify</string>

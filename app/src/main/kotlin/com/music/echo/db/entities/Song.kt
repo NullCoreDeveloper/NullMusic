@@ -50,7 +50,15 @@ constructor(
     override val title: String
         get() = song.title
     override val thumbnailUrl: String?
-        get() = song.thumbnailUrl
+        get() {
+            if (song.isLocal) {
+                val mediaStoreAlbumId = song.albumId?.removePrefix("LOCAL_ALBUM_")?.toLongOrNull()
+                if (mediaStoreAlbumId != null && mediaStoreAlbumId > 0) {
+                    return "content://media/external/audio/albumart/$mediaStoreAlbumId"
+                }
+            }
+            return song.thumbnailUrl
+        }
     val romanizeLyrics: Boolean
         get() = song.romanizeLyrics
 }

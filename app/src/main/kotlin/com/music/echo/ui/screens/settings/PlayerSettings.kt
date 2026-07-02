@@ -322,7 +322,7 @@ highlightKey: String? = null) {
                 title = { Text("Enable Saavn (320kbps)?") },
                 buttons = {
                     TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nullmusic.fun/donate"))
                         context.startActivity(intent)
                     }) {
                         Text("Donate")
@@ -348,7 +348,7 @@ highlightKey: String? = null) {
                 title = { Text(stringResource(R.string.enable_lossless_audio)) },
                 buttons = {
                     TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nullmusic.fun/donate"))
                         context.startActivity(intent)
                     }) {
                         Text("Donate")

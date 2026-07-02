@@ -26,7 +26,7 @@ import com.materialkolor.score.Score
 val DefaultThemeColor = Color(0xFFED5564)
 
 @Composable
-fun echomusicTheme(
+fun nullmusicTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     pureBlack: Boolean = false,
     themeColor: Color = DefaultThemeColor,

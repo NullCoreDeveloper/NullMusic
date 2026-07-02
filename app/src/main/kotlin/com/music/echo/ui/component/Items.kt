@@ -462,7 +462,7 @@ fun SongListItem(
             badges = badges,
             thumbnailContent = {
                 ItemThumbnail(
-                    thumbnailUrl = song.song.thumbnailUrl,
+                    thumbnailUrl = song.thumbnailUrl,
                     albumIndex = albumIndex,
                     isSelected = isSelected,
                     isActive = isActive,
@@ -543,7 +543,7 @@ fun SongGridItem(
     thumbnailContent = {
         val gridHeight = currentGridThumbnailHeight()
         ItemThumbnail(
-            thumbnailUrl = song.song.thumbnailUrl,
+            thumbnailUrl = song.thumbnailUrl,
             isActive = isActive,
             isPlaying = isPlaying,
             shape = RoundedCornerShape(ThumbnailCornerRadius),

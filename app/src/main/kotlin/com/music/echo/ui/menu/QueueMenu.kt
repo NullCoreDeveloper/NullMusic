@@ -299,7 +299,7 @@ fun QueueMenu(
                                 type = "text/plain"
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    "https://share.echomusic.fun/watch?v=${mediaMetadata.id}"
+                                    "https://share.nullmusic.fun/watch?v=${mediaMetadata.id}"
                                 )
                             }
                             context.startActivity(Intent.createChooser(intent, null))

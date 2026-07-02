@@ -228,7 +228,7 @@ fun Lyrics(
     val romanizeHindiLyrics by rememberPreference(LyricsRomanizeHindiKey, true)
     val romanizePunjabiLyrics by rememberPreference(LyricsRomanizePunjabiKey, true)
     val lyricsGlowEffect by rememberPreference(LyricsGlowEffectKey, false)
-    val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.echomusic_1)
+    val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.nullmusic_1)
     val lyricsTextSize by rememberPreference(LyricsTextSizeKey, 24f)
     val lyricsLineSpacing by rememberPreference(LyricsLineSpacingKey, 1.3f)
     val lyricsStandardBlur by rememberPreference(LyricsStandardBlurKey, false)
@@ -917,7 +917,7 @@ fun Lyrics(
                     key = { index, item -> "$index-${item.time}" } 
                 ) { index, item ->
                     val isSelected = selectedIndices.contains(index)
-                    if (lyricsAnimationStyle == LyricsAnimationStyle.echomusic_1 && item.words?.isNotEmpty() == true) {
+                    if (lyricsAnimationStyle == LyricsAnimationStyle.nullmusic_1 && item.words?.isNotEmpty() == true) {
                         val currentLineTime = if (displayedCurrentLineIndex >= 0 && displayedCurrentLineIndex < lines.size) {
                             lines[displayedCurrentLineIndex].time
                         } else -1L
@@ -925,7 +925,7 @@ fun Lyrics(
                         val isActiveByIndex = index == displayedCurrentLineIndex
                         val isActiveByTime = isLineAtSameTime && displayedCurrentLineIndex >= 0
 
-                        echomusicLyricsLine(
+                        nullmusicLyricsLine(
                             entry = item,
                             nextEntryTime = lines.getOrNull(index + 1)?.time,
                             effectivePlaybackPosition = effectivePlaybackPosition,
@@ -1988,7 +1988,7 @@ fun Lyrics(
                                     action = Intent.ACTION_SEND
                                     type = "text/plain"
                                     val songLink =
-                                        "https://share.echomusic.fun/watch?v=${mediaMetadata?.id}"
+                                        "https://share.nullmusic.fun/watch?v=${mediaMetadata?.id}"
                                     
                                     putExtra(
                                         Intent.EXTRA_TEXT,
@@ -2322,10 +2322,10 @@ fun Lyrics(
 }
 
 
-private const val echomusic_AUTO_SCROLL_DURATION = 1500L 
-private const val echomusic_INITIAL_SCROLL_DURATION = 1000L 
-private const val echomusic_SEEK_DURATION = 800L 
-private const val echomusic_FAST_SEEK_DURATION = 600L 
+private const val nullmusic_AUTO_SCROLL_DURATION = 1500L 
+private const val nullmusic_INITIAL_SCROLL_DURATION = 1000L 
+private const val nullmusic_SEEK_DURATION = 800L 
+private const val nullmusic_FAST_SEEK_DURATION = 600L 
 
 
 val LyricsPreviewTime = 2.seconds

@@ -3,7 +3,7 @@
 <!-- Upstream InnerTune strings -->
 <!-- Do not add new features here -->
 <!-- Try to re-use strings here, but be careful on its usage e.g. verb vs noun -->
-<!-- "InnerTune" is replaced with "echomusic" -->
+<!-- "InnerTune" is replaced with "nullmusic" -->
 <!-- Translators: Do not modify this file for translations, use InnerTune's Weblate instead. -->
 
 <resources>
@@ -367,7 +367,7 @@
     <string name="restore_failed">بازگردانی فایل پشتیبان ناموفق بود</string>
 
     <string name="discord_integration">اتصال به دیسکورد</string>
-    <string name="discord_information">برنامه echomusic از کتابخانه KizzyRPC برای تنظیم وضعیت حساب دیسکورد شما استفاده می‌کند. این کار از طریق اتصال دیسکورد گیت‌وی انجام می‌شود که ممکن است نقض قوانین خدمات (TOS) دیسکورد تلقی شود. با این حال، تاکنون هیچ موردی از مسدود شدن حساب کاربران به این دلیل گزارش نشده است. مسئولیت استفاده بر عهده خودتان است.\n\nبرنامه echomusic فقط توکن شما را استخراج می‌کند و اطلاعات دیگر کاملاً به صورت محلی ذخیره می‌شوند.</string>
+    <string name="discord_information">برنامه nullmusic از کتابخانه KizzyRPC برای تنظیم وضعیت حساب دیسکورد شما استفاده می‌کند. این کار از طریق اتصال دیسکورد گیت‌وی انجام می‌شود که ممکن است نقض قوانین خدمات (TOS) دیسکورد تلقی شود. با این حال، تاکنون هیچ موردی از مسدود شدن حساب کاربران به این دلیل گزارش نشده است. مسئولیت استفاده بر عهده خودتان است.\n\nبرنامه nullmusic فقط توکن شما را استخراج می‌کند و اطلاعات دیگر کاملاً به صورت محلی ذخیره می‌شوند.</string>
     <string name="dismiss">بستن</string>
     <string name="options">گزینه‌ها</string>
     <string name="preview">پیش‌نمایش</string>
@@ -395,7 +395,7 @@
     <string name="listen_together_smart_resync">همگام‌سازی هوشمند شبکه</string>
     <string name="listen_together_smart_resync_desc">همگام‌سازی و رساندن خودکار پخش به پخش‌کننده اصلی پس از قطع و وصل شدن اتصال</string>
     <string name="spotify_import_title">وارد کردن از اسپاتیفای</string>
-    <string name="spotify_import_desc">اتصال به اسپاتیفای، انتخاب لیست‌های پخش و شبیه‌سازی آن‌ها در لیست‌های پخش محلی Echo Music.</string>
+    <string name="spotify_import_desc">اتصال به اسپاتیفای، انتخاب لیست‌های پخش و شبیه‌سازی آن‌ها در لیست‌های پخش محلی NullMusic.</string>
     <string name="spotify_connect">اتصال به اسپاتیفای</string>
     <string name="spotify_refresh">بروزرسانی کتابخانه اسپاتیفای</string>
     <string name="spotify_select_sources">انتخاب لیست‌های پخش اسپاتیفای</string>

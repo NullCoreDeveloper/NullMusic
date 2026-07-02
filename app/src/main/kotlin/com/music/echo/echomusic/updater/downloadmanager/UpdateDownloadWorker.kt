@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.updater.downloadmanager
+package iad1tya.echo.music.nullmusic.updater.downloadmanager
 
 import android.content.Context
 import android.os.Environment
@@ -73,7 +73,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
             }
 
             val isZip = apkUrl.contains("nightly.link") || apkUrl.endsWith(".zip")
-            val downloadFile = if (isZip) File(downloadDir, "echo_temp.zip") else File(downloadDir, "echomusic.apk")
+            val downloadFile = if (isZip) File(downloadDir, "echo_temp.zip") else File(downloadDir, "nullmusic.apk")
             val outputStream = FileOutputStream(downloadFile)
 
             val buffer = ByteArray(8192)
@@ -119,7 +119,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
             connection.disconnect()
 
             val finalFile = if (isZip) {
-                val targetApkFile = File(downloadDir, "echomusic.apk")
+                val targetApkFile = File(downloadDir, "nullmusic.apk")
                 var extracted = false
                 try {
                     ZipInputStream(downloadFile.inputStream()).use { zis ->

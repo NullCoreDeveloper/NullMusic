@@ -282,7 +282,7 @@
     <string name="backup_create_failed">Не удалось создать резервную копию</string>
     <string name="restore_failed">Не удалось восстановить резервную копию</string>
     <string name="discord_integration">Интеграция с Discord</string>
-    <string name="discord_information">echomusic использует библиотеку KizzyRPC для установки статуса вашего аккаунта Discord. Это включает использование соединения через Discord Gateway, что может считаться нарушением условий использования Discord. Однако, на данный момент нет известных случаев блокировки учетных записей пользователей по этой причине. Используйте на свой страх и риск.\n\nechomusic будет извлекать только ваш токен, а все остальное хранится локально.</string>
+    <string name="discord_information">nullmusic использует библиотеку KizzyRPC для установки статуса вашего аккаунта Discord. Это включает использование соединения через Discord Gateway, что может считаться нарушением условий использования Discord. Однако, на данный момент нет известных случаев блокировки учетных записей пользователей по этой причине. Используйте на свой страх и риск.\n\nnullmusic будет извлекать только ваш токен, а все остальное хранится локально.</string>
     <string name="dismiss">Закрыть</string>
     <string name="options">Настройки</string>
     <string name="preview">Предпросмотр</string>
@@ -374,7 +374,7 @@
 
 
     <string name="spotify_import_title">Импорт из Spotify</string>
-    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах Echo Music.</string>
+    <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах NullMusic.</string>
     <string name="spotify_connect">Подключить Spotify</string>
     <string name="spotify_refresh">Обновить библиотеку Spotify</string>
     <string name="spotify_select_sources">Выбрать плейлисты Spotify</string>

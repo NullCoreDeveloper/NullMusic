@@ -92,8 +92,8 @@
     <string name="thumbnail_corner_radius_desc">Albüm kapağı küçük resminin köşe yarıçapını değiştirin</string>
     <string name="crop_album_art">Albüm Resmini Kırp</string>
     <string name="crop_album_art_desc">Video küçük resimlerini kırparak kare en boy oranını zorlayın</string>
-    <string name="echomusic_canvas">Canvas</string>
-    <string name="echomusic_canvas_desc">Mevcut olduğunda hareketli albüm kapaklarını göster</string>
+    <string name="nullmusic_canvas">Canvas</string>
+    <string name="nullmusic_canvas_desc">Mevcut olduğunda hareketli albüm kapaklarını göster</string>
     <string name="already_in_playlist">Zaten çalma listesinde:</string>
 
     <plurals name="n_element">
@@ -345,7 +345,7 @@
     <string name="enable_scrobbling">Scrobbling\'i etkinleştir</string>
     <string name="lastfm_now_playing">Şimdi çalanı gönder</string>
     <string name="last_fm_send_likes">Beğenilenler/Beğenilmeyenleri Gönder</string>
-    <string name="last_fm_send_likes_description">echomusic\'te Beğenilen/Beğenilmeyen şarkıları Last.fm\'de de Beğen/Beğenme</string>
+    <string name="last_fm_send_likes_description">nullmusic\'te Beğenilen/Beğenilmeyen şarkıları Last.fm\'de de Beğen/Beğenme</string>
     <string name="logging_in">Giriş yapılıyor…</string>
 
     <string name="scrobbling_configuration">Scrobbling Yapılandırması</string>
@@ -385,7 +385,7 @@
     <string name="karaoke">Karaoke</string>
     <string name="apple_music_style">Apple Müzik</string>
     <string name="apple_music_style_letter">Apple Music V2 (Letter by Letter)</string>
-    <string name="echomusic_1">Vivi Music (Fluid)</string>
+    <string name="nullmusic_1">Vivi Music (Fluid)</string>
     <string name="apple_music_lyrics_blur">Apple Music Lyrics Blur</string>
     <string name="apple_music_lyrics_blur_desc">Premium bir odak efekti için pasif şarkı sözü satırlarına bulanıklık uygulayın</string>
     <string name="lyrics_v2_fluid">Şarkı Sözleri V2 (Akıcı)</string>
@@ -414,19 +414,19 @@
     <string name="wrapped_total_artists_subtitle">benzersiz sanatçılar</string>
     <string name="wrapped_total_songs_title">Şunları dinlediniz</string>
     <string name="wrapped_total_songs_subtitle">benzersiz şarkılar</string>
-    <string name="wrapped_intro_title">echomusic</string>
+    <string name="wrapped_intro_title">nullmusic</string>
     <string name="wrapped_intro_subtitle">Dinlediklerinize göz atmanın zamanı geldi</string>
     <string name="wrapped_intro_button">hadi başlayalım!</string>
-    <string name="wrapped_end_thanks">echomusic ile dinlediğiniz için teşekkürler!</string>
+    <string name="wrapped_end_thanks">nullmusic ile dinlediğiniz için teşekkürler!</string>
     <string name="wrapped_end_create_playlist">Özet Çalma Listeni Oluştur</string>
     <string name="wrapped_end_creating_playlist">Oluşturuluyor...</string>
     <string name="wrapped_end_playlist_saved">Çalma Listesi Kaydedildi</string>
-    <string name="wrapped_logo_content_description">echomusic Logosu</string>
+    <string name="wrapped_logo_content_description">nullmusic Logosu</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">ÖZETİNİZ HAZIR!</string>
     <string name="wrapped_ready_subtitle">Bu yıl neleri sevdiğini görme zamanı.</string>
     <string name="wrapped_thank_you">Dinlediğin için teşekkürler</string>
-    <string name="wrapped_special_thanks">echomusic\'i oluşturduğu için MO Agamy\'ye özel teşekkürler</string>
+    <string name="wrapped_special_thanks">nullmusic\'i oluşturduğu için MO Agamy\'ye özel teşekkürler</string>
     <string name="wrapped_close">Özeti kapat</string>
     <string name="wrapped_playlist_title">%s Özetin</string>
     <string name="wrapped_create_playlist">Çalma listesi oluştur</string>
@@ -459,9 +459,9 @@
     <string name="plays">plays</string>
     <string name="casting_to">%s cihazına yansıtılıyor</string>
     <string name="progress_percent">İlerleme %s%%</string>
-    <string name="listening_to_echomusic">echomusic dinleniyor</string>
+    <string name="listening_to_nullmusic">nullmusic dinleniyor</string>
     <string name="listen_on_youtube_music">YouTube Music\'te dinle</string>
-    <string name="visit_echomusic">echomusic\'i ziyaret et</string>
+    <string name="visit_nullmusic">nullmusic\'i ziyaret et</string>
     <string name="open">Aç</string>
     <string name="failed_to_create_image">Görsel oluşturulamadı: %s</string>
     <string name="copied_title">Başlık kopyalandı</string>
@@ -478,13 +478,13 @@
     <!-- Widget strings -->
     <string name="album_art">Albüm kapağı</string>
     <string name="no_song_playing">Oynatılan şarkı yok</string>
-    <string name="tap_to_open">echomusic\'i açmak için bas</string>
+    <string name="tap_to_open">nullmusic\'i açmak için bas</string>
     <string name="previous">Bir önceki</string>
     <string name="play_pause">Devam Et/Duraklat</string>
     <string name="next">Bir sonraki</string>
     <string name="like">Beğen</string>
     <string name="not_playing">Herhangi bir şarkı oynatılmıyor</string>
-    <string name="tap_to_play">echomusic\'i açmak için tıkla</string>
+    <string name="tap_to_play">nullmusic\'i açmak için tıkla</string>
     <string name="widget_description">Oynatıcı widgetı için arkaplan kontrolcüsü</string>
     <string name="queue_widget_description">Sıra önizlemeli oynatıcı</string>
     <string name="turntable_widget_description">Şarkıyı oynatmak ve değiştirmek yapılmış için dairesel müzik widget\'ı</string>
@@ -641,7 +641,7 @@
     <string name="crash_description">Beklenmedik bir hata oluştu. Sorunu çözebilmemiz için lütfen bize oluşan hatayı raporlayın.</string>
     <string name="crash_share_logs">Logları paylaş</string>
     <string name="crash_share_title">Hata raporlarını paylaş</string>
-    <string name="crash_report_subject">echomusic Hata Bildirimi</string>
+    <string name="crash_report_subject">nullmusic Hata Bildirimi</string>
     <string name="crash_close">Kapat</string>
     <string name="crash_no_log">Hata logları bulunmamakta</string>
 
@@ -693,7 +693,7 @@
     <string name="delete_from_history">Geçmişten sil</string>
     <string name="re_listen">Yeniden dinle</string>
     <string name="hold_to_recognize">Müziği tanımlamak için arama tuşuna basılı tutun</string>
-    <string name="play_on_app">echomusic\'te dinle</string>
+    <string name="play_on_app">nullmusic\'te dinle</string>
     <string name="recognized_track">Tanımlanmış parça</string>
 
     <!-- CSV Import Strings -->
@@ -732,9 +732,9 @@
     <string name="discord_rpc_preview">Zengin Görünüm Önizlemesi</string>
     <string name="discord_presence">Görünüm</string>
     <string name="discord_connect_description">Ne dinlediğini paylaşmak için Discord\'a giriş yap</string>
-    <string name="discord_playing_echomusic">echomusic oynatılıyor</string>
-    <string name="discord_watching_echomusic">echomusic izlenliyor</string>
-    <string name="discord_competing_echomusic">echomusic\'te yarış</string>
+    <string name="discord_playing_nullmusic">nullmusic oynatılıyor</string>
+    <string name="discord_watching_nullmusic">nullmusic izlenliyor</string>
+    <string name="discord_competing_nullmusic">nullmusic\'te yarış</string>
     <string name="discord_activity_name">Aktivite adı</string>
     <string name="discord_activity_name_description">Aktivite için özel ad (boş bırakılırsa varsayılan kullanılır)</string>
     <string name="discord_advanced_mode">Gelişmiş seçenekler</string>

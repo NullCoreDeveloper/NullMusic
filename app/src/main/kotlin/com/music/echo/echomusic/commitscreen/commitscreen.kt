@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.commitscreen
+package iad1tya.echo.music.nullmusic.commitscreen
 
 import android.content.Intent
 import android.net.Uri

@@ -10,7 +10,7 @@
     android:paddingEnd="14dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
-    android:theme="@style/Theme.Widget.echomusic">
+    android:theme="@style/Theme.Widget.nullmusic">
 
     <LinearLayout
         android:layout_width="match_parent"

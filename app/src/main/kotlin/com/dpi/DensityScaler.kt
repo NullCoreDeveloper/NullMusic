@@ -14,7 +14,7 @@ class DensityScaler : BaseLifecycleContentProvider() {
     }
 
     companion object {
-        private const val PREFS_NAME = "echomusic_settings"
+        private const val PREFS_NAME = "nullmusic_settings"
         private const val KEY_DENSITY_SCALE = "density_scale_factor"
         private const val DEFAULT_SCALE_FACTOR = 1.0f
 

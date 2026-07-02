@@ -279,7 +279,7 @@
         <item quantity="other">%d godina</item>
     </plurals>
     <string name="playlist_imported">Playlista je uvezena</string>
-    <string name="discord_information">echomusic koristi KizzyRPC biblioteku za postavljanje vašeg Discord status. Ovo uključuje korištenje Discord Gateway spajanja, što bi se moglo smatrati prekršajem Discord-ovog TOS-a. Međutim nema poznatih slučajeva gdje su korisnički računi zbog toga bili suspendirani. Korisite na vlastiti rizik.\n\nechomusic će izdvojiti samo vaš žeton, sve drugo se sprema lokalno.</string>
+    <string name="discord_information">nullmusic koristi KizzyRPC biblioteku za postavljanje vašeg Discord status. Ovo uključuje korištenje Discord Gateway spajanja, što bi se moglo smatrati prekršajem Discord-ovog TOS-a. Međutim nema poznatih slučajeva gdje su korisnički računi zbog toga bili suspendirani. Korisite na vlastiti rizik.\n\nnullmusic će izdvojiti samo vaš žeton, sve drugo se sprema lokalno.</string>
     <string name="options">Opcije</string>
     <string name="preview">Pregled</string>
     <string name="login_failed">Prijava nije uspjela</string>
@@ -365,7 +365,7 @@
 
 
     <string name="spotify_import_title">Uvezi sa Spotifyja</string>
-    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne Echo Music playliste.</string>
+    <string name="spotify_import_desc">Povežite Spotify, odaberite playliste i preslikajte ih u lokalne NullMusic playliste.</string>
     <string name="spotify_connect">Poveži Spotify</string>
     <string name="spotify_refresh">Osvježi Spotify biblioteku</string>
     <string name="spotify_select_sources">Odaberite Spotify playliste</string>

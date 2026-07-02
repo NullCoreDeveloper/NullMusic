@@ -16,7 +16,7 @@ dependencyResolutionManagement {
 //     id("org.gradle.toolchains.foojay-resolver-convention") version("1.0.0")
 // }
 
-rootProject.name = "echomusic"
+rootProject.name = "nullmusic"
 include(
     ":app",
     ":innertube",
@@ -30,14 +30,14 @@ include(
     ":artistvideo",
     ":jiosaavn",
     ":canvas",
-    ":echomusiccanvas",
+    ":nullmusiccanvas",
     ":applecanvas",
     ":unison"
 )
 
 
 // Use a local copy of NewPipe Extractor by uncommenting the lines below.
-// We assume, that echomusic and NewPipe Extractor have the same parent directory.
+// We assume, that nullmusic and NewPipe Extractor have the same parent directory.
 // If this is not the case, please change the path in includeBuild().
 //
 // For this to work you also need to change the implementation in innertube/build.gradle.kts

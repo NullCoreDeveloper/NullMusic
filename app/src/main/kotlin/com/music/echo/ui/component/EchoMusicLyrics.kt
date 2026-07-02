@@ -49,7 +49,7 @@ import iad1tya.echo.music.utils.rememberPreference
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun echomusicLyricsLine(
+fun nullmusicLyricsLine(
     entry: LyricsEntry,
     nextEntryTime: Long?,
     effectivePlaybackPosition: Long,

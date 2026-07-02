@@ -1,6 +1,6 @@
 
 
-package iad1tya.echo.music.echomusic.component
+package iad1tya.echo.music.nullmusic.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

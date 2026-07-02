@@ -366,7 +366,7 @@ fun AlbumMenu(
                             val intent = Intent().apply {
                                 action = Intent.ACTION_SEND
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "https://share.echomusic.fun/playlist?list=${album.album.playlistId}")
+                                putExtra(Intent.EXTRA_TEXT, "https://share.nullmusic.fun/playlist?list=${album.album.playlistId}")
                             }
                             context.startActivity(Intent.createChooser(intent, null))
                         }

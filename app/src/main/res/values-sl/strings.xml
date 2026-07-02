@@ -368,7 +368,7 @@
     <string name="backup_create_failed">Varnostne kopije ni bilo mogoče ustvariti</string>
     <string name="restore_failed">Obnova varnostne kopije ni uspela</string>
     <string name="discord_integration">Integracija z Discordom</string>
-    <string name="discord_information">echomusic uporablja knjižnico KizzyRPC za nastavitev stanja vašega Discord računa. To vključuje uporabo povezave Discord Gateway, kar se lahko šteje za kršitev pogojev uporabe Discord. Vendar ni znanih primerov, da bi bili uporabniški računi zaradi tega suspendirani. Uporabljate na lastno odgovornost.\n\nechomusic bo izluščil samo vaš žeton, vse ostalo pa je shranjeno lokalno.</string>
+    <string name="discord_information">nullmusic uporablja knjižnico KizzyRPC za nastavitev stanja vašega Discord računa. To vključuje uporabo povezave Discord Gateway, kar se lahko šteje za kršitev pogojev uporabe Discord. Vendar ni znanih primerov, da bi bili uporabniški računi zaradi tega suspendirani. Uporabljate na lastno odgovornost.\n\nnullmusic bo izluščil samo vaš žeton, vse ostalo pa je shranjeno lokalno.</string>
     <string name="dismiss">Opusti</string>
     <string name="options">Možnosti</string>
     <string name="preview">Predogled</string>
@@ -396,7 +396,7 @@
 
 
     <string name="spotify_import_title">Uvozi iz Spotifyja</string>
-    <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname Echo Music.</string>
+    <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname NullMusic.</string>
     <string name="spotify_connect">Poveži Spotify</string>
     <string name="spotify_refresh">Osveži knjižnico Spotify</string>
     <string name="spotify_select_sources">Izberite sezname predvajanja Spotify</string>

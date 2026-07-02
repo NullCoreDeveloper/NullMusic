@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.changelog
+package iad1tya.echo.music.nullmusic.changelog
 
 
 
@@ -83,7 +83,7 @@ import coil3.compose.AsyncImage
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
-import iad1tya.echo.music.echomusic.updater.extractUrls
+import iad1tya.echo.music.nullmusic.updater.extractUrls
 import iad1tya.echo.music.ui.component.parseMarkdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -146,7 +146,7 @@ fun ChangelogScreen(
                 } else {
                     val changelogUrl = URL("https://github.com/NullCoreDeveloper/NullMusic/releases/download/$tag/changelog.json")
                     val connection = changelogUrl.openConnection() as HttpURLConnection
-                    connection.setRequestProperty("User-Agent", "echomusic-Changelog-App")
+                    connection.setRequestProperty("User-Agent", "nullmusic-Changelog-App")
                     connection.setRequestProperty("Accept", "application/json")
                     
                     if (connection.responseCode == 200) {
@@ -219,7 +219,7 @@ fun ChangelogScreen(
             try {
                 val releasesUrl = URL("https://api.github.com/repos/NullCoreDeveloper/NullMusic/releases")
                 val connection = releasesUrl.openConnection() as HttpURLConnection
-                connection.setRequestProperty("User-Agent", "echomusic-Changelog-App")
+                connection.setRequestProperty("User-Agent", "nullmusic-Changelog-App")
                 connection.setRequestProperty("Accept", "application/vnd.github+json")
                 
                 if (connection.responseCode == 200) {

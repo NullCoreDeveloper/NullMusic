@@ -302,7 +302,7 @@
 
 
     <string name="spotify_import_title">Spotify ਤੋਂ ਅਯਾਤ ਕਰੋ</string>
-    <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ Echo Music ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
+    <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ NullMusic ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
     <string name="spotify_connect">Spotify ਕਨੈਕਟ ਕਰੋ</string>
     <string name="spotify_refresh">Spotify ਲਾਇਬ੍ਰੇਰੀ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</string>
     <string name="spotify_select_sources">Spotify ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ</string>
@@ -367,7 +367,7 @@
     <string name="enable_lrclib">LrcLib ਬੋਲ ਪ੍ਰਦਾਤਾ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ</string>
     <string name="hide_explicit">ਸਪੱਸ਼ਟ ਸਮੱਗਰੀ ਲੁਕਾਓ</string>
     <string name="discord_integration">ਡਿਸਕੋਰਡ ਏਕੀਕਰਣ</string>
-    <string name="discord_information">echomusic ਤੁਹਾਡੇ Discord ਖਾਤੇ ਦੀ ਸਥਿਤੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ KizzyRPC ਲਾਇਬ੍ਰੇਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। ਇਸ ਵਿੱਚ Discord Gateway ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਸ਼ਾਮਲ ਹੈ, ਜਿਸ ਨੂੰ Discord ਦੀ TOS ਦੀ ਉਲੰਘਣਾ ਮੰਨਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਹਾਲਾਂਕਿ, ਇਸ ਕਾਰਨ ਉਪਭੋਗਤਾ ਖਾਤੇ ਮੁਅੱਤਲ ਕੀਤੇ ਜਾਣ ਦੇ ਕੋਈ ਜਾਣੇ-ਪਛਾਣੇ ਕੇਸ ਨਹੀਂ ਹਨ। ਆਪਣੇ ਜੋਖਮ \'ਤੇ ਵਰਤੋਂ।\n\nechomusic ਸਿਰਫ਼ ਤੁਹਾਡਾ ਟੋਕਨ ਕੱਢੇਗਾ, ਅਤੇ ਬਾਕੀ ਸਭ ਕੁਝ ਸਥਾਨਕ ਤੌਰ \'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="discord_information">nullmusic ਤੁਹਾਡੇ Discord ਖਾਤੇ ਦੀ ਸਥਿਤੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ KizzyRPC ਲਾਇਬ੍ਰੇਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। ਇਸ ਵਿੱਚ Discord Gateway ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਸ਼ਾਮਲ ਹੈ, ਜਿਸ ਨੂੰ Discord ਦੀ TOS ਦੀ ਉਲੰਘਣਾ ਮੰਨਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਹਾਲਾਂਕਿ, ਇਸ ਕਾਰਨ ਉਪਭੋਗਤਾ ਖਾਤੇ ਮੁਅੱਤਲ ਕੀਤੇ ਜਾਣ ਦੇ ਕੋਈ ਜਾਣੇ-ਪਛਾਣੇ ਕੇਸ ਨਹੀਂ ਹਨ। ਆਪਣੇ ਜੋਖਮ \'ਤੇ ਵਰਤੋਂ।\n\nnullmusic ਸਿਰਫ਼ ਤੁਹਾਡਾ ਟੋਕਨ ਕੱਢੇਗਾ, ਅਤੇ ਬਾਕੀ ਸਭ ਕੁਝ ਸਥਾਨਕ ਤੌਰ \'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</string>
     <string name="dismiss">ਰੱਦ ਕਰੋ</string>
     <string name="options">ਵਿਕਲਪ</string>
     <string name="preview">ਪੂਰਵ ਝਲਕ</string>

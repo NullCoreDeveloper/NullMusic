@@ -93,6 +93,12 @@ jobs:
                       except Exception: pass
           '
           
+          # Rename the canvas module folder to match the string replacement above
+          if [ -d "echomusiccanvas" ]; then
+            git mv echomusiccanvas nullmusiccanvas || true
+          fi
+          
+          
           git commit -am "chore: strip analytics and rewrite authorship from upstream changes" || true
           git push origin main
           

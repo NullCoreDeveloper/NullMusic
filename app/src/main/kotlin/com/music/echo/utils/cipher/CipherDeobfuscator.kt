@@ -14,10 +14,21 @@ object CipherDeobfuscator {
 
     fun initialize(context: Context) {
         appContext = context.applicationContext
+        PlayerConfigStore.initialize(appContext)
+        PlayerConfigStore.scheduleStartupRefresh()
     }
 
     private var cipherWebView: CipherWebView? = null
     private var currentPlayerHash: String? = null
+    private var builtConfigEpoch = -1
+
+    suspend fun prewarm() {
+        try {
+            getOrCreateWebView(forceRefresh = false)
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Cipher WebView prewarm failed")
+        }
+    }
 
     suspend fun deobfuscateStreamUrl(signatureCipher: String, videoId: String): String? {
         return try {
@@ -35,6 +46,8 @@ object CipherDeobfuscator {
             }
         }
     }
+
+    suspend fun onStreamRejected(): Boolean = PlayerConfigStore.refreshAfterStreamRejection()
 
     private suspend fun deobfuscateInternal(signatureCipher: String, videoId: String, isRetry: Boolean): String? {
         
@@ -102,9 +115,12 @@ object CipherDeobfuscator {
     }
 
     private suspend fun getOrCreateWebView(forceRefresh: Boolean): CipherWebView? {
-        if (!forceRefresh && cipherWebView != null) {
+        val epochAtStart = PlayerConfigStore.configEpoch
+        if (!forceRefresh && cipherWebView != null && builtConfigEpoch == epochAtStart) {
             return cipherWebView
         }
+
+        var builtEpoch = epochAtStart
 
         
         if (cipherWebView != null) {
@@ -118,24 +134,54 @@ object CipherDeobfuscator {
             return null
         }
         val (playerJs, hash) = result
+        val playerHash = FunctionNameExtractor.extractPlayerHash(playerJs)
+        var sigInfo = FunctionNameExtractor.extractSigFunctionInfo(playerJs)
+        var nFuncInfo = FunctionNameExtractor.extractNFunctionInfo(playerJs)
 
-        
-        val sigInfo = FunctionNameExtractor.extractSigFunctionInfo(playerJs)
+        if (playerHash != null) {
+            val hardcoded = FunctionNameExtractor.getHardcodedConfig(playerHash)
+            if (hardcoded != null) {
+                sigInfo = FunctionNameExtractor.SigFunctionInfo(
+                    name = hardcoded.sigFuncName,
+                    constantArg = hardcoded.sigConstantArg,
+                    jsExpression = hardcoded.sigJsExpression,
+                    isHardcoded = true
+                )
+                nFuncInfo = FunctionNameExtractor.NFunctionInfo(
+                    name = hardcoded.nFuncName,
+                    arrayIndex = hardcoded.nArrayIndex,
+                    jsExpression = hardcoded.nJsExpression,
+                    isHardcoded = true
+                )
+            } else if (!forceRefresh) {
+                Timber.tag(TAG).w("Extraction not fully config-backed for player $playerHash — forcing remote config refresh")
+                val healed = PlayerConfigStore.forceRefresh(missingHash = playerHash)
+                if (healed) {
+                    val newHardcoded = FunctionNameExtractor.getHardcodedConfig(playerHash)
+                    if (newHardcoded != null) {
+                        sigInfo = FunctionNameExtractor.SigFunctionInfo(
+                            name = newHardcoded.sigFuncName,
+                            constantArg = newHardcoded.sigConstantArg,
+                            jsExpression = newHardcoded.sigJsExpression,
+                            isHardcoded = true
+                        )
+                        nFuncInfo = FunctionNameExtractor.NFunctionInfo(
+                            name = newHardcoded.nFuncName,
+                            arrayIndex = newHardcoded.nArrayIndex,
+                            jsExpression = newHardcoded.nJsExpression,
+                            isHardcoded = true
+                        )
+                        builtEpoch = PlayerConfigStore.configEpoch
+                    }
+                }
+            }
+        }
 
         if (sigInfo == null) {
             Timber.tag(TAG).e("Could not extract signature function info from player JS")
             return null
         }
 
-        
-        val nFuncInfo = FunctionNameExtractor.extractNFunctionInfo(playerJs)
-        if (nFuncInfo == null) {
-            Timber.tag(TAG).e("Could not extract n-function info from player JS (will try brute-force)")
-        }
-
-        Timber.tag(TAG).d("Creating CipherWebView with sig=${sigInfo.name}, constantArg=${sigInfo.constantArg}, nFunc=${nFuncInfo?.name}[${nFuncInfo?.arrayIndex}]")
-
-        
         val webView = CipherWebView.create(
             context = appContext,
             playerJs = playerJs,
@@ -144,7 +190,8 @@ object CipherDeobfuscator {
         )
 
         cipherWebView = webView
-        currentPlayerHash = hash
+        currentPlayerHash = playerHash ?: hash
+        builtConfigEpoch = builtEpoch
         return webView
     }
 

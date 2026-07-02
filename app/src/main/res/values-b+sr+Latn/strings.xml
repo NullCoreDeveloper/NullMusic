@@ -290,6 +290,7 @@
     <string name="action_login">Uloguj se</string>
 
 
+
     <!-- Bottom navigation -->
     <string name="music">Muzika</string>
 
@@ -322,6 +323,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Prevucite prstom levo ili desno u delu izvođača i naziva pesme na celom ekranu teksta da promenite pesmu</string>
     <string name="lyrics_thumbnail_play_pause">Prikaži dugme za puštanje/pauzu na sličici</string>
     <string name="lyrics_thumbnail_play_pause_desc">Prikaži preklopno dugme za puštanje/pauzu na sličici pesme na celom ekranu teksta</string>
+    <string name="picker_not_available">Elector documentorum in hac machina non praesto est. Utetur directorio exportationis defalto applicationis.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -387,4 +389,5 @@
     <string name="spotify_clear_selection">Očisti</string>
     <string name="spotify_account">Spotify nalog</string>
     <string name="spotify_waiting_for_login">Čekanje na Spotify prijavu</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

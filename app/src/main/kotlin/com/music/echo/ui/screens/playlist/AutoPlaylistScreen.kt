@@ -613,7 +613,7 @@ private fun AutoPlaylistHeader(
                 .padding(horizontal = 48.dp)
         ) {
             AsyncImage(
-                model = songs[0].song.thumbnailUrl,
+                model = songs[0].thumbnailUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()

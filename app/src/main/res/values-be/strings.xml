@@ -289,6 +289,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Правядзіце пальцам налева ці направа ў секцыі выканаўцы і назвы песні на поўнаэкранным тэксце, каб змяніць песню</string>
     <string name="lyrics_thumbnail_play_pause">Паказваць прайграванне/прыпынак на мініяцюры</string>
     <string name="lyrics_thumbnail_play_pause_desc">Паказваць перакрыццё кнопкі прайгравання/прыпынку на мініяцюры песні ў поўнаэкранным тэксце</string>
+    <string name="picker_not_available">Выбар дакументаў недаступны на гэтай прыладзе. Будзе выкарыстаны стандартны каталог экспарту праграмы.</string>
 
     <!-- Duplicates -->
     <string name="duplicates">Дублікаты</string>
@@ -409,4 +410,5 @@
     <string name="keep_listening">Працягвайце слухаць</string>
     <string name="your_youtube_playlists">Вашы плэй-лісты YouTube</string>
     <string name="similar_to">Падобна да</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

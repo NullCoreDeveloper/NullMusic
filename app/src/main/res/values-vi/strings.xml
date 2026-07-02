@@ -295,6 +295,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Vuốt sang trái hoặc phải ở phần tên nghệ sĩ và bài hát trong lời bài hát toàn màn hình để chuyển bài hát</string>
     <string name="lyrics_thumbnail_play_pause">Hiển thị nút phát/tạm dừng trên hình thu nhỏ</string>
     <string name="lyrics_thumbnail_play_pause_desc">Hiển thị lớp phủ nút phát/tạm dừng trên hình thu nhỏ bài hát trong lời bài hát toàn màn hình</string>
+    <string name="picker_not_available">Trình chọn tài liệu không có sẵn trên thiết bị này. Đang sử dụng thư mục xuất mặc định của ứng dụng.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -358,4 +359,5 @@
     <string name="spotify_clear_selection">Xoá lựa chọn</string>
     <string name="spotify_account">Tài khoản Spotify</string>
     <string name="spotify_waiting_for_login">Đang chờ đăng nhập Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

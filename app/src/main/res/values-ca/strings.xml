@@ -387,4 +387,5 @@
     <string name="spotify_clear_selection">Neteja la selecció</string>
     <string name="spotify_account">Compte de Spotify</string>
     <string name="spotify_waiting_for_login">S’està esperant l’inici de sessió a Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

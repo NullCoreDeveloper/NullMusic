@@ -71,7 +71,7 @@ private val DiscordSmallImageOptions = listOf("thumbnail", "artist", "appicon", 
 private val DiscordActivityStatusOptions = listOf("online", "dnd", "idle", "streaming")
 private val DiscordPlatformOptions = listOf("desktop", "xbox", "samsung", "ios", "android", "embedded", "ps4", "ps5")
 private val DiscordActivityTypeOptions = listOf("PLAYING", "STREAMING", "LISTENING", "WATCHING", "COMPETING")
-private val DiscordLargeTextOptions = listOf("song", "artist", "album", "app", "custom", "dontshow")
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,57 +180,11 @@ fun DiscordSettings(
         }
 
     val launchAuthorization: () -> Unit = {
-        val session = DiscordOAuthRepository.createAuthorizationSession()
-        authorizationSession = session
         authorizationMessage = null
         authorizationUiModeName = DiscordAuthorizationUiMode.Waiting.name
-
-        runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, session.authorizationUri)
-            context.startActivity(intent)
-        }.onFailure {
-            authorizationUiModeName = DiscordAuthorizationUiMode.Failure.name
-            authorizationMessage = it.message ?: context.getString(R.string.discord_authorization_failed)
-        }
     }
 
-    LaunchedEffect(authorizationSession.state, authorizationUiMode) {
-        if (authorizationUiMode != DiscordAuthorizationUiMode.Waiting) {
-            return@LaunchedEffect
-        }
 
-        DiscordAuthCoordinator.redirects.collectLatest { redirect ->
-            if (redirect.getQueryParameter("state") != authorizationSession.state) {
-                return@collectLatest
-            }
-
-            DiscordOAuthRepository
-                .completeAuthorization(
-                    context = context,
-                    session = authorizationSession,
-                    redirect = redirect,
-                ).onSuccess { session ->
-                    val account =
-                        session.account
-                            ?: runCatching { DiscordOAuthRepository.fetchAccount(session.accessToken) }.getOrNull()
-
-                    authorizedToken = session.accessToken
-                    authorizedUsername = account?.username.orEmpty()
-                    authorizedName = account?.displayName.orEmpty()
-                    authorizedAvatarUrl = account?.avatarUrl.orEmpty()
-                    discordUsername = authorizedUsername
-                    discordName = authorizedName
-                    discordAvatarUrl = authorizedAvatarUrl
-                    authorizationMessage = context.getString(R.string.discord_authorization_success)
-                    authorizationUiModeName = DiscordAuthorizationUiMode.Success.name
-                    authorizationSession = DiscordOAuthRepository.createAuthorizationSession()
-                }.onFailure {
-                    authorizationMessage = it.message ?: context.getString(R.string.discord_authorization_failed)
-                    authorizationUiModeName = DiscordAuthorizationUiMode.Failure.name
-                    authorizationSession = DiscordOAuthRepository.createAuthorizationSession()
-                }
-        }
-    }
 
     LaunchedEffect(authorizationUiMode) {
         if (authorizationUiMode == DiscordAuthorizationUiMode.Success ||
@@ -351,16 +305,35 @@ fun DiscordSettings(
         defaultValue = false,
     )
 
-    val (largeTextSource, onLargeTextSourceChange) =
-        rememberPreference(
-            key = DiscordLargeTextSourceKey,
-            defaultValue = "album",
+
+    LaunchedEffect(
+        listOf(
+            activityStatusSelection,
+            platformSelection,
+            nameSource,
+            detailsSource,
+            stateSource,
+            largeImageType,
+            largeImageCustomUrl,
+            smallImageType,
+            smallImageCustomUrl,
+            button1Label,
+            button1Enabled,
+            button1UrlSource,
+            button1CustomUrl,
+            button2Label,
+            button2Enabled,
+            button2UrlSource,
+            button2CustomUrl,
+            activityType,
+            showWhenPaused
         )
-    val (largeTextCustom, onLargeTextCustomChange) =
-        rememberPreference(
-            key = DiscordLargeTextCustomKey,
-            defaultValue = "",
-        )
+    ) {
+        if (discordRPC && discordToken.isNotBlank() && DiscordPresenceManager.isRunning()) {
+            delay(500)
+            DiscordPresenceManager.restart()
+        }
+    }
 
     Scaffold(
         modifier =
@@ -618,26 +591,6 @@ fun DiscordSettings(
                         )
                     }
 
-                    item {
-                        ListPreference(
-                            title = { Text(stringResource(R.string.large_text)) },
-                            icon = { Icon(painterResource(R.drawable.edit), null) },
-                            selectedValue = largeTextSource,
-                            values = DiscordLargeTextOptions,
-                            valueText = { discordLargeTextSourceLabel(it) },
-                            onValueSelected = onLargeTextSourceChange,
-                        )
-                    }
-
-                    item(visible = largeTextSource == "custom") {
-                        EditTextPreference(
-                            title = { Text("Custom Text") },
-                            icon = { Icon(painterResource(R.drawable.edit), null) },
-                            value = largeTextCustom,
-                            onValueChange = onLargeTextCustomChange,
-                            isInputValid = { true },
-                        )
-                    }
 
                     item {
                         ListPreference(
@@ -672,8 +625,7 @@ fun DiscordSettings(
                     activityType = activityType,
                     largeImageType = largeImageType,
                     largeImageCustomUrl = largeImageCustomUrl,
-                    largeTextSource = largeTextSource,
-                    largeTextCustom = largeTextCustom,
+
                     smallImageType = smallImageType,
                     smallImageCustomUrl = smallImageCustomUrl,
                     button1Label = button1Label,
@@ -704,6 +656,7 @@ fun DiscordSettings(
                             authorizedUsername = ""
                             authorizedName = ""
                             authorizedAvatarUrl = ""
+                            discordToken = ""
                             DiscordPresenceManager.stop()
                             authorizationUiModeName = DiscordAuthorizationUiMode.Idle.name
                             authorizationMessage = null
@@ -724,6 +677,28 @@ fun DiscordSettings(
                     }
                 },
             )
+        }
+
+        if (authorizationUiMode == DiscordAuthorizationUiMode.Waiting) {
+            androidx.compose.ui.window.Dialog(
+                onDismissRequest = {
+                    authorizationUiModeName = DiscordAuthorizationUiMode.Idle.name
+                    authorizationMessage = null
+                },
+                properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    DiscordTokenWebView(
+                        onTokenExtracted = { token ->
+                            authorizedToken = token
+                            discordToken = token
+                            authorizationMessage = context.getString(R.string.discord_authorization_success)
+                            authorizationUiModeName = DiscordAuthorizationUiMode.Success.name
+                            // Account details are fetched in LaunchedEffect(discordToken) automatically
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -1150,17 +1125,6 @@ private fun discordImageTypeLabel(value: String): String =
         else -> value
     }
 
-@Composable
-private fun discordLargeTextSourceLabel(value: String): String =
-    when (value.lowercase()) {
-        "song" -> stringResource(R.string.song_title)
-        "artist" -> stringResource(R.string.artist_name)
-        "album" -> "Album Name"
-        "app" -> stringResource(R.string.app_name)
-        "custom" -> "Custom"
-        "dontshow" -> "Don't Show"
-        else -> value
-    }
 
 @Composable
 fun EditablePreference(
@@ -1217,8 +1181,6 @@ fun RichPresence(
     activityType: String = "LISTENING",
     largeImageType: String = "thumbnail",
     largeImageCustomUrl: String = "",
-    largeTextSource: String = "album",
-    largeTextCustom: String = "",
     smallImageType: String = "artist",
     smallImageCustomUrl: String = "",
     button1Label: String = "Listen on YouTube Music",
@@ -1236,7 +1198,6 @@ fun RichPresence(
     val artistNameFallback = stringResource(R.string.artist_name)
     val albumNameFallback = "Album Name"
     val songTitleFallback = stringResource(R.string.song_title)
-    val customLargeTextFallback = "Custom Text"
 
     fun resolveUrl(
         source: String,
@@ -1280,25 +1241,14 @@ fun RichPresence(
     val previewName = previewSourceValue(nameSource)
     val previewDetails = previewSourceValue(detailsSource)
     val previewState = previewSourceValue(stateSource)
-    val previewLargeText =
-        when (largeTextSource.lowercase()) {
-            "song" -> previewSourceValue(ActivitySource.SONG)
-            "artist" -> previewSourceValue(ActivitySource.ARTIST)
-            "album" -> previewSourceValue(ActivitySource.ALBUM)
-            "app" -> appName
-            "custom" -> largeTextCustom.ifBlank { customLargeTextFallback }
-            "dontshow" -> null
-            else -> previewSourceValue(ActivitySource.ALBUM)
-        }
     val visiblePreviewDetails = previewDetails.takeUnless { it == previewName }
     val visiblePreviewState =
         previewState.takeUnless {
             it == previewName || it == visiblePreviewDetails
         }
-    val visiblePreviewLargeText =
-        previewLargeText?.takeUnless {
-            it == previewName || it == visiblePreviewDetails || it == visiblePreviewState
-        }
+    val visiblePreviewLargeText = previewSourceValue(ActivitySource.ALBUM).takeUnless {
+        it == previewName || it == visiblePreviewDetails || it == visiblePreviewState
+    }
     val resolvedButton1Url = resolveUrl(button1UrlSource, song, button1CustomUrl)
     val resolvedButton2Url = resolveUrl(button2UrlSource, song, button2CustomUrl)
     val activityTypeLabel = discordActivityTypeLabel(activityType)

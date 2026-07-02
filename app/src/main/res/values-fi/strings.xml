@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Pyyhkäise vasemmalle tai oikealle artistin ja kappaleen nimen kohdalla koko näytön sanoituksissa vaihtaaksesi kappaletta</string>
     <string name="lyrics_thumbnail_play_pause">Näytä toisto/keskeytys -painike esikatselukuvassa</string>
     <string name="lyrics_thumbnail_play_pause_desc">Näytä toisto/keskeytys -painike kappaleen esikatselukuvan päällä koko näytön sanoituksissa</string>
+    <string name="picker_not_available">Asiakirjavalitsin ei ole käytettävissä tässä laitteessa. Käytetään sovelluksen oletusvientihakemistoa.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">Tyhjennä valinta</string>
     <string name="spotify_account">Spotify-tili</string>
     <string name="spotify_waiting_for_login">Odotetaan Spotify-kirjautumista</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

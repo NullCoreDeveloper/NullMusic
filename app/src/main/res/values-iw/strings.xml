@@ -322,6 +322,7 @@
     <string name="lyrics_swipe_to_change_song_desc">החלק שמאלה או ימינה בחלק שם האמן והשיר במילות השיר במסך מלא כדי להחליף שיר</string>
     <string name="lyrics_thumbnail_play_pause">הצג הפסקה/ניגון על התמונה הממוזערת</string>
     <string name="lyrics_thumbnail_play_pause_desc">הצג כפתור ניגון/הפסקה על תמונת השיר הממוזערת במילות השיר במסך מלא</string>
+    <string name="picker_not_available">בורר המסמכים אינו זמין במכשיר זה. נעשה שימוש בספריית היצוא המוגדרת כברירת מחדל של האפליקציה.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -387,7 +388,7 @@
     <string name="spotify_clear_selection">נקה בחירה</string>
     <string name="spotify_account">חשבון Spotify</string>
     <string name="spotify_waiting_for_login">ממתין להתחברות לספוטיפיי</string>
-
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 
 
 </resources>

@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">முழுத்திரை பாடல் வரிகளில் கலைஞர் மற்றும் பாடல் பெயர் பகுதியில் இடது அல்லது வலது ஸ்வைப் செய்து பாடலை மாற்றவும்</string>
     <string name="lyrics_thumbnail_play_pause">சிறுபடத்தில் இயக்கு/இடைநிறுத்து காட்டு</string>
     <string name="lyrics_thumbnail_play_pause_desc">முழுத்திரை பாடல் வரிகளில் பாடலின் சிறுபடத்தின் மேல் இயக்கு/இடைநிறுத்து பொத்தானைக் காட்டும்</string>
+    <string name="picker_not_available">இந்த சாதனத்தில் ஆவணத் தேர்வி கிடைக்கவில்லை. பயன்பாட்டின் இயல்புநிலை ஏற்றுமதி கோப்பகத்தைப் பயன்படுத்துகிறது.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">தேர்வை அழி</string>
     <string name="spotify_account">Spotify கணக்கு</string>
     <string name="spotify_waiting_for_login">Spotify உள்நுழைவுக்காக காத்திருக்கிறது</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

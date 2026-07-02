@@ -1,6 +1,7 @@
 package iad1tya.echo.music.utils.cipher
 
 import timber.log.Timber
+import java.security.MessageDigest
 
 object FunctionNameExtractor {
     private const val TAG = "nullmusic_CipherFnExtract"
@@ -8,6 +9,12 @@ object FunctionNameExtractor {
     
     
     
+    private val PLAYER_HASH_PATTERNS = listOf(
+        Regex("""jsUrl['":\s]+[^"']*?/player/([a-f0-9]{8})/"""),
+        Regex("""player_ias\.vflset/[^/]+/([a-f0-9]{8})/"""),
+        Regex("""/s/player/([a-f0-9]{8})/""")
+    )
+
     private val SIG_FUNCTION_PATTERNS = listOf(
         
         Regex("""&&\s*\(\s*[a-zA-Z0-9$]+\s*=\s*([a-zA-Z0-9$]+)\s*\(\s*(\d+)\s*,\s*decodeURIComponent\s*\(\s*[a-zA-Z0-9$]+\s*\)"""),
@@ -35,13 +42,51 @@ object FunctionNameExtractor {
 
     data class SigFunctionInfo(
         val name: String,
-        val constantArg: Int? 
+        val constantArg: Int?,
+        val jsExpression: String? = null,
+        val isHardcoded: Boolean = false
     )
 
     data class NFunctionInfo(
         val name: String,
-        val arrayIndex: Int? 
+        val arrayIndex: Int?,
+        val jsExpression: String? = null,
+        val isHardcoded: Boolean = false
     )
+
+    data class HardcodedPlayerConfig(
+        val sigFuncName: String,
+        val sigConstantArg: Int?,
+        val sigJsExpression: String? = null,
+        val nFuncName: String,
+        val nArrayIndex: Int?,
+        val nConstantArgs: List<Int>? = null,
+        val nJsExpression: String? = null,
+        val signatureTimestamp: Int
+    )
+
+    fun extractPlayerHash(playerJs: String): String? {
+        for ((index, pattern) in PLAYER_HASH_PATTERNS.withIndex()) {
+            val match = pattern.find(playerJs)
+            if (match != null) {
+                return match.groupValues[1]
+            }
+        }
+        val contentToHash = playerJs.take(10000)
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(contentToHash.toByteArray())
+        return digest.take(4).joinToString("") { "%02x".format(it) }
+    }
+
+    fun getHardcodedConfig(playerHash: String): HardcodedPlayerConfig? {
+        val config = PlayerConfigStore.get(playerHash)
+        if (config != null) {
+            Timber.tag(TAG).d("Found config for hash $playerHash")
+        } else {
+            Timber.tag(TAG).w("No config for hash: $playerHash")
+        }
+        return config
+    }
 
     fun extractSigFunctionInfo(playerJs: String): SigFunctionInfo? {
         for ((index, pattern) in SIG_FUNCTION_PATTERNS.withIndex()) {

@@ -150,7 +150,6 @@ class MusicDatabase(
         AutoMigration(from = 26, to = 27),
         AutoMigration(from = 27, to = 28),
         AutoMigration(from = 28, to = 29),
-        AutoMigration(from = 29, to = 30, spec = Migration29To30::class),
         AutoMigration(from = 30, to = 31),
         AutoMigration(from = 31, to = 32),
         AutoMigration(from = 32, to = 33),
@@ -180,6 +179,7 @@ abstract class InternalDatabase : RoomDatabase() {
                         MIGRATION_22_24,
                         MIGRATION_24_25,
                         MIGRATION_27_28,
+                        MIGRATION_29_30,
                         MIGRATION_36_37,
                         MIGRATION_37_38,
                         MIGRATION_38_39,
@@ -693,40 +693,70 @@ val MIGRATION_24_25 =
         }
     }
 
-class Migration29To30 : AutoMigrationSpec {
-    override fun onPostMigrate(db: SupportSQLiteDatabase) {
-        
-        var hasIsVideo = false
-        db.query("PRAGMA table_info('song')").use { cursor ->
-            val nameIndex = cursor.getColumnIndex("name")
-            while (cursor.moveToNext()) {
-                val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                if (colName == "isVideo") {
-                    hasIsVideo = true
-                    break
-                }
+val MIGRATION_29_30 = object : Migration(29, 30) {
+
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Drop views before modifying the schema
+        db.execSQL("DROP VIEW IF EXISTS sorted_song_artist_map")
+        db.execSQL("DROP VIEW IF EXISTS sorted_song_album_map")
+        db.execSQL("DROP VIEW IF EXISTS playlist_song_map_preview")
+
+        // Add the isVideo column only if it does not already exist
+        if (!hasColumn(db, "song", "isVideo")) {
+            try {
+                db.execSQL(
+                    "ALTER TABLE song ADD COLUMN isVideo INTEGER NOT NULL DEFAULT 0"
+                )
+            } catch (e: Exception) {
+                Timber.tag("MIGRATION_29_30").w(e, "Column isVideo may already exist despite hasColumn check")
             }
-        }
-        if (!hasIsVideo) {
-            db.execSQL("ALTER TABLE song ADD COLUMN isVideo INTEGER NOT NULL DEFAULT 0")
         }
 
-        
-        var hasProvider = false
-        db.query("PRAGMA table_info('lyrics')").use { cursor ->
-            val nameIndex = cursor.getColumnIndex("name")
-            while (cursor.moveToNext()) {
-                val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                if (colName == "provider") {
-                    hasProvider = true
-                    break
-                }
+        // Add the provider column only if it does not already exist.
+        // This prevents crashes for databases that already contain the
+        // provider column due to previous migration inconsistencies.
+        if (!hasColumn(db, "lyrics", "provider")) {
+            try {
+                db.execSQL(
+                    "ALTER TABLE lyrics ADD COLUMN provider TEXT NOT NULL DEFAULT 'Unknown'"
+                )
+            } catch (e: Exception) {
+                Timber.tag("MIGRATION_29_30").w(e, "Column provider may already exist despite hasColumn check")
             }
         }
-        if (!hasProvider) {
-            db.execSQL("ALTER TABLE lyrics ADD COLUMN provider TEXT NOT NULL DEFAULT 'Unknown'")
+
+        // Recreate the dropped views
+        db.execSQL(
+            "CREATE VIEW `sorted_song_artist_map` AS SELECT * FROM song_artist_map ORDER BY position"
+        )
+
+        db.execSQL(
+            "CREATE VIEW `sorted_song_album_map` AS SELECT * FROM song_album_map ORDER BY `index`"
+        )
+
+        db.execSQL(
+            "CREATE VIEW `playlist_song_map_preview` AS SELECT * FROM playlist_song_map WHERE position <= 3 ORDER BY position"
+        )
+    }
+}
+
+private fun hasColumn(
+    db: SupportSQLiteDatabase,
+    table: String,
+    column: String
+): Boolean {
+    db.query("PRAGMA table_info('$table')").use { cursor ->
+        val nameIndex = cursor.getColumnIndex("name")
+
+        while (cursor.moveToNext()) {
+            if (nameIndex >= 0 && cursor.getString(nameIndex) == column) {
+                return true
+            }
         }
     }
+
+    return false
 }
 
 val MIGRATION_27_28 =

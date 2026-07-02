@@ -349,6 +349,7 @@
     <string name="lyrics_swipe_to_change_song_desc">اسحب يسارًا أو يمينًا في قسم اسم الفنان والأغنية في وضع ملء الشاشة لتغيير الأغنية</string>
     <string name="lyrics_thumbnail_play_pause">إظهار زر التشغيل/الإيقاف على الصورة المصغرة</string>
     <string name="lyrics_thumbnail_play_pause_desc">إظهار زر تشغيل/إيقاف مؤقت متراكبًا على الصورة المصغرة للأغنية في وضع ملء الشاشة لكلمات الأغنية</string>
+    <string name="picker_not_available">منتقي المستندات غير متوفر على هذا الجهاز. سيتم استخدام دليل التصدير الافتراضي للتطبيق.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -416,4 +417,5 @@
     <string name="spotify_clear_selection">مسح التحديد</string>
     <string name="spotify_account">حساب Spotify</string>
     <string name="spotify_waiting_for_login">انتظار تسجيل الدخول إلى Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

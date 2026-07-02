@@ -791,7 +791,7 @@ class MainActivity : ComponentActivity() {
                         handleRecognitionIntent(pendingIntent!!, navController)
                         handleAssistantSearchIntent(pendingIntent!!, navController)
                         pendingIntent = null
-                    } else if (intent != null && intent.action == Intent.ACTION_VIEW) {
+                    } else if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
                         handleDeepLinkIntent(intent, navController)
                     } else if (intent != null && intent.action == ACTION_RECOGNITION) {
                         handleRecognitionIntent(intent, navController)
@@ -802,7 +802,7 @@ class MainActivity : ComponentActivity() {
 
                 DisposableEffect(Unit) {
                     val listener = Consumer<Intent> { intent ->
-                        if (intent.action == Intent.ACTION_VIEW) {
+                        if (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND) {
                             handleDeepLinkIntent(intent, navController)
                         } else if (intent.action == ACTION_RECOGNITION) {
                             handleRecognitionIntent(intent, navController)
@@ -816,7 +816,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val currentTitle = when (navBackStackEntry?.destination?.route) {
-                    Screens.Home.route -> stringResource(R.string.app_name)
+                    Screens.Home.route -> "NullMusic"
                     Screens.Search.route -> stringResource(R.string.search)
                     Screens.Library.route -> stringResource(R.string.filter_library)
                     Screens.ListenTogether.route -> stringResource(R.string.together)
@@ -1251,13 +1251,26 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+
                 }
             }
         }
     }
 
     private fun handleDeepLinkIntent(intent: Intent, navController: NavHostController) {
-        val uri = intent.data ?: intent.extras?.getString(Intent.EXTRA_TEXT)?.toUri() ?: return
+        var uri = intent.data
+        if (uri == null) {
+            val extraText = intent.extras?.getString(Intent.EXTRA_TEXT)
+            if (extraText != null) {
+                val urlRegex = "(https?://[^\\s]+)".toRegex()
+                val match = urlRegex.find(extraText)
+                if (match != null) {
+                    uri = match.value.toUri()
+                }
+            }
+        }
+        if (uri == null) return
+
         intent.data = null
         intent.removeExtra(Intent.EXTRA_TEXT)
         val coroutineScope = lifecycle.coroutineScope
@@ -1306,7 +1319,7 @@ class MainActivity : ComponentActivity() {
             else -> {
                 val videoId = when {
                     path == "watch" -> uri.getQueryParameter("v")
-                    uri.host == "youtu.be" -> uri.pathSegments.firstOrNull()
+                    uri.host == "youtu.be" || uri.host == "share.nullmusic.fun" -> uri.pathSegments.firstOrNull()
                     else -> null
                 }
 
@@ -1316,6 +1329,11 @@ class MainActivity : ComponentActivity() {
                     coroutineScope.launch(Dispatchers.IO) {
                         YouTube.queue(listOf(videoId), playlistId).onSuccess { queue ->
                             withContext(Dispatchers.Main) {
+                                var attempts = 0
+                                while (playerConnection == null && attempts < 20) {
+                                    delay(100)
+                                    attempts++
+                                }
                                 playerConnection?.playQueue(
                                     YouTubeQueue(
                                         WatchEndpoint(videoId = queue.firstOrNull()?.id, playlistId = playlistId),
@@ -1332,6 +1350,11 @@ class MainActivity : ComponentActivity() {
                         YouTube.queue(null, playlistId).onSuccess { queue ->
                             val firstItem = queue.firstOrNull()
                             withContext(Dispatchers.Main) {
+                                var attempts = 0
+                                while (playerConnection == null && attempts < 20) {
+                                    delay(100)
+                                    attempts++
+                                }
                                 playerConnection?.playQueue(
                                     YouTubeQueue(
                                         WatchEndpoint(videoId = firstItem?.id, playlistId = playlistId),

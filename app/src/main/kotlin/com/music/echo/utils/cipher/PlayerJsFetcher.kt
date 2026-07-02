@@ -71,7 +71,10 @@ object PlayerJsFetcher {
         try {
             val cacheDir = getCacheDir()
             if (cacheDir.exists()) {
-                cacheDir.listFiles()?.forEach { it.delete() }
+                val files = cacheDir.listFiles()?.filter {
+                    it.name.startsWith("player_") || it.name == "current_hash.txt"
+                }
+                files?.forEach { it.delete() }
             }
             Timber.tag(TAG).d("Cache invalidated")
         } catch (e: Exception) {

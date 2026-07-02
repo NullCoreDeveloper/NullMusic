@@ -20,8 +20,7 @@ import iad1tya.echo.music.constants.DiscordActivityStateKey
 import iad1tya.echo.music.constants.DiscordActivityTypeKey
 import iad1tya.echo.music.constants.DiscordLargeImageCustomUrlKey
 import iad1tya.echo.music.constants.DiscordLargeImageTypeKey
-import iad1tya.echo.music.constants.DiscordLargeTextCustomKey
-import iad1tya.echo.music.constants.DiscordLargeTextSourceKey
+
 import iad1tya.echo.music.constants.DiscordPresenceStatusKey
 import iad1tya.echo.music.constants.DiscordShowWhenPausedKey
 import iad1tya.echo.music.constants.DiscordSmallImageCustomUrlKey
@@ -257,15 +256,7 @@ class DiscordRPC(
         song: Song,
         translatedMap: Map<String, String>,
     ): String? =
-        when ((context.dataStore[DiscordLargeTextSourceKey] ?: "album").lowercase()) {
-            "song" -> translatedMap["{song}"] ?: song.song.title
-            "artist" -> translatedMap["{artist}"] ?: song.artists.firstOrNull()?.name
-            "album" -> translatedMap["{album}"] ?: song.song.albumName ?: song.album?.title ?: song.song.title
-            "app" -> context.getString(R.string.app_name)
-            "custom" -> (context.dataStore[DiscordLargeTextCustomKey] ?: "").ifBlank { null }
-            "dontshow" -> null
-            else -> translatedMap["{album}"] ?: song.song.albumName ?: song.album?.title
-        }
+        translatedMap["{album}"] ?: song.song.albumName ?: song.album?.title ?: song.song.title
 
     private fun resolveSmallText(
         song: Song,

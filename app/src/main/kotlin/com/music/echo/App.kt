@@ -75,7 +75,10 @@ class App : Application(), SingletonImageLoader.Factory {
             Timber.plant(Timber.DebugTree())
         }
 
-        
+        applicationScope.launch(Dispatchers.IO) {
+            cachedCoilCacheSize = dataStore.data.map { it[MaxImageCacheSizeKey] ?: 512 }.first()
+        }
+
         applicationScope.launch {
             initializeSettings()
             
@@ -93,6 +96,20 @@ class App : Application(), SingletonImageLoader.Factory {
         val settings = dataStore.data.first()
         val locale = Locale.getDefault()
         val languageTag = locale.language
+
+        val currentAudioQuality = settings[AudioQualityKey]?.toEnum(defaultValue = AudioQuality.OPUS) ?: AudioQuality.OPUS
+        if (currentAudioQuality == AudioQuality.SAAVN || currentAudioQuality == AudioQuality.LOSSLESS) {
+            dataStore.edit { prefs ->
+                prefs[AudioQualityKey] = AudioQuality.OPUS.name
+            }
+        }
+
+        val currentDownloadQuality = settings[DownloadQualityKey]?.toEnum(defaultValue = DownloadQuality.YOUTUBE) ?: DownloadQuality.YOUTUBE
+        if (currentDownloadQuality == DownloadQuality.SAAVN || currentDownloadQuality == DownloadQuality.LOSSLESS) {
+            dataStore.edit { prefs ->
+                prefs[DownloadQualityKey] = DownloadQuality.YOUTUBE.name
+            }
+        }
 
         YouTube.locale = YouTubeLocale(
             gl = settings[ContentCountryKey]?.takeIf { it != SYSTEM_DEFAULT }
@@ -232,8 +249,11 @@ class App : Application(), SingletonImageLoader.Factory {
         }
     }
 
+    @Volatile
+    private var cachedCoilCacheSize: Int? = null
+
     override fun newImageLoader(context: PlatformContext): ImageLoader {
-        val cacheSize = runBlocking {
+        val cacheSize = cachedCoilCacheSize ?: runBlocking {
             dataStore.data.map { it[MaxImageCacheSizeKey] ?: 512 }.first()
         }
         return ImageLoader.Builder(this).apply {

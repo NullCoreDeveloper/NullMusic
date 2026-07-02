@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Laulusõnade täisekraanil pühkige esitaja ja loo pealkirja osas vasakule või paremale, et lugu vahetada</string>
     <string name="lyrics_thumbnail_play_pause">Näita esitamist/pausi pisipildil</string>
     <string name="lyrics_thumbnail_play_pause_desc">Näita laulusõnade täisekraanil loo pisipildil esitamise/pausi nupu ülekatet</string>
+    <string name="picker_not_available">Dokumendivalija pole selles seadmes saadaval. Kasutatakse rakenduse vaikimisi ekspordikataloogi.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">Tühjenda valik</string>
     <string name="spotify_account">Spotify konto</string>
     <string name="spotify_waiting_for_login">Ootan Spotify sisselogimist</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

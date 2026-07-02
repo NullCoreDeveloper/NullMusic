@@ -171,6 +171,7 @@
     <string name="add_anyway">Add anyway</string>
     <string name="duplicates_description_single">The song is already in your playlist</string>
     <string name="duplicates_description_multiple">%d songs are already in your playlist</string>
+    <string name="picker_not_available">Document picker is not available on this device. Using app\'s default export directory.</string>
 
     <!-- Noun plurals -->
     <plurals name="n_song">
@@ -398,4 +399,5 @@
     <string name="spotify_clear_selection">Clear</string>
     <string name="spotify_account">Spotify account</string>
     <string name="spotify_waiting_for_login">Waiting for Spotify login</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

@@ -75,6 +75,7 @@ import iad1tya.echo.music.constants.EnablePaxsenixKey
 import iad1tya.echo.music.constants.HideExplicitKey
 import iad1tya.echo.music.constants.HideVideoSongsKey
 import iad1tya.echo.music.constants.HideYoutubeShortsKey
+import iad1tya.echo.music.constants.SponsorBlockEnabledKey
 import iad1tya.echo.music.constants.AlbumCanvasEnabledKey
 import iad1tya.echo.music.constants.LanguageCodeToName
 import iad1tya.echo.music.constants.LyricsProviderOrderKey
@@ -136,6 +137,7 @@ highlightKey: String? = null) {
     val (hideVideoSongs, onHideVideoSongsChange) = rememberPreference(key = HideVideoSongsKey, defaultValue = false)
 
     val (hideYoutubeShorts, onHideYoutubeShortsChange) = rememberPreference(key = HideYoutubeShortsKey, defaultValue = false)
+    val (sponsorBlockEnabled, onSponsorBlockEnabledChange) = rememberPreference(key = SponsorBlockEnabledKey, defaultValue = false)
     val (showArtistDescription, onShowArtistDescriptionChange) = rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val (showArtistSubscriberCount, onShowArtistSubscriberCountChange) = rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
     val (showMonthlyListeners, onShowMonthlyListenersChange) = rememberPreference(key = ShowMonthlyListenersKey, defaultValue = true)
@@ -707,6 +709,28 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onHideYoutubeShortsChange(!hideYoutubeShorts) }
+                ),
+                Material3SettingsItem(
+                    isHighlighted = (highlightKey == stringResource(R.string.content_sponsor_block)),
+                    icon = painterResource(R.drawable.skip_next),
+                    title = { Text(stringResource(R.string.content_sponsor_block)) },
+                    description = { Text(stringResource(R.string.content_sponsor_block_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = sponsorBlockEnabled,
+                            onCheckedChange = onSponsorBlockEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (sponsorBlockEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onSponsorBlockEnabledChange(!sponsorBlockEnabled) }
                 )
             )
         )

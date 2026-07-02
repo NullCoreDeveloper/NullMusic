@@ -323,6 +323,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Prijeđite prstom ulijevo ili udesno u odjeljku s izvođačem i nazivom pjesme na cijelom zaslonu teksta da biste promijenili pjesmu</string>
     <string name="lyrics_thumbnail_play_pause">Prikaži gumb za reprodukciju/pauzu na sličici</string>
     <string name="lyrics_thumbnail_play_pause_desc">Prikaži preklopni gumb za reprodukciju/pauzu preko sličice pjesme na cijelom zaslonu teksta</string>
+    <string name="picker_not_available">Odabir dokumenata nije dostupan na ovom uređaju. Koristi se zadani direktorij za izvoz aplikacije.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -389,4 +390,5 @@
     <string name="spotify_clear_selection">Očisti odabir</string>
     <string name="spotify_account">Spotify račun</string>
     <string name="spotify_waiting_for_login">Čekanje na Spotify prijavu</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

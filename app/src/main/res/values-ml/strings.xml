@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">ഫുൾസ്ക്രീൻ ഗാനരചനയിൽ ആർട്ടിസ്റ്റിന്റെയും ഗാനത്തിന്റെയും പേര് വിഭാഗത്തിൽ ഇടത്തോട്ടോ വലത്തോട്ടോ സ്വൈപ്പ് ചെയ്ത് ഗാനം മാറ്റുക</string>
     <string name="lyrics_thumbnail_play_pause">തംബ്നെയിലിൽ പ്ലേ/പോസ് കാണിക്കുക</string>
     <string name="lyrics_thumbnail_play_pause_desc">ഫുൾസ്ക്രീൻ ഗാനരചനയിൽ ഗാനത്തിന്റെ തംബ്നെയിലിന് മുകളിൽ പ്ലേ/പോസ് ബട്ടൺ ഓവർലേ കാണിക്കുക</string>
+    <string name="picker_not_available">ഈ ഉപകരണത്തിൽ ഡോക്യുമെന്റ് പിക്കർ ലഭ്യമല്ല. ആപ്പിന്റെ സ്ഥിരസ്ഥിതി എക്സ്പോർട്ട് ഡയറക്ടറി ഉപയോഗിക്കുന്നു.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">തിരഞ്ഞെടുപ്പ് മായ്‌ക്കുക</string>
     <string name="spotify_account">Spotify അക്കൗണ്ട്</string>
     <string name="spotify_waiting_for_login">Spotify ലോഗിനായി കാത്തിരിക്കുന്നു</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

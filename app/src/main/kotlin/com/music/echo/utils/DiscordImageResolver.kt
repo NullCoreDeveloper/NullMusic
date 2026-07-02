@@ -47,7 +47,7 @@ object DiscordImageResolver {
             return cached
         }
 
-        val thumbnailUrl = song.song.thumbnailUrl?.asHttpUrl()
+        val thumbnailUrl = song.thumbnailUrl?.asHttpUrl()
         val artistUrl =
             song.artists
                 .firstOrNull()
@@ -78,7 +78,7 @@ object DiscordImageResolver {
             "thumbnail", "song", "album" -> {
                 resolvedImages.thumbnailResolvedId
                     ?: resolvedImages.thumbnailOriginalUrl
-                    ?: song.song.thumbnailUrl?.asHttpUrl()
+                    ?: song.thumbnailUrl?.asHttpUrl()
             }
 
             "artist" -> {
@@ -90,7 +90,7 @@ object DiscordImageResolver {
                         ?.asHttpUrl()
                     ?: resolvedImages.thumbnailResolvedId
                     ?: resolvedImages.thumbnailOriginalUrl
-                    ?: song.song.thumbnailUrl?.asHttpUrl()
+                    ?: song.thumbnailUrl?.asHttpUrl()
             }
 
             "appicon" -> {

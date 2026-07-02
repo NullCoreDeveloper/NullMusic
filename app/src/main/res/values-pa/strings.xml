@@ -262,6 +262,7 @@
     <string name="lyrics_swipe_to_change_song_desc">ਪੂਰੀ ਸਕ੍ਰੀਨ ਬੋਲਾਂ ਵਿੱਚ ਕਲਾਕਾਰ ਅਤੇ ਗੀਤ ਦੇ ਨਾਮ ਵਾਲੇ ਭਾਗ \'ਤੇ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਸਵਾਈਪ ਕਰਕੇ ਗੀਤ ਬਦਲੋ</string>
     <string name="lyrics_thumbnail_play_pause">ਥੰਬਨੇਲ \'ਤੇ ਚਲਾਓ/ਰੋਕੋ ਦਿਖਾਓ</string>
     <string name="lyrics_thumbnail_play_pause_desc">ਪੂਰੀ ਸਕ੍ਰੀਨ ਬੋਲਾਂ ਵਿੱਚ ਗੀਤ ਦੇ ਥੰਬਨੇਲ \'ਤੇ ਚਲਾਓ/ਰੋਕੋ ਬਟਨ ਦਾ ਓਵਰਲੇ ਦਿਖਾਓ</string>
+    <string name="picker_not_available">ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਦਸਤਾਵੇਜ਼ ਚੁਣਨ ਵਾਲਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਐਪ ਦੀ ਡਿਫੌਲਟ ਐਕਸਪੋਰਟ ਡਾਇਰੈਕਟਰੀ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -372,5 +373,6 @@
     <string name="options">ਵਿਕਲਪ</string>
     <string name="preview">ਪੂਰਵ ਝਲਕ</string>
     <string name="enable_discord_rpc">Rich Presence ਸਮਰੱਥ ਕਰੋ</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 
 </resources>

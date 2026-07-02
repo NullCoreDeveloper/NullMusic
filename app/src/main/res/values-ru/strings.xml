@@ -331,6 +331,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Смахните влево или вправо по области с именем исполнителя и названием песни в полноэкранном тексте, чтобы сменить трек</string>
     <string name="lyrics_thumbnail_play_pause">Показывать кнопку «Воспроизвести/Пауза» на миниатюре</string>
     <string name="lyrics_thumbnail_play_pause_desc">Показывать наложение кнопки воспроизведения/паузы поверх миниатюры трека в полноэкранном тексте песни</string>
+    <string name="picker_not_available">Выбор документов недоступен на этом устройстве. Используется каталог экспорта приложения по умолчанию.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -398,4 +399,5 @@
     <string name="spotify_clear_selection">Очистить выбор</string>
     <string name="spotify_account">Учётная запись Spotify</string>
     <string name="spotify_waiting_for_login">Ожидание входа в Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

@@ -197,11 +197,12 @@ object DiscordAssetRegistrar {
                 put("urls", JSONArray(listOf(imageUrl)))
             }
         val body = json.toString().toRequestBody("application/json".toMediaType())
+        val authHeader = if (accessToken.contains(".")) accessToken else "Bearer $accessToken"
         val request =
             Request
                 .Builder()
                 .url("$API_BASE/applications/${BuildConfig.DISCORD_APPLICATION_ID}/external-assets")
-                .addHeader("Authorization", "Bearer $accessToken")
+                .addHeader("Authorization", authHeader)
                 .post(body)
                 .build()
 
@@ -231,11 +232,12 @@ object DiscordAssetRegistrar {
                     put("urls", JSONArray(urls))
                 }
             val body = json.toString().toRequestBody("application/json".toMediaType())
+            val authHeader = if (accessToken.contains(".")) accessToken else "Bearer $accessToken"
             val request =
                 Request
                     .Builder()
                     .url("$API_BASE/applications/${BuildConfig.DISCORD_APPLICATION_ID}/external-assets")
-                    .addHeader("Authorization", "Bearer $accessToken")
+                    .addHeader("Authorization", authHeader)
                     .post(body)
                     .build()
 

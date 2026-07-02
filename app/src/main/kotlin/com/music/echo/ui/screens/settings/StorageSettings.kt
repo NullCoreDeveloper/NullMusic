@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import android.widget.Toast
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -63,9 +64,13 @@ import kotlinx.coroutines.launch
 import okio.ByteString.Companion.encodeUtf8
 import kotlin.math.roundToInt
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import iad1tya.echo.music.constants.ExportDirectoryUriKey
+import timber.log.Timber
 
 @OptIn(ExperimentalCoilApi::class, ExperimentalMaterial3Api::class, DelicateCoilApi::class)
 @Composable
@@ -73,7 +78,7 @@ fun StorageSettings(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
     autoOpenExportPicker: Boolean = false,
-highlightKey: String? = null) {
+    highlightKey: String? = null) {
     val scrollState = androidx.compose.foundation.rememberScrollState()
 
     val context = LocalContext.current
@@ -107,11 +112,66 @@ highlightKey: String? = null) {
                 onExportDirectoryUriChange(uri.toString())
             }
         }
+
+    val isPickerSupported = remember(context) {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> true
+            else -> {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                context.packageManager
+                    .resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null
+            }
+        }.also { supported ->
+            Timber.d("OPEN_DOCUMENT_TREE supported: $supported (API ${Build.VERSION.SDK_INT})")
+        }
+    }
+
+
+
+    val pickerNotAvailableMsg = stringResource(R.string.picker_not_available)
+    val exportDirUnavailableMsg = stringResource(R.string.export_directory_unavailable)
+
+    val launchExportPicker: () -> Unit = remember(
+        isPickerSupported,
+        exportDirectoryLauncher,
+        onExportDirectoryUriChange,
+        pickerNotAvailableMsg,
+        exportDirUnavailableMsg
+    ) {
+        {
+            if (isPickerSupported) {
+                try {
+                    exportDirectoryLauncher.launch(null)
+                } catch (e: android.content.ActivityNotFoundException) {
+                    Timber.e(e, "Document picker launch failed despite resolveActivity check")
+                    val fallbackDir = context.getExternalFilesDir(null)
+                    if (fallbackDir != null) {
+                        onExportDirectoryUriChange(fallbackDir.toUri().toString())
+                        Toast.makeText(context, pickerNotAvailableMsg, Toast.LENGTH_LONG).show()
+                    } else {
+                        Timber.e("getExternalFilesDir returned null on catch block")
+                        Toast.makeText(context, exportDirUnavailableMsg, Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                Timber.w("OPEN_DOCUMENT_TREE not supported on this device, using fallback")
+                val fallbackDir = context.getExternalFilesDir(null)
+                if (fallbackDir != null) {
+                    onExportDirectoryUriChange(fallbackDir.toUri().toString())
+                    Toast.makeText(context, pickerNotAvailableMsg, Toast.LENGTH_LONG).show()
+                } else {
+                    Timber.e("getExternalFilesDir returned null on else block")
+                    Toast.makeText(context, exportDirUnavailableMsg, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
     var exportPickerAutoOpened by remember { mutableStateOf(false) }
     LaunchedEffect(autoOpenExportPicker) {
         if (autoOpenExportPicker && !exportPickerAutoOpened) {
             exportPickerAutoOpened = true
-            exportDirectoryLauncher.launch(null)
+            Timber.d("Auto-opening export picker, autoOpenExportPicker=$autoOpenExportPicker")
+            launchExportPicker()
         }
     }
 
@@ -119,7 +179,7 @@ highlightKey: String? = null) {
     var clearCacheDialog by remember { mutableStateOf(false) }
     var clearImageCacheDialog by remember { mutableStateOf(false) }
 
-    
+
     var showCacheWarningDialog by remember { mutableStateOf(false) }
     var cacheType by remember { mutableStateOf("") }
     var cacheUsage by remember { androidx.compose.runtime.mutableLongStateOf(0L) }
@@ -236,7 +296,7 @@ highlightKey: String? = null) {
                         emptyList()
                     }
                     downloadedSongs.forEach { song ->
-                        song.song.thumbnailUrl?.let { urlsToPreserve.add(it.encodeUtf8().sha256().hex()) }
+                        song.thumbnailUrl?.let { urlsToPreserve.add(it.encodeUtf8().sha256().hex()) }
                         song.album?.thumbnailUrl?.let { urlsToPreserve.add(it.encodeUtf8().sha256().hex()) }
                     }
                     val directory = imageDiskCache.directory.toFile()
@@ -260,7 +320,7 @@ highlightKey: String? = null) {
         )
     }
 
-    
+
     if (showCacheWarningDialog) {
         AlertDialog(
             onDismissRequest = { showCacheWarningDialog = false },
@@ -312,11 +372,11 @@ highlightKey: String? = null) {
                 )
             )
         )
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.storage),
             items = listOf(
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.downloaded_songs)),
+                    isHighlighted = (highlightKey == stringResource(R.string.downloaded_songs)),
                     icon = painterResource(R.drawable.storage),
                     title = { Text(stringResource(R.string.downloaded_songs)) },
                     description = {
@@ -324,7 +384,7 @@ highlightKey: String? = null) {
                     }
                 ),
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_all_downloads)),
+                    isHighlighted = (highlightKey == stringResource(R.string.clear_all_downloads)),
                     icon = painterResource(R.drawable.clear_all),
                     title = { Text(stringResource(R.string.clear_all_downloads)) },
                     onClick = {
@@ -332,29 +392,28 @@ highlightKey: String? = null) {
                     }
                 ),
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.export_directory)),
+                    isHighlighted = (highlightKey == stringResource(R.string.export_directory)),
                     icon = painterResource(R.drawable.folder_managed),
                     title = { Text(stringResource(R.string.export_directory)) },
                     description = {
                         Text(
-                            text =
-                                if (exportDirectoryUri.isBlank()) {
-                                    stringResource(R.string.not_set)
-                                } else {
-                                    exportDirectoryUri
-                                }
+                            text = if (exportDirectoryUri.isBlank()) {
+                                stringResource(R.string.not_set)
+                            } else {
+                                exportDirectoryUri
+                            }
                         )
                     },
-                    onClick = { exportDirectoryLauncher.launch(null) }
+                    onClick = { launchExportPicker() }
                 )
             )
         )
 
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.song_cache),
             items = listOf(
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.max_song_cache_size)),
+                    isHighlighted = (highlightKey == stringResource(R.string.max_song_cache_size)),
                     icon = painterResource(R.drawable.cached),
                     title = { Text(stringResource(R.string.max_song_cache_size)) },
                     description = {
@@ -412,7 +471,7 @@ highlightKey: String? = null) {
                     }
                 ),
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_song_cache)),
+                    isHighlighted = (highlightKey == stringResource(R.string.clear_song_cache)),
                     icon = painterResource(R.drawable.clear_all),
                     title = { Text(stringResource(R.string.clear_song_cache)) },
                     onClick = {
@@ -422,11 +481,11 @@ highlightKey: String? = null) {
             )
         )
 
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.image_cache),
             items = listOf(
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.max_image_cache_size)),
+                    isHighlighted = (highlightKey == stringResource(R.string.max_image_cache_size)),
                     icon = painterResource(R.drawable.manage_search),
                     title = { Text(stringResource(R.string.max_image_cache_size)) },
                     description = {
@@ -475,7 +534,7 @@ highlightKey: String? = null) {
                     }
                 ),
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_image_cache)),
+                    isHighlighted = (highlightKey == stringResource(R.string.clear_image_cache)),
                     icon = painterResource(R.drawable.clear_all),
                     title = { Text(stringResource(R.string.clear_image_cache)) },
                     onClick = {
@@ -485,7 +544,7 @@ highlightKey: String? = null) {
             )
         )
         Spacer(Modifier.padding(bottom = 30.dp))
-    
+
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 

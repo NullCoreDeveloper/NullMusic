@@ -331,6 +331,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Prejdite prstom doľava alebo doprava v časti s menom umelca a názvom skladby v režime celej obrazovky a zmeňte skladbu</string>
     <string name="lyrics_thumbnail_play_pause">Zobraziť prehrávanie/pozastavenie na miniatúre</string>
     <string name="lyrics_thumbnail_play_pause_desc">Zobraziť tlačidlo prehrávania/pozastavenia prekryté na miniatúre skladby v režime celej obrazovky</string>
+    <string name="picker_not_available">Výber dokumentov nie je na tomto zariadení k dispozícii. Používa sa predvolený adresár na export aplikácie.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -398,4 +399,5 @@
     <string name="spotify_clear_selection">Vyčistiť výber</string>
     <string name="spotify_account">Účet Spotify</string>
     <string name="spotify_waiting_for_login">Čaká sa na prihlásenie do Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

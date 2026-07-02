@@ -35,8 +35,8 @@ jobs:
           git config --global gc.auto 0
           rm -f .git/index.lock
           git checkout main
-          # We try to merge upstream/main. If there are conflicts, we prefer our changes
-          git merge upstream/main -X ours --allow-unrelated-histories -m "chore: sync with upstream EchoMusicApp/Echo-Music" || {
+          # We try to merge upstream/main without automatically committing
+          git merge upstream/main -X ours --allow-unrelated-histories --no-commit || {
             echo "Merge conflicts detected (e.g. rename/delete). Resolving in favor of HEAD..."
             git diff --name-only --diff-filter=U | while read -r file; do
               if git rev-parse HEAD:"$file" >/dev/null 2>&1; then
@@ -46,8 +46,15 @@ jobs:
                 git rm -rf -- "$file" || true
               fi
             done
-            git commit --no-edit || true
           }
+          
+          # GitHub Actions token doesn't have permission to modify workflows.
+          # We must completely revert any changes or additions to the workflows folder made by upstream!
+          git rm -rf .github/workflows/ || true
+          git checkout HEAD -- .github/workflows/ || true
+          
+          # Now commit the merge
+          git commit --no-edit || true
           
           # Remove analytics if they were re-introduced
           sed -i '/firebase-crashlytics/d' app/build.gradle.kts

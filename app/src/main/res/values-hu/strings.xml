@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">A teljes képernyős dalszövegben az előadó és a dal címénél húzz balra vagy jobbra a dalváltáshoz</string>
     <string name="lyrics_thumbnail_play_pause">Lejátszás/szünet gomb mutatása a miniatűrön</string>
     <string name="lyrics_thumbnail_play_pause_desc">Lejátszás/szünet gomb megjelenítése a dal miniatűrjén a teljes képernyős dalszövegben</string>
+    <string name="picker_not_available">A dokumentumválasztó nem érhető el ezen az eszközön. Az alkalmazás alapértelmezett exportkönyvtárát használjuk.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">Kijelölés törlése</string>
     <string name="spotify_account">Spotify fiók</string>
     <string name="spotify_waiting_for_login">Várakozás a Spotify bejelentkezésre</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

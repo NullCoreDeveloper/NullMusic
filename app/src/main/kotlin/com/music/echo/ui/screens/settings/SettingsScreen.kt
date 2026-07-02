@@ -191,6 +191,7 @@ highlightKey: String? = null) {
                     )
                 )
             }
+
             if (aiLyricsText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(

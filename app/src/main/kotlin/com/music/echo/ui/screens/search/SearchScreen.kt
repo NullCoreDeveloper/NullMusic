@@ -235,74 +235,101 @@ fun SearchScreen(
                     .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
             ) {
                 SearchBar(
-                    query = query.text,
-                    onQueryChange = { query = TextFieldValue(it) },
-                    onSearch = { 
-                        onSearch(it)
-                        searchActive = false
-                    },
-                    active = searchActive,
-                    onActiveChange = { searchActive = it },
-                    placeholder = {
-                        Text(
-                            text = stringResource(
-                                when (searchSource) {
-                                    SearchSource.LOCAL -> R.string.search_library
-                                    SearchSource.ONLINE -> R.string.search_yt_music
-                                }
-                            ),
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    inputField = {
+                        BasicTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .focusRequester(focusRequester),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { 
+                                onSearch(query.text)
+                                searchActive = false
+                            }),
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 16.sp
-                            )
+                            ),
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            decorationBox = { innerTextField ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            if (searchActive) {
+                                                searchActive = false
+                                                query = TextFieldValue("") 
+                                            } else {
+                                                searchActive = true 
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(if (searchActive) R.drawable.arrow_back else R.drawable.search),
+                                            contentDescription = if (searchActive) stringResource(R.string.dismiss) else null,
+                                            tint = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(horizontal = 4.dp)
+                                    ) {
+                                        if (query.text.isEmpty()) {
+                                            Text(
+                                                text = stringResource(
+                                                    when (searchSource) {
+                                                        SearchSource.LOCAL -> R.string.search_library
+                                                        SearchSource.ONLINE -> R.string.search_yt_music
+                                                    }
+                                                ),
+                                                style = TextStyle(
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                                    fontSize = 16.sp
+                                                )
+                                            )
+                                        }
+                                        innerTextField()
+                                    }
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        if (query.text.isNotEmpty()) {
+                                            IconButton(onClick = { query = TextFieldValue("") }) {
+                                                Icon(
+                                                    painter = painterResource(R.drawable.close),
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                searchSource = if (searchSource == SearchSource.ONLINE) 
+                                                    SearchSource.LOCAL else SearchSource.ONLINE
+                                            }
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    when (searchSource) {
+                                                        SearchSource.LOCAL -> R.drawable.library_music
+                                                        SearchSource.ONLINE -> R.drawable.globe_search
+                                                    }
+                                                ),
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         )
                     },
-                    leadingIcon = {
-                        IconButton(onClick = {
-                            if (searchActive) {
-                                searchActive = false
-                                query = TextFieldValue("") 
-                            } else {
-                                searchActive = true 
-                            }
-                        }) {
-                            Icon(
-                                painter = painterResource(if (searchActive) R.drawable.arrow_back else R.drawable.search),
-                                contentDescription = if (searchActive) stringResource(R.string.dismiss) else null,
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    },
-                    trailingIcon = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (query.text.isNotEmpty()) {
-                                IconButton(onClick = { query = TextFieldValue("") }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.close),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            }
-                            IconButton(
-                                onClick = {
-                                    searchSource = if (searchSource == SearchSource.ONLINE) 
-                                        SearchSource.LOCAL else SearchSource.ONLINE
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(
-                                        when (searchSource) {
-                                            SearchSource.LOCAL -> R.drawable.library_music
-                                            SearchSource.ONLINE -> R.drawable.globe_search
-                                        }
-                                    ),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-                    },
+                    expanded = searchActive,
+                    onExpandedChange = { searchActive = it },
                     colors = SearchBarDefaults.colors(
                         containerColor = if (pureBlack) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
                     ),

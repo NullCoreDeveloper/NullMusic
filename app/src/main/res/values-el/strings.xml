@@ -312,6 +312,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Σύρετε αριστερά ή δεξιά στην ενότητα καλλιτέχνη και τίτλου τραγουδιού στους στίχους πλήρους οθόνης για να αλλάξετε τραγούδι</string>
     <string name="lyrics_thumbnail_play_pause">Εμφάνιση αναπαραγωγής/παύσης στη μικρογραφία</string>
     <string name="lyrics_thumbnail_play_pause_desc">Εμφάνιση επικάλυψης κουμπιού αναπαραγωγής/παύσης στη μικρογραφία τραγουδιού σε στίχους πλήρους οθόνης</string>
+    <string name="picker_not_available">Ο επιλογέας εγγράφων δεν είναι διαθέσιμος σε αυτήν τη συσκευή. Χρησιμοποιείται ο προεπιλεγμένος κατάλογος εξαγωγής της εφαρμογής.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -379,4 +380,5 @@
     <string name="spotify_clear_selection">Εκκαθάριση</string>
     <string name="spotify_account">Λογαριασμός Spotify</string>
     <string name="spotify_waiting_for_login">Αναμονή για σύνδεση Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

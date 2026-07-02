@@ -181,6 +181,7 @@
     <string name="add_anyway">افزودن در هر صورت</string>
     <string name="duplicates_description_single">این آهنگ در حال حاضر در لیست پخش شما وجود دارد</string>
     <string name="duplicates_description_multiple">%d آهنگ در حال حاضر در لیست پخش شما وجود دارد</string>
+    <string name="picker_not_available">انتخابگر سند در این دستگاه در دسترس نیست. از دایرکتوری صادرات پیش‌فرض برنامه استفاده می‌شود.</string>
 
     <!-- Noun -->
     <plurals name="n_song">
@@ -419,4 +420,5 @@
     <string name="spotify_clear_selection">پاک کردن انتخاب‌ها</string>
     <string name="spotify_account">حساب کاربری اسپاتیفای</string>
     <string name="spotify_waiting_for_login">در انتظار ورود به حساب اسپاتیفای</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

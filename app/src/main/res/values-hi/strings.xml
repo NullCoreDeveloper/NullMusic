@@ -242,6 +242,7 @@
     <string name="lyrics_swipe_to_change_song_desc">पूर्ण स्क्रीन गीतिकाव्य में कलाकार और गाने के नाम वाले भाग पर बाएँ या दाएँ स्वाइप करके गाना बदलें</string>
     <string name="lyrics_thumbnail_play_pause">थंबनेल पर चलाएँ/विराम दिखाएँ</string>
     <string name="lyrics_thumbnail_play_pause_desc">पूर्ण स्क्रीन गीतिकाव्य में गाने के थंबनेल पर चलाएँ/विराम बटन का ओवरले दिखाएँ</string>
+    <string name="picker_not_available">इस डिवाइस पर दस्तावेज़ चयनकर्ता उपलब्ध नहीं है। ऐप की डिफ़ॉल्ट निर्यात निर्देशिका का उपयोग किया जा रहा है।</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -378,4 +379,5 @@
     <string name="audio_quality_auto">ऑटो</string>
     <string name="audio_quality_high">उच्च</string>
     <string name="audio_quality_low">निम्न</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

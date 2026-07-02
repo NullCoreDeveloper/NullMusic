@@ -515,7 +515,7 @@ fun SongMenu(
                                                 id = song.id,
                                                 title = song.song.title,
                                                 subtitle = song.artists.joinToString(", ") { it.name },
-                                                thumbnailUrl = song.song.thumbnailUrl,
+                                                thumbnailUrl = song.thumbnailUrl,
                                                 type = "SONG",
                                                 explicit = song.song.explicit
                                             )
@@ -766,7 +766,7 @@ fun SongMenu(
                                             songTitle = song.song.title,
                                             songArtist = song.artists.joinToString(", ") { it.name },
                                             songAlbum = song.song.albumName ?: "",
-                                            artworkUrl = song.song.thumbnailUrl ?: "",
+                                            artworkUrl = song.thumbnailUrl ?: "",
                                             targetDirectoryUri = exportDirectoryUri
                                         )
                                     }

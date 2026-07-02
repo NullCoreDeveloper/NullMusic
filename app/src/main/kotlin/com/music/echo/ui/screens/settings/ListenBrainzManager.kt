@@ -69,30 +69,17 @@ object ListenBrainzManager {
         }
     }
 
-    suspend fun submitPlayingNow(
-        context: Context,
-        token: String,
-        song: Song?,
-        positionMs: Long,
-    ): Boolean {
+    suspend fun submitPlayingNow(context: Context, token: String, title: String, artistNames: String, releaseName: String, durationMs: Long, positionMs: Long): Boolean {
         if (token.isBlank()) return false
-        if (song == null) return false
+        if (title.isBlank()) return false
         return withContext(Dispatchers.IO) {
             try {
-                val listenedAt = System.currentTimeMillis() / 1000L
-                val duration = song.song.duration
-                val durationMs = (duration * 1000).toLong()
-                val artistNames =
-                    song.artists
-                        .map { artist -> extractArtistName(artist) }
-                        .joinToString(" & ")
-                val releaseName = song.album?.title ?: ""
                 val releasePart = if (releaseName.isBlank()) "" else "\"release_name\":\"${escapeJson(releaseName)}\","
                 val trackMetadata = "{\"track_metadata\":{\"artist_name\":\"${escapeJson(
                     artistNames,
                 )}\",\"track_name\":\"${escapeJson(
-                    song.title,
-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"NullMusic\"}}}"
+                    title,
+                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"NullMusic\",\"submission_client_version\":\"5.2.4\"}}}"
                 val listensJson = "[$trackMetadata]"
                 val bodyJson = "{\"listen_type\":\"playing_now\",\"payload\":$listensJson}"
                 Timber.tag(logTag).d("submitPlayingNow JSON: %s", bodyJson)
@@ -105,13 +92,14 @@ object ListenBrainzManager {
                         .post(body)
                         .addHeader("Content-Type", "application/json")
                         .addHeader("Authorization", "Token $token")
+                        .addHeader("User-Agent", "EchoMusic/5.2.4")
                         .build()
 
                 httpClient.newCall(request).execute().use { resp ->
                     val success = resp.isSuccessful
                     if (success) {
                         _lastSubmitTime.value = System.currentTimeMillis()
-                        Timber.tag(logTag).d("playing_now submitted for %s", song.title)
+                        Timber.tag(logTag).d("playing_now submitted for %s", title)
                     } else {
                         val respBody =
                             try {
@@ -133,22 +121,17 @@ object ListenBrainzManager {
     suspend fun submitFinished(
         context: Context,
         token: String,
-        song: Song?,
+        title: String,
+        artistNames: String,
+        releaseName: String,
+        durationMs: Long,
         startMs: Long,
         endMs: Long,
     ): Boolean {
         if (token.isBlank()) return false
-        if (song == null) return false
+        if (title.isBlank()) return false
         return withContext(Dispatchers.IO) {
             try {
-                val listenedAt = endMs / 1000L
-                val duration = song.song.duration
-                val durationMs = (duration * 1000).toLong()
-                val artistNames =
-                    song.artists
-                        .map { artist -> extractArtistName(artist) }
-                        .joinToString(" & ")
-                val releaseName = song.album?.title ?: ""
                 val releasePart = if (releaseName.isBlank()) "" else "\"release_name\":\"${escapeJson(releaseName)}\","
                 var listenedAtStart = (startMs / 1000L)
                 val MIN_LISTEN_TS = 1033430400L
@@ -159,8 +142,8 @@ object ListenBrainzManager {
                 val trackMetadataSingle = "{\"listened_at\":$listenedAtStart,\"track_metadata\":{\"artist_name\":\"${escapeJson(
                     artistNames,
                 )}\",\"track_name\":\"${escapeJson(
-                    song.title,
-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"NullMusic\"}}}"
+                    title,
+                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"NullMusic\",\"submission_client_version\":\"5.2.4\"}}}"
                 val listensJson = "[$trackMetadataSingle]"
                 val bodyJson = "{\"listen_type\":\"single\",\"payload\":$listensJson}"
                 Timber.tag(logTag).d("submitFinished JSON: %s", bodyJson)
@@ -173,13 +156,14 @@ object ListenBrainzManager {
                         .post(body)
                         .addHeader("Content-Type", "application/json")
                         .addHeader("Authorization", "Token $token")
+                        .addHeader("User-Agent", "EchoMusic/5.2.4")
                         .build()
 
                 httpClient.newCall(request).execute().use { resp ->
                     val success = resp.isSuccessful
                     if (success) {
                         _lastSubmitTime.value = System.currentTimeMillis()
-                        Timber.tag(logTag).d("finished listen submitted for %s", song.title)
+                        Timber.tag(logTag).d("finished listen submitted for %s", title)
                     } else {
                         val respBody =
                             try {

@@ -313,6 +313,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Плъзнете наляво или надясно в секцията с изпълнител и име на песен в текста на цял екран, за да смените песента</string>
     <string name="lyrics_thumbnail_play_pause">Покажи бутона за пускане/пауза върху миниатюрата</string>
     <string name="lyrics_thumbnail_play_pause_desc">Покажи наслагване на бутон за пускане/пауза върху миниатюрата на песента в текста на цял екран</string>
+    <string name="picker_not_available">Изборът на документи не е наличен на това устройство. Използва се директорията за експорт по подразбиране на приложението.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -377,4 +378,5 @@
     <string name="spotify_clear_selection">Изчистване</string>
     <string name="spotify_account">Профил в Spotify</string>
     <string name="spotify_waiting_for_login">Изчакване на входа в Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

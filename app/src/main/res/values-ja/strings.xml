@@ -305,6 +305,7 @@
     <string name="lyrics_swipe_to_change_song_desc">全画面歌詞のアーティストと曲名の部分で左右にスワイプすると曲を変更できます</string>
     <string name="lyrics_thumbnail_play_pause">サムネイルに再生/一時停止を表示</string>
     <string name="lyrics_thumbnail_play_pause_desc">全画面歌詞の曲のサムネイルに再生/一時停止ボタンを重ねて表示します</string>
+    <string name="picker_not_available">このデバイスではドキュメントピッカーが利用できません。アプリのデフォルトのエクスポートディレクトリを使用します。</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -370,4 +371,5 @@
     <string name="spotify_clear_selection">選択をクリア</string>
     <string name="spotify_account">Spotifyアカウント</string>
     <string name="spotify_waiting_for_login">Spotifyのログインを待機中</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

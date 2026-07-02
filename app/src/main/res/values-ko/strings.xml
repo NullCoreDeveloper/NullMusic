@@ -304,6 +304,7 @@
     <string name="lyrics_swipe_to_change_song_desc">전체화면 가사에서 아티스트 및 노래 이름 부분을 왼쪽이나 오른쪽으로 스와이프하여 노래를 변경하세요</string>
     <string name="lyrics_thumbnail_play_pause">썸네일에 재생/일시정지 표시</string>
     <string name="lyrics_thumbnail_play_pause_desc">전체화면 가사에서 노래 썸네일 위에 재생/일시정지 버튼을 오버레이로 표시합니다</string>
+    <string name="picker_not_available">이 기기에서는 문서 선택기를 사용할 수 없습니다. 앱의 기본 내보내기 디렉터리를 사용합니다.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -369,4 +370,5 @@
     <string name="spotify_clear_selection">선택 해제</string>
     <string name="spotify_account">Spotify 계정</string>
     <string name="spotify_waiting_for_login">Spotify 로그인 대기 중</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

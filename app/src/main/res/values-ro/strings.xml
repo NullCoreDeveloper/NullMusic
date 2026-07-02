@@ -323,6 +323,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Glisează la stânga sau la dreapta în secțiunea cu artistul și numele melodiei în versurile pe tot ecranul pentru a schimba melodia</string>
     <string name="lyrics_thumbnail_play_pause">Arată redare/pauză pe miniatură</string>
     <string name="lyrics_thumbnail_play_pause_desc">Arată un buton de redare/pauză suprapus pe miniatura melodiei în versurile pe tot ecranul</string>
+    <string name="picker_not_available">Selectorul de documente nu este disponibil pe acest dispozitiv. Se utilizează directorul de export implicit al aplicației.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -389,4 +390,5 @@
     <string name="spotify_clear_selection">Curăță selecția</string>
     <string name="spotify_account">Cont Spotify</string>
     <string name="spotify_waiting_for_login">Se așteaptă autentificarea Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

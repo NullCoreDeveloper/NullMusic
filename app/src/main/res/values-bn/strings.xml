@@ -312,6 +312,7 @@
     <string name="lyrics_swipe_to_change_song_desc">পূর্ণ স্ক্রিন লিরিক্সে শিল্পী এবং গানের নামের অংশে বাম বা ডান সোয়াইপ করে গান পরিবর্তন করুন</string>
     <string name="lyrics_thumbnail_play_pause">থাম্বনেইলে প্লে/পজ দেখান</string>
     <string name="lyrics_thumbnail_play_pause_desc">পূর্ণ স্ক্রিন লিরিক্সে গানের থাম্বনেইলে একটি প্লে/পজ বাটন ওভারলে দেখান</string>
+    <string name="picker_not_available">এই ডিভাইসে ডকুমেন্ট পিকার উপলব্ধ নয়। অ্যাপের ডিফল্ট এক্সপোর্ট ডিরেক্টরি ব্যবহার করা হচ্ছে।</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -376,4 +377,5 @@
     <string name="spotify_clear_selection">পরিষ্কার করুন</string>
     <string name="spotify_account">স্পটিফাই অ্যাকাউন্ট</string>
     <string name="spotify_waiting_for_login">স্পটিফাই লগইনের জন্য অপেক্ষা করছে</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

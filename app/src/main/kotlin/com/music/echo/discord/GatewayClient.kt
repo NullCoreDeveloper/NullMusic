@@ -53,7 +53,7 @@ class GatewayClient {
     suspend fun connect(accessToken: String) {
         if (wsSession != null) throw IllegalStateException("GatewayClient already connected")
 
-        token = "Bearer $accessToken"
+        token = accessToken
         sessionState = null
         liveSeq = 0
         closed = false

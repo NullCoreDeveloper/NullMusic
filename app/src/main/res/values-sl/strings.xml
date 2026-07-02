@@ -172,6 +172,7 @@
     <string name="add_anyway">Vseeno dodaj</string>
     <string name="duplicates_description_single">Skladba je že na vašem seznamu predvajanja</string>
     <string name="duplicates_description_multiple">%d skladb je že na vašem seznamu predvajanja</string>
+    <string name="picker_not_available">Izbirnik dokumentov na tej napravi ni na voljo. Uporablja se privzeti izvozni imenik aplikacije.</string>
 
     <!-- Noun plurals (some already exist, but missing many) -->
     <plurals name="n_song">
@@ -420,4 +421,5 @@
     <string name="spotify_clear_selection">Počisti izbor</string>
     <string name="spotify_account">Račun Spotify</string>
     <string name="spotify_waiting_for_login">Čakanje na prijavo v Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

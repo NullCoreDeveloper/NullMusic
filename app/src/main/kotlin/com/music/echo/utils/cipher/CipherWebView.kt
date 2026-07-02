@@ -60,11 +60,22 @@ class CipherWebView private constructor(
         val nArrayIdx = nFuncInfo?.arrayIndex
         Timber.tag(TAG).d("Loading player JS from file (${playerJs.length} chars), exporting sig=$sigFuncName, nFunc=$nFuncName[$nArrayIdx]")
 
+        val isHardcoded = sigInfo?.isHardcoded == true || nFuncInfo?.isHardcoded == true
+
         val exports = buildList {
-            if (sigFuncName != null) {
+            val sigJsExpr = sigInfo?.jsExpression
+            if (sigJsExpr != null) {
+                val expr = sigJsExpr.replace("INPUT", "sig")
+                add("window._cipherSigFunc = function(sig) { try { return $expr; } catch(e) { return null; } };")
+            } else if (sigFuncName != null) {
                 add("window._cipherSigFunc = typeof $sigFuncName !== 'undefined' ? $sigFuncName : null;")
             }
-            if (nFuncName != null) {
+
+            val nJsExpr = nFuncInfo?.jsExpression
+            if (nJsExpr != null) {
+                val expr = nJsExpr.replace("INPUT", "n")
+                add("window._nTransformFunc = function(n) { try { return $expr; } catch(e) { return n; } };")
+            } else if (nFuncName != null) {
                 val nExpr = if (nArrayIdx != null) {
                     "$nFuncName[$nArrayIdx]"
                 } else {
@@ -95,7 +106,9 @@ function deobfuscateSig(funcName, constantArg, obfuscatedSig) {
             return;
         }
         var result;
-        if (constantArg !== null && constantArg !== undefined) {
+        if (func.length === 1) {
+            result = func(obfuscatedSig);
+        } else if (constantArg !== null && constantArg !== undefined) {
             result = func(constantArg, obfuscatedSig);
         } else {
             result = func(obfuscatedSig);

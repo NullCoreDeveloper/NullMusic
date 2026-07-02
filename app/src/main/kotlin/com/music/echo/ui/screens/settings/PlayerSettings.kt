@@ -253,7 +253,7 @@ highlightKey: String? = null) {
             },
             title = stringResource(R.string.audio_quality),
             current = audioQuality,
-            values = AudioQuality.values().filter { iad1tya.echo.music.constants.LOSSLESS_ENABLED || it != AudioQuality.LOSSLESS },
+            values = listOf(AudioQuality.OPUS),
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
@@ -273,7 +273,7 @@ highlightKey: String? = null) {
             },
             title = stringResource(R.string.download_quality_title),
             current = downloadQuality,
-            values = iad1tya.echo.music.constants.DownloadQuality.values().filter { iad1tya.echo.music.constants.LOSSLESS_ENABLED || it != iad1tya.echo.music.constants.DownloadQuality.LOSSLESS },
+            values = listOf(iad1tya.echo.music.constants.DownloadQuality.YOUTUBE),
             valueText = {
                 when (it) {
                     iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"

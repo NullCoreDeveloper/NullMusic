@@ -31,13 +31,20 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import iad1tya.echo.music.constants.SponsorBlockEnabledKey
+import iad1tya.echo.music.utils.dataStore
+import iad1tya.echo.music.data.SponsorBlockRepository
+import iad1tya.echo.music.models.SponsorBlockSegment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerConnection(
-    context: Context,
+    val context: Context,
     binder: MusicBinder,
     val database: MusicDatabase,
-    scope: CoroutineScope,
+    val scope: CoroutineScope,
 ) : Player.Listener {
     private companion object {
         private const val TAG = "PlayerConnection"
@@ -160,6 +167,10 @@ class PlayerConnection(
     var onSkipNext: (() -> Unit)? = null
 
     private var attachedPlayer: Player? = null
+    
+    private val sponsorBlockRepository = SponsorBlockRepository()
+    private var sponsorBlockJob: Job? = null
+    private val sponsorBlockSegments = MutableStateFlow<List<SponsorBlockSegment>>(emptyList())
 
     init {
         try {
@@ -202,6 +213,8 @@ class PlayerConnection(
         repeatMode.value = newPlayer.repeatMode
         
         Timber.tag(TAG).d("Attached to new player instance: $newPlayer")
+        
+        startSponsorBlockPolling()
     }
 
     fun playQueue(queue: Queue) {
@@ -473,8 +486,48 @@ class PlayerConnection(
         }
     }
 
+    private fun startSponsorBlockPolling() {
+        sponsorBlockJob?.cancel()
+        sponsorBlockJob = scope.launch {
+            val sponsorBlockEnabledFlow = context.dataStore.data.map { it[SponsorBlockEnabledKey] ?: false }
+
+            launch {
+                combine(mediaMetadata, sponsorBlockEnabledFlow) { metadata, enabled ->
+                    Pair(metadata, enabled)
+                }.collect { (metadata, enabled) ->
+                    if (enabled && metadata != null) {
+                        val videoId = metadata.id
+                        sponsorBlockSegments.value = sponsorBlockRepository.getSkipSegments(videoId)
+                    } else {
+                        sponsorBlockSegments.value = emptyList()
+                    }
+                }
+            }
+
+            launch {
+                while (true) {
+                    if (player.isPlaying) {
+                        val currentSegments = sponsorBlockSegments.value
+                        if (currentSegments.isNotEmpty()) {
+                            val currentPosSec = player.currentPosition / 1000f
+                            for (segment in currentSegments) {
+                                if (currentPosSec >= segment.segment[0] && currentPosSec < segment.segment[1]) {
+                                    Timber.d("SponsorBlock: skipping segment ${segment.category} from ${segment.segment[0]} to ${segment.segment[1]}")
+                                    player.seekTo((segment.segment[1] * 1000).toLong())
+                                    break
+                                }
+                            }
+                        }
+                    }
+                    delay(500)
+                }
+            }
+        }
+    }
+
     fun dispose() {
         try {
+            sponsorBlockJob?.cancel()
             attachedPlayer?.removeListener(this)
             attachedPlayer = null
             Timber.tag(TAG).d("PlayerConnection disposed successfully")

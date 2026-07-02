@@ -322,6 +322,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Deslize para a esquerda ou direita na secção do artista e nome da música em letras de ecrã inteiro para mudar de música</string>
     <string name="lyrics_thumbnail_play_pause">Mostrar reproduzir/pausa na miniatura</string>
     <string name="lyrics_thumbnail_play_pause_desc">Mostrar uma sobreposição do botão reproduzir/pausa na miniatura da música em letras de ecrã inteiro</string>
+    <string name="picker_not_available">O seletor de documentos não está disponível neste dispositivo. Usando o diretório de exportação padrão do aplicativo.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -387,4 +388,5 @@
     <string name="spotify_clear_selection">Limpar seleção</string>
     <string name="spotify_account">Conta Spotify</string>
     <string name="spotify_waiting_for_login">À espera do início de sessão no Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

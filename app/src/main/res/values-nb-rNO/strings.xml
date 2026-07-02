@@ -310,6 +310,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Sveip til venstre eller høyre i artist- og sangnavn-seksjonen i fullskjermstekster for å bytte sang</string>
     <string name="lyrics_thumbnail_play_pause">Vis spill/pause på miniatyrbilde</string>
     <string name="lyrics_thumbnail_play_pause_desc">Vis et spill/pause-knappoverlegg på sangminiatyrbildet i fullskjermstekster</string>
+    <string name="picker_not_available">Dokumentvelger er ikke tilgjengelig på denne enheten. Bruker appens standard eksportkatalog.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -374,4 +375,5 @@
     <string name="spotify_clear_selection">Tøm valg</string>
     <string name="spotify_account">Spotify-konto</string>
     <string name="spotify_waiting_for_login">Venter på Spotify-pålogging</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

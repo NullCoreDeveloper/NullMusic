@@ -115,7 +115,9 @@ constructor(
                         playlistId = null,
                         title = album.title,
                         year = album.year ?: existingAlbum?.year,
-                        thumbnailUrl = album.thumbnailUrl ?: existingAlbum?.thumbnailUrl,
+                        thumbnailUrl = album.thumbnailUrl ?: existingAlbum?.thumbnailUrl?.takeIf {
+                            !it.startsWith("content://media/external/audio/media/")
+                        },
                         themeColor = existingAlbum?.themeColor,
                         songCount = album.songCount,
                         duration = album.duration,
@@ -149,7 +151,9 @@ constructor(
                         id = track.id,
                         title = track.title,
                         duration = track.durationSeconds,
-                        thumbnailUrl = track.thumbnailUrl ?: existingSong?.thumbnailUrl,
+                        thumbnailUrl = track.thumbnailUrl ?: existingSong?.thumbnailUrl?.takeIf {
+                            !it.startsWith("content://media/external/audio/media/")
+                        },
                         albumId = track.albumId,
                         albumName = track.albumName,
                         explicit = existingSong?.explicit ?: false,
@@ -345,7 +349,9 @@ constructor(
                         ?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneId.systemDefault()) },
                     sizeBytes = cursor.getLong(sizeIndex).coerceAtLeast(0L),
                     mimeType = mimeType,
-                    thumbnailUrl = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId).toString(),
+                    thumbnailUrl = mediaStoreAlbumId?.takeIf { it > 0 }?.let {
+                        ContentUris.withAppendedId(AlbumArtUri, it).toString()
+                    },
                 )
             }
         }

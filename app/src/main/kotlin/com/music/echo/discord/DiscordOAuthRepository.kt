@@ -351,7 +351,8 @@ object DiscordOAuthRepository {
                 requestMethod = "GET"
                 connectTimeout = REQUEST_TIMEOUT_MS
                 readTimeout = REQUEST_TIMEOUT_MS
-                setRequestProperty("Authorization", "Bearer $bearerToken")
+                val authHeader = if (bearerToken.contains(".")) bearerToken else "Bearer $bearerToken"
+                setRequestProperty("Authorization", authHeader)
                 setRequestProperty("Accept", "application/json")
             }
 

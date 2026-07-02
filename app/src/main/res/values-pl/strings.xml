@@ -331,6 +331,7 @@
     <string name="lyrics_swipe_to_change_song_desc">Przesuń w lewo lub w prawo w sekcji z nazwą artysty i utworu w trybie pełnoekranowym, aby zmienić utwór</string>
     <string name="lyrics_thumbnail_play_pause">Pokaż przycisk odtwarzania/wstrzymania na miniaturze</string>
     <string name="lyrics_thumbnail_play_pause_desc">Pokaż nakładkę przycisku odtwarzania/wstrzymania na miniaturze utworu w trybie pełnoekranowym</string>
+    <string name="picker_not_available">Selektor dokumentów nie jest dostępny na tym urządzeniu. Używany jest domyślny katalog eksportu aplikacji.</string>
 
     <!-- Plurals -->
     <plurals name="n_apk_found">
@@ -398,4 +399,5 @@
     <string name="spotify_clear_selection">Wyczyść zaznaczenie</string>
     <string name="spotify_account">Konto Spotify</string>
     <string name="spotify_waiting_for_login">Oczekiwanie na logowanie do Spotify</string>
+    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
 </resources>

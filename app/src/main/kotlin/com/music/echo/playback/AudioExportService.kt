@@ -24,6 +24,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import timber.log.Timber
 import java.io.File
 
 class AudioExportService : Service() {
@@ -61,7 +62,12 @@ class AudioExportService : Service() {
     ) {
         val safeTitle = sanitizeTitle(songTitle.ifBlank { songId })
         addExportingSongId(songId)
-        runCatching {
+
+        val tempSourceFile = File.createTempFile("export_source_", ".m4a", cacheDir)
+        val tempArtworkFile = File.createTempFile("export_cover_", ".jpg", cacheDir)
+        val tempMp3File = File.createTempFile("export_result_", ".mp3", cacheDir)
+
+        try {
             val connectivityManager = getSystemService<ConnectivityManager>()
                 ?: error("No connectivity manager")
             val playbackData = YTPlayerUtils.playerResponseForPlayback(
@@ -69,105 +75,131 @@ class AudioExportService : Service() {
                 audioQuality = AudioQuality.OPUS,
                 connectivityManager = connectivityManager,
             ).getOrThrow()
-            val year = YouTube.getMediaInfo(songId)
-                .getOrNull()
-                ?.uploadDate
-                ?.let { uploadDate ->
-                    Regex("(19|20)\\d{2}")
-                        .find(uploadDate)
-                        ?.value
-                        ?.toIntOrNull()
-                }
-            val rangedStreamUrl = playbackData.streamUrl.let { baseUrl ->
-                val totalLength = playbackData.format.contentLength ?: 10_000_000L
-                "$baseUrl&range=0-$totalLength"
-            }
 
-            val tempSourceFile = File.createTempFile("export_source_", ".m4a", cacheDir)
-            val tempArtworkFile = File.createTempFile("export_cover_", ".jpg", cacheDir)
-            val tempMp3File = File.createTempFile("export_result_", ".mp3", cacheDir)
-
-            val streamRequest = Request.Builder().url(rangedStreamUrl).build()
-            var totalBytes = -1L
-            var bytesWritten = 0L
-            httpClient.newCall(streamRequest).execute().use { response ->
-                if (!response.isSuccessful) {
-                    error("Stream request failed with ${response.code}")
-                }
-                val body = response.body ?: error("No response body")
-                totalBytes = body.contentLength()
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                body.byteStream().use { input ->
-                    tempSourceFile.outputStream().use { output ->
-                        var read: Int
-                        var lastProgress = -1
-                        while (input.read(buffer).also { read = it } != -1) {
-                            output.write(buffer, 0, read)
-                            bytesWritten += read
-                            if (totalBytes > 0) {
-                                val progress = ((bytesWritten * 55L) / totalBytes).toInt().coerceIn(0, 55)
-                                if (progress > lastProgress) {
-                                    lastProgress = progress
-                                }
-                            }
-                        }
-                        output.flush()
-                    }
-                }
-            }
-            if (totalBytes > 0 && bytesWritten < totalBytes) {
-                error("Incomplete export source: wrote $bytesWritten of $totalBytes bytes")
-            }
-
-            val artworkDownloaded = artworkUrl.isNotBlank() && runCatching {
-                httpClient.newCall(Request.Builder().url(artworkUrl).build()).execute().use { response ->
-                    if (!response.isSuccessful) return@use
-                    response.body?.byteStream()?.use { input ->
-                        tempArtworkFile.outputStream().use { output ->
-                            input.copyTo(output)
-                            output.flush()
-                        }
-                    }
-                }
-            }.isSuccess && tempArtworkFile.length() > 0L
-
-            val ffmpegCommand = buildFfmpegCommand(
-                inputPath = tempSourceFile.absolutePath,
-                outputPath = tempMp3File.absolutePath,
-                title = songTitle,
-                artist = songArtist,
-                album = songAlbum,
+            val year = fetchSongYear(songId)
+            downloadStream(playbackData, tempSourceFile)
+            val artworkDownloaded = downloadArtwork(artworkUrl, tempArtworkFile)
+            convertToMp3(
+                sourceFile = tempSourceFile,
+                outputFile = tempMp3File,
+                songTitle = songTitle,
+                songArtist = songArtist,
+                songAlbum = songAlbum,
                 year = year,
-                coverPath = if (artworkDownloaded) tempArtworkFile.absolutePath else null,
+                artworkFile = if (artworkDownloaded) tempArtworkFile else null,
             )
-            val session = FFmpegKit.execute(ffmpegCommand)
-            val returnCode = session.returnCode
-            if (returnCode == null || !ReturnCode.isSuccess(returnCode)) {
-                error("FFmpeg failed: ${session.output}")
-            }
-            if (!tempMp3File.exists() || tempMp3File.length() <= 0L) {
-                error("Exported MP3 file is empty")
-            }
-
-            val destinationDir = DocumentFile.fromTreeUri(this, Uri.parse(targetDirectoryUri))
-                ?: error("Export directory unavailable")
-            val outputFile = destinationDir.createFile("audio/mpeg", "$safeTitle.mp3")
-                ?: error("Unable to create output file")
-
-            tempMp3File.inputStream().use { input ->
-                contentResolver.openOutputStream(outputFile.uri, "w")?.use { output ->
-                    input.copyTo(output)
-                    output.flush()
-                } ?: error("Unable to open output stream")
-            }
+            writeOutputFile(safeTitle, targetDirectoryUri, tempMp3File)
+            addExportedSongId(songId)
+        } catch (e: Exception) {
+            Timber.e(e, "Export failed for songId=$songId")
+        } finally {
 
             tempSourceFile.delete()
             tempArtworkFile.delete()
             tempMp3File.delete()
-            addExportedSongId(songId)
-        }.onFailure { }
-        removeExportingSongId(songId)
-        stopSelf()
+            removeExportingSongId(songId)
+            stopSelf()
+        }
+    }
+    private suspend fun fetchSongYear(songId: String): Int? =
+        YouTube.getMediaInfo(songId)
+            .getOrNull()
+            ?.uploadDate
+            ?.let { Regex("(19|20)\\d{2}").find(it)?.value?.toIntOrNull() }
+
+    private fun downloadStream(
+        playbackData: iad1tya.echo.music.utils.YTPlayerUtils.PlaybackData,
+        destFile: File,
+    ) {
+        val totalLength = playbackData.format.contentLength ?: 10_000_000L
+        val rangedUrl = "${playbackData.streamUrl}&range=0-$totalLength"
+        val request = Request.Builder().url(rangedUrl).build()
+        var totalBytes = -1L
+        var bytesWritten = 0L
+
+        httpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) error("Stream request failed with ${response.code}")
+            val body = response.body ?: error("No response body")
+            totalBytes = body.contentLength()
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            body.byteStream().use { input ->
+                destFile.outputStream().use { output ->
+                    var read: Int
+                    while (input.read(buffer).also { read = it } != -1) {
+                        output.write(buffer, 0, read)
+                        bytesWritten += read
+                    }
+                    output.flush()
+                }
+            }
+        }
+        if (totalBytes > 0 && bytesWritten < totalBytes) {
+            error("Incomplete export source: wrote $bytesWritten of $totalBytes bytes")
+        }
+    }
+
+    private fun downloadArtwork(artworkUrl: String, destFile: File): Boolean {
+        if (artworkUrl.isBlank()) return false
+        return runCatching {
+            httpClient.newCall(Request.Builder().url(artworkUrl).build()).execute().use { response ->
+                if (!response.isSuccessful) return@use
+                response.body?.byteStream()?.use { input ->
+                    destFile.outputStream().use { output ->
+                        input.copyTo(output)
+                        output.flush()
+                    }
+                }
+            }
+        }.isSuccess && destFile.length() > 0L
+    }
+
+    private fun convertToMp3(
+        sourceFile: File,
+        outputFile: File,
+        songTitle: String,
+        songArtist: String,
+        songAlbum: String,
+        year: Int?,
+        artworkFile: File?,
+    ) {
+        val command = buildFfmpegCommand(
+            inputPath = sourceFile.absolutePath,
+            outputPath = outputFile.absolutePath,
+            title = songTitle,
+            artist = songArtist,
+            album = songAlbum,
+            year = year,
+            coverPath = artworkFile?.absolutePath,
+        )
+        val session = FFmpegKit.execute(command)
+        val returnCode = session.returnCode
+        if (returnCode == null || !ReturnCode.isSuccess(returnCode)) {
+            error("FFmpeg failed: ${session.output}")
+        }
+        if (!outputFile.exists() || outputFile.length() <= 0L) {
+            error("Exported MP3 file is empty")
+        }
+    }
+
+    private fun writeOutputFile(
+        safeTitle: String,
+        targetDirectoryUri: String,
+        sourceFile: File,
+    ) {
+        val uri = Uri.parse(targetDirectoryUri)
+        if (uri.scheme == "file") {
+            val folder = File(uri.path ?: error("Invalid export directory"))
+            if (!folder.exists() && !folder.mkdirs()) error("Unable to create export directory")
+            sourceFile.copyTo(File(folder, "$safeTitle.mp3"), overwrite = true)
+        } else {
+            val destinationDir = DocumentFile.fromTreeUri(this, uri)
+                ?: error("Export directory unavailable")
+            val outputFile = destinationDir.createFile("audio/mpeg", "$safeTitle.mp3")
+                ?: error("Unable to create output file")
+            sourceFile.inputStream().use { input ->
+                contentResolver.openOutputStream(outputFile.uri, "w")!!.use { input.copyTo(it) }
+            }
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

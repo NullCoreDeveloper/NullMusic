@@ -259,13 +259,13 @@ fun AccountSettingsScreen(
                     ),
                     Material3SettingsItem(
                         isHighlighted = (highlightKey == stringResource(R.string.lastfm_integration)),
-                        icon = painterResource(R.drawable.queue_music),
+                        icon = painterResource(R.drawable.ic_lastfm),
                         title = { Text(stringResource(R.string.lastfm_integration)) },
                         onClick = { navController.navigate("settings/lastfm") }
                     ),
                     Material3SettingsItem(
                         isHighlighted = (highlightKey == stringResource(R.string.listenbrainz_scrobbling)),
-                        icon = painterResource(R.drawable.token),
+                        icon = painterResource(R.drawable.ic_listenbrainz),
                         title = { Text(stringResource(R.string.listenbrainz_scrobbling)) },
                         trailingContent = {
                             Switch(

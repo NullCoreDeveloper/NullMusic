@@ -314,7 +314,7 @@ fun LastFMSettingsScreen(
                             }
                         }
                     },
-                    icon = painterResource(R.drawable.music_note)
+                    icon = painterResource(R.drawable.ic_lastfm)
                 ),
             )
         )

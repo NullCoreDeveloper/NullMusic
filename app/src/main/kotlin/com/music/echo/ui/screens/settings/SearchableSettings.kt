@@ -2,6 +2,7 @@ package iad1tya.echo.music.ui.screens.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.R
 
 @Composable
@@ -370,6 +371,21 @@ fun getAllSearchableSettings(): List<Triple<String, String, String>> {
             Triple("Listen Together", "Integrations", "settings/integrations/listen_together"),
             Triple("YouLyPlus", "Content", "settings/content"),
             Triple("PaxSenix", "Content", "settings/content"),
-            Triple("Apple Music Inspired", "Appearance", "settings/appearance")
+            Triple("Apple Music Inspired", "Appearance", "settings/appearance"),
+            Triple(stringResource(R.string.version, BuildConfig.VERSION_NAME), "System Update", "settings/update"),
+            Triple(stringResource(R.string.discord_integration), "Account", "settings/account"),
+            Triple(stringResource(R.string.lastfm_integration), "Account", "settings/account"),
+            Triple(stringResource(R.string.listenbrainz_scrobbling), "Account", "settings/account"),
+            Triple(stringResource(R.string.set_listenbrainz_token), "Account", "settings/account"),
+            Triple("Show audio fallback notifications", "Player and audio", "settings/player"),
+            Triple("Preload Next Song", "Player and audio", "settings/player"),
+            Triple("Preload Limit", "Player and audio", "settings/player"),
+            Triple("Preload Lyrics", "Player and audio", "settings/player"),
+            Triple("Suggestions Region", "Content", "settings/content"),
+            Triple(stringResource(R.string.content_sponsor_block), "Content", "settings/content"),
+            Triple("Speed Dial", "Content", "settings/content"),
+            Triple(stringResource(R.string.service_uptime), "Content", "settings/content"),
+            Triple("Hide volume slider", "Appearance", "settings/appearance"),
+            Triple("Show codec on player", "Appearance", "settings/appearance")
     )
 }

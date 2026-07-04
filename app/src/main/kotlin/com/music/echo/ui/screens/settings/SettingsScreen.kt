@@ -145,7 +145,7 @@ highlightKey: String? = null) {
                 add(
                     Material3SettingsItem(
     isHighlighted = (highlightKey == "Echo Brain (Beta)"),
-                        icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
+                        icon = painterResource(R.drawable.ic_echo_brain),
                         title = { Text("Echo Brain (Beta)") },
                         onClick = { navController.navigate("settings/echo_brain") }
                     )
@@ -297,16 +297,13 @@ highlightKey: String? = null) {
 
             val matchedSubSettings = subSettings
                 .filter { it.first.lowercase().contains(searchLower) }
-                .groupBy { it.second }
-                .map { (parentTitle, settingsInPage) ->
-                    val route = settingsInPage.first().third
-                    val title = settingsInPage.first().first
+                .map { (title, parentTitle, route) ->
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.search),
-                        title = { Text(parentTitle) },
-                        description = { Text("Contains ${settingsInPage.size} matching setting(s)") },
+                        title = { Text(title) },
+                        description = { Text(parentTitle) },
                         onClick = { 
-                            val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
+                            val encodedTitle = android.net.Uri.encode(title)
                             val finalRoute = if (route.contains("?")) "$route&highlightKey=$encodedTitle" else "$route?highlightKey=$encodedTitle"
                             navController.navigate(finalRoute)
                         }

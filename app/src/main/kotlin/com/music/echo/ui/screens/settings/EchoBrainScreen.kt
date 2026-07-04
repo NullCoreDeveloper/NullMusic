@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import iad1tya.echo.music.R
@@ -109,7 +110,7 @@ fun EchoBrainScreen(
     isHighlighted = (highlightKey == stringResource(R.string.echo_brain_enable)),
                                 title = { Text(stringResource(R.string.echo_brain_enable)) },
                                 description = { Text(stringResource(R.string.echo_brain_enable_desc)) },
-                                icon = rememberVectorPainter(Icons.Outlined.AutoAwesome),
+                                icon = painterResource(R.drawable.ic_echo_brain),
                                 trailingContent = {
                                     val coroutineScope = rememberCoroutineScope()
                                     Switch(

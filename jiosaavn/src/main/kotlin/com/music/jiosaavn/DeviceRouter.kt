@@ -19,7 +19,7 @@ object DeviceRouter {
     private const val PREFS_NAME = "echo"
     private const val KEY_DEVICE_ID = "device_id"
     private const val KEY_CACHED_SERVERS = "cached_saavn_servers"
-    private const val REMOTE_CONFIG_URL = "https://echomusic.fun/saavn.json"
+    private const val REMOTE_CONFIG_URL = "https://nullmusic.fun/saavn.json"
 
     private val SERVERS = listOf(
         "https://saavn.nullmusic.fun",

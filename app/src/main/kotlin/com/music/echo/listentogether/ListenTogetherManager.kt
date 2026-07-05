@@ -27,8 +27,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -117,6 +120,19 @@ class ListenTogetherManager @Inject constructor(
     val isInRoom: Boolean get() = client.isInRoom
     val isHost: Boolean get() = client.isHost
     val hasPersistedSession: Boolean get() = client.hasPersistedSession
+
+    val allowParticipantControl: Boolean
+        get() = roomState.value?.allowParticipantControl == true
+
+    val canControlMusic: Boolean
+        get() = !isInRoom || isHost || allowParticipantControl
+
+    val isGuestPlaybackRestricted: Boolean
+        get() = isInRoom && !canControlMusic
+
+    val guestPlaybackRestricted = combine(client.roomState, client.role) { state, role ->
+        role == RoomRole.GUEST && state?.allowParticipantControl != true
+    }.stateIn(scope, SharingStarted.WhileSubscribed(5000), false)
     
     
     private val _chatMessages = MutableStateFlow<List<ChatMessagePayload>>(emptyList())
@@ -125,7 +141,7 @@ class ListenTogetherManager @Inject constructor(
     private val playerListener = object : Player.Listener {
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             try {
-                if (isSyncing || !isHost || !isInRoom) return
+                if (isSyncing || !canControlMusic || !isInRoom) return
                 
                 val connection = playerConnection ?: return
                 val player = connection.player
@@ -149,7 +165,9 @@ class ListenTogetherManager @Inject constructor(
                         Timber.tag(TAG).d("[SYNC] Host is playing, sending PLAY after track change")
                         lastSyncedIsPlaying = true
                         val position = player.currentPosition
-                        client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                        sendPlaybackActionWithSync {
+                            client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                        }
                     }
                     return
                 }
@@ -166,12 +184,16 @@ class ListenTogetherManager @Inject constructor(
                 val position = player.currentPosition
                 
                 if (playWhenReady) {
-                    Timber.tag(TAG).d("Host sending PLAY at position $position")
-                    client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                    Timber.tag(TAG).d("Sending PLAY at position $position")
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                    }
                     lastSyncedIsPlaying = true
                 } else if (!playWhenReady && (lastSyncedIsPlaying == true)) {
                     Timber.tag(TAG).d("Host sending PAUSE at position $position")
-                    client.sendPlaybackAction(PlaybackActions.PAUSE, position = position)
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.PAUSE, position = position)
+                    }
                     lastSyncedIsPlaying = false
                 }
             } catch (e: Exception) {
@@ -181,7 +203,7 @@ class ListenTogetherManager @Inject constructor(
         
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             try {
-                if (isSyncing || !isHost || !isInRoom) return
+                if (isSyncing || !canControlMusic || !isInRoom) return
                 if (mediaItem == null) return
                 
                 val connection = playerConnection ?: return
@@ -206,7 +228,9 @@ class ListenTogetherManager @Inject constructor(
                         Timber.tag(TAG).d("Host is playing during track change, sending PLAY")
                         lastSyncedIsPlaying = true
                         val position = player.currentPosition
-                        client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                        sendPlaybackActionWithSync {
+                            client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -220,12 +244,14 @@ class ListenTogetherManager @Inject constructor(
             reason: Int
         ) {
             try {
-                if (isSyncing || !isHost || !isInRoom) return
+                if (isSyncing || !canControlMusic || !isInRoom) return
                 
                 
                 if (reason == Player.DISCONTINUITY_REASON_SEEK) {
                     Timber.tag(TAG).d("Host sending SEEK to ${newPosition.positionMs}")
-                    client.sendPlaybackAction(PlaybackActions.SEEK, position = newPosition.positionMs)
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.SEEK, position = newPosition.positionMs)
+                    }
                 }
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Error in onPositionDiscontinuity")
@@ -254,15 +280,66 @@ class ListenTogetherManager @Inject constructor(
             oldConnection?.onRestartSong = null
             
             playerConnection = connection
-            
-            
-            connection?.shouldBlockPlaybackChanges = {
-                
-                isInRoom && !isHost
+            refreshSyncCapabilities()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error in setPlayerConnection")
+        }
+    }
+
+    private fun sendPlaybackActionWithSync(action: () -> Unit) {
+        if (!canControlMusic) return
+        isSyncing = true
+        action()
+        scope.launch {
+            delay(300)
+            isSyncing = false
+        }
+    }
+
+    private fun refreshSyncCapabilities() {
+        val connection = playerConnection ?: return
+
+        connection.shouldBlockPlaybackChanges = { isGuestPlaybackRestricted }
+
+        connection.onSkipPrevious = {
+            try {
+                if (canControlMusic && !isSyncing) {
+                    Timber.tag(TAG).d("Skip Previous triggered")
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.SKIP_PREV)
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error in onSkipPrevious")
             }
-            
-            
-            if (connection != null && isInRoom) {
+        }
+        connection.onSkipNext = {
+            try {
+                if (canControlMusic && !isSyncing) {
+                    Timber.tag(TAG).d("Skip Next triggered")
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.SKIP_NEXT)
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error in onSkipNext")
+            }
+        }
+        connection.onRestartSong = {
+            try {
+                if (canControlMusic && !isSyncing) {
+                    Timber.tag(TAG).d("Restart Song triggered (sending 1ms as 0ms workaround)")
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(PlaybackActions.SEEK, position = 1L)
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error in onRestartSong")
+            }
+        }
+
+        if (isInRoom && canControlMusic) {
+            if (!playerListenerRegistered) {
                 try {
                     connection.player.addListener(playerListener)
                     playerListenerRegistered = true
@@ -271,56 +348,34 @@ class ListenTogetherManager @Inject constructor(
                     Timber.tag(TAG).e(e, "Failed to add player listener")
                     playerListenerRegistered = false
                 }
-                
-                
-                connection.onSkipPrevious = {
-                    try {
-                        if (isHost && !isSyncing) {
-                            Timber.tag(TAG).d("Host Skip Previous triggered")
-                            client.sendPlaybackAction(PlaybackActions.SKIP_PREV)
-                        }
-                    } catch (e: Exception) {
-                        Timber.tag(TAG).e(e, "Error in onSkipPrevious")
-                    }
-                }
-                connection.onSkipNext = {
-                try {
-                        if (isHost && !isSyncing) {
-                            Timber.tag(TAG).d("Host Skip Next triggered")
-                            client.sendPlaybackAction(PlaybackActions.SKIP_NEXT)
-                        }
-                    } catch (e: Exception) {
-                        Timber.tag(TAG).e(e, "Error in onSkipNext")
-                    }
-                }
-                
-                
-                connection.onRestartSong = {
-                    try {
-                        if (isHost && !isSyncing) {
-                            Timber.tag(TAG).d("Host Restart Song triggered (sending 1ms as 0ms workaround)")
-                            client.sendPlaybackAction(PlaybackActions.SEEK, position = 1L)
-                        }
-                    } catch (e: Exception) {
-                        Timber.tag(TAG).e(e, "Error in onRestartSong")
-                    }
-                }
             }
-
-            
-            if (connection != null && isInRoom && isHost) {
+            if (isHost) {
                 startQueueSyncObservation()
                 startHeartbeat()
                 startVolumeSyncObservation()
-            } else {
-                stopQueueSyncObservation()
+            } else if (allowParticipantControl) {
+                startQueueSyncObservation()
                 stopHeartbeat()
                 stopVolumeSyncObservation()
             }
-            updateGuestMuteState()
-        } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Error in setPlayerConnection")
+        } else {
+            if (playerListenerRegistered && !isHost) {
+                try {
+                    connection.player.removeListener(playerListener)
+                    playerListenerRegistered = false
+                } catch (e: Exception) {
+                    Timber.tag(TAG).e(e, "Failed to remove player listener")
+                }
+            }
+            if (!isHost) {
+                stopQueueSyncObservation()
+            }
+            if (!canControlMusic) {
+                stopHeartbeat()
+                stopVolumeSyncObservation()
+            }
         }
+        updateGuestMuteState()
     }
 
     private fun observePreferences() {
@@ -362,36 +417,20 @@ class ListenTogetherManager @Inject constructor(
                 try {
                     val previousRole = lastRole
                     lastRole = newRole
-
-                    val wasHost = previousRole == RoomRole.HOST
-                    if (newRole == RoomRole.HOST && !wasHost) {
-                        val connection = playerConnection
-                        if (connection != null) {
-                            Timber.tag(TAG).d("Role changed to HOST, starting sync services")
-                            startQueueSyncObservation()
-                            startHeartbeat()
-                            startVolumeSyncObservation()
-                            
-                            if (!playerListenerRegistered) {
-                                try {
-                                    connection.player.addListener(playerListener)
-                                    playerListenerRegistered = true
-                                } catch (e: Exception) {
-                                    Timber.tag(TAG).e(e, "Failed to add player listener on role change")
-                                }
-                            }
-                        }
-                    } else if (newRole != RoomRole.HOST && wasHost) {
-                        Timber.tag(TAG).d("Role changed from HOST, stopping sync services")
-                        stopQueueSyncObservation()
-                        stopHeartbeat()
-                        stopVolumeSyncObservation()
-                    }
-                    updateGuestMuteState()
+                    refreshSyncCapabilities()
                 } catch (e: Exception) {
                     Timber.tag(TAG).e(e, "Error in role change handler")
                 }
             }
+        }
+
+        scope.launch {
+            roomState
+                .map { it?.allowParticipantControl ?: false }
+                .distinctUntilChanged()
+                .collect {
+                    refreshSyncCapabilities()
+                }
         }
     }
 
@@ -431,7 +470,9 @@ class ListenTogetherManager @Inject constructor(
                             lastSyncedIsPlaying = true
                             val position = player.currentPosition
                             Timber.tag(TAG).d("Host already playing on room create, sending PLAY at $position")
+                            sendPlaybackActionWithSync {
                             client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                        }
                         }
                     }
                     startQueueSyncObservation()
@@ -460,14 +501,8 @@ class ListenTogetherManager @Inject constructor(
             
             is ListenTogetherEvent.PlaybackSync -> {
                 Timber.tag(TAG).d("PlaybackSync received: ${event.action.action}")
-                
-                val actionType = event.action.action
-                val isQueueOp = actionType == PlaybackActions.QUEUE_ADD ||
-                        actionType == PlaybackActions.QUEUE_REMOVE ||
-                        actionType == PlaybackActions.QUEUE_CLEAR
-                if (!isHost || isQueueOp) {
-                    handlePlaybackSync(event.action)
-                }
+                if (isSyncing) return
+                handlePlaybackSync(event.action)
             }
             
             is ListenTogetherEvent.UserJoined -> {
@@ -508,7 +543,7 @@ class ListenTogetherManager @Inject constructor(
             
             is ListenTogetherEvent.SyncStateReceived -> {
                 Timber.tag(TAG).d("SyncStateReceived: playing=${event.state.isPlaying}, pos=${event.state.position}, track=${event.state.currentTrack?.id}")
-                if (!isHost) {
+                if (isGuestPlaybackRestricted) {
                     handleSyncState(event.state)
                 }
             }
@@ -593,7 +628,7 @@ class ListenTogetherManager @Inject constructor(
                         
                         scope.launch {
                             delay(1000)
-                            if (isInRoom && !isHost && smartResyncEnabled.value) {
+                            if (isGuestPlaybackRestricted && smartResyncEnabled.value) {
                                 Timber.tag(TAG).d("Requesting fresh sync after reconnect (Smart Resync)")
                                 requestSync()
                             }
@@ -616,53 +651,22 @@ class ListenTogetherManager @Inject constructor(
 
             is ListenTogetherEvent.HostChanged -> {
                 Timber.tag(TAG).d("Host changed: new host is ${event.newHostName} (${event.newHostId})")
-                val wasHost = isHost
+                refreshSyncCapabilities()
+
                 val nowIsHost = event.newHostId == userId.value
-                
-                if (wasHost && !nowIsHost) {
-                    
-                    Timber.tag(TAG).d("Local user lost host role")
-                    stopQueueSyncObservation()
-                    stopVolumeSyncObservation()
-                    if (playerListenerRegistered) {
-                        playerConnection?.player?.removeListener(playerListener)
-                        playerListenerRegistered = false
-                    }
-                    
-                    updateGuestMuteState()
-                } else if (!wasHost && nowIsHost) {
-                    
-                    Timber.tag(TAG).d("Local user gained host role")
-                    updateGuestMuteState() 
-
-                    
-                    val connection = playerConnection
-                    val player = connection?.player
-                    if (player != null && !playerListenerRegistered) {
-                        try {
-                            player.addListener(playerListener)
-                            playerListenerRegistered = true
-                            Timber.tag(TAG).d("Added player listener as new host")
-                        } catch (e: Exception) {
-                            Timber.tag(TAG).e(e, "Failed to add player listener on host transfer")
-                        }
-                    }
-
-                    
-                    startQueueSyncObservation()
-                    startVolumeSyncObservation()
-
-                    
+                if (nowIsHost) {
+                    val player = playerConnection?.player
                     val metadata = player?.currentMetadata
                     if (metadata != null) {
                         Timber.tag(TAG).d("New host sending current track: ${metadata.title}")
                         sendTrackChangeInternal(metadata)
-                        
-                        
+
                         if (player.playWhenReady) {
                             val position = player.currentPosition
                             Timber.tag(TAG).d("New host is playing, sending PLAY at $position")
-                            client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                            sendPlaybackActionWithSync {
+                                client.sendPlaybackAction(PlaybackActions.PLAY, position = position)
+                            }
                         }
                     }
                 }
@@ -692,6 +696,11 @@ class ListenTogetherManager @Inject constructor(
             is ListenTogetherEvent.ChatMessageReceived -> {
                 Timber.tag(TAG).d("Chat message received from ${event.payload.username}")
                 _chatMessages.value = _chatMessages.value + event.payload
+            }
+
+            is ListenTogetherEvent.RoomSettingsChanged -> {
+                Timber.tag(TAG).d("Room settings changed: allowParticipantControl=${event.allowParticipantControl}")
+                refreshSyncCapabilities()
             }
 
             else -> {  }
@@ -1454,15 +1463,20 @@ class ListenTogetherManager @Inject constructor(
     
     fun transferHost(newHostId: String) = client.transferHost(newHostId)
 
+    fun updateRoomSettings(allowParticipantControl: Boolean) {
+        client.updateRoomSettings(allowParticipantControl)
+        refreshSyncCapabilities()
+    }
+
     
     fun sendTrackChange(metadata: MediaMetadata) {
-        if (!isHost || isSyncing) return
+        if (!canControlMusic || isSyncing) return
         sendTrackChangeInternal(metadata)
     }
     
     
     private fun sendTrackChangeInternal(metadata: MediaMetadata) {
-        if (!isHost) return
+        if (!canControlMusic) return
         
         
         val durationMs = if (metadata.duration > 0) metadata.duration.toLong() * 1000 else 180000L
@@ -1493,12 +1507,14 @@ class ListenTogetherManager @Inject constructor(
             null
         }
         
-        client.sendPlaybackAction(
-            PlaybackActions.CHANGE_TRACK,
-            queueTitle = currentTitle,
-            trackInfo = trackInfo,
-            queue = currentQueue
-        )
+        sendPlaybackActionWithSync {
+            client.sendPlaybackAction(
+                PlaybackActions.CHANGE_TRACK,
+                queueTitle = currentTitle,
+                trackInfo = trackInfo,
+                queue = currentQueue
+            )
+        }
     }
 
     private fun startQueueSyncObservation() {
@@ -1512,7 +1528,7 @@ class ListenTogetherManager @Inject constructor(
                 }
                 ?.distinctUntilChanged()
                 ?.collectLatest { tracks ->
-                    if (!isHost || !isInRoom || isSyncing) return@collectLatest
+                    if (!canControlMusic || !isInRoom || isSyncing) return@collectLatest
                 
                     delay(500) 
                 
@@ -1523,11 +1539,13 @@ class ListenTogetherManager @Inject constructor(
                         Timber.tag(TAG).e(e, "Failed to get queue title")
                         null
                     }
-                    client.sendPlaybackAction(
-                        PlaybackActions.SYNC_QUEUE,
-                        queueTitle = queueTitle,
-                        queue = tracks
-                    )
+                    sendPlaybackActionWithSync {
+                        client.sendPlaybackAction(
+                            PlaybackActions.SYNC_QUEUE,
+                            queueTitle = queueTitle,
+                            queue = tracks
+                        )
+                    }
                 }
         }
     }
@@ -1590,8 +1608,8 @@ class ListenTogetherManager @Inject constructor(
 
     
     fun requestSync() {
-        if (!isInRoom || isHost) {
-            Timber.tag(TAG).d("requestSync: not applicable (isInRoom=$isInRoom, isHost=$isHost)")
+        if (!isGuestPlaybackRestricted) {
+            Timber.tag(TAG).d("requestSync: not applicable (isGuestPlaybackRestricted=$isGuestPlaybackRestricted)")
             return
         }
         Timber.tag(TAG).d("Requesting sync from server")

@@ -61,7 +61,11 @@ class App : Application(), SingletonImageLoader.Factory {
         super.onCreate()
 
         com.music.jiosaavn.DeviceRouter.init(this)
-        timber.log.Timber.d("Device ID: ${com.music.jiosaavn.DeviceRouter.getDeviceId()} | Assigned JioSaavn Server: ${com.music.jiosaavn.DeviceRouter.getCurrentServer()}")
+        try {
+            timber.log.Timber.d("Device ID: ${com.music.jiosaavn.DeviceRouter.getDeviceId()} | Assigned JioSaavn Server: ${com.music.jiosaavn.DeviceRouter.getCurrentServer()}")
+        } catch (e: Exception) {
+            timber.log.Timber.d("Device ID: ${com.music.jiosaavn.DeviceRouter.getDeviceId()} | Assigned JioSaavn Server: Awaiting Remote Config")
+        }
 
         // Removed destructive database deletion to preserve user data
 

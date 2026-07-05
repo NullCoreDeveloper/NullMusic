@@ -173,6 +173,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import iad1tya.echo.music.viewmodels.DailyDiscoverItem
 
+private fun NavController.navigateToPlaylistItem(playlist: PlaylistItem) {
+    when (val playlistId = playlist.id.removePrefix("VL")) {
+        "LM" -> navigate("auto_playlist/liked")
+        "SE" -> navigate("auto_playlist/downloaded")
+        else -> navigate("online_playlist/$playlistId")
+    }
+}
 
 sealed class HomeSection(val id: String, val baseWeight: Int) {
     data object SpeedDial : HomeSection("speed_dial", 100)
@@ -761,7 +768,7 @@ fun HomeScreen(
 
                             is AlbumItem -> navController.navigate("album/${item.id}")
                             is ArtistItem -> navController.navigate("artist/${item.id}")
-                            is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+                            is PlaylistItem -> navController.navigateToPlaylistItem(item)
                         }
                     },
                     onLongClick = {
@@ -1051,7 +1058,7 @@ fun HomeScreen(
                                                                                             )
                                                                                             is AlbumItem -> navController.navigate("album/${randomItem.id}")
                                                                                             is ArtistItem -> navController.navigate("artist/${randomItem.id}")
-                                                                                            is PlaylistItem -> navController.navigate("online_playlist/${randomItem.id}") 
+                                                                                            is PlaylistItem -> navController.navigateToPlaylistItem(randomItem)
                                                                                         }
                                                                                     }
                                                                                 }
@@ -1088,7 +1095,7 @@ fun HomeScreen(
                                                                                         is AlbumItem -> navController.navigate("album/${item.id}")
                                                                                         is ArtistItem -> navController.navigate("artist/${item.id}")
 
-                                                                                        is PlaylistItem -> navController.navigate("online_playlist/${item.id}") 
+                                                                                        is PlaylistItem -> navController.navigateToPlaylistItem(item)
                                                                                     }
                                                                                 },
                                                                                 onLongClick = {
@@ -1354,7 +1361,7 @@ fun HomeScreen(
                                             CommunityPlaylistCard(
                                                 item = item,
                                                 onClick = {
-                                                    navController.navigate("online_playlist/${item.playlist.id.removePrefix("VL")}")
+                                                    navController.navigateToPlaylistItem(item.playlist)
                                                 },
                                                 onSongClick = { song ->
                                                     playerConnection.playQueue(

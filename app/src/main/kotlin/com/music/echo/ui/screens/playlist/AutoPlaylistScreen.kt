@@ -92,7 +92,9 @@ import iad1tya.echo.music.constants.SongSortTypeKey
 import iad1tya.echo.music.constants.YtmSyncKey
 import iad1tya.echo.music.db.entities.Song
 import iad1tya.echo.music.extensions.toMediaItem
+import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.ExoDownloadService
+import iad1tya.echo.music.playback.PlayerConnection
 import iad1tya.echo.music.playback.queues.ListQueue
 import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.DraggableScrollbar
@@ -112,6 +114,7 @@ import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.AutoPlaylistViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -125,9 +128,9 @@ fun AutoPlaylistScreen(
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val playerConnection = LocalPlayerConnection.current
+    val isPlaying by (playerConnection?.isEffectivelyPlaying ?: flowOf(false)).collectAsState(false)
+    val mediaMetadata by (playerConnection?.mediaMetadata ?: flowOf<MediaMetadata?>(null)).collectAsState(null)
     val playlist = when (viewModel.playlist) {
         "liked" -> stringResource(R.string.liked)
         "uploaded" -> stringResource(R.string.uploaded_playlist)
@@ -336,6 +339,7 @@ fun AutoPlaylistScreen(
                                 downloadState = downloadState,
                                 onShowRemoveDownloadDialog = { showRemoveDownloadDialog = true },
                                 menuState = menuState,
+                                playerConnection = playerConnection,
                                 modifier = Modifier.animateItem()
                             )
                         }
@@ -417,9 +421,9 @@ fun AutoPlaylistScreen(
                                         if (inSelectMode) {
                                             onCheckedChange(song.id !in selection)
                                         } else if (song.song.id == mediaMetadata?.id) {
-                                            playerConnection.togglePlayPause()
+                                            playerConnection?.togglePlayPause()
                                         } else {
-                                            playerConnection.playQueue(
+                                            playerConnection?.playQueue(
                                                 ListQueue(
                                                     title = playlist,
                                                     items = songs!!.map { it.toMediaItem() },
@@ -593,9 +597,9 @@ private fun AutoPlaylistHeader(
     downloadState: Int,
     onShowRemoveDownloadDialog: () -> Unit,
     menuState: iad1tya.echo.music.ui.component.MenuState,
+    playerConnection: PlayerConnection?,
     modifier: Modifier = Modifier
 ) {
-    val playerConnection = LocalPlayerConnection.current ?: return
     val context = LocalContext.current
     
     Column(
@@ -665,7 +669,7 @@ private fun AutoPlaylistHeader(
             
             androidx.compose.material3.Button(
                 onClick = {
-                    playerConnection.playQueue(
+                    playerConnection?.playQueue(
                         ListQueue(
                             title = name,
                             items = songs.shuffled().map { it.toMediaItem() },
@@ -705,7 +709,7 @@ private fun AutoPlaylistHeader(
             
             androidx.compose.material3.Button(
                 onClick = {
-                    playerConnection.playQueue(
+                    playerConnection?.playQueue(
                         ListQueue(
                             title = name,
                             items = songs.map { it.toMediaItem() },
@@ -747,7 +751,7 @@ private fun AutoPlaylistHeader(
                         AutoPlaylistMenu(
                             downloadState = downloadState,
                             onQueue = {
-                                playerConnection.addToQueue(
+                                playerConnection?.addToQueue(
                                     songs.map { it.toMediaItem() }
                                 )
                             },

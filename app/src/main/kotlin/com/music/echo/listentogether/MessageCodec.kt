@@ -218,6 +218,9 @@ class MessageCodec(
             is TransferHostPayload -> Listentogether.TransferHostPayload.newBuilder()
                 .setNewHostId(payload.newHostId)
                 .build()
+            is UpdateRoomSettingsPayload -> Listentogether.UpdateRoomSettingsPayload.newBuilder()
+                .setAllowParticipantControl(payload.allowParticipantControl)
+                .build()
             else -> throw IllegalArgumentException("Unsupported payload type: ${payload::class.simpleName}")
         }
     }
@@ -258,6 +261,7 @@ class MessageCodec(
             MessageTypes.SUGGESTION_APPROVED -> json.decodeFromString<SuggestionApprovedPayload>(payloadString)
             MessageTypes.SUGGESTION_REJECTED -> json.decodeFromString<SuggestionRejectedPayload>(payloadString)
             MessageTypes.CHAT -> json.decodeFromString<ChatMessagePayload>(payloadString)
+            MessageTypes.ROOM_SETTINGS_CHANGED -> json.decodeFromString<UpdateRoomSettingsPayload>(payloadString)
             else -> null
         }
     }
@@ -376,6 +380,10 @@ class MessageCodec(
                 val pb = Listentogether.SuggestionRejectedPayload.parseFrom(payloadBytes)
                 SuggestionRejectedPayload(pb.suggestionId, pb.reason.let { if (it.isEmpty()) null else it })
             }
+            MessageTypes.ROOM_SETTINGS_CHANGED -> {
+                val pb = Listentogether.UpdateRoomSettingsPayload.parseFrom(payloadBytes)
+                UpdateRoomSettingsPayload(pb.allowParticipantControl)
+            }
             else -> null
         }
     }
@@ -425,7 +433,8 @@ class MessageCodec(
             position = proto.position,
             lastUpdate = proto.lastUpdate,
             volume = proto.volume,
-            queue = proto.queueList.map { protoToTrackInfo(it) }
+            queue = proto.queueList.map { protoToTrackInfo(it) },
+            allowParticipantControl = proto.allowParticipantControl
         )
     }
     
@@ -445,6 +454,7 @@ class MessageCodec(
             is ReconnectPayload -> ReconnectPayload.serializer()
             is TransferHostPayload -> TransferHostPayload.serializer()
             is ChatPayload -> ChatPayload.serializer()
+            is UpdateRoomSettingsPayload -> UpdateRoomSettingsPayload.serializer()
             else -> throw IllegalArgumentException("Unknown type: ${value!!::class.simpleName}")
         } as kotlinx.serialization.KSerializer<T>
     }

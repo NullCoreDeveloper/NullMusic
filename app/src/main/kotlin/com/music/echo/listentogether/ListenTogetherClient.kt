@@ -127,6 +127,8 @@ sealed class ListenTogetherEvent {
     
     
     data class LocalSuggestionApproved(val payload: SuggestionReceivedPayload) : ListenTogetherEvent()
+
+    data class RoomSettingsChanged(val allowParticipantControl: Boolean) : ListenTogetherEvent()
 }
 
 
@@ -1147,6 +1149,17 @@ class ListenTogetherClient @Inject constructor(
                     scope.launch { _events.emit(ListenTogetherEvent.ChatMessageReceived(payload)) }
                 }
 
+                MessageTypes.ROOM_SETTINGS_CHANGED -> {
+                    val payload = codec.decodePayload(msgType, payloadBytes, detectedFormat) as? UpdateRoomSettingsPayload ?: return
+                    _roomState.value = _roomState.value?.copy(
+                        allowParticipantControl = payload.allowParticipantControl
+                    )
+                    log(LogLevel.INFO, "Room settings changed", "allowParticipantControl=${payload.allowParticipantControl}")
+                    scope.launch {
+                        _events.emit(ListenTogetherEvent.RoomSettingsChanged(payload.allowParticipantControl))
+                    }
+                }
+
                 else -> {
                     log(LogLevel.WARNING, "Unknown message type", msgType)
                 }
@@ -1290,6 +1303,18 @@ class ListenTogetherClient @Inject constructor(
         sendMessage(MessageTypes.TRANSFER_HOST, TransferHostPayload(newHostId))
     }
 
+    fun updateRoomSettings(allowParticipantControl: Boolean) {
+        if (_role.value != RoomRole.HOST) {
+            log(LogLevel.ERROR, "Cannot update room settings", "Not host")
+            return
+        }
+        sendMessage(
+            MessageTypes.UPDATE_ROOM_SETTINGS,
+            UpdateRoomSettingsPayload(allowParticipantControl)
+        )
+        _roomState.value = _roomState.value?.copy(allowParticipantControl = allowParticipantControl)
+    }
+
     
     fun sendPlaybackAction(
         action: String, 
@@ -1301,8 +1326,10 @@ class ListenTogetherClient @Inject constructor(
         queueTitle: String? = null,
         volume: Float? = null
     ) {
-        if (_role.value != RoomRole.HOST) {
-            log(LogLevel.ERROR, "Cannot control playback", "Not host")
+        val canControl = _role.value == RoomRole.HOST ||
+            (_role.value == RoomRole.GUEST && _roomState.value?.allowParticipantControl == true)
+        if (!canControl) {
+            log(LogLevel.ERROR, "Cannot control playback", "Not allowed")
             return
         }
         sendMessage(

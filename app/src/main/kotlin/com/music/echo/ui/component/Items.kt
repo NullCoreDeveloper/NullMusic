@@ -152,9 +152,8 @@ inline fun ListItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = Modifier
             .padding(vertical = 2.dp)
-            .height(ListItemHeight)
             .padding(horizontal = horizontalPadding)
             .clip(shape)
             .background(
@@ -164,6 +163,8 @@ inline fun ListItem(
                     else -> color
                 }
             )
+            .then(modifier)
+            .height(ListItemHeight)
     ) {
         Box(
             modifier = Modifier.padding(start = 12.dp, top = 6.dp, end = 6.dp, bottom = 6.dp),

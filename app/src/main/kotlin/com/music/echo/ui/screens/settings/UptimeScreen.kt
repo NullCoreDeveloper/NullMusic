@@ -55,9 +55,9 @@ highlightKey: String? = null) {
             ServiceStatus("YouTube Music", { "https://music.youtube.com" }),
             ServiceStatus(
                 "JioSaavn",
-                { com.music.jiosaavn.DeviceRouter.getCurrentServer() },
-                { "Server ${com.music.jiosaavn.DeviceRouter.getCurrentServerIndex() + 1}" },
-                offlineMessage = "Server hits its daily limit, we'll get you tomorrow!"
+                { if (com.music.jiosaavn.DeviceRouter.hasServers()) com.music.jiosaavn.DeviceRouter.getCurrentServer() else "unconfigured" },
+                { if (com.music.jiosaavn.DeviceRouter.hasServers()) "Server ${com.music.jiosaavn.DeviceRouter.getCurrentServerIndex() + 1}" else "Not Configured" },
+                offlineMessage = if (com.music.jiosaavn.DeviceRouter.hasServers()) "Server hits its daily limit, we'll get you tomorrow!" else "Please upload saavn.json to your server"
             ),
             ServiceStatus(
                 "Qobuz",

@@ -413,7 +413,7 @@
     <string name="other_services">Ostale usluge</string>
     <string name="status_online">Na mreži</string>
     <string name="status_offline">Van mreže</string>
-    <string name="listen_on_echo_music">Slušajte na Echo Music</string>
+    <string name="listen_on_echo_music">Slušajte na NullMusic</string>
     <string name="qs_tile_music_recognizer">Prepoznaj muziku</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Omogući Echo Brain</string>

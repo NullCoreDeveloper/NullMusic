@@ -127,6 +127,8 @@ fun MetroLyricsLine(
     isSelectionModeActive: Boolean,
     isAutoScrollActive: Boolean,
     expressiveAccent: Color,
+    lyricsTextSize: Float = 36f,
+    lyricsLineSpacing: Float = 1.3f,
     modifier: Modifier = Modifier
 ) {
     val (appleMusicLyricsBlur) = rememberPreference(AppleMusicLyricsBlurKey, true)
@@ -181,9 +183,6 @@ fun MetroLyricsLine(
         animationSpec = tween(durationMillis = 300),
         label = "lineAlpha"
     )
-
-    val lyricsTextSize = 36f
-    val lyricsLineSpacing = 1.3f
 
     val itemModifier = modifier
         .fillMaxWidth()

@@ -35,7 +35,7 @@ data class ServiceStatus(
     val displayUrl: () -> String = url,
     var status: Status = Status.CHECKING,
     var latencyMs: Long? = null,
-    val offlineMessage: String? = null,
+    val offlineMessage: () -> String? = { null },
     val fallbackUrls: () -> List<String> = { emptyList() }
 ) {
     enum class Status {
@@ -57,7 +57,7 @@ highlightKey: String? = null) {
                 "JioSaavn",
                 { if (com.music.jiosaavn.DeviceRouter.hasServers()) com.music.jiosaavn.DeviceRouter.getCurrentServer() else "unconfigured" },
                 { if (com.music.jiosaavn.DeviceRouter.hasServers()) "Server ${com.music.jiosaavn.DeviceRouter.getCurrentServerIndex() + 1}" else "Not Configured" },
-                offlineMessage = if (com.music.jiosaavn.DeviceRouter.hasServers()) "Server hits its daily limit, we'll get you tomorrow!" else "Please upload saavn.json to your server"
+                offlineMessage = { if (com.music.jiosaavn.DeviceRouter.hasServers()) "Server hits its daily limit, we'll get you tomorrow!" else "Please upload saavn.json to your server" }
             ),
             ServiceStatus(
                 "Qobuz",
@@ -308,7 +308,7 @@ fun ServiceStatusCard(service: ServiceStatus) {
             }
 
             androidx.compose.animation.AnimatedVisibility(
-                visible = service.status == ServiceStatus.Status.OFFLINE && service.offlineMessage != null
+                visible = service.status == ServiceStatus.Status.OFFLINE && service.offlineMessage() != null
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -323,7 +323,7 @@ fun ServiceStatusCard(service: ServiceStatus) {
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
-                            text = service.offlineMessage ?: "",
+                            text = service.offlineMessage() ?: "",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFFF44336).copy(alpha = 0.8f),
                             fontWeight = FontWeight.Medium

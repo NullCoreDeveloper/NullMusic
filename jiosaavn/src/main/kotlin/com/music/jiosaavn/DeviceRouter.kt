@@ -27,9 +27,13 @@ object DeviceRouter {
         "https://jiosaavn-api.mac-adityadav9532.workers.dev"
     )
 
+    @Volatile
     private var deviceId: String? = null
+    @Volatile
     private var assignedServerIndex: Int = 0
+    @Volatile
     private var currentSessionServerIndex: Int = 0
+    @Volatile
     private var isInitialized = false
 
     private val jsonConfig = Json { ignoreUnknownKeys = true }
@@ -70,15 +74,36 @@ object DeviceRouter {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response: RemoteServerConfig = httpClient.get(REMOTE_CONFIG_URL).body()
-                if (response.servers.isNotEmpty() && response.servers != activeServers) {
-                    val newJson = jsonConfig.encodeToString(RemoteServerConfig.serializer(), response)
-                    prefs.edit().putString(KEY_CACHED_SERVERS, newJson).apply()
-                    activeServers = response.servers
-                    assignServer()
+                val url = java.net.URL(REMOTE_CONFIG_URL)
+                val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 10000
+                connection.readTimeout = 10000
+                connection.connect()
+                
+                if (connection.responseCode in 200..299) {
+                    val jsonText = connection.inputStream.bufferedReader().use { it.readText() }
+                    val jsonObject = org.json.JSONObject(jsonText)
+                    val serversArray = jsonObject.optJSONArray("servers")
+                    val fetchedServers = mutableListOf<String>()
+                    if (serversArray != null) {
+                        for (i in 0 until serversArray.length()) {
+                            fetchedServers.add(serversArray.getString(i))
+                        }
+                    }
+                    if (fetchedServers.isNotEmpty() && fetchedServers != activeServers) {
+                        activeServers = fetchedServers
+                        assignServer()
+                        val configToSave = org.json.JSONObject()
+                        configToSave.put("version", jsonObject.optInt("version", 1))
+                        configToSave.put("servers", org.json.JSONArray(fetchedServers))
+                        prefs.edit().putString(KEY_CACHED_SERVERS, configToSave.toString()).apply()
+                    }
                 }
+                connection.disconnect()
             } catch (e: Exception) {
                 // Network error, fail silently
+                e.printStackTrace()
             }
         }
     }

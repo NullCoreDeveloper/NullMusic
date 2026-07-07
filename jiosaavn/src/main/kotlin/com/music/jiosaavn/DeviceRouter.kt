@@ -30,6 +30,8 @@ object DeviceRouter {
     @Volatile
     private var deviceId: String? = null
     @Volatile
+    private var activeServers: List<String> = SERVERS
+    @Volatile
     private var assignedServerIndex: Int = 0
     @Volatile
     private var currentSessionServerIndex: Int = 0

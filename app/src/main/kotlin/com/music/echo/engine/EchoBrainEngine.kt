@@ -202,25 +202,55 @@ class EchoBrainEngine @Inject constructor(
                 }
             }
             
+            // 4. Existing upcoming Echo Brain tracks
+            val upcomingBrainIndices = mutableListOf<Int>()
+            val upcomingBrainMetadatas = mutableListOf<MediaMetadata>()
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                val player = conn.player
+                for (i in player.currentMediaItemIndex + 1 until player.mediaItemCount) {
+                    val item = player.getMediaItemAt(i)
+                    if (item.metadata?.source == QueueItemSource.ECHO_BRAIN) {
+                        upcomingBrainIndices.add(i)
+                        item.metadata?.let { upcomingBrainMetadatas.add(it) }
+                    }
+                }
+            }
+            
             // Await all sources
             val anchorCandidates = anchorDeferred.await()
             val momentumCandidates = momentumDeferred.await()
             val vaultCandidates = vaultDeferred.await()
             
-            val allCandidates = (anchorCandidates + momentumCandidates + vaultCandidates).distinctBy { it.id }
+            val allCandidates = (anchorCandidates + momentumCandidates + vaultCandidates + upcomingBrainMetadatas).distinctBy { it.id }
             
             if (allCandidates.isNotEmpty()) {
-            val recentSongs = buildSet {
-                for (i in 0 until conn.player.mediaItemCount) {
-                    conn.player.getMediaItemAt(i).metadata?.id?.let { add(it) }
+                val recentSongs = buildSet {
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        for (i in 0..conn.player.currentMediaItemIndex) {
+                            conn.player.getMediaItemAt(i).metadata?.id?.let { add(it) }
+                        }
+                    }
                 }
-            }
-            
-            val ranked = neuroEngine.rank(allCandidates, recentSongs)
-            // Take top 3 for the "Runway"
-            val topCandidates = ranked.take(3)
-            
-            val itemsToInject = topCandidates.map { it ->
+                
+                val ranked = neuroEngine.rank(allCandidates, recentSongs)
+                // Take top 15 for the dynamic queue
+                val topCandidates = ranked.take(15)
+                val topIds = topCandidates.map { it.id }.toSet()
+                
+                // Identify which existing ECHO_BRAIN tracks scored poorly and should be pruned
+                val indicesToRemove = mutableListOf<Int>()
+                for (i in upcomingBrainIndices.indices) {
+                    if (upcomingBrainMetadatas[i].id !in topIds) {
+                        indicesToRemove.add(upcomingBrainIndices[i])
+                    }
+                }
+                
+                // Identify completely new tracks to inject
+                val existingUpcomingIds = upcomingBrainMetadatas.map { it.id }.toSet()
+                val newCandidatesToInject = topCandidates.filter { it.id !in existingUpcomingIds }
+                
+                // Shuffle new tracks to place them randomly and keep the flow organic
+                val itemsToInject = newCandidatesToInject.shuffled().map { it ->
                     val newMeta = MediaMetadata(
                         id = it.id,
                         title = it.title,
@@ -234,13 +264,25 @@ class EchoBrainEngine @Inject constructor(
                     newMeta.toMediaItem()
                 }
                 
-                if (itemsToInject.isNotEmpty()) {
-                    // Inject the runway batch with a delay to prevent Media3 PlaybackStatsListener crash
-                    kotlinx.coroutines.delay(1500)
-                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                        conn.player.addMediaItems(conn.player.currentMediaItemIndex + 1, itemsToInject)
+                // Apply queue modifications on the Main thread
+                kotlinx.coroutines.delay(1500) // Delay to prevent Media3 PlaybackStatsListener crash
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    val player = conn.player
+                    
+                    // Remove irrelevant tracks (reverse order to maintain index integrity)
+                    indicesToRemove.reversed().forEach { index ->
+                        if (index < player.mediaItemCount) {
+                            player.removeMediaItem(index)
+                        }
                     }
-                    repository.logActivity("Queued", "Added ${itemsToInject.size} tracks to runway queue")
+                    
+                    // Inject new relevant tracks
+                    if (itemsToInject.isNotEmpty()) {
+                        player.addMediaItems(player.currentMediaItemIndex + 1, itemsToInject)
+                        repository.logActivity("Queued", "Pruned ${indicesToRemove.size} irrelevant tracks, added ${itemsToInject.size} new random tracks to runway")
+                    } else if (indicesToRemove.isNotEmpty()) {
+                        repository.logActivity("Pruned", "Pruned ${indicesToRemove.size} irrelevant tracks to maintain flow")
+                    }
                 }
             }
         }

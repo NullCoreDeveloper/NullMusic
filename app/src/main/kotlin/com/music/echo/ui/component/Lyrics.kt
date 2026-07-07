@@ -1033,6 +1033,8 @@ fun Lyrics(
                             isSelectionModeActive = isSelectionModeActive,
                             isSelected = isSelected,
                             expressiveAccent = expressiveAccent,
+                            lyricsTextSize = lyricsTextSize,
+                            lyricsLineSpacing = lyricsLineSpacing,
                             onClick = {
                                 if (isSelectionModeActive) {
                                     if (isSelected) {

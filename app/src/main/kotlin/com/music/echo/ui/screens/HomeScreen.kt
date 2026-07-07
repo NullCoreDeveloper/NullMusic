@@ -814,6 +814,7 @@ fun HomeScreen(
         accountPlaylists,
         forgottenFavorites,
         communityPlaylists,
+        echoBrainPlaylists,
         similarRecommendations,
         homePage?.sections,
         explorePage?.moodAndGenres
@@ -822,6 +823,7 @@ fun HomeScreen(
 
         if (showSpeedDial && speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
         if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
+        if (echoBrainPlaylists?.isNotEmpty() == true) list.add(HomeSection.EchoBrainPlaylists)
         if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
         if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
         if (keepListening?.isNotEmpty() == true) list.add(HomeSection.KeepListening)
@@ -855,6 +857,7 @@ fun HomeScreen(
                     HomeSection.KeepListening,
                     HomeSection.AccountPlaylists,
                     HomeSection.ForgottenFavorites,
+                    HomeSection.EchoBrainPlaylists,
                     HomeSection.FromTheCommunity -> 300 
 
                     else -> 100 
@@ -873,6 +876,7 @@ fun HomeScreen(
                     HomeSection.KeepListening,
                     HomeSection.AccountPlaylists,
                     HomeSection.ForgottenFavorites,
+                    HomeSection.EchoBrainPlaylists,
                     HomeSection.FromTheCommunity -> sectionRandom.nextInt(-100, 400)
 
                     
@@ -884,6 +888,7 @@ fun HomeScreen(
             val defaultOrder = mapOf(
                 HomeSection.QuickPicks to 1000,
                 HomeSection.SpeedDial to 100,
+                HomeSection.EchoBrainPlaylists to 85,
                 HomeSection.FromTheCommunity to 80,
                 HomeSection.DailyDiscover to 70,
                 HomeSection.KeepListening to 60,

@@ -53,6 +53,10 @@ jobs:
           git rm -rf .github/workflows/ || true
           git checkout HEAD -- .github/workflows/ || true
           
+          # Force take RELEASE_INFO.md and app/build.gradle.kts from upstream to sync versions
+          git checkout upstream/main -- RELEASE_INFO.md || true
+          git checkout upstream/main -- app/build.gradle.kts || true
+          
           # Now commit the merge
           git commit --no-edit || true
           

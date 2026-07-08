@@ -22,6 +22,7 @@ import iad1tya.echo.music.db.daos.SpeedDialDao
 import iad1tya.echo.music.db.entities.AlbumArtistMap
 import iad1tya.echo.music.db.entities.AlbumEntity
 import iad1tya.echo.music.db.entities.ArtistEntity
+import iad1tya.echo.music.db.entities.BeatInfoEntity
 import iad1tya.echo.music.db.entities.BrainActivityLogEntity
 import iad1tya.echo.music.db.entities.Event
 import iad1tya.echo.music.db.entities.FormatEntity
@@ -113,14 +114,15 @@ class MusicDatabase(
         SpeedDialItem::class,
         BrainActivityLogEntity::class,
         PlayEventEntity::class,
-        TasteProfileEntity::class
+        TasteProfileEntity::class,
+        BeatInfoEntity::class
     ],
     views = [
         SortedSongArtistMap::class,
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 39,
+    version = 41,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -184,6 +186,8 @@ abstract class InternalDatabase : RoomDatabase() {
                         MIGRATION_36_37,
                         MIGRATION_37_38,
                         MIGRATION_38_39,
+                        MIGRATION_39_40,
+                        MIGRATION_40_41,
                     )
                     .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                     .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
@@ -886,5 +890,31 @@ val MIGRATION_38_39 =
             if (!columnExists) {
                 db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
             }
+        }
+    }
+
+val MIGRATION_39_40 =
+    object : Migration(39, 40) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `beat_info` (
+                    `songId` TEXT NOT NULL,
+                    `bpm` REAL NOT NULL,
+                    `firstBeatOffsetMs` INTEGER NOT NULL,
+                    `confidence` REAL NOT NULL,
+                    `analyzedAt` INTEGER NOT NULL,
+                    PRIMARY KEY(`songId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
+val MIGRATION_40_41 =
+    object : Migration(40, 41) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE beat_info ADD COLUMN mixInPointMs INTEGER DEFAULT NULL")
+            db.execSQL("ALTER TABLE beat_info ADD COLUMN mixOutPointMs INTEGER DEFAULT NULL")
         }
     }

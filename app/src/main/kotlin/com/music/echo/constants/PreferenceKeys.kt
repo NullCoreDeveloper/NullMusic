@@ -139,6 +139,8 @@ val PreventDuplicateTracksInQueueKey = booleanPreferencesKey("preventDuplicateTr
 val CrossfadeEnabledKey = booleanPreferencesKey("crossfadeEnabled")
 val CrossfadeDurationKey = floatPreferencesKey("crossfadeDuration")
 val CrossfadeGaplessKey = booleanPreferencesKey("crossfadeGapless")
+val AutomixCrossfadeKey = booleanPreferencesKey("automixCrossfade")
+val AutomixDebugOverlayKey = booleanPreferencesKey("automixDebugOverlay")
 
 
 val MaxImageCacheSizeKey = intPreferencesKey("maxImageCacheSize")

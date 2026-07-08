@@ -203,14 +203,12 @@ class EchoBrainEngine @Inject constructor(
             }
             
             // 4. Existing upcoming Echo Brain tracks
-            val upcomingBrainIndices = mutableListOf<Int>()
             val upcomingBrainMetadatas = mutableListOf<MediaMetadata>()
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                 val player = conn.player
                 for (i in player.currentMediaItemIndex + 1 until player.mediaItemCount) {
                     val item = player.getMediaItemAt(i)
                     if (item.metadata?.source == QueueItemSource.ECHO_BRAIN) {
-                        upcomingBrainIndices.add(i)
                         item.metadata?.let { upcomingBrainMetadatas.add(it) }
                     }
                 }
@@ -237,37 +235,45 @@ class EchoBrainEngine @Inject constructor(
                 val topCandidates = ranked.take(15)
                 val topIds = topCandidates.map { it.id }.toSet()
                 
-                // Identify which existing ECHO_BRAIN tracks scored poorly and should be pruned
-                val indicesToRemove = mutableListOf<Int>()
-                for (i in upcomingBrainIndices.indices) {
-                    if (upcomingBrainMetadatas[i].id !in topIds) {
-                        indicesToRemove.add(upcomingBrainIndices[i])
-                    }
-                }
-                
-                // Identify completely new tracks to inject
-                val existingUpcomingIds = upcomingBrainMetadatas.map { it.id }.toSet()
-                val newCandidatesToInject = topCandidates.filter { it.id !in existingUpcomingIds }
-                
-                // Shuffle new tracks to place them randomly and keep the flow organic
-                val itemsToInject = newCandidatesToInject.shuffled().map { it ->
-                    val newMeta = MediaMetadata(
-                        id = it.id,
-                        title = it.title,
-                        artists = it.artists,
-                        duration = it.duration,
-                        album = it.album,
-                        source = QueueItemSource.ECHO_BRAIN,
-                        suggestedBy = "Echo Brain",
-                        thumbnailUrl = it.thumbnailUrl
-                    )
-                    newMeta.toMediaItem()
-                }
-                
                 // Apply queue modifications on the Main thread
                 kotlinx.coroutines.delay(1500) // Delay to prevent Media3 PlaybackStatsListener crash
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                     val player = conn.player
+                    if (player.currentMediaItem?.mediaId != trackId) {
+                        repository.logActivity("Skipped", "Ignored stale Echo Brain runway for $trackId")
+                        return@withContext
+                    }
+
+                    val currentIndex = player.currentMediaItemIndex
+                    val indicesToRemove = mutableListOf<Int>()
+                    val existingUpcomingIds = mutableSetOf<String>()
+                    for (i in currentIndex + 1 until player.mediaItemCount) {
+                        val item = player.getMediaItemAt(i)
+                        val metadata = item.metadata
+                        if (metadata?.source == QueueItemSource.ECHO_BRAIN) {
+                            existingUpcomingIds.add(metadata.id)
+                            if (metadata.id !in topIds) {
+                                indicesToRemove.add(i)
+                            }
+                        }
+                    }
+
+                    // Identify completely new tracks to inject against the current queue state.
+                    val itemsToInject = topCandidates
+                        .filter { it.id !in existingUpcomingIds }
+                        .shuffled()
+                        .map { item ->
+                            MediaMetadata(
+                                id = item.id,
+                                title = item.title,
+                                artists = item.artists,
+                                duration = item.duration,
+                                album = item.album,
+                                source = QueueItemSource.ECHO_BRAIN,
+                                suggestedBy = "Echo Brain",
+                                thumbnailUrl = item.thumbnailUrl
+                            ).toMediaItem()
+                        }
                     
                     // Remove irrelevant tracks (reverse order to maintain index integrity)
                     indicesToRemove.reversed().forEach { index ->

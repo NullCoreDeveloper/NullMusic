@@ -50,7 +50,11 @@ class PoTokenWebView private constructor(
     var isDead: Boolean = false
         private set
     private val poTokenContinuations =
-        Collections.synchronizedMap(ArrayMap<String, Continuation<String>>())
+        Collections.synchronizedMap(ArrayMap<Int, Continuation<String>>())
+    private var nextReqId = 0
+
+    @Synchronized
+    private fun getNextReqId(): Int = ++nextReqId
     private val exceptionHandler = CoroutineExceptionHandler { _, t ->
         onInitializationErrorCloseAndCancel(t)
     }
@@ -220,7 +224,6 @@ class PoTokenWebView private constructor(
             }
         } catch (e: TimeoutCancellationException) {
             isDead = true
-            popPoTokenContinuation(identifier)
             Timber.tag(TAG).e("generatePoToken($identifier) timed out")
             throw PoTokenException("poToken generation timed out")
         }
@@ -230,7 +233,9 @@ class PoTokenWebView private constructor(
         return withContext(Dispatchers.Main) {
             suspendCancellableCoroutine { cont ->
                 Timber.tag(TAG).d("generatePoToken() called with identifier $identifier")
-                addPoTokenEmitter(identifier, cont)
+                val reqId = getNextReqId()
+                addPoTokenEmitter(reqId, cont)
+                cont.invokeOnCancellation { popPoTokenContinuation(reqId) }
                 
                 webView.evaluateJavascript(
                     """try {
@@ -238,12 +243,12 @@ class PoTokenWebView private constructor(
                         u8Identifier = ${stringToU8(identifier)}
                         obtainPoToken(u8Identifier).then(function(poTokenU8) {
                             poTokenU8String = poTokenU8.join(",")
-                            $JS_INTERFACE.onObtainPoTokenResult(identifier, poTokenU8String)
+                            $JS_INTERFACE.onObtainPoTokenResult($reqId, identifier, poTokenU8String)
                         }).catch(function(error) {
-                            $JS_INTERFACE.onObtainPoTokenError(identifier, error + "\n" + (error.stack || ''))
+                            $JS_INTERFACE.onObtainPoTokenError($reqId, identifier, error + "\n" + (error.stack || ''))
                         })
                     } catch (error) {
-                        $JS_INTERFACE.onObtainPoTokenError(identifier, error + "\n" + error.stack)
+                        $JS_INTERFACE.onObtainPoTokenError($reqId, identifier, error + "\n" + error.stack)
                     }""",
                     null
                 )
@@ -253,26 +258,26 @@ class PoTokenWebView private constructor(
 
     
     @JavascriptInterface
-    fun onObtainPoTokenError(identifier: String, error: String) {
+    fun onObtainPoTokenError(reqId: Int, identifier: String, error: String) {
         if (BuildConfig.DEBUG) {
             Timber.tag(TAG).e("obtainPoToken error from JavaScript: $error")
         }
-        popPoTokenContinuation(identifier)?.resumeWithException(buildExceptionForJsError(error))
+        popPoTokenContinuation(reqId)?.resumeWithException(buildExceptionForJsError(error))
     }
 
     
     @JavascriptInterface
-    fun onObtainPoTokenResult(identifier: String, poTokenU8: String) {
+    fun onObtainPoTokenResult(reqId: Int, identifier: String, poTokenU8: String) {
         Timber.tag(TAG).d("Generated poToken (before decoding): identifier=$identifier poTokenU8=$poTokenU8")
         val poToken = try {
             u8ToBase64(poTokenU8)
         } catch (t: Throwable) {
-            popPoTokenContinuation(identifier)?.resumeWithException(t)
+            popPoTokenContinuation(reqId)?.resumeWithException(t)
             return
         }
 
         Timber.tag(TAG).d("Generated poToken: identifier=$identifier poToken=$poToken")
-        popPoTokenContinuation(identifier)?.resume(poToken)
+        popPoTokenContinuation(reqId)?.resume(poToken)
     }
 
     val isExpired: Boolean
@@ -280,15 +285,15 @@ class PoTokenWebView private constructor(
     
 
     
-    private fun addPoTokenEmitter(identifier: String, continuation: Continuation<String>) {
-        poTokenContinuations[identifier] = continuation
+    private fun addPoTokenEmitter(reqId: Int, continuation: Continuation<String>) {
+        poTokenContinuations[reqId] = continuation
     }
 
-    private fun popPoTokenContinuation(identifier: String): Continuation<String>? {
-        return poTokenContinuations.remove(identifier)
+    private fun popPoTokenContinuation(reqId: Int): Continuation<String>? {
+        return poTokenContinuations.remove(reqId)
     }
 
-    private fun popAllPoTokenContinuations(): Map<String, Continuation<String>> {
+    private fun popAllPoTokenContinuations(): Map<Int, Continuation<String>> {
         val result = poTokenContinuations.toMap()
         poTokenContinuations.clear()
         return result

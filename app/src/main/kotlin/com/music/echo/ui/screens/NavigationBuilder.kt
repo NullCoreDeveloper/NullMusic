@@ -46,6 +46,7 @@ import iad1tya.echo.music.ui.screens.settings.PlayerSettings
 import iad1tya.echo.music.ui.screens.settings.PrivacySettings
 import iad1tya.echo.music.ui.screens.settings.RomanizationSettings
 import iad1tya.echo.music.ui.screens.settings.SettingsScreen
+import iad1tya.echo.music.ui.screens.settings.EchoExtractorSettings
 import iad1tya.echo.music.ui.screens.settings.AccountSettingsScreen
 import iad1tya.echo.music.ui.screens.settings.StorageSettings
 import iad1tya.echo.music.ui.screens.settings.ThemeScreen
@@ -72,6 +73,18 @@ fun NavGraphBuilder.navigationBuilder(
 ) {
     composable(Screens.Home.route) {
         HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+    }
+
+    composable("settings/echo_extractor") {
+        EchoExtractorSettings(navController, scrollBehavior)
+    }
+
+    composable("settings/echo_extractor") {
+        EchoExtractorSettings(navController, scrollBehavior)
+    }
+
+    composable("settings/echo_extractor") {
+        EchoExtractorSettings(navController, scrollBehavior)
     }
 
     composable(Screens.Search.route) {

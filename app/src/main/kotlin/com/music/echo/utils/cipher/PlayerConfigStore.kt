@@ -31,7 +31,7 @@ object PlayerConfigStore {
         String(Base64.decode(encoded, Base64.DEFAULT), StandardCharsets.UTF_8)
     }
 
-    private const val REFRESH_TTL_MS = 6 * 60 * 60 * 1000L
+    private const val REFRESH_TTL_MS = 24 * 60 * 60 * 1000L
     private const val FORCE_REFRESH_COOLDOWN_MS = 5 * 60 * 1000L
 
     private const val CACHE_FILE = "configs_remote.json"
@@ -56,8 +56,13 @@ object PlayerConfigStore {
     @Volatile
     private var lastRejectionAttemptMs = 0L
 
-    internal fun forcedCooldownActive(now: Long) = now - lastForcedAttemptMs < FORCE_REFRESH_COOLDOWN_MS
-    internal fun rejectionCooldownActive(now: Long) = now - lastRejectionAttemptMs < FORCE_REFRESH_COOLDOWN_MS
+    internal fun forcedCooldownActive(now: Long) = withinWindow(now, lastForcedAttemptMs, FORCE_REFRESH_COOLDOWN_MS)
+    internal fun rejectionCooldownActive(now: Long) = withinWindow(now, lastRejectionAttemptMs, FORCE_REFRESH_COOLDOWN_MS)
+
+    private fun withinWindow(now: Long, previousMs: Long, ttl: Long): Boolean {
+        val elapsed = now - previousMs
+        return elapsed in 0..<ttl
+    }
 
     internal fun armForcedCooldownForTest(ms: Long) { lastForcedAttemptMs = ms }
     internal fun armRejectionCooldownForTest(ms: Long) { lastRejectionAttemptMs = ms }
@@ -156,6 +161,15 @@ object PlayerConfigStore {
         }
     }
 
+    suspend fun manualRefresh(): Boolean = withContext(Dispatchers.IO) {
+        refreshMutex.withLock {
+            val now = System.currentTimeMillis()
+            lastForcedAttemptMs = now
+            fetchAndApplyResetting { lastForcedAttemptMs = 0L }
+            lastAttemptReachedServer
+        }
+    }
+
     private fun fetchAndApplyResetting(resetCooldown: () -> Unit): Boolean {
         val changed = fetchAndApply()
         if (!lastAttemptReachedServer) resetCooldown()
@@ -164,7 +178,7 @@ object PlayerConfigStore {
 
     private suspend fun refreshIfStale() {
         val lastFetchMs = readMeta()?.second ?: 0L
-        if (System.currentTimeMillis() - lastFetchMs < REFRESH_TTL_MS) {
+        if (withinWindow(System.currentTimeMillis(), lastFetchMs, REFRESH_TTL_MS)) {
             Timber.tag(TAG).d("Remote configs fresh (fetched ${System.currentTimeMillis() - lastFetchMs} ms ago)")
             return
         }
@@ -284,6 +298,10 @@ object PlayerConfigStore {
     private fun cacheFile(): File? = cacheDir()?.let { File(it, CACHE_FILE) }
 
     private fun metaFile(): File? = cacheDir()?.let { File(it, META_FILE) }
+
+    fun getLastFetchTimeMs(): Long {
+        return readMeta()?.second ?: 0L
+    }
 
     private fun readMeta(): Pair<String, Long>? {
         return try {

@@ -18,7 +18,9 @@ if not BMC_TOKEN:
 API_URL = "https://developers.buymeacoffee.com/api/v1/supporters"
 
 headers = {
-    "Authorization": f"Bearer {BMC_TOKEN}"
+    "Authorization": f"Bearer {BMC_TOKEN}",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json"
 }
 
 total_raised = 0.0

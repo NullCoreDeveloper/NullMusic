@@ -30,7 +30,7 @@ android {
 
 
     defaultConfig {
-        applicationId = "iad1tya.echo.music"
+        applicationId = "com.nullcore.music"
         minSdk = 26
         targetSdk = 36
         versionCode = 519
@@ -236,8 +236,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 dependencies {
     // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
     "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
-    "gmsImplementation"("com.google.firebase:firebase-analytics")
-    "gmsImplementation"("com.google.firebase:firebase-crashlytics")
 
     // Google Drive Sync - GMS flavor only
     "gmsImplementation"(libs.play.services.auth)
@@ -318,7 +316,7 @@ dependencies {
     implementation(project(":shazamkit"))
     implementation(project(":artistvideo"))
     implementation(project(":applecanvas"))
-    implementation(project(":echomusiccanvas"))
+    implementation(project(":nullmusiccanvas"))
     implementation(project(":paxsenixlyrics"))
     implementation(project(":jiosaavn"))
     implementation(project(":unison"))

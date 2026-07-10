@@ -127,7 +127,7 @@ fun FundingProgressCard() {
                     ) {
                         Button(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://buymeacoffee.com/iad1tya"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/NullCoreDeveloper"))
                                 context.startActivity(intent)
                             },
                             modifier = Modifier.weight(1f),
@@ -139,7 +139,7 @@ fun FundingProgressCard() {
 
                         OutlinedButton(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://support.iad1tya.cyou"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://support.NullCoreDeveloper"))
                                 context.startActivity(intent)
                             },
                             modifier = Modifier.weight(1f),

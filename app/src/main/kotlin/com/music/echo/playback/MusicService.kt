@@ -81,6 +81,7 @@ import iad1tya.echo.music.constants.AudioQualityKey
 import iad1tya.echo.music.constants.AutoDownloadOnLikeKey
 import iad1tya.echo.music.constants.AutoLoadMoreKey
 import iad1tya.echo.music.constants.AutoSkipNextOnErrorKey
+import iad1tya.echo.music.constants.AutomixCrossfadeKey
 import iad1tya.echo.music.constants.CrossfadeDurationKey
 import iad1tya.echo.music.constants.CrossfadeEnabledKey
 import iad1tya.echo.music.constants.CrossfadeGaplessKey
@@ -154,6 +155,8 @@ import iad1tya.echo.music.lyrics.LyricsHelper
 import iad1tya.echo.music.models.PersistPlayerState
 import iad1tya.echo.music.models.PersistQueue
 import iad1tya.echo.music.models.toMediaMetadata
+import iad1tya.echo.music.db.entities.BeatInfoEntity
+import iad1tya.echo.music.playback.audio.BeatAnalyzer
 import iad1tya.echo.music.playback.audio.SilenceDetectorAudioProcessor
 import iad1tya.echo.music.playback.queues.EmptyQueue
 import iad1tya.echo.music.playback.queues.Queue
@@ -195,6 +198,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import timber.log.Timber
@@ -255,6 +259,67 @@ class MusicService :
     private var crossfadeDuration = 5000f
     private var crossfadeGapless = true
     private var crossfadeTriggerJob: Job? = null
+
+    private var automixEnabled = false
+    private var activeAutomixPlan: AutomixPlan? = null
+    private var automixBaseParams: PlaybackParameters = PlaybackParameters.DEFAULT
+    private val analysisDataSourceFactory by lazy { createDataSourceFactory() }
+    private val beatAnalysisJobs = java.util.Collections.synchronizedMap(mutableMapOf<String, BeatAnalysisHandle>())
+    private val immediateBeatAnalysisMutex = kotlinx.coroutines.sync.Mutex()
+    private val lookaheadBeatAnalysisMutex = kotlinx.coroutines.sync.Mutex()
+
+    private enum class BeatAnalysisPriority {
+        IMMEDIATE,
+        LOOKAHEAD,
+    }
+
+    private data class BeatAnalysisHandle(
+        val priority: BeatAnalysisPriority,
+        val job: Job,
+    )
+
+    private fun beatAnalysisTimeoutMs(priority: BeatAnalysisPriority): Long =
+        when (priority) {
+            BeatAnalysisPriority.IMMEDIATE -> 45_000L
+            BeatAnalysisPriority.LOOKAHEAD -> 25_000L
+        }
+
+    private data class AutomixPair(
+        val currentId: String,
+        val nextId: String,
+    )
+
+    /** Beat-aligned transition computed from cached BeatInfoEntity of both tracks. */
+    private data class AutomixPlan(
+        val currentId: String,
+        val nextId: String,
+        val triggerTimeMs: Long,
+        val incomingStartMs: Long,
+        val tempoRatio: Float,
+        /** DJ blend length: 16 beats of the outgoing track, clamped to sane bounds. */
+        val overlapMs: Long,
+    )
+
+    private data class AutomixPlanResult(
+        val plan: AutomixPlan?,
+        val pairAnalyzed: Boolean,
+    )
+
+    /** Live state of the automix engine, surfaced in the player debug overlay. */
+    data class AutomixDebugInfo(
+        val status: String,
+        val outBpm: Float? = null,
+        val outConfidence: Float? = null,
+        val outMixOutMs: Long? = null,
+        val inBpm: Float? = null,
+        val inConfidence: Float? = null,
+        val inMixInMs: Long? = null,
+        val triggerTimeMs: Long? = null,
+        val incomingStartMs: Long? = null,
+        val tempoRatio: Float? = null,
+    )
+
+    val automixDebugInfo = MutableStateFlow<AutomixDebugInfo?>(null)
 
     private val secondaryPlayerListener = object : Player.Listener {
         override fun onPlayerError(error: PlaybackException) {
@@ -338,6 +403,7 @@ class MusicService :
     private var secondaryPlayer: ExoPlayer? = null
     private var fadingPlayer: ExoPlayer? = null
     val isCrossfading = MutableStateFlow(false)
+    val isAutomixing = MutableStateFlow(false)
     private var crossfadeJob: Job? = null
 
     private lateinit var mediaSession: MediaLibrarySession
@@ -798,8 +864,33 @@ class MusicService :
             .distinctUntilChanged()
             .collect(scope) { (enabled, duration, gapless) ->
                 crossfadeEnabled = enabled
-                crossfadeDuration = duration * 1000f 
+                crossfadeDuration = duration * 1000f
                 crossfadeGapless = gapless
+                if (enabled) {
+                    prepareAutomixForCurrentPair()
+                    scheduleCrossfade()
+                } else {
+                    crossfadeTriggerJob?.cancel()
+                    crossfadeTriggerJob = null
+                    automixDebugInfo.value = null
+                }
+            }
+
+        dataStore.data
+            .map { it[AutomixCrossfadeKey] ?: false }
+            .distinctUntilChanged()
+            .collect(scope) {
+                automixEnabled = it
+                if (it) {
+                    prepareAutomixForCurrentPair()
+                    scheduleCrossfade()
+                } else {
+                    crossfadeTriggerJob?.cancel()
+                    crossfadeTriggerJob = null
+                    activeAutomixPlan = null
+                    automixDebugInfo.value = null
+                    scheduleCrossfade()
+                }
             }
 
 
@@ -1792,7 +1883,10 @@ class MusicService :
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        
+        // Stale plan belongs to the previous track; planner re-arms when the new one is READY.
+        if (!isCrossfading.value) automixDebugInfo.value = null
+        prepareAutomixForCurrentPair()
+
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
             val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
             if (repeatMode == REPEAT_MODE_ONE &&
@@ -1901,6 +1995,7 @@ class MusicService :
                 Timber.tag(TAG).d("Playback successful for $mediaId, reset retry count")
             }
             scheduleCrossfade()
+            prepareAutomixForCurrentPair()
         }
 
         if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
@@ -1937,9 +2032,13 @@ class MusicService :
     ) {
         if (events.containsAny(
                 Player.EVENT_PLAYBACK_STATE_CHANGED,
-                Player.EVENT_PLAY_WHEN_READY_CHANGED
+                Player.EVENT_PLAY_WHEN_READY_CHANGED,
+                Player.EVENT_MEDIA_ITEM_TRANSITION,
+                EVENT_TIMELINE_CHANGED,
+                EVENT_POSITION_DISCONTINUITY
             )
         ) {
+            prepareAutomixForCurrentPair()
             scheduleCrossfade()
             val isBufferingOrReady =
                 player.playbackState == Player.STATE_BUFFERING || player.playbackState == Player.STATE_READY
@@ -3183,8 +3282,38 @@ class MusicService :
         reason: Int
     ) {
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+            prepareAutomixForCurrentPair()
             scheduleCrossfade()
         }
+    }
+
+    private fun currentAutomixPair(): AutomixPair? {
+        val currentId = player.currentMediaItem?.mediaId ?: return null
+        val repeatOne = runCatching {
+            dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) == REPEAT_MODE_ONE
+        }.getOrDefault(player.repeatMode == REPEAT_MODE_ONE)
+        val nextId = if (repeatOne) {
+            currentId
+        } else {
+            val nextIndex = player.nextMediaItemIndex
+            if (nextIndex == C.INDEX_UNSET) return null
+            player.getMediaItemAt(nextIndex).mediaId
+        }
+        return AutomixPair(currentId, nextId)
+    }
+
+    private fun prepareAutomixForCurrentPair() {
+        if (!automixEnabled || !crossfadeEnabled || isCrossfading.value) return
+        val pair = currentAutomixPair() ?: return
+        maybeAnalyzeBeat(pair.currentId, BeatAnalysisPriority.IMMEDIATE)
+        if (pair.nextId != pair.currentId) {
+            maybeAnalyzeBeat(pair.nextId, BeatAnalysisPriority.IMMEDIATE)
+        }
+    }
+
+    private fun isAutomixPlanCurrent(plan: AutomixPlan): Boolean {
+        val pair = currentAutomixPair() ?: return false
+        return pair.currentId == plan.currentId && pair.nextId == plan.nextId
     }
 
     private fun scheduleCrossfade() {
@@ -3194,17 +3323,271 @@ class MusicService :
         if (crossfadeGapless && isNextItemGapless()) return
         if (!player.hasNextMediaItem() && player.repeatMode != REPEAT_MODE_ONE) return
 
-        val triggerTime = player.duration - crossfadeDuration.toLong()
-        val delayMs = triggerTime - player.currentPosition
-        if (delayMs <= 0) return
+        val baseTriggerTime = player.duration - crossfadeDuration.toLong()
+        if (baseTriggerTime - player.currentPosition <= 0) return
 
         val targetMediaId = player.currentMediaItem?.mediaId
+        val trackDuration = player.duration
 
         crossfadeTriggerJob = scope.launch {
-            delay(delayMs)
-            if (isActive && player.isPlaying && player.currentMediaItem?.mediaId == targetMediaId && !sleepTimer.pauseWhenSongEnd) {
-                startCrossfade()
+            if (!automixEnabled) automixDebugInfo.value = null
+            // Plan first: it enqueues analysis for current+next, which must not wait
+            // behind slower far-queue lookahead fetches.
+            val planResult = if (automixEnabled) {
+                computeAutomixPlan(baseTriggerTime, trackDuration)
+            } else {
+                AutomixPlanResult(plan = null, pairAnalyzed = false)
             }
+            val plan = planResult.plan
+            if (automixEnabled && planResult.pairAnalyzed) analyzeUpcomingTracks()
+            val triggerTime = plan?.triggerTimeMs ?: baseTriggerTime
+            if (triggerTime - player.currentPosition <= 0) return@launch
+
+            // Poll playback position instead of a wall-clock delay: position freezes on
+            // pause, so the trigger can't misfire while paused and get lost.
+            while (isActive) {
+                if (player.currentMediaItem?.mediaId != targetMediaId) return@launch
+                val remaining = triggerTime - player.currentPosition
+                if (remaining <= 0) break
+                delay(minOf(remaining, 250L))
+            }
+            if (isActive && player.isPlaying && player.currentMediaItem?.mediaId == targetMediaId && !sleepTimer.pauseWhenSongEnd) {
+                if (plan != null && !isAutomixPlanCurrent(plan)) {
+                    scheduleCrossfade()
+                    return@launch
+                }
+                startCrossfade(plan)
+            }
+        }
+    }
+
+    /**
+     * Builds a beat-aligned transition from cached beat analysis of the outgoing and
+     * incoming tracks. Returns null (plain crossfade fallback) when either track lacks
+     * usable analysis; kicks off lazy analysis in that case so a later transition can align.
+     */
+    private suspend fun computeAutomixPlan(baseTriggerTime: Long, trackDuration: Long): AutomixPlanResult {
+        val pair = currentAutomixPair() ?: return AutomixPlanResult(plan = null, pairAnalyzed = false)
+        val currentId = pair.currentId
+        val nextId = pair.nextId
+
+        val (outBeat, inBeat) = withContext(Dispatchers.IO) {
+            database.beatInfo(currentId) to database.beatInfo(nextId)
+        }
+        if (outBeat == null) maybeAnalyzeBeat(currentId, BeatAnalysisPriority.IMMEDIATE)
+        if (inBeat == null && nextId != currentId) maybeAnalyzeBeat(nextId, BeatAnalysisPriority.IMMEDIATE)
+        val partialDebug = AutomixDebugInfo(
+            status = "",
+            outBpm = outBeat?.bpm, outConfidence = outBeat?.confidence, outMixOutMs = outBeat?.mixOutPointMs,
+            inBpm = inBeat?.bpm, inConfidence = inBeat?.confidence, inMixInMs = inBeat?.mixInPointMs,
+        )
+        if (outBeat == null || inBeat == null) {
+            Timber.tag(TAG).d(
+                "Automix fallback: beat info missing (current=%s next=%s)",
+                outBeat != null, inBeat != null
+            )
+            automixDebugInfo.value = partialDebug.copy(
+                status = "fallback: analysis pending (" +
+                    (if (outBeat == null) "current" else "") +
+                    (if (outBeat == null && inBeat == null) "+" else "") +
+                    (if (inBeat == null) "next" else "") + ")"
+            )
+            return AutomixPlanResult(plan = null, pairAnalyzed = false)
+        }
+        if (outBeat.confidence < 0.3f || inBeat.confidence < 0.3f || outBeat.bpm <= 0f || inBeat.bpm <= 0f) {
+            Timber.tag(TAG).d(
+                "Automix fallback: low confidence (out=%.2f/%.0fbpm in=%.2f/%.0fbpm)",
+                outBeat.confidence, outBeat.bpm, inBeat.confidence, inBeat.bpm
+            )
+            automixDebugInfo.value = partialDebug.copy(status = "fallback: low confidence")
+            return AutomixPlanResult(plan = null, pairAnalyzed = true)
+        }
+
+        val periodMs = (60_000f / outBeat.bpm).toDouble()
+
+        // DJ blend: 16 beats of the outgoing track (4 bars), 6-16s bounds.
+        val overlapMs = (16 * periodMs).toLong().coerceIn(6_000L, 16_000L)
+
+        // Dynamic mix-out: start the transition where the song's body ends (outro begins)
+        // rather than a fixed distance from the end. Sentinel <= 0 means "no outro found".
+        val latestTrigger = trackDuration - overlapMs
+        val mixOut = outBeat.mixOutPointMs?.takeIf { it > 0 }
+        val effectiveTrigger = mixOut?.coerceAtMost(latestTrigger) ?: latestTrigger
+
+        // Snap the fade start onto an 8-beat phrase boundary of the outgoing track's grid.
+        // Anchor past the current position so re-planning late (pause/seek near the end)
+        // still lands on the next musical boundary instead of giving up.
+        val phraseMs = periodMs * 8
+        val anchor = maxOf(effectiveTrigger, player.currentPosition + 1000)
+        val k = ((anchor - outBeat.firstBeatOffsetMs) / phraseMs).toLong()
+        var triggerTime = (outBeat.firstBeatOffsetMs + k * phraseMs).toLong()
+        if (triggerTime < anchor) triggerTime = (outBeat.firstBeatOffsetMs + (k + 1) * phraseMs).toLong()
+        if (triggerTime >= trackDuration - 3000) {
+            Timber.tag(TAG).d("Automix fallback: trigger %d out of range (pos=%d dur=%d)", triggerTime, player.currentPosition, trackDuration)
+            automixDebugInfo.value = partialDebug.copy(status = "fallback: trigger out of range")
+            return AutomixPlanResult(plan = null, pairAnalyzed = true)
+        }
+
+        // Fold octave errors, then cap pitch-preserving stretch at ±8%.
+        var tempoRatio = outBeat.bpm / inBeat.bpm
+        while (tempoRatio > 1.5f) tempoRatio /= 2f
+        while (tempoRatio < 0.667f) tempoRatio *= 2f
+        if (tempoRatio !in 0.92f..1.08f) tempoRatio = 1f
+
+        // Dynamic mix-in: skip the incoming track's intro, snapped onto its own 8-beat grid.
+        val inPeriodMs = (60_000f / inBeat.bpm).toDouble()
+        val rawStart = inBeat.mixInPointMs?.takeIf { it > 0 } ?: inBeat.firstBeatOffsetMs
+        val inPhraseMs = inPeriodMs * 8
+        val inK = kotlin.math.ceil((rawStart - inBeat.firstBeatOffsetMs) / inPhraseMs).toLong().coerceAtLeast(0)
+        val incomingStart = (inBeat.firstBeatOffsetMs + inK * inPhraseMs).toLong()
+
+        val plan = AutomixPlan(
+            currentId = currentId,
+            nextId = nextId,
+            triggerTimeMs = triggerTime,
+            incomingStartMs = incomingStart,
+            tempoRatio = tempoRatio,
+            overlapMs = overlapMs,
+        )
+        Timber.tag(TAG).d(
+            "Automix plan: trigger=%dms incomingStart=%dms ratio=%.3f overlap=%dms",
+            plan.triggerTimeMs, plan.incomingStartMs, plan.tempoRatio, plan.overlapMs
+        )
+        automixDebugInfo.value = partialDebug.copy(
+            status = "plan ready",
+            triggerTimeMs = plan.triggerTimeMs,
+            incomingStartMs = plan.incomingStartMs,
+            tempoRatio = plan.tempoRatio,
+        )
+        return AutomixPlanResult(plan = plan, pairAnalyzed = true)
+    }
+
+    /**
+     * Queue lookahead: analyze the next few upcoming tracks while the current one plays,
+     * so beat data is ready by the time their transition is planned.
+     */
+    private fun analyzeUpcomingTracks() {
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return
+        // Skip the immediate next item: the transition planner already enqueues it
+        // (with priority over this far-queue lookahead).
+        var index = timeline.getNextWindowIndex(
+            player.currentMediaItemIndex, REPEAT_MODE_OFF, player.shuffleModeEnabled
+        )
+        if (index == C.INDEX_UNSET) return
+        repeat(2) {
+            index = timeline.getNextWindowIndex(index, REPEAT_MODE_OFF, player.shuffleModeEnabled)
+            if (index == C.INDEX_UNSET) return
+            maybeAnalyzeBeat(player.getMediaItemAt(index).mediaId, BeatAnalysisPriority.LOOKAHEAD)
+        }
+    }
+
+    /**
+     * Lazy per-track beat analysis; fetches audio through the playback data-source chain
+     * (cache-first, network otherwise) and stores the result permanently. Serialized so
+     * lookahead doesn't stack up parallel downloads.
+     */
+    private fun maybeAnalyzeBeat(
+        mediaId: String,
+        priority: BeatAnalysisPriority = BeatAnalysisPriority.IMMEDIATE,
+    ) {
+        synchronized(beatAnalysisJobs) {
+            val existing = beatAnalysisJobs[mediaId]
+            if (existing != null) {
+                if (priority == BeatAnalysisPriority.IMMEDIATE &&
+                    existing.priority == BeatAnalysisPriority.LOOKAHEAD
+                ) {
+                    Timber.tag(TAG).d("Beat analysis priority upgrade for %s", mediaId)
+                    existing.job.cancel()
+                    beatAnalysisJobs.remove(mediaId)
+                } else {
+                    return
+                }
+            }
+
+            val job = scope.launch(Dispatchers.IO) {
+                val mutex = when (priority) {
+                    BeatAnalysisPriority.IMMEDIATE -> immediateBeatAnalysisMutex
+                    BeatAnalysisPriority.LOOKAHEAD -> lookaheadBeatAnalysisMutex
+                }
+                mutex.withLock {
+                    try {
+                        runBeatAnalysis(mediaId, priority)
+                    } catch (e: kotlinx.coroutines.CancellationException) {
+                        Timber.tag(TAG).d("Beat analysis cancelled for %s (%s)", mediaId, priority)
+                        throw e
+                    } catch (e: Exception) {
+                        Timber.tag(TAG).w(e, "Beat analysis failed for $mediaId")
+                    } finally {
+                        synchronized(beatAnalysisJobs) {
+                            val current = beatAnalysisJobs[mediaId]
+                            if (current?.job == coroutineContext[Job]) {
+                                beatAnalysisJobs.remove(mediaId)
+                            }
+                        }
+                    }
+                }
+            }
+            beatAnalysisJobs[mediaId] = BeatAnalysisHandle(priority, job)
+        }
+    }
+
+    private suspend fun runBeatAnalysis(mediaId: String, priority: BeatAnalysisPriority) {
+        val existing = database.beatInfo(mediaId)
+        // Skip when analyzed with mix points (null mixOut = pre-mix-point row, rescan once).
+        if (existing != null && !(existing.bpm > 0f && existing.mixOutPointMs == null)) return
+        Timber.tag(TAG).d("Beat analysis starting for %s (%s)", mediaId, priority)
+
+        val result: BeatAnalyzer.Result?
+        val dataComplete: Boolean
+        val startedAt = android.os.SystemClock.elapsedRealtime()
+        val analysisContext = coroutineContext
+        fun timedOutOrCancelled(): Boolean =
+            !analysisContext.isActive ||
+                android.os.SystemClock.elapsedRealtime() - startedAt > beatAnalysisTimeoutMs(priority)
+        if (mediaId.isLocalMediaId()) {
+            result = BeatAnalyzer.analyzeUri(
+                this@MusicService,
+                android.net.Uri.parse(mediaId),
+                shouldCancel = ::timedOutOrCancelled,
+            )
+            dataComplete = true
+        } else {
+            val fetched = BeatAnalyzer.analyzeStream(
+                analysisDataSourceFactory,
+                mediaId,
+                cacheDir,
+                shouldCancel = { !analysisContext.isActive || timedOutOrCancelled() },
+            )
+                ?: run {
+                    Timber.tag(TAG).d("Beat analysis skipped for %s: fetch failed", mediaId)
+                    return // retry on a later transition
+                }
+            result = fetched.result
+            dataComplete = fetched.complete
+        }
+        Timber.tag(TAG).d(
+            "Beat analysis done for %s: %s", mediaId,
+            result?.let { "bpm=%.1f conf=%.2f mixIn=%s mixOut=%s".format(it.bpm, it.confidence, it.mixInPointMs, it.mixOutPointMs) } ?: "failed (complete=$dataComplete)"
+        )
+        if (result == null && !dataComplete) return // partial data; retry when fully cached
+
+        val entity = result?.let {
+            BeatInfoEntity(
+                mediaId, it.bpm, it.firstBeatOffsetMs, it.confidence,
+                mixInPointMs = it.mixInPointMs ?: -1L, // -1 sentinel: scanned, none found
+                mixOutPointMs = it.mixOutPointMs ?: -1L,
+            )
+        } ?: BeatInfoEntity(mediaId, 0f, 0L, 0f, mixInPointMs = -1L, mixOutPointMs = -1L)
+        withContext(Dispatchers.IO) { database.upsert(entity) }
+
+        // Fresh data may unlock a beat-aligned plan for the ongoing transition:
+        // re-arm the scheduler if this track is the current or next item.
+        withContext(Dispatchers.Main) {
+            val currentId = player.currentMediaItem?.mediaId
+            val nextIndex = player.nextMediaItemIndex
+            val nextId = if (nextIndex != C.INDEX_UNSET) player.getMediaItemAt(nextIndex).mediaId else null
+            if (mediaId == currentId || mediaId == nextId) scheduleCrossfade()
         }
     }
 
@@ -3216,15 +3599,15 @@ class MusicService :
         return current.albumTitle != null && current.albumTitle == next.albumTitle
     }
 
-    private fun startCrossfade() {
+    private fun startCrossfade(plan: AutomixPlan? = null) {
         if (isCrossfading.value) return
 
-        
-        
+
+
         val savedRepeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
         val savedShuffleEnabled = runBlocking { dataStore.get(ShuffleModeKey, false) }
 
-        
+
         val targetIndex = if (savedRepeatMode == REPEAT_MODE_ONE) {
             player.currentMediaItemIndex
         } else {
@@ -3232,23 +3615,39 @@ class MusicService :
         }
         if (targetIndex == C.INDEX_UNSET) return
 
+        activeAutomixPlan = plan
+
         secondaryPlayer = createExoPlayer()
         val secPlayer = secondaryPlayer!!
         secPlayer.addListener(secondaryPlayerListener)
 
         val itemCount = player.mediaItemCount
         val items = mutableListOf<MediaItem>()
-        
+
         for (i in 0 until itemCount) {
             items.add(player.getMediaItemAt(i))
         }
 
         secPlayer.setMediaItems(items)
-        
-        secPlayer.seekTo(targetIndex, 0)
+
+        // Beat-aligned: start the incoming track on its first downbeat and
+        // tempo-match it to the outgoing track for the overlap window. User tempo/pitch
+        // from PlayerMenu is preserved by scaling on top of the current parameters.
+        secPlayer.seekTo(targetIndex, plan?.incomingStartMs ?: 0)
+        if (plan != null) {
+            automixBaseParams = try { player.playbackParameters } catch (e: Exception) { PlaybackParameters.DEFAULT }
+            if (plan.tempoRatio != 1f) {
+                secPlayer.playbackParameters = PlaybackParameters(
+                    automixBaseParams.speed * plan.tempoRatio,
+                    automixBaseParams.pitch,
+                )
+            } else if (automixBaseParams != PlaybackParameters.DEFAULT) {
+                secPlayer.playbackParameters = automixBaseParams
+            }
+        }
         secPlayer.volume = 0f
 
-        
+
         secPlayer.repeatMode = savedRepeatMode
         secPlayer.shuffleModeEnabled = savedShuffleEnabled
 
@@ -3266,6 +3665,10 @@ class MusicService :
 
     private fun performCrossfadeSwap() {
         isCrossfading.value = true
+        isAutomixing.value = activeAutomixPlan != null
+        if (activeAutomixPlan != null) {
+            automixDebugInfo.value = automixDebugInfo.value?.copy(status = "automixing now")
+        }
         val nextPlayer = secondaryPlayer ?: return
         val currentPlayer = player
 
@@ -3309,10 +3712,16 @@ class MusicService :
         }
 
         crossfadeJob = scope.launch {
-            val duration = crossfadeDuration.toLong()
-            val steps = 20
+            val djPlan = activeAutomixPlan
+            val duration = djPlan?.overlapMs ?: crossfadeDuration.toLong()
+            val steps = (duration / 100L).toInt().coerceIn(20, 150)
             val stepTime = duration / steps
             val startVolume = try { fadingPlayer?.volume ?: 1f } catch (e: Exception) { 1f }
+
+            fun smoothstep(edge0: Float, edge1: Float, x: Float): Float {
+                val t = ((x - edge0) / (edge1 - edge0)).coerceIn(0f, 1f)
+                return t * t * (3f - 2f * t)
+            }
 
             try {
                 for (i in 0..steps) {
@@ -3323,8 +3732,17 @@ class MusicService :
                     }
 
                     val progress = i / steps.toFloat()
-                    val fadeIn = 1.0f - (1.0f - progress) * (1.0f - progress)
-                    val fadeOut = (1.0f - progress) * (1.0f - progress)
+                    val fadeIn: Float
+                    val fadeOut: Float
+                    if (djPlan != null) {
+                        // DJ blend: incoming rises to full by ~55%, outgoing holds until
+                        // ~45% then drops — both near full mid-blend, beat-locked.
+                        fadeIn = smoothstep(0f, 0.55f, progress)
+                        fadeOut = 1f - smoothstep(0.45f, 1f, progress)
+                    } else {
+                        fadeIn = 1.0f - (1.0f - progress) * (1.0f - progress)
+                        fadeOut = (1.0f - progress) * (1.0f - progress)
+                    }
 
                     try {
                         player.volume = startVolume * fadeIn
@@ -3337,8 +3755,39 @@ class MusicService :
                 try {
                     fadingPlayer?.volume = 0f
                     player.volume = startVolume
-                } catch (e: Exception) { }
+                } catch (e: Exception) {
+                    Timber.tag(TAG).d(e, "Crossfade volume reset skipped, player likely released")
+                }
                 cleanupCrossfade()
+                rampTempoToNormal()
+            }
+        }
+    }
+
+    /** After a tempo-matched overlap, ease the (now primary) player back to the base speed. */
+    private fun rampTempoToNormal() {
+        val plan = activeAutomixPlan ?: return
+        activeAutomixPlan = null
+        if (plan.tempoRatio == 1f) return
+        val base = automixBaseParams
+        scope.launch {
+            val steps = 10
+            val startSpeed = base.speed * plan.tempoRatio
+            try {
+                for (i in 1..steps) {
+                    if (!isActive) break
+                    val speed = startSpeed + (base.speed - startSpeed) * i / steps
+                    try {
+                        player.playbackParameters = PlaybackParameters(speed, base.pitch)
+                    } catch (e: Exception) { break }
+                    delay(200)
+                }
+            } finally {
+                try {
+                    player.playbackParameters = base
+                } catch (e: Exception) {
+                    Timber.tag(TAG).d(e, "Tempo ramp-back skipped, player likely released")
+                }
             }
         }
     }
@@ -3349,6 +3798,7 @@ class MusicService :
         fadingPlayer?.release()
         fadingPlayer = null
         isCrossfading.value = false
+        isAutomixing.value = false
         sleepTimer.notifySongTransition()
     }
 

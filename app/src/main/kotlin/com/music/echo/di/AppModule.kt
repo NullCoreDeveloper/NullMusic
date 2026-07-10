@@ -68,12 +68,14 @@ object AppModule {
             iad1tya.echo.music.db.MIGRATION_22_24,
             iad1tya.echo.music.db.MIGRATION_24_25,
             iad1tya.echo.music.db.MIGRATION_27_28,
+            iad1tya.echo.music.db.MIGRATION_28_29,
             iad1tya.echo.music.db.MIGRATION_29_30,
             iad1tya.echo.music.db.MIGRATION_36_37,
             iad1tya.echo.music.db.MIGRATION_37_38,
             iad1tya.echo.music.db.MIGRATION_38_39,
+            iad1tya.echo.music.db.MIGRATION_39_40,
+            iad1tya.echo.music.db.MIGRATION_40_41,
         )
-
         .setJournalMode(androidx.room.RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
         .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
         .setQueryExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))

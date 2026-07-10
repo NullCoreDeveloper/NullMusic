@@ -22,6 +22,7 @@ import iad1tya.echo.music.db.daos.SpeedDialDao
 import iad1tya.echo.music.db.entities.AlbumArtistMap
 import iad1tya.echo.music.db.entities.AlbumEntity
 import iad1tya.echo.music.db.entities.ArtistEntity
+import iad1tya.echo.music.db.entities.BeatInfoEntity
 import iad1tya.echo.music.db.entities.BrainActivityLogEntity
 import iad1tya.echo.music.db.entities.Event
 import iad1tya.echo.music.db.entities.FormatEntity
@@ -113,14 +114,15 @@ class MusicDatabase(
         SpeedDialItem::class,
         BrainActivityLogEntity::class,
         PlayEventEntity::class,
-        TasteProfileEntity::class
+        TasteProfileEntity::class,
+        BeatInfoEntity::class
     ],
     views = [
         SortedSongArtistMap::class,
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 39,
+    version = 41,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -149,7 +151,6 @@ class MusicDatabase(
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27),
         AutoMigration(from = 27, to = 28),
-        
         AutoMigration(from = 30, to = 31),
         AutoMigration(from = 31, to = 32),
         AutoMigration(from = 32, to = 33),
@@ -171,37 +172,39 @@ abstract class InternalDatabase : RoomDatabase() {
         fun newInstance(context: Context): MusicDatabase =
             MusicDatabase(
                 delegate =
-                Room
-                    .databaseBuilder(context, InternalDatabase::class.java, DB_NAME)
-                    .addMigrations(
-                        MIGRATION_1_2,
-                        MIGRATION_21_24,
-                        MIGRATION_22_24,
-                        MIGRATION_24_25,
-                        MIGRATION_27_28,
-                        MIGRATION_28_29,
-                        MIGRATION_29_30,
-                        MIGRATION_36_37,
-                        MIGRATION_37_38,
-                        MIGRATION_38_39,
-                    )
-                    .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
-                    .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
-                    .setQueryExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
-                    .addCallback(object : RoomDatabase.Callback() {
-                        override fun onOpen(db: SupportSQLiteDatabase) {
-                            super.onOpen(db)
-                            try {
-                                db.query("PRAGMA busy_timeout = 60000").close()
-                                db.query("PRAGMA cache_size = -16000").close()
-                                db.query("PRAGMA wal_autocheckpoint = 1000").close()
-                                db.query("PRAGMA synchronous = NORMAL").close()
-                            } catch (e: Exception) {
-                                Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
+                    Room
+                        .databaseBuilder(context, InternalDatabase::class.java, DB_NAME)
+                        .addMigrations(
+                            MIGRATION_1_2,
+                            MIGRATION_21_24,
+                            MIGRATION_22_24,
+                            MIGRATION_24_25,
+                            MIGRATION_27_28,
+                            MIGRATION_28_29,
+                            MIGRATION_29_30,
+                            MIGRATION_36_37,
+                            MIGRATION_37_38,
+                            MIGRATION_38_39,
+                            MIGRATION_39_40,
+                            MIGRATION_40_41,
+                        )
+                        .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
+                        .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
+                        .setQueryExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
+                        .addCallback(object : RoomDatabase.Callback() {
+                            override fun onOpen(db: SupportSQLiteDatabase) {
+                                super.onOpen(db)
+                                try {
+                                    db.query("PRAGMA busy_timeout = 60000").close()
+                                    db.query("PRAGMA cache_size = -16000").close()
+                                    db.query("PRAGMA wal_autocheckpoint = 1000").close()
+                                    db.query("PRAGMA synchronous = NORMAL").close()
+                                } catch (e: Exception) {
+                                    Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
+                                }
                             }
-                        }
-                    })
-                    .build(),
+                        })
+                        .build(),
             )
     }
 }
@@ -417,9 +420,9 @@ val MIGRATION_1_2 =
 val MIGRATION_21_24 =
     object : Migration(21, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            
-            
-            
+
+
+
             try {
                 db.execSQL("ALTER TABLE song ADD COLUMN libraryAddToken TEXT DEFAULT ''")
             } catch (e: Exception) {
@@ -441,7 +444,7 @@ val MIGRATION_21_24 =
                 Timber.tag("Migration").w("Column isDownloaded may already exist")
             }
 
-            
+
             var hasIsUploaded = false
             db.query("PRAGMA table_info('song')").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -453,7 +456,7 @@ val MIGRATION_21_24 =
                     }
                 }
             }
-            
+
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
@@ -463,7 +466,7 @@ val MIGRATION_21_24 =
 val MIGRATION_22_24 =
     object : Migration(22, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            
+
             var hasIsUploaded = false
             db.query("PRAGMA table_info('song')").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -475,7 +478,7 @@ val MIGRATION_22_24 =
                     }
                 }
             }
-            
+
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
@@ -559,13 +562,13 @@ class Migration11To12 : AutoMigrationSpec {
                     table = "album",
                     conflictAlgorithm = SQLiteDatabase.CONFLICT_IGNORE,
                     values =
-                    contentValuesOf(
-                        "id" to albumId,
-                        "title" to albumName,
-                        "songCount" to 0,
-                        "duration" to 0,
-                        "lastUpdateTime" to 0,
-                    ),
+                        contentValuesOf(
+                            "id" to albumId,
+                            "title" to albumName,
+                            "songCount" to 0,
+                            "duration" to 0,
+                            "lastUpdateTime" to 0,
+                        ),
                 )
             }
         }
@@ -648,7 +651,7 @@ class Migration21To22 : AutoMigrationSpec {
 
 class Migration22To23 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
-        
+
     }
 }
 
@@ -675,7 +678,7 @@ class Migration23To24: AutoMigrationSpec {
 val MIGRATION_24_25 =
     object : Migration(24, 25) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            
+
             var columnExists = false
             db.query("PRAGMA table_info(format)").use { cursor ->
                 val nameIndex = cursor.getColumnIndex("name")
@@ -688,7 +691,7 @@ val MIGRATION_24_25 =
             }
 
             if (!columnExists) {
-                
+
                 db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
             }
         }
@@ -807,7 +810,7 @@ val MIGRATION_27_28 =
             db.execSQL("ALTER TABLE `_new_album` RENAME TO `album`")
             db.execSQL("CREATE TABLE IF NOT EXISTS `_new_playlist` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `browseId` TEXT, `createdAt` INTEGER, `lastUpdateTime` INTEGER, `isEditable` INTEGER NOT NULL DEFAULT true, `bookmarkedAt` INTEGER, `remoteSongCount` INTEGER, `playEndpointParams` TEXT, `thumbnailUrl` TEXT, `shuffleEndpointParams` TEXT, `radioEndpointParams` TEXT, `isLocal` INTEGER NOT NULL DEFAULT false, `isAutoSync` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))")
             db.execSQL("INSERT INTO `_new_playlist` (`id`,`name`,`browseId`,`createdAt`,`lastUpdateTime`,`isEditable`,`bookmarkedAt`,`remoteSongCount`,`playEndpointParams`,`thumbnailUrl`,`shuffleEndpointParams`,`radioEndpointParams`,`isLocal`) SELECT `id`,`name`,`browseId`,`createdAt`,`lastUpdateTime`,`isEditable`,`bookmarkedAt`,`remoteSongCount`,`playEndpointParams`,`thumbnailUrl`,`shuffleEndpointParams`,`radioEndpointParams`,`isLocal` FROM `playlist`")
-            
+
             db.execSQL("UPDATE `_new_playlist` SET `isAutoSync` = 0")
             db.execSQL("DROP TABLE `playlist`")
             db.execSQL("ALTER TABLE `_new_playlist` RENAME TO `playlist`")
@@ -817,24 +820,21 @@ val MIGRATION_27_28 =
         }
     }
 
-val MIGRATION_28_29 =
-    object : Migration(28, 29) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-            var columnExists = false
-            db.query("PRAGMA table_info(playlist)").use { cursor ->
-                val nameIndex = cursor.getColumnIndex("name")
-                while (cursor.moveToNext()) {
-                    if (nameIndex >= 0 && cursor.getString(nameIndex) == "isAutoSync") {
-                        columnExists = true
-                        break
-                    }
-                }
-            }
-            if (!columnExists) {
-                db.execSQL("ALTER TABLE playlist ADD COLUMN isAutoSync INTEGER NOT NULL DEFAULT 0")
-            }
+val MIGRATION_28_29 = object : Migration(28, 29) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("DROP VIEW IF EXISTS sorted_song_artist_map")
+        db.execSQL("DROP VIEW IF EXISTS sorted_song_album_map")
+        db.execSQL("DROP VIEW IF EXISTS playlist_song_map_preview")
+
+        if (!hasColumn(db, "playlist", "isAutoSync")) {
+            db.execSQL("ALTER TABLE `playlist` ADD COLUMN `isAutoSync` INTEGER NOT NULL DEFAULT false")
         }
+
+        db.execSQL("CREATE VIEW `sorted_song_artist_map` AS SELECT * FROM song_artist_map ORDER BY position")
+        db.execSQL("CREATE VIEW `sorted_song_album_map` AS SELECT * FROM song_album_map ORDER BY `index`")
+        db.execSQL("CREATE VIEW `playlist_song_map_preview` AS SELECT * FROM playlist_song_map WHERE position <= 3 ORDER BY position")
     }
+}
 
 val MIGRATION_36_37 =
     object : Migration(36, 37) {
@@ -886,5 +886,31 @@ val MIGRATION_38_39 =
             if (!columnExists) {
                 db.execSQL("ALTER TABLE format ADD COLUMN perceptualLoudnessDb REAL DEFAULT NULL")
             }
+        }
+    }
+
+val MIGRATION_39_40 =
+    object : Migration(39, 40) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `beat_info` (
+                    `songId` TEXT NOT NULL,
+                    `bpm` REAL NOT NULL,
+                    `firstBeatOffsetMs` INTEGER NOT NULL,
+                    `confidence` REAL NOT NULL,
+                    `analyzedAt` INTEGER NOT NULL,
+                    PRIMARY KEY(`songId`)
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
+val MIGRATION_40_41 =
+    object : Migration(40, 41) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE beat_info ADD COLUMN mixInPointMs INTEGER DEFAULT NULL")
+            db.execSQL("ALTER TABLE beat_info ADD COLUMN mixOutPointMs INTEGER DEFAULT NULL")
         }
     }

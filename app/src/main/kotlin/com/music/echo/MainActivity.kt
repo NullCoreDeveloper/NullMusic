@@ -6,6 +6,9 @@ import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.ui.screens.settings.RingtoneViewModel
 import iad1tya.echo.music.ui.component.RingtoneTrimmerDialog
 import iad1tya.echo.music.ui.component.RingtoneProgressDialog
+import iad1tya.echo.music.ui.component.AppFloatingNavBar
+import iad1tya.echo.music.ui.component.floatingtabbar.rememberFloatingTabBarScrollConnection
+import iad1tya.echo.music.constants.UseFloatingNavBarKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.CompositionLocalProvider
@@ -172,6 +175,8 @@ import iad1tya.echo.music.constants.SYSTEM_DEFAULT
 import iad1tya.echo.music.constants.SelectedThemeColorKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
+import iad1tya.echo.music.constants.*
+import iad1tya.echo.music.ui.component.shimmer.getShimmerTheme
 import iad1tya.echo.music.db.MusicDatabase
 import iad1tya.echo.music.db.entities.SearchHistory
 import iad1tya.echo.music.extensions.toEnum
@@ -181,14 +186,9 @@ import iad1tya.echo.music.playback.MusicService
 import iad1tya.echo.music.playback.MusicService.MusicBinder
 import iad1tya.echo.music.playback.PlayerConnection
 import iad1tya.echo.music.playback.queues.YouTubeQueue
-import iad1tya.echo.music.ui.component.AppNavigationRail
-import iad1tya.echo.music.ui.component.BottomSheetMenu
-import iad1tya.echo.music.ui.component.BottomSheetPage
-import iad1tya.echo.music.ui.component.FloatingNavigationToolbar
-import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
-import iad1tya.echo.music.ui.component.LocalMenuState
-import iad1tya.echo.music.ui.component.rememberBottomSheetState
-import iad1tya.echo.music.ui.component.shimmer.getShimmerTheme
+import iad1tya.echo.music.ui.component.*
+import iad1tya.echo.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
+import iad1tya.echo.music.ui.component.backdrop.backdrops.layerBackdrop
 import iad1tya.echo.music.ui.menu.YouTubeSongMenu
 import iad1tya.echo.music.ui.player.BottomSheetPlayer
 import iad1tya.echo.music.ui.screens.Screens
@@ -628,12 +628,19 @@ class MainActivity : ComponentActivity() {
                     label = "navBarHeight",
                 )
 
+                val (useFloatingNavBar) = rememberPreference(UseFloatingNavBarKey, defaultValue = false)
+                val floatingNavBarScrollConnection = rememberFloatingTabBarScrollConnection()
+
                 val playerBottomSheetState = rememberBottomSheetState(
                     dismissedBound = 0.dp,
-                    collapsedBound = bottomInset +
-                        (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
-                        (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp) +
-                        MiniPlayerHeight,
+                    collapsedBound = if (useFloatingNavBar && !showRail) {
+                        0.dp
+                    } else {
+                        bottomInset +
+                            (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
+                            (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp) +
+                            MiniPlayerHeight
+                    },
                     expandedBound = maxHeight,
                 )
 
@@ -658,6 +665,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                val playerMediaMetadata = playerConnection?.player?.currentMediaItem?.mediaMetadata
+                val hasDockedPlayerAccessory =
+                    useFloatingNavBar && playerMediaMetadata != null && !showRail && shouldShowNavigationBar
 
                 val playerAwareWindowInsets = remember(
                     bottomInset,
@@ -831,7 +842,48 @@ class MainActivity : ComponentActivity() {
                     !(pauseListenHistory && eventCount == 0)
                 }
 
+                val (liquidGlassGlobalEnabled) = rememberPreference(LiquidGlassGlobalEnabledKey, defaultValue = false)
+                val (liquidGlassVibrancy) = rememberPreference(LiquidGlassVibrancyKey, defaultValue = 1f)
+                val (liquidGlassBlurRadius) = rememberPreference(LiquidGlassBlurRadiusKey, defaultValue = 8f)
+                val (liquidGlassLensHeight) = rememberPreference(LiquidGlassLensHeightKey, defaultValue = 0.5f)
+                val (liquidGlassLensAmount) = rememberPreference(LiquidGlassLensAmountKey, defaultValue = 0.5f)
+                val (liquidGlassChromaticAberration) = rememberPreference(LiquidGlassChromaticAberrationKey, defaultValue = true)
+                val (liquidGlassDepthEffect) = rememberPreference(LiquidGlassDepthEffectKey, defaultValue = true)
+                val (liquidGlassSurfaceTintColorInt) = rememberPreference(LiquidGlassSurfaceTintColorKey, defaultValue = 0)
+                val (liquidGlassSurfaceOpacity) = rememberPreference(LiquidGlassSurfaceOpacityKey, defaultValue = 0.4f)
+                val (liquidGlassTextColorInt) = rememberPreference(LiquidGlassTextColorKey, defaultValue = Color.White.toArgb())
+                val (liquidGlassPlayerEnabled) = rememberPreference(LiquidGlassPlayerEnabledKey, defaultValue = true)
+                val (liquidGlassMiniPlayerEnabled) = rememberPreference(LiquidGlassMiniPlayerEnabledKey, defaultValue = true)
+                val (liquidGlassNavBarEnabled) = rememberPreference(LiquidGlassNavBarEnabledKey, defaultValue = true)
+                val glassEffectConfig = remember(
+                    liquidGlassGlobalEnabled, useFloatingNavBar, liquidGlassVibrancy, liquidGlassBlurRadius,
+                    liquidGlassLensHeight, liquidGlassLensAmount, liquidGlassChromaticAberration,
+                    liquidGlassDepthEffect, liquidGlassSurfaceTintColorInt,
+                    liquidGlassSurfaceOpacity, liquidGlassTextColorInt, liquidGlassPlayerEnabled,
+                    liquidGlassMiniPlayerEnabled, liquidGlassNavBarEnabled,
+                ) {
+                    GlassEffectConfig(
+                        globalEnabled = liquidGlassGlobalEnabled && useFloatingNavBar,
+                        vibrancy = liquidGlassVibrancy,
+                        blurRadius = liquidGlassBlurRadius,
+                        lensHeight = liquidGlassLensHeight,
+                        lensAmount = liquidGlassLensAmount,
+                        chromaticAberration = liquidGlassChromaticAberration,
+                        depthEffect = liquidGlassDepthEffect,
+                        surfaceTintColor = if (liquidGlassSurfaceTintColorInt == 0) Color.Unspecified else Color(liquidGlassSurfaceTintColorInt),
+                        surfaceOpacity = liquidGlassSurfaceOpacity,
+                        textColor = Color(liquidGlassTextColorInt),
+                        playerEnabled = liquidGlassPlayerEnabled,
+                        miniPlayerEnabled = liquidGlassMiniPlayerEnabled,
+                        navBarEnabled = liquidGlassNavBarEnabled,
+                    )
+                }
+                
                 val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+                val appBackdrop = rememberLayerBackdrop {
+                    drawRect(baseBg)
+                    drawContent()
+                }
 
                 val ringtoneViewModel: RingtoneViewModel = viewModel()
                 val ringtoneUiState by ringtoneViewModel.uiState.collectAsState()
@@ -846,6 +898,8 @@ class MainActivity : ComponentActivity() {
                     LocalShimmerTheme provides getShimmerTheme(),
                     LocalSyncUtils provides syncUtils,
                     LocalListenTogetherManager provides listenTogetherManager,
+                    LocalGlassEffectConfig provides glassEffectConfig,
+                    LocalAppBackdrop provides appBackdrop,
                 ) {
 
                     Scaffold(
@@ -976,54 +1030,83 @@ class MainActivity : ComponentActivity() {
                                         slideOffset + hideOffset
                                     }
 
-                                    Box(
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                            .height(navSlideDistance)
-                                            .offset(y = navOffsetY),
-                                    ) {
-                                        FloatingNavigationToolbar(
-                                            items = navigationItems,
-                                            pureBlack = pureBlack,
-                                            onShuffleClick = onShuffleClick,
-                                            shuffleIconRes = R.drawable.shuffle,
-                                            shuffleContentDescription = stringResource(R.string.shuffle),
-                                            onMusicRecognitionClick = onMusicRecognitionClick,
-                                            musicRecognitionContentDescription = stringResource(R.string.recognition),
-                                            onSettingsClick = { 
-                                                navController.navigate("settings") {
-                                                    launchSingleTop = true
-                                                }
-                                            },
-                                            settingsIconRes = R.drawable.settings,
-                                            settingsContentDescription = stringResource(R.string.settings),
-                                            isSelected = { screen ->
-                                                currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
-                                            },
+                                    if (useFloatingNavBar) {
+                                        AppFloatingNavBar(
+                                            navigationItems = navigationItems,
+                                            currentRoute = currentRoute,
                                             onItemClick = onNavItemClick,
+                                            scrollConnection = floatingNavBarScrollConnection,
+                                            pureBlack = pureBlack,
+                                            showPlayerAccessory = hasDockedPlayerAccessory,
+                                            onAccessoryClick = { playerBottomSheetState.expandSoft() },
                                             modifier = Modifier
                                                 .align(Alignment.BottomCenter)
-                                                .padding(
-                                                    start = FloatingToolbarHorizontalPadding,
-                                                    end = FloatingToolbarHorizontalPadding,
-                                                    bottom = bottomInset + FloatingToolbarBottomPadding,
-                                                )
-                                                .height(NavigationBarHeight)
+                                                .padding(horizontal = 16.dp)
+                                                .padding(bottom = bottomInset + 8.dp)
+                                                .graphicsLayer {
+                                                    val hiddenOffset =
+                                                        size.height + (bottomInset + 8.dp).toPx()
+                                                    val navBarHeightPx = navigationBarHeight.toPx()
+                                                    translationY = if (navBarHeightPx == 0f) {
+                                                        hiddenOffset
+                                                    } else {
+                                                        val progress = playerBottomSheetState.progress.coerceIn(0f, 1f)
+                                                        val slideOffset = hiddenOffset * progress
+                                                        val hideOffset = hiddenOffset * (1 - navBarHeightPx / NavigationBarHeight.toPx())
+                                                        slideOffset + hideOffset
+                                                    }
+                                                }
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .height(navSlideDistance)
+                                                .offset(y = navOffsetY),
+                                        ) {
+                                            FloatingNavigationToolbar(
+                                                items = navigationItems,
+                                                pureBlack = pureBlack,
+                                                onShuffleClick = onShuffleClick,
+                                                shuffleIconRes = R.drawable.shuffle,
+                                                shuffleContentDescription = stringResource(R.string.shuffle),
+                                                onMusicRecognitionClick = onMusicRecognitionClick,
+                                                musicRecognitionContentDescription = stringResource(R.string.recognition),
+                                                onSettingsClick = { 
+                                                    navController.navigate("settings") {
+                                                        launchSingleTop = true
+                                                    }
+                                                },
+                                                settingsIconRes = R.drawable.settings,
+                                                settingsContentDescription = stringResource(R.string.settings),
+                                                isSelected = { screen ->
+                                                    currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
+                                                },
+                                                onItemClick = onNavItemClick,
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomCenter)
+                                                    .padding(
+                                                        start = FloatingToolbarHorizontalPadding,
+                                                        end = FloatingToolbarHorizontalPadding,
+                                                        bottom = bottomInset + FloatingToolbarBottomPadding,
+                                                    )
+                                                    .height(NavigationBarHeight)
+                                            )
+                                        }
+
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .align(Alignment.BottomCenter)
+                                                .height(bottomInsetDp)
+                                                
+                                                .graphicsLayer {
+                                                    val progress = playerBottomSheetState.progress
+                                                    alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+                                                }
+                                                .background(baseBg)
                                         )
                                     }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.BottomCenter)
-                                            .height(bottomInsetDp)
-                                            
-                                            .graphicsLayer {
-                                                val progress = playerBottomSheetState.progress
-                                                alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
-                                            }
-                                            .background(baseBg)
-                                    )
                                 }
                             } else {
                                 if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
@@ -1051,6 +1134,13 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                            .then(
+                                if (useFloatingNavBar) {
+                                    Modifier.nestedScroll(floatingNavBarScrollConnection)
+                                } else {
+                                    Modifier
+                                }
+                            )
                     ) {
                         Row(Modifier.fillMaxSize()) {
                             val onRailItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
@@ -1158,7 +1248,9 @@ class MainActivity : ComponentActivity() {
                                         else
                                             slideOutHorizontally { it / 8 } + fadeOut(tween(200))
                                     },
-                                    modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                                    modifier = Modifier
+                                        .layerBackdrop(appBackdrop)
+                                        .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                                 ) {
                                     navigationBuilder(
                                         navController = navController,
@@ -1209,7 +1301,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    val ringtoneUiState by ringtoneViewModel.uiState.collectAsState()
                     RingtoneTrimmerDialog(
                         isVisible = ringtoneUiState.showTrimmer,
                         songId = ringtoneUiState.targetSongId,

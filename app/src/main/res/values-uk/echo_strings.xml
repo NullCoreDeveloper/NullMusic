@@ -99,7 +99,6 @@
     <string name="max_selection_limit">Максимальний ліміт вибору</string>
     <string name="share_selected">Поділитися вибраним</string>
     <string name="customize_colors">Налаштувати кольори</string>
-    <string name="more_options">Більше параметрів</string>
     <string name="text_color">Колір тексту</string>
     <string name="secondary_text_color">Вторинний колір тексту</string>
     <string name="background_color">Колір тла</string>

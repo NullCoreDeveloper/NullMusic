@@ -53,9 +53,15 @@ jobs:
           git rm -rf .github/workflows/ || true
           git checkout HEAD -- .github/workflows/ || true
           
-          # Force take RELEASE_INFO.md and app/build.gradle.kts from upstream to sync versions
+          # Force take RELEASE_INFO.md from upstream for release notes
           git checkout upstream/main -- RELEASE_INFO.md || true
-          git checkout upstream/main -- app/build.gradle.kts || true
+          
+          # Extract version from tag (e.g., v5.2.4 -> 5.2.4) and update versionName in app/build.gradle.kts
+          LATEST_TAG=$(git describe --tags --abbrev=0 upstream/main 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ]; then
+            VERSION_NUM=${LATEST_TAG#v}
+            sed -i "s/versionName = \".*\"/versionName = \"$VERSION_NUM\"/" app/build.gradle.kts
+          fi
           
           # Now commit the merge
           git commit --no-edit || true

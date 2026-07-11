@@ -390,7 +390,7 @@
     <string name="spotify_waiting_for_login">Очікування входу в Spotify</string>
     <string name="export_directory_unavailable">Не вдалося отримати доступ до папки експорту на цьому пристрої. Будь ласка, вкажіть її вручну.</string>
     <string name="loading">Завантаження</string>
-    <string name="listen_on_echo_music">Слухати на Echo Music</string>
+    <string name="listen_on_echo_music">Слухати на NullMusic</string>
     <string name="qs_tile_music_recognizer">Розпізнати музику</string>
     <string name="echo_brain_beta">Echo Brain (Бета)</string>
     <string name="echo_brain_enable">Увімкнути Echo Brain</string>

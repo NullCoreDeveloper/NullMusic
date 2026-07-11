@@ -52,6 +52,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.navigation.NavController
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.music.innertube.YouTube
 import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.LocalDownloadUtil
@@ -76,6 +77,7 @@ import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.VolumeSlider
 import iad1tya.echo.music.utils.rememberPreference
+import iad1tya.echo.music.viewmodels.CachePlaylistViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -135,6 +137,7 @@ fun OldPlayerMenu(
     var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
     var showPitchTempoDialog by rememberSaveable { mutableStateOf(false) }
     var refetchIconDegree by remember { mutableFloatStateOf(0f) }
+    val cacheViewModel = hiltViewModel<CachePlaylistViewModel>()
     val rotationAnimation by animateFloatAsState(
         targetValue = refetchIconDegree,
         animationSpec = tween(durationMillis = 800, easing = LinearEasing),
@@ -192,14 +195,13 @@ fun OldPlayerMenu(
         TempoPitchDialog(onDismiss = { showPitchTempoDialog = false })
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .padding(top = 24.dp, bottom = 6.dp),
-    ) {
-        
-        if (isCasting && castDeviceName != null) {
+    if (isCasting && castDeviceName != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(top = 24.dp, bottom = 6.dp),
+        ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -525,6 +527,7 @@ fun OldPlayerMenu(
                             },
                             onClick = {
                                 refetchIconDegree -= 360
+                                cacheViewModel.removeSongFromCache(mediaMetadata.id)
                                 coroutineScope.launch(Dispatchers.IO) {
                                     YouTube.queue(listOf(mediaMetadata.id)).onSuccess {
                                         val newSong = it.firstOrNull()

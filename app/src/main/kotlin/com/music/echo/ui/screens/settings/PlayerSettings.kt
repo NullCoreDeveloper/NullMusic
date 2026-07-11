@@ -40,6 +40,8 @@ import iad1tya.echo.music.constants.AudioOffload
 import iad1tya.echo.music.constants.AudioQuality
 import iad1tya.echo.music.constants.AudioQualityKey
 import iad1tya.echo.music.constants.AutoDownloadOnLikeKey
+import iad1tya.echo.music.constants.AutomixCrossfadeKey
+import iad1tya.echo.music.constants.AutomixDebugOverlayKey
 import iad1tya.echo.music.constants.CrossfadeDurationKey
 import iad1tya.echo.music.constants.CrossfadeEnabledKey
 import iad1tya.echo.music.constants.CrossfadeGaplessKey
@@ -105,6 +107,14 @@ highlightKey: String? = null) {
     val (crossfadeDuration, onCrossfadeDurationChange) = rememberPreference(
         CrossfadeDurationKey,
         defaultValue = 5f
+    )
+    val (automixCrossfade, onAutomixCrossfadeChange) = rememberPreference(
+        AutomixCrossfadeKey,
+        defaultValue = false
+    )
+    val (automixDebugOverlay, onAutomixDebugOverlayChange) = rememberPreference(
+        AutomixDebugOverlayKey,
+        defaultValue = false
     )
     val (crossfadeGapless, onCrossfadeGaplessChange) = rememberPreference(
         CrossfadeGaplessKey,
@@ -383,6 +393,8 @@ highlightKey: String? = null) {
             )
         )
 
+        iad1tya.echo.music.ui.component.FundingProgressCard()
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.player),
             items = buildList {
@@ -527,6 +539,52 @@ highlightKey: String? = null) {
                         },
                         onClick = { onCrossfadeGaplessChange(!crossfadeGapless) }
                     ))
+                    add(Material3SettingsItem(
+                        isHighlighted = highlightKey == stringResource(R.string.automix),
+                        icon = painterResource(R.drawable.graphic_eq),
+                        title = { Text(stringResource(R.string.automix)) },
+                        description = { Text(stringResource(R.string.automix_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = automixCrossfade,
+                                onCheckedChange = onAutomixCrossfadeChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (automixCrossfade) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onAutomixCrossfadeChange(!automixCrossfade) }
+                    ))
+                    if (automixCrossfade) {
+                        add(Material3SettingsItem(
+                            isHighlighted = highlightKey == stringResource(R.string.automix_debug),
+                            icon = painterResource(R.drawable.bug_report),
+                            title = { Text(stringResource(R.string.automix_debug)) },
+                            description = { Text(stringResource(R.string.automix_debug_desc)) },
+                            trailingContent = {
+                                Switch(
+                                    checked = automixDebugOverlay,
+                                    onCheckedChange = onAutomixDebugOverlayChange,
+                                    thumbContent = {
+                                        Icon(
+                                            painter = painterResource(
+                                                id = if (automixDebugOverlay) R.drawable.check else R.drawable.close
+                                            ),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                )
+                            },
+                            onClick = { onAutomixDebugOverlayChange(!automixDebugOverlay) }
+                        ))
+                    }
                 }
                 add(Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.history_duration)),
@@ -1099,6 +1157,13 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onEnableExportAsMp3Change(!enableExportAsMp3) }
+                ),
+                Material3SettingsItem(
+                    isHighlighted = (highlightKey == stringResource(R.string.youtube_decryption_settings)),
+                    icon = painterResource(R.drawable.settings),
+                    title = { Text(stringResource(R.string.youtube_decryption_settings)) },
+                    description = { Text(stringResource(R.string.youtube_decryption_desc)) },
+                    onClick = { navController.navigate("settings/echo_extractor") }
                 )
             )
         )

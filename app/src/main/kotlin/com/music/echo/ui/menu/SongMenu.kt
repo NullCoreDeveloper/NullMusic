@@ -863,6 +863,7 @@ fun SongMenu(
                             },
                             onClick = {
                                 refetchIconDegree -= 360
+                                cacheViewModel.removeSongFromCache(song.id)
                                 scope.launch(Dispatchers.IO) {
                                     YouTube.queue(listOf(song.id)).onSuccess {
                                         val newSong = it.firstOrNull()

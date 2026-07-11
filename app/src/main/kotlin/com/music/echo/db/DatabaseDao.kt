@@ -31,6 +31,7 @@ import iad1tya.echo.music.db.entities.Artist
 import iad1tya.echo.music.db.entities.ArtistEntity
 import iad1tya.echo.music.db.entities.Event
 import iad1tya.echo.music.db.entities.EventWithSong
+import iad1tya.echo.music.db.entities.BeatInfoEntity
 import iad1tya.echo.music.db.entities.FormatEntity
 import iad1tya.echo.music.db.entities.LyricsEntity
 import iad1tya.echo.music.db.entities.PlayCountEntity
@@ -1560,6 +1561,12 @@ interface DatabaseDao {
 
     @Query("DELETE FROM format WHERE id = :id")
     fun deleteFormat(id: String)
+
+    @Upsert
+    fun upsert(beatInfo: BeatInfoEntity)
+
+    @Query("SELECT * FROM beat_info WHERE songId = :songId")
+    fun beatInfo(songId: String): BeatInfoEntity?
 
     @Upsert
     fun upsert(song: SongEntity)

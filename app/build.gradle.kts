@@ -18,6 +18,11 @@ plugins {
 
 val hasGoogleServicesConfig = file("google-services.json").exists()
 
+if (hasGoogleServicesConfig) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
+
 android {
     namespace = "iad1tya.echo.music"
     compileSdk = 36
@@ -28,8 +33,8 @@ android {
         applicationId = "com.nullcore.music"
         minSdk = 26
         targetSdk = 36
-        versionCode = 516
-        versionName = "5.2.22"
+        versionCode = 519
+        versionName = "5.2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -108,16 +113,16 @@ android {
             keyPassword = "android"
         }
         create("release") {
-            storeFile = System.getenv("STORE_PASSWORD")?.let { file("keystore/release.keystore") } ?: file("keystore/debug.keystore")
-            storePassword = System.getenv("STORE_PASSWORD")?.trim() ?: "android"
-            keyAlias = System.getenv("KEY_ALIAS")?.trim() ?: "androiddebugkey"
-            keyPassword = System.getenv("KEY_PASSWORD")?.trim() ?: "android"
+            storeFile = file("keystore/release.keystore")
+            storePassword = System.getenv("STORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
         }
         getByName("debug") {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
             storePassword = "android"
-            storeFile = file("keystore/debug.keystore")
+            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
         }
     }
 
@@ -229,7 +234,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    // Firebase removed
+    // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
+    "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
 
     // Google Drive Sync - GMS flavor only
     "gmsImplementation"(libs.play.services.auth)

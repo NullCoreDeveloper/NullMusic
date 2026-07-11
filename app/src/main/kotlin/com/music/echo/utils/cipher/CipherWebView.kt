@@ -30,8 +30,26 @@ class CipherWebView private constructor(
     private val webView = WebView(context)
 
     private var initContinuation: Continuation<CipherWebView>? = initContinuation
-    private var sigContinuation: Continuation<String>? = null
-    private var nContinuation: Continuation<String>? = null
+    private val sigSlot = RequestSlot<String>()
+    private val nSlot = RequestSlot<String>()
+
+    private class RequestSlot<T> {
+        private var continuation: Continuation<T>? = null
+        private var requestId = 0
+
+        @Synchronized
+        fun arm(cont: Continuation<T>): Int {
+            continuation = cont
+            return ++requestId
+        }
+
+        @Synchronized
+        fun takeIfCurrent(id: Int): Continuation<T>? =
+            if (id == requestId) continuation.also { continuation = null } else null
+
+        @Synchronized
+        fun takeAny(): Continuation<T>? = continuation.also { continuation = null }
+    }
 
     @Volatile
     var isDead: Boolean = false
@@ -82,22 +100,14 @@ class CipherWebView private constructor(
         isDead = true
         val e = CipherRendererGoneException(reason)
         takeInitContinuation()?.resumeSafely { it.resumeWithException(e) }
-        takeSigContinuation()?.resumeSafely { it.resumeWithException(e) }
-        takeNContinuation()?.resumeSafely { it.resumeWithException(e) }
+        sigSlot.takeAny()?.resumeSafely { it.resumeWithException(e) }
+        nSlot.takeAny()?.resumeSafely { it.resumeWithException(e) }
         destroyWebView()
     }
 
     @Synchronized
     private fun takeInitContinuation(): Continuation<CipherWebView>? =
         initContinuation.also { initContinuation = null }
-
-    @Synchronized
-    private fun takeSigContinuation(): Continuation<String>? =
-        sigContinuation.also { sigContinuation = null }
-
-    @Synchronized
-    private fun takeNContinuation(): Continuation<String>? =
-        nContinuation.also { nContinuation = null }
 
     private inline fun <T> T.resumeSafely(block: (T) -> Unit) {
         runCatching { block(this) }
@@ -147,7 +157,7 @@ class CipherWebView private constructor(
 
         val html = """<!DOCTYPE html>
 <html><head><script>
-function deobfuscateSig(funcName, constantArg, obfuscatedSig) {
+function deobfuscateSig(reqId, funcName, constantArg, obfuscatedSig) {
     try {
         var func = window._cipherSigFunc;
         if (typeof func !== 'function') {
@@ -163,16 +173,16 @@ function deobfuscateSig(funcName, constantArg, obfuscatedSig) {
             result = func(obfuscatedSig);
         }
         if (result === undefined || result === null) {
-            CipherBridge.onSigError("Function returned null/undefined");
+            CipherBridge.onSigError(reqId, "Function returned null/undefined");
             return;
         }
-        CipherBridge.onSigResult(String(result));
+        CipherBridge.onSigResult(reqId, String(result));
     } catch (error) {
-        CipherBridge.onSigError(error + "\n" + (error.stack || ""));
+        CipherBridge.onSigError(reqId, error + "\n" + (error.stack || ""));
     }
 }
 
-function transformN(nValue) {
+function transformN(reqId, nValue) {
     try {
         var func = window._nTransformFunc;
         if (typeof func !== 'function') {
@@ -181,12 +191,12 @@ function transformN(nValue) {
         }
         var result = func(nValue);
         if (result === undefined || result === null) {
-            CipherBridge.onNError("N-transform returned null/undefined");
+            CipherBridge.onNError(reqId, "N-transform returned null/undefined");
             return;
         }
-        CipherBridge.onNResult(String(result));
+        CipherBridge.onNResult(reqId, String(result));
     } catch (error) {
-        CipherBridge.onNError(error + "\n" + (error.stack || ""));
+        CipherBridge.onNError(reqId, error + "\n" + (error.stack || ""));
     }
 }
 
@@ -293,10 +303,10 @@ function discoverAndInit() {
             withTimeout(EVAL_TIMEOUT_MS) {
                 withContext(Dispatchers.Main) {
                     suspendCancellableCoroutine { cont ->
-                        sigContinuation = cont
+                        val reqId = sigSlot.arm(cont)
                         val constArgJs = if (sigInfo.constantArg != null) "${sigInfo.constantArg}" else "null"
                         webView.evaluateJavascript(
-                            "deobfuscateSig('${sigInfo.name}', $constArgJs, '${escapeJsString(obfuscatedSig)}')",
+                            "deobfuscateSig('$reqId', '${sigInfo.name}', $constArgJs, '${escapeJsString(obfuscatedSig)}')",
                             null
                         )
                     }
@@ -309,15 +319,15 @@ function discoverAndInit() {
     }
 
     @JavascriptInterface
-    fun onSigResult(result: String) {
+    fun onSigResult(reqId: Int, result: String) {
         Timber.tag(TAG).d("Signature deobfuscated: ${result.take(30)}...")
-        takeSigContinuation()?.resumeSafely { it.resume(result) }
+        sigSlot.takeIfCurrent(reqId)?.resumeSafely { it.resume(result) }
     }
 
     @JavascriptInterface
-    fun onSigError(error: String) {
+    fun onSigError(reqId: Int, error: String) {
         Timber.tag(TAG).e("Signature deobfuscation error: $error")
-        takeSigContinuation()?.resumeSafely { it.resumeWithException(CipherException("Sig deobfuscation failed: $error")) }
+        sigSlot.takeIfCurrent(reqId)?.resumeSafely { it.resumeWithException(CipherException("Sig deobfuscation failed: $error")) }
     }
 
     suspend fun transformN(nValue: String): String {
@@ -330,9 +340,9 @@ function discoverAndInit() {
             withTimeout(EVAL_TIMEOUT_MS) {
                 withContext(Dispatchers.Main) {
                     suspendCancellableCoroutine { cont ->
-                        nContinuation = cont
+                        val reqId = nSlot.arm(cont)
                         webView.evaluateJavascript(
-                            "transformN('${escapeJsString(nValue)}')",
+                            "transformN('$reqId', '${escapeJsString(nValue)}')",
                             null
                         )
                     }
@@ -345,15 +355,15 @@ function discoverAndInit() {
     }
 
     @JavascriptInterface
-    fun onNResult(result: String) {
+    fun onNResult(reqId: Int, result: String) {
         Timber.tag(TAG).d("N-transform result: ${result.take(50)}...")
-        takeNContinuation()?.resumeSafely { it.resume(result) }
+        nSlot.takeIfCurrent(reqId)?.resumeSafely { it.resume(result) }
     }
 
     @JavascriptInterface
-    fun onNError(error: String) {
+    fun onNError(reqId: Int, error: String) {
         Timber.tag(TAG).e("N-transform error: $error")
-        takeNContinuation()?.resumeSafely { it.resumeWithException(CipherException("N-transform failed: $error")) }
+        nSlot.takeIfCurrent(reqId)?.resumeSafely { it.resumeWithException(CipherException("N-transform failed: $error")) }
     }
 
     private fun throwIfDead() {
@@ -364,8 +374,8 @@ function discoverAndInit() {
 
     private fun failAsRendererGone(reason: String): Nothing {
         isDead = true
-        takeSigContinuation()
-        takeNContinuation()
+        sigSlot.takeAny()
+        nSlot.takeAny()
         throw CipherRendererGoneException(reason)
     }
 

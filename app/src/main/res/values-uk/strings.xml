@@ -6,17 +6,17 @@
     <string name="albums">Альбоми</string>
     <string name="playlists">Плейлисти</string>
     <plurals name="n_selected">
-        <item quantity="one">%d вибрано</item>
-        <item quantity="few">%d вибране</item>
-        <item quantity="many">%d вибрані</item>
-        <item quantity="other">%d вибрані</item>
+        <item quantity="one">%d вибраний</item>
+        <item quantity="few">%d вибрані</item>
+        <item quantity="many">%d вибраних</item>
+        <item quantity="other">%d вибраних</item>
     </plurals>
     <string name="history">Історія</string>
     <string name="stats">Статистика</string>
     <string name="mood_and_genres">Настрій та жанри</string>
-    <string name="account">Акаунт</string>
+    <string name="account">Обліковий запис</string>
     <string name="quick_picks">Швидкий вибір</string>
-    <string name="quick_picks_empty">Послухайте кілька пісень, щоб створити ваш швидкий вибір</string>
+    <string name="quick_picks_empty">Слухайте пісні, щоб створити свій швидкий вибір</string>
     <string name="forgotten_favorites">Забуті улюблені</string>
     <string name="keep_listening">Продовжуйте слухати</string>
     <string name="your_youtube_playlists">Ваші плейлисти YouTube</string>
@@ -36,7 +36,7 @@
     <string name="filter_liked">Вподобані</string>
     <string name="filter_downloaded">Завантажені</string>
     <string name="filter_all">Всі</string>
-    <string name="filter_songs">Композиції</string>
+    <string name="filter_songs">Пісні</string>
     <string name="filter_videos">Відео</string>
     <string name="filter_albums">Альбоми</string>
     <string name="filter_artists">Виконавці</string>
@@ -51,16 +51,16 @@
     <string name="library_playlist_empty">Тут будуть відображатися ваші плейлисти</string>
     <string name="from_your_library">З вашої бібліотеки</string>
     <string name="other_versions">Інші версії</string>
-    <string name="liked_songs">Улюблені треки</string>
-    <string name="downloaded_songs">Завантажена музика</string>
+    <string name="liked_songs">Улюблені пісні</string>
+    <string name="downloaded_songs">Завантажені пісні</string>
     <string name="playlist_is_empty">Плейлист порожній</string>
-    <string name="remove_download_playlist_confirm">Ви впевнені, що хочете видалити всі пісні з плейлиста «%s» зі сховища завантаженої музики?</string>
+    <string name="remove_download_playlist_confirm">Ви дійсно хочете видалити всі пісні з плейлиста «%s» зі сховища завантажених пісень?</string>
     <string name="delete_playlist_confirm">Ви впевнені, що хочете видалити плейлист «%s»?</string>
-    <string name="retry">Повторювати</string>
+    <string name="retry">Повторити</string>
     <string name="radio">Радіо</string>
     <string name="shuffle">Перемішати</string>
     <string name="reset">Скинути</string>
-    <string name="details">Детальніше</string>
+    <string name="details">Деталі</string>
     <string name="edit">Редагувати</string>
     <string name="start_radio">Увімкнути радіо</string>
     <string name="play">Відтворити</string>
@@ -70,7 +70,7 @@
     <string name="add_all_to_library">Додати все до бібліотеки</string>
     <string name="remove_from_library">Видалити з бібліотеки</string>
     <string name="remove_all_from_library">Видалити все з бібліотеки</string>
-    <string name="action_download">Завантаження</string>
+    <string name="action_download">Завантажити</string>
     <string name="downloading">Завантаження</string>
     <string name="remove_download">Видалити із завантажених</string>
     <string name="import_playlist">Імпортувати плейлист</string>
@@ -84,14 +84,14 @@
     <string name="remove_from_playlist">Видалити з плейлиста</string>
     <string name="remove_from_queue">Видалити з черги</string>
     <string name="search_online">Пошук в Інтернеті</string>
-    <string name="action_sync">Синхронізація</string>
-    <string name="advanced">Контроль аудіо</string>
+    <string name="action_sync">Синхронізувати</string>
+    <string name="advanced">Розширені</string>
     <string name="tempo_and_pitch">Темп і висота тону</string>
     <string name="sort_by_create_date">Нещодавно додані</string>
     <string name="sort_by_name">Назва</string>
     <string name="sort_by_artist">Виконавець</string>
     <string name="sort_by_year">Рік</string>
-    <string name="sort_by_song_count">Кількість треків</string>
+    <string name="sort_by_song_count">Кількість пісень</string>
     <string name="sort_by_length">Тривалість</string>
     <string name="sort_by_play_time">Кількість відтворень</string>
     <string name="sort_by_custom">Корист. порядок</string>
@@ -104,20 +104,20 @@
     <string name="volume">Рівень гучності</string>
     <string name="file_size">Розмір файлу</string>
     <string name="unknown">Невідомо</string>
-    <string name="copied">Скопійовано</string>
+    <string name="copied">Скопійовано в буфер обміну</string>
     <string name="edit_lyrics">Редагувати текст пісні</string>
     <string name="search_lyrics">Пошук тексту пісні</string>
-    <string name="edit_song">Редагувати композицію</string>
-    <string name="song_title">Назва композиції</string>
-    <string name="song_artists">Виконавці композиції</string>
+    <string name="edit_song">Редагувати пісню</string>
+    <string name="song_title">Назва пісні</string>
+    <string name="song_artists">Виконавці пісні</string>
     <string name="error_song_title_empty">Назва пісні не може бути порожньою.</string>
-    <string name="error_song_artist_empty">Поле \"Виконавець пісні\" не може бути порожнім.</string>
+    <string name="error_song_artist_empty">Виконавці пісні не можуть бути порожніми.</string>
     <string name="save">Зберегти</string>
     <string name="choose_playlist">Вибрати плейлист</string>
     <string name="edit_playlist">Редагувати плейлист</string>
     <string name="create_playlist">Створити плейлист</string>
     <string name="playlist_name">Назва плейлиста</string>
-    <string name="error_playlist_name_empty">Назва списку відтворення не може бути порожньою.</string>
+    <string name="error_playlist_name_empty">Назва плейлиста не може бути порожньою.</string>
     <string name="edit_artist">Редагувати виконавця</string>
     <string name="artist_name">Ім\'я виконавця</string>
     <string name="error_artist_name_empty">Ім\'я виконавця не може бути порожнім.</string>
@@ -125,12 +125,12 @@
     <string name="skip_duplicates">Пропустити дублікати</string>
     <string name="add_anyway">Додати в будь-якому разі</string>
     <string name="duplicates_description_single">Ця пісня вже у вашому плейлисті</string>
-    <string name="duplicates_description_multiple">%d пісень вже у вашому плейлисті</string>
+    <string name="duplicates_description_multiple">%d пісень вже є у вашому плейлисті</string>
     <plurals name="n_song">
-        <item quantity="one">%d композиція</item>
-        <item quantity="few">%d композиції</item>
-        <item quantity="many">%d композицій</item>
-        <item quantity="other">%d композицій</item>
+        <item quantity="one">%d пісня</item>
+        <item quantity="few">%d пісні</item>
+        <item quantity="many">%d пісень</item>
+        <item quantity="other">%d пісень</item>
     </plurals>
     <plurals name="n_artist">
         <item quantity="one">%d виконавець</item>
@@ -169,7 +169,7 @@
         <item quantity="other">%d років</item>
     </plurals>
     <string name="playlist_imported">Плейлист імпортовано</string>
-    <string name="removed_song_from_playlist">«%s» видалена з плейлиста</string>
+    <string name="removed_song_from_playlist">«%s» видалено з плейлиста</string>
     <string name="playlist_synced">Плейлист синхронізовано</string>
     <string name="undo">Скасувати</string>
     <string name="lyrics_not_found">Текст пісні не знайдено</string>
@@ -183,29 +183,29 @@
     </plurals>
     <string name="error_no_stream">Немає доступних потоків</string>
     <string name="error_no_internet">Відсутнє підключення до мережі</string>
-    <string name="error_timeout">Тайм-аут</string>
+    <string name="error_timeout">Час очікування вичерпано</string>
     <string name="error_unknown">Невідома помилка</string>
-    <string name="action_like">Поставити «Подобається»</string>
-    <string name="action_like_all">Відзначити все як «Подобається»</string>
-    <string name="action_remove_like">Прибрати «Подобається»</string>
-    <string name="action_remove_like_all">Прибрати всі позначки «Подобається»</string>
+    <string name="action_like">Вподобати</string>
+    <string name="action_like_all">Вподобати все</string>
+    <string name="action_remove_like">Вилучити з вподобаних</string>
+    <string name="action_remove_like_all">Вилучити все з вподобаних</string>
     <string name="action_shuffle_on">Увімкнути перемішування</string>
     <string name="action_shuffle_off">Вимкнути перемішування</string>
     <string name="repeat_mode_off">Вимкнути повторення</string>
     <string name="repeat_mode_one">Повторити поточну пісню</string>
     <string name="repeat_mode_all">Повторити чергу</string>
-    <string name="queue_all_songs">Всі композиції</string>
-    <string name="queue_searched_songs">Шукані композиції</string>
+    <string name="queue_all_songs">Всі пісні</string>
+    <string name="queue_searched_songs">Шукані пісні</string>
     <string name="music_player">Музичний плеєр</string>
     <string name="settings">Параметри</string>
     <string name="appearance">Зовнішній вигляд</string>
     <string name="theme">Тема</string>
-    <string name="enable_dynamic_theme">Увімкнути динамічну тему</string>
+    <string name="enable_dynamic_theme">Увімкнути динамічний колір теми</string>
     <string name="dark_theme">Темна тема</string>
     <string name="dark_theme_on">Увімк.</string>
     <string name="dark_theme_off">Вимк.</string>
-    <string name="dark_theme_follow_system">Використовувати налаштування системи</string>
-    <string name="pure_black">Режим чистого чорного кольору</string>
+    <string name="dark_theme_follow_system">Як у системі</string>
+    <string name="pure_black">Глибокий чорний</string>
     <string name="customize_navigation_tabs">Налаштування вкладок навігації</string>
     <string name="player">Плеєр</string>
     <string name="player_text_alignment">Вирівнювання тексту плеєра</string>
@@ -218,20 +218,20 @@
     <string name="default_">Стандартний</string>
     <string name="squiggly">Хвилястий</string>
     <string name="misc">Різне</string>
-    <string name="default_open_tab">Основна вкладка навігації</string>
+    <string name="default_open_tab">Вкладка за замовчуванням</string>
     <string name="grid_cell_size">Розмір клітинки сітки</string>
     <string name="small">Малий</string>
     <string name="big">Великий</string>
     <string name="content">Контент</string>
     <string name="login">Логін</string>
-    <string name="not_logged_in">Не авторизовано</string>
-    <string name="content_language">Мова контенту</string>
-    <string name="content_country">Країна контенту</string>
+    <string name="not_logged_in">Вхід не виконано</string>
+    <string name="content_language">Мова контенту за замовчуванням</string>
+    <string name="content_country">Країна контенту за замовчуванням</string>
     <string name="system_default">Використовувати налаштування системи</string>
     <string name="enable_proxy">Увімкнути проксі</string>
     <string name="proxy_type">Тип проксі</string>
     <string name="proxy_url">URL проксі</string>
-    <string name="restart_to_take_effect">Перезапуск програми</string>
+    <string name="restart_to_take_effect">Перезапустіть, щоб зміни набрали чинності</string>
     <string name="player_and_audio">Плеєр та аудіо</string>
     <string name="audio_quality">Якість аудіо</string>
     <string name="audio_quality_auto">Авто</string>
@@ -240,25 +240,25 @@
     <string name="queue">Черга</string>
     <string name="persistent_queue">Постійна черга</string>
     <string name="persistent_queue_desc">Відновлювати останню чергу після запуску програми</string>
-    <string name="auto_load_more">Автозавантаження більшої кількості пісень</string>
+    <string name="auto_load_more">Автоматично завантажувати більше пісень</string>
     <string name="auto_load_more_desc">Автоматично додавати більше пісень при досягненні кінця черги, якщо це можливо</string>
-    <string name="skip_silence">Пропуск тиші в композиціях</string>
+    <string name="skip_silence">Пропуск тиші</string>
     <string name="audio_normalization">Нормалізація аудіо</string>
     <string name="auto_skip_next_on_error">Автоперехід до наступної пісні при помилці</string>
-    <string name="auto_skip_next_on_error_desc">Забезпечити безперервне відтворення</string>
-    <string name="stop_music_on_task_clear">Зупиняти музику при очищенні завдань</string>
+    <string name="auto_skip_next_on_error_desc">Забезпечте безперервне відтворення</string>
+    <string name="stop_music_on_task_clear">Зупиняти музику при очищенні завдання</string>
     <string name="equalizer">Еквалайзер</string>
     <string name="storage">Сховище</string>
     <string name="cache">Кеш</string>
     <string name="image_cache">Кеш зображень</string>
-    <string name="song_cache">Кеш аудіо</string>
+    <string name="song_cache">Кеш пісень</string>
     <string name="max_cache_size">Максимальний розмір кешу</string>
     <string name="unlimited">Необмежено</string>
     <string name="clear_all_downloads">Очистити всі завантаження</string>
     <string name="max_image_cache_size">Макс. розмір кешу зображень</string>
     <string name="clear_image_cache">Очистити кеш зображень</string>
-    <string name="max_song_cache_size">Макс. розмір кешу аудіо</string>
-    <string name="clear_song_cache">Очистити кеш аудіо</string>
+    <string name="max_song_cache_size">Макс. розмір кешу пісень</string>
+    <string name="clear_song_cache">Очистити кеш пісень</string>
     <string name="size_used">%s використано</string>
     <string name="privacy">Конфіденційність</string>
     <string name="listen_history">Історія прослуховувань</string>
@@ -270,13 +270,13 @@
     <string name="clear_search_history">Очистити історію пошуку</string>
     <string name="clear_search_history_confirm">Ви впевнені, що хочете очистити всю історію пошуку?</string>
     <string name="disable_screenshot">Вимкнути знімок екрана</string>
-    <string name="disable_screenshot_desc">Якщо ця опція увімкнена, знімки екрана та відображення програми в списку останніх відключаються.</string>
+    <string name="disable_screenshot_desc">Коли цю опцію ввімкнено, знімки екрана та перегляд застосунку в списку нещодавніх програм вимкнено.</string>
     <string name="enable_lrclib">Увімкнути провайдера текстів LrcLib</string>
     <string name="enable_kugou">Увімкнути провайдера текстів KuGou</string>
     <string name="hide_explicit">Приховувати контент із нецензурною лексикою</string>
-    <string name="backup_restore">Резервне Копіювання</string>
-    <string name="action_backup">Резервне копіювання</string>
-    <string name="action_restore">Відновити</string>
+    <string name="backup_restore">Резервне копіювання</string>
+    <string name="action_backup">Створити резервну копію</string>
+    <string name="action_restore">Відновити резервну копію</string>
     <string name="imported_playlist">Імпортований плейлист</string>
     <string name="backup_create_success">Резервну копію створено успішно</string>
     <string name="backup_create_failed">Не вдалося створити резервну копію</string>
@@ -294,27 +294,21 @@
     <string name="new_version_available">Доступна нова версія</string>
     <string name="translation_models">Моделі перекладу</string>
     <string name="clear_translation_models">Очистити моделі перекладу</string>
-    <string name="use_login_for_browse_desc">Це може вплинути на те, який вміст ви бачите, і, наприклад, показує лише платні альбоми, якщо ви ввійшли в обліковий запис Premium</string>
-    <string name="use_login_for_browse">Використовуйте логін для перегляду вмісту</string>
+    <string name="use_login_for_browse_desc">Це може вплинути на контент, який ви бачите. Наприклад, якщо ви увійшли з обліковим записом Premium, відображатимуться альбоми лише для Premium-користувачів</string>
+    <string name="use_login_for_browse">Використовувати логін для перегляду вмісту</string>
     <string name="action_login">Увійти</string>
-
     <!-- Bottom navigation -->
     <string name="music">Музика</string>
-
     <!-- Search -->
     <string name="filter_local">Локальні</string>
-
     <!-- Album screen -->
-    <string name="album_description_placeholder">Опис альбому за замовчуванням. Насолоджуйтеся прослуховуванням треків нижче!</string>
-
+    <string name="album_description_placeholder">Це опис альбому за замовчуванням. Насолоджуйтеся прослуховуванням пісень нижче!</string>
     <!-- Playlist -->
     <string name="you_might_also_like">Схожі плейлисти</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Перемішати</string>
     <string name="shuffle_label">Перемішати</string>
     <string name="pause">Пауза</string>
-
     <!-- Menu -->
     <string name="saving">Збереження</string>
     <string name="saved">Збережено</string>
@@ -322,7 +316,6 @@
     <string name="add_to_an_playlist">Додати</string>
     <string name="more_label">Більше</string>
     <string name="releases_for_you">Релізи для вас</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Приховати рядок стану в повноекранному режимі</string>
     <string name="hide_status_bar_on_fullscreen_desc">Приховати рядок стану, коли активний повноекранний режим тексту пісні</string>
@@ -331,28 +324,26 @@
     <string name="lyrics_thumbnail_play_pause">Показувати відтворення/паузу на мініатюрі</string>
     <string name="lyrics_thumbnail_play_pause_desc">Показувати кнопку відтворення/паузи поверх мініатюри пісні в повноекранному тексті</string>
     <string name="picker_not_available">Вибір документів недоступний на цьому пристрої. Використовується каталог експорту за замовчуванням програми.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
-        <item quantity="one">Знайдено %d APK</item>
-        <item quantity="few">Знайдено %d APK</item>
-        <item quantity="many">Знайдено %d APK</item>
-        <item quantity="other">Знайдено %d APK</item>
+        <item quantity="one">Знайдено %d файл APK</item>
+        <item quantity="few">Знайдено %d файли APK</item>
+        <item quantity="many">Знайдено %d файлів APK</item>
+        <item quantity="other">Знайдено %d файлів APK</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Налаштуйте тему застосунку</string>
     <string name="theme_colors">Тема та кольори</string>
     <string name="theme_mode">Режим теми</string>
-    <string name="color_palette">Кольорова палітра</string>
+    <string name="color_palette">Палітра кольорів</string>
     <string name="use_system_colors">Використовувати системні кольори</string>
     <string name="apple_music">Apple Music</string>
     <string name="show_audio_quality_badge">Показувати значок якості звуку</string>
-    <string name="network_ip_version">Версія IP мережі</string>
+    <string name="network_ip_version">Версія IP-адреси</string>
     <string name="ip_version_auto">Авто</string>
     <string name="ip_version_ipv4">Примусово IPv4</string>
     <string name="ip_version_ipv6">Примусово IPv6</string>
-    <string name="audio_quality_lossless">Звук без втрат</string>
+    <string name="audio_quality_lossless">Музика без втрат</string>
     <string name="clear_downloaded_updates">Очистити завантажені оновлення</string>
     <string name="clear_downloaded_updates_desc">Видаліть завантажені APK-файли, щоб звільнити місце</string>
     <string name="bluetooth_permission_required">Для виявлення аудіопристроїв потрібен дозвіл Bluetooth.</string>
@@ -366,7 +357,7 @@
     <string name="done">Готово</string>
     <string name="audio_devices">Аудіопристрої</string>
     <string name="bluetooth_headphones">Bluetooth-навушники</string>
-    <string name="license">GNU Загальна публічна ліцензія v3.0</string>
+    <string name="license">GNU General Public License v3.0</string>
     <string name="standard_lyrics_blur">Стандартне розмиття тексту</string>
     <string name="listen_together_smart_resync">Розумна повторна синхронізація мережі</string>
     <string name="listen_together_smart_resync_desc">Автоматично підлаштовуйтеся під ведучого після обриву з’єднання</string>
@@ -383,13 +374,13 @@
     <string name="spotify_connected_as">Підключено як %1$s</string>
     <string name="spotify_not_connected">Spotify не підключено</string>
     <string name="spotify_liked_songs">Уподобані пісні Spotify</string>
-    <string name="spotify_liked_songs_desc">Збережені треки з вашої бібліотеки Spotify</string>
-    <string name="spotify_track_count">%1$d треків</string>
+    <string name="spotify_liked_songs_desc">Збережені пісні з вашої бібліотеки Spotify</string>
+    <string name="spotify_track_count">%1$d пісень</string>
     <string name="spotify_login_title">Вхід у Spotify</string>
     <string name="spotify_loading_library">Завантаження бібліотеки Spotify</string>
     <string name="spotify_no_sources">Не знайдено плейлистів Spotify</string>
     <string name="spotify_import_in_progress">Імпорт плейлистів Spotify</string>
-    <string name="spotify_import_progress_step">%1$s • %2$d/%3$d джерел • %4$d/%5$d треків</string>
+    <string name="spotify_import_progress_step">%1$s • %2$d/%3$d джерел • %4$d/%5$d пісень</string>
     <string name="spotify_import_complete">Імпорт із Spotify завершено</string>
     <string name="spotify_import_summary">%1$d джерел • %2$d імпортовано • %3$d не вдалося</string>
     <string name="spotify_source_summary">%1$s: %2$d/%3$d імпортовано</string>
@@ -397,5 +388,70 @@
     <string name="spotify_clear_selection">Очистити вибір</string>
     <string name="spotify_account">Обліковий запис Spotify</string>
     <string name="spotify_waiting_for_login">Очікування входу в Spotify</string>
-    <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="export_directory_unavailable">Не вдалося отримати доступ до папки експорту на цьому пристрої. Будь ласка, вкажіть її вручну.</string>
+    <string name="loading">Завантаження</string>
+    <string name="listen_on_echo_music">Слухати на NullMusic</string>
+    <string name="qs_tile_music_recognizer">Розпізнати музику</string>
+    <string name="echo_brain_beta">Echo Brain (Бета)</string>
+    <string name="echo_brain_enable">Увімкнути Echo Brain</string>
+    <string name="echo_brain_enable_desc">Автоматично додавати пропозиції на основі ШІ, враховуючи ваші музичні вподобання</string>
+    <string name="echo_brain_profile_statistics">Статистика профілю</string>
+    <string name="echo_brain_learning_level">Рівень навчання</string>
+    <string name="echo_brain_initiate">Початок</string>
+    <string name="echo_brain_total_interactions">Загальна кількість взаємодій</string>
+    <string name="echo_brain_interactions_tracked">Відстежено %1$d взаємодій</string>
+    <string name="echo_brain_discovered_genres">Виявлені жанри</string>
+    <string name="echo_brain_distinct_genres_identified">Виявлено %1$d різних жанрів</string>
+    <string name="echo_brain_analyzed_artists">Проаналізовані виконавці</string>
+    <string name="echo_brain_artists_mapped">%1$d виконавців зіставлено</string>
+    <string name="echo_brain_data_management">Керування даними</string>
+    <string name="echo_brain_export_profile">Експортувати профіль</string>
+    <string name="echo_brain_export_profile_desc">Збережіть свою нейронну мапу у файл</string>
+    <string name="echo_brain_import_profile">Імпортувати профіль</string>
+    <string name="echo_brain_import_profile_desc">Завантажити раніше збережену нейронну мапу</string>
+    <string name="echo_brain_reset_profile">Скинути профіль</string>
+    <string name="echo_brain_reset_profile_desc">Скинути всі дані навчання та почати спочатку</string>
+    <string name="echo_brain_reset_neural_profile">Скинути нейронний профіль</string>
+    <string name="echo_brain_reset_neural_profile_desc">Це назавжди видалить усі накопичені вподобання. Система почне навчання з нуля.</string>
+    <string name="echo_brain_profile_exported_successfully">Профіль успішно експортовано</string>
+    <string name="echo_brain_export_failed">Помилка експорту</string>
+    <string name="echo_brain_profile_imported_successfully">Профіль успішно імпортовано</string>
+    <string name="echo_brain_import_failed_invalid_file">Помилка імпорту — недійсний файл</string>
+    <string name="listenbrainz_scrobbling">Скроблінг у ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Автоматично надсилати прослухані треки до ListenBrainz</string>
+    <string name="set_listenbrainz_token">Встановити токен ListenBrainz</string>
+    <string name="added_to_playlist">Додано до %s</string>
+    <string name="more_options">Більше опцій</string>
+    <string name="export_as_csv">Експортувати як CSV</string>
+    <string name="export_playlist_desc">Експортувати пісні з плейліста у файл CSV</string>
+    <string name="export_successful">Плейлист успішно експортовано</string>
+    <string name="activity_history">Підсумок прослуховувань</string>
+    <string name="total_listening_time">Загальний час прослуховування</string>
+    <string name="unique_songs">Унікальні пісні</string>
+    <string name="unique_artists">Унікальні виконавці</string>
+    <string name="unique_albums">Унікальні альбоми</string>
+    <string name="selected_period">Вибраний період</string>
+    <string name="hours_minutes_format">%1$dгод %2$dхв</string>
+    <string name="content_sponsor_block">SponsorBlock (автопропуск)</string>
+    <string name="content_sponsor_block_desc">Автоматично пропускати спонсорські інтеграції, вступи та немузичні фрагменти у відео</string>
+    <string name="spotify_import_by_link">Імпортувати плейлист за посиланням</string>
+    <string name="spotify_import_by_link_desc">Вставте посилання на плейлист Spotify для його імпорту — навіть на ті, якими ви не володієте</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Додати</string>
+    <string name="spotify_invalid_playlist_link">Це не схоже на посилання на плейлист Spotify. Використовуйте посилання на кшталт https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Час роботи сервісів</string>
+    <string name="service_uptime_desc">Перевірте статус музичних провайдерів</string>
+    <string name="music_providers">Провайдери музики</string>
+    <string name="canvas_providers">Провайдери Canvas</string>
+    <string name="lyrics_providers">Провайдери текстів пісень</string>
+    <string name="other_services">Інші сервіси</string>
+    <string name="status_online">Працює</string>
+    <string name="status_offline">Не працює</string>
+    <string name="status_checking">Перевірка...</string>
+    <string name="recognition_notification_channel_name">Розпізнавання музики</string>
+    <string name="recognition_notification_channel_desc">Показує сповіщення під час розпізнавання пісні зі швидких налаштувань</string>
+    <string name="recognition_notification_listening">Слухаю музику…</string>
+    <string name="recognition_notification_processing">Визначення…</string>
+    <string name="recognition_notification_no_match">Нічого не знайдено</string>
+    <string name="recognition_notification_failed">Помилка розпізнавання</string>
 </resources>

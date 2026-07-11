@@ -18,11 +18,6 @@ plugins {
 
 val hasGoogleServicesConfig = file("google-services.json").exists()
 
-if (hasGoogleServicesConfig) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
-}
-
 android {
     namespace = "iad1tya.echo.music"
     compileSdk = 36
@@ -113,16 +108,16 @@ android {
             keyPassword = "android"
         }
         create("release") {
-            storeFile = file("keystore/release.keystore")
-            storePassword = System.getenv("STORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            storeFile = System.getenv("STORE_PASSWORD")?.let { file("keystore/release.keystore") } ?: file("keystore/debug.keystore")
+            storePassword = System.getenv("STORE_PASSWORD")?.trim() ?: "android"
+            keyAlias = System.getenv("KEY_ALIAS")?.trim() ?: "androiddebugkey"
+            keyPassword = System.getenv("KEY_PASSWORD")?.trim() ?: "android"
         }
         getByName("debug") {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
             storePassword = "android"
-            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+            storeFile = file("keystore/debug.keystore")
         }
     }
 
@@ -234,8 +229,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
-    // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
-    "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
+    // Firebase removed
 
     // Google Drive Sync - GMS flavor only
     "gmsImplementation"(libs.play.services.auth)

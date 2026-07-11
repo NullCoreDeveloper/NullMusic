@@ -38,7 +38,7 @@
     <string name="share_as_image">แชร์เป็นรูปภาพ</string>
     <string name="share_selected">แชร์ที่เลือก</string>
     <string name="customize_colors">ปรับแต่งสี</string>
-    <string name="more_options">ตัวเลือกเพิ่มเติม</string>
+
     <string name="text_color">สีข้อความ</string>
     <string name="secondary_text_color">สีข้อความรอง</string>
     <string name="background_color">สีพื้นหลัง</string>

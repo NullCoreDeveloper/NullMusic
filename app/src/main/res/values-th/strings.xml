@@ -313,7 +313,7 @@
     <string name="backup_create_failed">ไม่สามารถสำรองข้อมูลได้</string>
     <string name="restore_failed">กู้คืนข้อมูลสำรองไม่สำเร็จ</string>
     <string name="discord_integration">การเชื่อมต่อ Discord</string>
-    <string name="discord_information">echomusic ใช้ไลบรารี KizzyRPC เพื่อตั้งค่าสถานะบัญชี Discord ของคุณ ซึ่งต้องใช้การเชื่อมต่อ Discord Gateway ซึ่งอาจถือเป็นการละเมิดข้อกำหนดการใช้งานของ Discord อย่างไรก็ตาม ยังไม่พบกรณีที่บัญชีผู้ใช้ถูกระงับด้วยเหตุผลนี้ ใช้ความเสี่ยงด้วยตัวคุณเอง\nechomusic จะดึงเฉพาะโทเคนของคุณเท่านั้น ส่วนอื่น ๆ ทั้งหมดจะถูกเก็บไว้ในเครื่องของคุณ</string>
+    <string name="discord_information">nullmusic ใช้ไลบรารี KizzyRPC เพื่อตั้งค่าสถานะบัญชี Discord ของคุณ ซึ่งต้องใช้การเชื่อมต่อ Discord Gateway ซึ่งอาจถือเป็นการละเมิดข้อกำหนดการใช้งานของ Discord อย่างไรก็ตาม ยังไม่พบกรณีที่บัญชีผู้ใช้ถูกระงับด้วยเหตุผลนี้ ใช้ความเสี่ยงด้วยตัวคุณเอง\nnullmusic จะดึงเฉพาะโทเคนของคุณเท่านั้น ส่วนอื่น ๆ ทั้งหมดจะถูกเก็บไว้ในเครื่องของคุณ</string>
     <string name="dismiss">ปิด</string>
     <string name="options">ตัวเลือก</string>
     <string name="preview">ตัวอย่าง</string>
@@ -339,7 +339,7 @@
     <string name="listen_together_smart_resync">ซิงค์เครือข่ายอัจฉริยะ</string>
     <string name="listen_together_smart_resync_desc">ตามให้ทันโฮสต์โดยอัตโนมัติหลังการเชื่อมต่อหลุด</string>
     <string name="spotify_import_title">นำเข้าจาก Spotify</string>
-    <string name="spotify_import_desc">เชื่อมต่อ Spotify เลือกเพลย์ลิสต์ แล้วคัดลอกมาเป็นเพลย์ลิสต์ใน Echo Music</string>
+    <string name="spotify_import_desc">เชื่อมต่อ Spotify เลือกเพลย์ลิสต์ แล้วคัดลอกมาเป็นเพลย์ลิสต์ใน NullMusic</string>
     <string name="spotify_connect">เชื่อมต่อ Spotify</string>
     <string name="spotify_refresh">รีเฟรชคลังเพลง Spotify</string>
     <string name="spotify_select_sources">เลือกเพลย์ลิสต์ Spotify</string>
@@ -383,7 +383,7 @@
     <string name="recognition_notification_processing">กำลังระบุเพลง…</string>
     <string name="recognition_notification_no_match">ไม่พบเพลงที่ตรงกัน</string>
     <string name="recognition_notification_failed">การจดจำเพลงล้มเหลว</string>
-    <string name="listen_on_echo_music">ฟังบน Echo Music</string>
+    <string name="listen_on_echo_music">ฟังบน NullMusic</string>
     <string name="qs_tile_music_recognizer">จดจำเพลง</string>
     <string name="echo_brain_beta">Echo Brain (เบต้า)</string>
     <string name="echo_brain_enable">เปิดใช้ Echo Brain</string>

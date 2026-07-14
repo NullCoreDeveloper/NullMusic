@@ -404,7 +404,7 @@
     <string name="recognition_notification_processing">Αναγνώριση…</string>
     <string name="recognition_notification_no_match">Δεν βρέθηκε αντιστοιχία</string>
     <string name="recognition_notification_failed">Η αναγνώριση απέτυχε</string>
-    <string name="listen_on_echo_music">Ακρόαση στο Echo Music</string>
+    <string name="listen_on_echo_music">Ακρόαση στο NullMusic</string>
     <string name="qs_tile_music_recognizer">Αναγνώριση μουσικής</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Ενεργοποίηση Echo Brain</string>

@@ -404,7 +404,7 @@
     <string name="recognition_notification_processing">Azonosítás…</string>
     <string name="recognition_notification_no_match">Nincs találat</string>
     <string name="recognition_notification_failed">A felismerés sikertelen</string>
-    <string name="listen_on_echo_music">Meghallgatás az Echo Musicban</string>
+    <string name="listen_on_echo_music">Meghallgatás az NullMusicban</string>
     <string name="qs_tile_music_recognizer">Zene felismerése</string>
     <string name="echo_brain_beta">Echo Brain (béta)</string>
     <string name="echo_brain_enable">Echo Brain engedélyezése</string>

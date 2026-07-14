@@ -423,7 +423,7 @@
     <string name="recognition_notification_processing">Rozpoznáva sa…</string>
     <string name="recognition_notification_no_match">Nenašla sa žiadna zhoda</string>
     <string name="recognition_notification_failed">Rozpoznávanie zlyhalo</string>
-    <string name="listen_on_echo_music">Počúvať v Echo Music</string>
+    <string name="listen_on_echo_music">Počúvať v NullMusic</string>
     <string name="qs_tile_music_recognizer">Rozpoznať hudbu</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Povoliť Echo Brain</string>

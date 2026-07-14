@@ -313,7 +313,7 @@
     <string name="backup_create_failed">Tidak dapat mencipta sandaran</string>
     <string name="restore_failed">Gagal memulihkan sandaran</string>
     <string name="discord_integration">Penyepaduan Discord</string>
-    <string name="discord_information">echomusic menggunakan pustaka KizzyRPC untuk menetapkan status akaun Discord anda. Ini melibatkan penggunaan sambungan Discord Gateway yang mungkin dianggap sebagai pelanggaran Syarat Perkhidmatan Discord. Walau bagaimanapun, tiada kes akaun pengguna digantung atas sebab ini yang diketahui. Gunakan atas risiko anda sendiri.\nchomusic hanya akan mengekstrak token anda dan semua yang lain disimpan secara setempat.</string>
+    <string name="discord_information">nullmusic menggunakan pustaka KizzyRPC untuk menetapkan status akaun Discord anda. Ini melibatkan penggunaan sambungan Discord Gateway yang mungkin dianggap sebagai pelanggaran Syarat Perkhidmatan Discord. Walau bagaimanapun, tiada kes akaun pengguna digantung atas sebab ini yang diketahui. Gunakan atas risiko anda sendiri.\nchomusic hanya akan mengekstrak token anda dan semua yang lain disimpan secara setempat.</string>
     <string name="dismiss">Tutup</string>
     <string name="options">Pilihan</string>
     <string name="preview">Pratonton</string>
@@ -339,7 +339,7 @@
     <string name="listen_together_smart_resync">Penyegerakan Semula Rangkaian Pintar</string>
     <string name="listen_together_smart_resync_desc">Selaras semula dengan hos secara automatik selepas sambungan terputus</string>
     <string name="spotify_import_title">Import daripada Spotify</string>
-    <string name="spotify_import_desc">Sambungkan Spotify, pilih senarai main dan salinnya ke senarai main Echo Music setempat.</string>
+    <string name="spotify_import_desc">Sambungkan Spotify, pilih senarai main dan salinnya ke senarai main NullMusic setempat.</string>
     <string name="spotify_connect">Sambungkan Spotify</string>
     <string name="spotify_refresh">Muat semula pustaka Spotify</string>
     <string name="spotify_select_sources">Pilih senarai main Spotify</string>
@@ -383,7 +383,7 @@
     <string name="recognition_notification_processing">Mengenal pasti…</string>
     <string name="recognition_notification_no_match">Tiada padanan ditemui</string>
     <string name="recognition_notification_failed">Pengecaman gagal</string>
-    <string name="listen_on_echo_music">Dengar di Echo Music</string>
+    <string name="listen_on_echo_music">Dengar di NullMusic</string>
     <string name="qs_tile_music_recognizer">Kenal pasti muzik</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Dayakan Echo Brain</string>

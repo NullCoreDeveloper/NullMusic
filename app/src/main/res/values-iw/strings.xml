@@ -412,7 +412,7 @@
     <string name="recognition_notification_processing">מתבצע זיהוי…</string>
     <string name="recognition_notification_no_match">לא נמצאה התאמה</string>
     <string name="recognition_notification_failed">הזיהוי נכשל</string>
-    <string name="listen_on_echo_music">האזנה ב-Echo Music</string>
+    <string name="listen_on_echo_music">האזנה ב-NullMusic</string>
     <string name="qs_tile_music_recognizer">זיהוי מוזיקה</string>
     <string name="echo_brain_beta">Echo Brain (בטא)</string>
     <string name="echo_brain_enable">הפעלת Echo Brain</string>

@@ -412,7 +412,7 @@
     <string name="recognition_notification_processing">Identificazione in corso…</string>
     <string name="recognition_notification_no_match">Nessuna corrispondenza trovata</string>
     <string name="recognition_notification_failed">Riconoscimento non riuscito</string>
-    <string name="listen_on_echo_music">Ascolta su Echo Music</string>
+    <string name="listen_on_echo_music">Ascolta su NullMusic</string>
     <string name="qs_tile_music_recognizer">Riconosci la musica</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Abilita Echo Brain</string>

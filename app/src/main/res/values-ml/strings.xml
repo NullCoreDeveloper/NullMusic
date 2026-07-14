@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">തിരിച്ചറിയുന്നു…</string>
     <string name="recognition_notification_no_match">പൊരുത്തമൊന്നും കണ്ടെത്തിയില്ല</string>
     <string name="recognition_notification_failed">തിരിച്ചറിയൽ പരാജയപ്പെട്ടു</string>
-    <string name="listen_on_echo_music">Echo Music-ൽ കേൾക്കുക</string>
+    <string name="listen_on_echo_music">NullMusic-ൽ കേൾക്കുക</string>
     <string name="qs_tile_music_recognizer">സംഗീതം തിരിച്ചറിയുക</string>
     <string name="echo_brain_beta">Echo Brain (ബീറ്റ)</string>
     <string name="echo_brain_enable">Echo Brain പ്രവർത്തനക്ഷമമാക്കുക</string>

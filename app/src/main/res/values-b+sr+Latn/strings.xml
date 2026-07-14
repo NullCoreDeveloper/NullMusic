@@ -413,7 +413,7 @@
     <string name="recognition_notification_processing">Prepoznavanje…</string>
     <string name="recognition_notification_no_match">Nije pronađeno podudaranje</string>
     <string name="recognition_notification_failed">Prepoznavanje nije uspelo</string>
-    <string name="listen_on_echo_music">Slušaj na Echo Music</string>
+    <string name="listen_on_echo_music">Slušaj na NullMusic</string>
     <string name="qs_tile_music_recognizer">Prepoznaj muziku</string>
     <string name="echo_brain_beta">Echo Brain (beta)</string>
     <string name="echo_brain_enable">Omogući Echo Brain</string>

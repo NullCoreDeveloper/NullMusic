@@ -383,7 +383,7 @@
     <string name="recognition_notification_processing">Musiqi emal edilir</string>
     <string name="recognition_notification_no_match">Uyğunluq tapılmadı</string>
     <string name="recognition_notification_failed">Musiqini tanımaq mümkün olmadı</string>
-    <string name="listen_on_echo_music">Echo Music-də dinlə</string>
+    <string name="listen_on_echo_music">NullMusic-də dinlə</string>
     <string name="qs_tile_music_recognizer">Musiqi tanıyıcı</string>
     <string name="echo_brain_beta">Echo Brain Beta</string>
     <string name="echo_brain_enable">Echo Brain-i aktiv et</string>

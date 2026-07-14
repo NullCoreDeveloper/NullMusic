@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">Tuvastamine…</string>
     <string name="recognition_notification_no_match">Vastet ei leitud</string>
     <string name="recognition_notification_failed">Tuvastamine ebaõnnestus</string>
-    <string name="listen_on_echo_music">Kuula Echo Musicus</string>
+    <string name="listen_on_echo_music">Kuula NullMusicus</string>
     <string name="qs_tile_music_recognizer">Tuvasta muusika</string>
     <string name="echo_brain_beta">Echo Brain (beeta)</string>
     <string name="echo_brain_enable">Luba Echo Brain</string>

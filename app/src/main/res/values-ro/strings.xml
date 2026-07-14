@@ -413,7 +413,7 @@
     <string name="recognition_notification_processing">Se identifică…</string>
     <string name="recognition_notification_no_match">Nu s-a găsit nicio potrivire</string>
     <string name="recognition_notification_failed">Recunoașterea a eșuat</string>
-    <string name="listen_on_echo_music">Ascultă în Echo Music</string>
+    <string name="listen_on_echo_music">Ascultă în NullMusic</string>
     <string name="qs_tile_music_recognizer">Recunoaște muzica</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Activează Echo Brain</string>

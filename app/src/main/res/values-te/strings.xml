@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">గుర్తిస్తోంది…</string>
     <string name="recognition_notification_no_match">సరిపోలిక కనుగొనబడలేదు</string>
     <string name="recognition_notification_failed">గుర్తింపు విఫలమైంది</string>
-    <string name="listen_on_echo_music">Echo Musicలో వినండి</string>
+    <string name="listen_on_echo_music">NullMusicలో వినండి</string>
     <string name="qs_tile_music_recognizer">సంగీతాన్ని గుర్తించండి</string>
     <string name="echo_brain_beta">Echo Brain (బీటా)</string>
     <string name="echo_brain_enable">Echo Brainను ప్రారంభించండి</string>

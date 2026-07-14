@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">Herkennen…</string>
     <string name="recognition_notification_no_match">Geen overeenkomst gevonden</string>
     <string name="recognition_notification_failed">Herkenning mislukt</string>
-    <string name="listen_on_echo_music">Luisteren op Echo Music</string>
+    <string name="listen_on_echo_music">Luisteren op NullMusic</string>
     <string name="qs_tile_music_recognizer">Muziek herkennen</string>
     <string name="echo_brain_beta">Echo Brain (bèta)</string>
     <string name="echo_brain_enable">Echo Brain inschakelen</string>

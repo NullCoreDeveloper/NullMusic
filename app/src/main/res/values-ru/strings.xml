@@ -423,7 +423,7 @@
     <string name="recognition_notification_processing">Определяю…</string>
     <string name="recognition_notification_no_match">Нет совпадений</string>
     <string name="recognition_notification_failed">Ошибка распознавания</string>
-    <string name="listen_on_echo_music">Слушать в Echo Music</string>
+    <string name="listen_on_echo_music">Слушать в NullMusic</string>
     <string name="qs_tile_music_recognizer">Распознать музыку</string>
     <string name="echo_brain_beta">Echo Brain (Бета)</string>
     <string name="echo_brain_enable">Включить Echo Brain</string>

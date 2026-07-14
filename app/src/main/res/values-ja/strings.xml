@@ -394,7 +394,7 @@
     <string name="recognition_notification_processing">識別中…</string>
     <string name="recognition_notification_no_match">一致する曲が見つかりませんでした</string>
     <string name="recognition_notification_failed">認識に失敗しました</string>
-    <string name="listen_on_echo_music">Echo Musicで聴く</string>
+    <string name="listen_on_echo_music">NullMusicで聴く</string>
     <string name="qs_tile_music_recognizer">音楽を認識</string>
     <string name="echo_brain_beta">Echo Brain（ベータ版）</string>
     <string name="echo_brain_enable">Echo Brainを有効にする</string>

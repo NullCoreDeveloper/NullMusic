@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">Identifiserer…</string>
     <string name="recognition_notification_no_match">Fant ingen treff</string>
     <string name="recognition_notification_failed">Gjenkjenningen mislyktes</string>
-    <string name="listen_on_echo_music">Lytt på Echo Music</string>
+    <string name="listen_on_echo_music">Lytt på NullMusic</string>
     <string name="qs_tile_music_recognizer">Gjenkjenn musikk</string>
     <string name="echo_brain_beta">Echo Brain (beta)</string>
     <string name="echo_brain_enable">Aktiver Echo Brain</string>

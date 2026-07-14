@@ -428,7 +428,7 @@
     <string name="recognition_notification_processing">Tanımlanıyor…</string>
     <string name="recognition_notification_no_match">Eşleşme bulunamadı</string>
     <string name="recognition_notification_failed">Tanıma başarısız oldu</string>
-    <string name="listen_on_echo_music">Echo Music\'te dinle</string>
+    <string name="listen_on_echo_music">NullMusic\'te dinle</string>
     <string name="qs_tile_music_recognizer">Müziği tanı</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Echo Brain\'i etkinleştir</string>

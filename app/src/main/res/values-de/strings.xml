@@ -404,7 +404,7 @@
     <string name="recognition_notification_processing">Wird erkannt…</string>
     <string name="recognition_notification_no_match">Keine Übereinstimmung gefunden</string>
     <string name="recognition_notification_failed">Erkennung fehlgeschlagen</string>
-    <string name="listen_on_echo_music">Auf Echo Music anhören</string>
+    <string name="listen_on_echo_music">Auf NullMusic anhören</string>
     <string name="qs_tile_music_recognizer">Musik erkennen</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Echo Brain aktivieren</string>

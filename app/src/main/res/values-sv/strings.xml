@@ -323,7 +323,7 @@
     <string name="backup_create_failed">Det gick inte att skapa säkerhetskopian</string>
     <string name="restore_failed">Det gick inte att återställa säkerhetskopian</string>
     <string name="discord_integration">Discord-integrering</string>
-    <string name="discord_information">echomusic använder biblioteket KizzyRPC för att ställa in statusen för ditt Discord-konto. Detta innebär att Discord Gateway-anslutningen används, vilket kan betraktas som ett brott mot Discords användarvillkor. Det finns dock inga kända fall där användarkonton har stängts av av denna anledning. Använd på egen risk.\nchomusic hämtar endast din token, och allt annat lagras lokalt.</string>
+    <string name="discord_information">nullmusic använder biblioteket KizzyRPC för att ställa in statusen för ditt Discord-konto. Detta innebär att Discord Gateway-anslutningen används, vilket kan betraktas som ett brott mot Discords användarvillkor. Det finns dock inga kända fall där användarkonton har stängts av av denna anledning. Använd på egen risk.\nchomusic hämtar endast din token, och allt annat lagras lokalt.</string>
     <string name="dismiss">Stäng</string>
     <string name="options">Alternativ</string>
     <string name="preview">Förhandsgranska</string>
@@ -349,7 +349,7 @@
     <string name="listen_together_smart_resync">Smart nätverkssynkronisering</string>
     <string name="listen_together_smart_resync_desc">Synkronisera automatiskt med värden efter ett anslutningsavbrott</string>
     <string name="spotify_import_title">Importera från Spotify</string>
-    <string name="spotify_import_desc">Anslut Spotify, välj spellistor och spegla dem till lokala spellistor i Echo Music.</string>
+    <string name="spotify_import_desc">Anslut Spotify, välj spellistor och spegla dem till lokala spellistor i NullMusic.</string>
     <string name="spotify_connect">Anslut Spotify</string>
     <string name="spotify_refresh">Uppdatera Spotify-biblioteket</string>
     <string name="spotify_select_sources">Välj Spotify-spellistor</string>
@@ -393,7 +393,7 @@
     <string name="recognition_notification_processing">Identifierar…</string>
     <string name="recognition_notification_no_match">Ingen matchning hittades</string>
     <string name="recognition_notification_failed">Igenkänningen misslyckades</string>
-    <string name="listen_on_echo_music">Lyssna i Echo Music</string>
+    <string name="listen_on_echo_music">Lyssna i NullMusic</string>
     <string name="qs_tile_music_recognizer">Identifiera musik</string>
     <string name="echo_brain_beta">Echo Brain (beta)</string>
     <string name="echo_brain_enable">Aktivera Echo Brain</string>

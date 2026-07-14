@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">식별 중…</string>
     <string name="recognition_notification_no_match">일치하는 결과를 찾을 수 없습니다</string>
     <string name="recognition_notification_failed">음악 인식 실패</string>
-    <string name="listen_on_echo_music">Echo Music에서 듣기</string>
+    <string name="listen_on_echo_music">NullMusic에서 듣기</string>
     <string name="qs_tile_music_recognizer">음악 인식</string>
     <string name="echo_brain_beta">Echo Brain(베타)</string>
     <string name="echo_brain_enable">Echo Brain 사용</string>

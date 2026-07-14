@@ -415,7 +415,7 @@
     <string name="recognition_notification_processing">Kinikilala…</string>
     <string name="recognition_notification_no_match">Walang nakitang katugma</string>
     <string name="recognition_notification_failed">Nabigo ang pagkilala</string>
-    <string name="listen_on_echo_music">Pakinggan sa Echo Music</string>
+    <string name="listen_on_echo_music">Pakinggan sa NullMusic</string>
     <string name="qs_tile_music_recognizer">Kilalanin ang musika</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Paganahin ang Echo Brain</string>

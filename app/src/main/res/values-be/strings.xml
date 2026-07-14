@@ -429,7 +429,7 @@
     <string name="recognition_notification_processing">Распазнаванне…</string>
     <string name="recognition_notification_no_match">Супадзенняў не знойдзена</string>
     <string name="recognition_notification_failed">Не ўдалося распазнаць</string>
-    <string name="listen_on_echo_music">Слухаць у Echo Music</string>
+    <string name="listen_on_echo_music">Слухаць у NullMusic</string>
     <string name="qs_tile_music_recognizer">Распазнаць музыку</string>
     <string name="echo_brain_beta">Echo Brain (бэта-версія)</string>
     <string name="echo_brain_enable">Уключыць Echo Brain</string>

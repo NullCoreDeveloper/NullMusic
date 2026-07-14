@@ -322,7 +322,7 @@
     <string name="backup_create_failed">Sicherig het nit chenne erstellt wärde</string>
     <string name="restore_failed">Sicherig het nit chenne widerhergstellt wärde</string>
     <string name="discord_integration">Discord-Integration</string>
-    <string name="discord_information">echomusic brucht d KizzyRPC-Bibliothek, um dr Status va dim Discord-Konto festzlege. Derbi wird d Discord-Gateway-Verbindig brucht, was als Verstoss gege d Nutzigsbedingige va Discord chönnti gälte. Es sind aber kei Fäll bekannt, bi dene Benutzerkonte deswegen gsperrt worde sind. D Nutzig erfolgt uf eiges Risiko.\nchomusic liest nur din Token us, alles andera wird lokal gspeicheret.</string>
+    <string name="discord_information">nullmusic brucht d KizzyRPC-Bibliothek, um dr Status va dim Discord-Konto festzlege. Derbi wird d Discord-Gateway-Verbindig brucht, was als Verstoss gege d Nutzigsbedingige va Discord chönnti gälte. Es sind aber kei Fäll bekannt, bi dene Benutzerkonte deswegen gsperrt worde sind. D Nutzig erfolgt uf eiges Risiko.\nchomusic liest nur din Token us, alles andera wird lokal gspeicheret.</string>
     <string name="dismiss">Schliesse</string>
     <string name="options">Optione</string>
     <string name="preview">Vorschau</string>
@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">Wird erkannt…</string>
     <string name="recognition_notification_no_match">Kei Treffer gfunde</string>
     <string name="recognition_notification_failed">Erchennig fählgschlage</string>
-    <string name="listen_on_echo_music">Uf Echo Music lose</string>
+    <string name="listen_on_echo_music">Uf NullMusic lose</string>
     <string name="qs_tile_music_recognizer">Müsig erkenne</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Echo Brain aktiviere</string>

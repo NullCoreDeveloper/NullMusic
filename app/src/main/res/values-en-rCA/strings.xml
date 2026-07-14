@@ -414,7 +414,7 @@
     <string name="recognition_notification_processing">Identifying…</string>
     <string name="recognition_notification_no_match">No match found</string>
     <string name="recognition_notification_failed">Recognition failed</string>
-    <string name="listen_on_echo_music">Listen on Echo Music</string>
+    <string name="listen_on_echo_music">Listen on NullMusic</string>
     <string name="qs_tile_music_recognizer">Recognize music</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Enable Echo Brain</string>

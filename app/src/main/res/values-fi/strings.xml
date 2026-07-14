@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">Tunnistetaan…</string>
     <string name="recognition_notification_no_match">Vastaavuutta ei löytynyt</string>
     <string name="recognition_notification_failed">Tunnistus epäonnistui</string>
-    <string name="listen_on_echo_music">Kuuntele Echo Musicissa</string>
+    <string name="listen_on_echo_music">Kuuntele NullMusicissa</string>
     <string name="qs_tile_music_recognizer">Tunnista musiikki</string>
     <string name="echo_brain_beta">Echo Brain (beeta)</string>
     <string name="echo_brain_enable">Ota Echo Brain käyttöön</string>

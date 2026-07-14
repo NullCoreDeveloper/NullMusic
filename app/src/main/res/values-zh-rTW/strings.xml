@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">正在辨識…</string>
     <string name="recognition_notification_no_match">找不到相符結果</string>
     <string name="recognition_notification_failed">辨識失敗</string>
-    <string name="listen_on_echo_music">在 Echo Music 上聆聽</string>
+    <string name="listen_on_echo_music">在 NullMusic 上聆聽</string>
     <string name="qs_tile_music_recognizer">辨識音樂</string>
     <string name="echo_brain_beta">Echo Brain（測試版）</string>
     <string name="echo_brain_enable">啟用 Echo Brain</string>

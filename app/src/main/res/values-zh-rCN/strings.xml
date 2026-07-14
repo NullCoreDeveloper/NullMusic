@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">正在识别…</string>
     <string name="recognition_notification_no_match">未找到匹配项</string>
     <string name="recognition_notification_failed">识别失败</string>
-    <string name="listen_on_echo_music">在 Echo Music 中收听</string>
+    <string name="listen_on_echo_music">在 NullMusic 中收听</string>
     <string name="qs_tile_music_recognizer">识别音乐</string>
     <string name="echo_brain_beta">Echo Brain（测试版）</string>
     <string name="echo_brain_enable">启用 Echo Brain</string>

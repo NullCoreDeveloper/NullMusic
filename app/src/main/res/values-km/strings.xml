@@ -313,7 +313,7 @@
     <string name="backup_create_failed">មិនអាចបង្កើតការបម្រុងទុកបានទេ</string>
     <string name="restore_failed">ការស្ដារការបម្រុងទុកបានបរាជ័យ</string>
     <string name="discord_integration">ការរួមបញ្ចូល Discord</string>
-    <string name="discord_information">echomusic ប្រើបណ្ណាល័យ KizzyRPC ដើម្បីកំណត់ស្ថានភាពគណនី Discord របស់អ្នក។ វាពាក់ព័ន្ធនឹងការប្រើការតភ្ជាប់ Discord Gateway ដែលអាចត្រូវបានចាត់ទុកថា រំលោភលក្ខខណ្ឌប្រើប្រាស់របស់ Discord។ ទោះយ៉ាងណា មិនមានករណីដែលគេដឹងថា គណនីអ្នកប្រើត្រូវបានផ្អាកដោយសារហេតុផលនេះទេ។ ប្រើដោយទទួលខុសត្រូវលើហានិភ័យផ្ទាល់ខ្លួន។\nchomusic នឹងស្រង់យកតែថូខឹនរបស់អ្នកប៉ុណ្ណោះ ហើយអ្វីៗផ្សេងទៀតត្រូវបានរក្សាទុកក្នុងឧបករណ៍។</string>
+    <string name="discord_information">nullmusic ប្រើបណ្ណាល័យ KizzyRPC ដើម្បីកំណត់ស្ថានភាពគណនី Discord របស់អ្នក។ វាពាក់ព័ន្ធនឹងការប្រើការតភ្ជាប់ Discord Gateway ដែលអាចត្រូវបានចាត់ទុកថា រំលោភលក្ខខណ្ឌប្រើប្រាស់របស់ Discord។ ទោះយ៉ាងណា មិនមានករណីដែលគេដឹងថា គណនីអ្នកប្រើត្រូវបានផ្អាកដោយសារហេតុផលនេះទេ។ ប្រើដោយទទួលខុសត្រូវលើហានិភ័យផ្ទាល់ខ្លួន។\nchomusic នឹងស្រង់យកតែថូខឹនរបស់អ្នកប៉ុណ្ណោះ ហើយអ្វីៗផ្សេងទៀតត្រូវបានរក្សាទុកក្នុងឧបករណ៍។</string>
     <string name="dismiss">បិទ</string>
     <string name="options">ជម្រើស</string>
     <string name="preview">មើលជាមុន</string>
@@ -339,7 +339,7 @@
     <string name="listen_together_smart_resync">ធ្វើសមកាលកម្មបណ្តាញឆ្លាតវៃឡើងវិញ</string>
     <string name="listen_together_smart_resync_desc">តាមទាន់ម្ចាស់បន្ទប់ដោយស្វ័យប្រវត្តិបន្ទាប់ពីការតភ្ជាប់ដាច់</string>
     <string name="spotify_import_title">នាំចូលពី Spotify</string>
-    <string name="spotify_import_desc">ភ្ជាប់ Spotify ជ្រើសរើសបញ្ជីចាក់ ហើយចម្លងពួកវាទៅក្នុងបញ្ជីចាក់ Echo Music ក្នុងឧបករណ៍។</string>
+    <string name="spotify_import_desc">ភ្ជាប់ Spotify ជ្រើសរើសបញ្ជីចាក់ ហើយចម្លងពួកវាទៅក្នុងបញ្ជីចាក់ NullMusic ក្នុងឧបករណ៍។</string>
     <string name="spotify_connect">ភ្ជាប់ Spotify</string>
     <string name="spotify_refresh">ផ្ទុកបណ្ណាល័យ Spotify ឡើងវិញ</string>
     <string name="spotify_select_sources">ជ្រើសរើសបញ្ជីចាក់ Spotify</string>
@@ -383,7 +383,7 @@
     <string name="recognition_notification_processing">កំពុងសម្គាល់…</string>
     <string name="recognition_notification_no_match">រកមិនឃើញបទដែលត្រូវគ្នា</string>
     <string name="recognition_notification_failed">ការសម្គាល់បានបរាជ័យ</string>
-    <string name="listen_on_echo_music">ស្តាប់លើ Echo Music</string>
+    <string name="listen_on_echo_music">ស្តាប់លើ NullMusic</string>
     <string name="qs_tile_music_recognizer">សម្គាល់តន្ត្រី</string>
     <string name="echo_brain_beta">Echo Brain (សាកល្បង)</string>
     <string name="echo_brain_enable">បើក Echo Brain</string>

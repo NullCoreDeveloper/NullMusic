@@ -389,7 +389,7 @@
     <string name="recognition_notification_processing">Đang nhận diện…</string>
     <string name="recognition_notification_no_match">Không tìm thấy kết quả phù hợp</string>
     <string name="recognition_notification_failed">Nhận diện thất bại</string>
-    <string name="listen_on_echo_music">Nghe trên Echo Music</string>
+    <string name="listen_on_echo_music">Nghe trên NullMusic</string>
     <string name="qs_tile_music_recognizer">Nhận diện nhạc</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Bật Echo Brain</string>

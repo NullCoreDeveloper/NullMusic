@@ -402,7 +402,7 @@
     <string name="recognition_notification_processing">அடையாளம் காண்கிறது…</string>
     <string name="recognition_notification_no_match">பொருத்தம் எதுவும் கிடைக்கவில்லை</string>
     <string name="recognition_notification_failed">அடையாளம் காண முடியவில்லை</string>
-    <string name="listen_on_echo_music">Echo Music இல் கேளுங்கள்</string>
+    <string name="listen_on_echo_music">NullMusic இல் கேளுங்கள்</string>
     <string name="qs_tile_music_recognizer">இசையை அடையாளம் காண்</string>
     <string name="echo_brain_beta">Echo Brain (பீட்டா)</string>
     <string name="echo_brain_enable">Echo Brain ஐ இயக்கு</string>

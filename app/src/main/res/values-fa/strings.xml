@@ -422,7 +422,7 @@
     <string name="recognition_notification_processing">در حال شناسایی…</string>
     <string name="recognition_notification_no_match">هیچ مورد منطبقی یافت نشد</string>
     <string name="recognition_notification_failed">تشخیص ناموفق بود</string>
-    <string name="listen_on_echo_music">در Echo Music گوش دهید</string>
+    <string name="listen_on_echo_music">در NullMusic گوش دهید</string>
     <string name="qs_tile_music_recognizer">تشخیص موسیقی</string>
     <string name="echo_brain_beta">Echo Brain (بتا)</string>
     <string name="echo_brain_enable">فعال‌سازی Echo Brain</string>

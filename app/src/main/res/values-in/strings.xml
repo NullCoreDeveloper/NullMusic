@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">Mengidentifikasi…</string>
     <string name="recognition_notification_no_match">Tidak ditemukan kecocokan</string>
     <string name="recognition_notification_failed">Pengenalan gagal</string>
-    <string name="listen_on_echo_music">Dengarkan di Echo Music</string>
+    <string name="listen_on_echo_music">Dengarkan di NullMusic</string>
     <string name="qs_tile_music_recognizer">Kenali musik</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Aktifkan Echo Brain</string>

@@ -412,7 +412,7 @@
     <string name="recognition_notification_processing">Identificando…</string>
     <string name="recognition_notification_no_match">No se encontraron coincidencias</string>
     <string name="recognition_notification_failed">Falló el reconocimiento</string>
-    <string name="listen_on_echo_music">Escuchar en Echo Music</string>
+    <string name="listen_on_echo_music">Escuchar en NullMusic</string>
     <string name="qs_tile_music_recognizer">Reconocer música</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Activar Echo Brain</string>

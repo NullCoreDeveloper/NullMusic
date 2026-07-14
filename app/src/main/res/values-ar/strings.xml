@@ -443,7 +443,7 @@
     <string name="recognition_notification_processing">جارٍ التعرف…</string>
     <string name="recognition_notification_no_match">لم يتم العثور على تطابق</string>
     <string name="recognition_notification_failed">فشل التعرف</string>
-    <string name="listen_on_echo_music">الاستماع على Echo Music</string>
+    <string name="listen_on_echo_music">الاستماع على NullMusic</string>
     <string name="qs_tile_music_recognizer">التعرف على الموسيقى</string>
     <string name="echo_brain_beta">Echo Brain (تجريبي)</string>
     <string name="echo_brain_enable">تفعيل Echo Brain</string>

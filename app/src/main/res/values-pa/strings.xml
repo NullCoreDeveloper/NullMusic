@@ -403,7 +403,7 @@
     <string name="recognition_notification_processing">ਪਛਾਣ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</string>
     <string name="recognition_notification_no_match">ਕੋਈ ਮੇਲ ਨਹੀਂ ਮਿਲਿਆ</string>
     <string name="recognition_notification_failed">ਪਛਾਣ ਅਸਫਲ ਰਹੀ</string>
-    <string name="listen_on_echo_music">Echo Music ਉੱਤੇ ਸੁਣੋ</string>
+    <string name="listen_on_echo_music">NullMusic ਉੱਤੇ ਸੁਣੋ</string>
     <string name="qs_tile_music_recognizer">ਸੰਗੀਤ ਪਛਾਣੋ</string>
     <string name="echo_brain_beta">Echo Brain (ਬੀਟਾ)</string>
     <string name="echo_brain_enable">Echo Brain ਚਾਲੂ ਕਰੋ</string>

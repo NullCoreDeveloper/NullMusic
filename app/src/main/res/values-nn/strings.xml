@@ -323,7 +323,7 @@
     <string name="backup_create_failed">Klarte ikkje å oppretta tryggleikskopi</string>
     <string name="restore_failed">Klarte ikkje å gjenoppretta tryggleikskopien</string>
     <string name="discord_integration">Discord-integrasjon</string>
-    <string name="discord_information">echomusic brukar KizzyRPC-biblioteket til å velja statusen for Discord-kontoen din. Dette inneber bruk av Discord Gateway-tilkoplinga, noko som kan reknast som eit brot på bruksvilkåra til Discord. Det finst likevel ingen kjende tilfelle der brukarkontoar har vorte suspenderte av denne grunnen. Bruk på eige ansvar.\nchomusic hentar berre tokenet ditt, og alt anna vert lagra lokalt.</string>
+    <string name="discord_information">nullmusic brukar KizzyRPC-biblioteket til å velja statusen for Discord-kontoen din. Dette inneber bruk av Discord Gateway-tilkoplinga, noko som kan reknast som eit brot på bruksvilkåra til Discord. Det finst likevel ingen kjende tilfelle der brukarkontoar har vorte suspenderte av denne grunnen. Bruk på eige ansvar.\nchomusic hentar berre tokenet ditt, og alt anna vert lagra lokalt.</string>
     <string name="dismiss">Lukk</string>
     <string name="options">Val</string>
     <string name="preview">Førehandsvising</string>
@@ -349,7 +349,7 @@
     <string name="listen_together_smart_resync">Smart nettverkssynkronisering</string>
     <string name="listen_together_smart_resync_desc">Ta automatisk igjen verten etter at tilkoplinga fell ut</string>
     <string name="spotify_import_title">Importer frå Spotify</string>
-    <string name="spotify_import_desc">Kople til Spotify, vel spelelister og spegl dei til lokale Echo Music-spelelister.</string>
+    <string name="spotify_import_desc">Kople til Spotify, vel spelelister og spegl dei til lokale NullMusic-spelelister.</string>
     <string name="spotify_connect">Kople til Spotify</string>
     <string name="spotify_refresh">Oppdater Spotify-biblioteket</string>
     <string name="spotify_select_sources">Vel Spotify-spelelister</string>
@@ -393,7 +393,7 @@
     <string name="recognition_notification_processing">Identifiserer…</string>
     <string name="recognition_notification_no_match">Fann ingen treff</string>
     <string name="recognition_notification_failed">Attkjenninga mislukkast</string>
-    <string name="listen_on_echo_music">Lytt på Echo Music</string>
+    <string name="listen_on_echo_music">Lytt på NullMusic</string>
     <string name="qs_tile_music_recognizer">Kjenn att musikk</string>
     <string name="echo_brain_beta">Echo Brain (beta)</string>
     <string name="echo_brain_enable">Slå på Echo Brain</string>

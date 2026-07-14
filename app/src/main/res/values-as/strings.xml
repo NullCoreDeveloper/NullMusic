@@ -323,7 +323,7 @@
     <string name="backup_create_failed">বেকআপ সৃষ্টি কৰিব পৰা নগ’ল</string>
     <string name="restore_failed">বেকআপ পুনৰুদ্ধাৰ কৰাত বিফল</string>
     <string name="discord_integration">Discord সংহতি</string>
-    <string name="discord_information">আপোনাৰ Discord একাউণ্টৰ স্থিতি নিৰ্ধাৰণ কৰিবলৈ echomusic-এ KizzyRPC লাইব্ৰেৰী ব্যৱহাৰ কৰে। ইয়াত Discord Gateway সংযোগ ব্যৱহাৰ কৰা হয়, যাক Discord-ৰ সেৱাৰ চৰ্তৰ উলংঘন বুলি গণ্য কৰা হ’ব পাৰে। অৱশ্যে এই কাৰণত ব্যৱহাৰকাৰীৰ একাউণ্ট স্থগিত হোৱাৰ কোনো জ্ঞাত ঘটনা নাই। নিজৰ দায়িত্বত ব্যৱহাৰ কৰক। \nchomusic-এ কেৱল আপোনাৰ ট’কেন আহৰণ কৰিব আৰু বাকী সকলো তথ্য স্থানীয়ভাৱে সংৰক্ষণ কৰা হয়।chomusic-এ কেৱল আপোনাৰ ট’কেন আহৰণ কৰিব আৰু বাকী সকলো তথ্য স্থানীয়ভাৱে সংৰক্ষণ কৰা হয়।</string>
+    <string name="discord_information">আপোনাৰ Discord একাউণ্টৰ স্থিতি নিৰ্ধাৰণ কৰিবলৈ nullmusic-এ KizzyRPC লাইব্ৰেৰী ব্যৱহাৰ কৰে। ইয়াত Discord Gateway সংযোগ ব্যৱহাৰ কৰা হয়, যাক Discord-ৰ সেৱাৰ চৰ্তৰ উলংঘন বুলি গণ্য কৰা হ’ব পাৰে। অৱশ্যে এই কাৰণত ব্যৱহাৰকাৰীৰ একাউণ্ট স্থগিত হোৱাৰ কোনো জ্ঞাত ঘটনা নাই। নিজৰ দায়িত্বত ব্যৱহাৰ কৰক। \nchomusic-এ কেৱল আপোনাৰ ট’কেন আহৰণ কৰিব আৰু বাকী সকলো তথ্য স্থানীয়ভাৱে সংৰক্ষণ কৰা হয়।chomusic-এ কেৱল আপোনাৰ ট’কেন আহৰণ কৰিব আৰু বাকী সকলো তথ্য স্থানীয়ভাৱে সংৰক্ষণ কৰা হয়।</string>
     <string name="dismiss">খাৰিজ কৰক</string>
     <string name="options">বিকল্পসমূহ</string>
     <string name="preview">পূৰ্বদৰ্শন</string>
@@ -349,7 +349,7 @@
     <string name="listen_together_smart_resync">স্মাৰ্ট নেটৱৰ্ক পুনঃসমলয়</string>
     <string name="listen_together_smart_resync_desc">সংযোগ বিচ্ছিন্ন হোৱাৰ পিছত স্বয়ংক্ৰিয়ভাৱে হ’ষ্টৰ সৈতে মিলাওক</string>
     <string name="spotify_import_title">Spotify-ৰ পৰা আমদানি কৰক</string>
-    <string name="spotify_import_desc">Spotify সংযোগ কৰক, প্লেলিষ্ট বাছক আৰু সেইবোৰ স্থানীয় Echo Music প্লেলিষ্টলৈ প্ৰতিফলিত কৰক।</string>
+    <string name="spotify_import_desc">Spotify সংযোগ কৰক, প্লেলিষ্ট বাছক আৰু সেইবোৰ স্থানীয় NullMusic প্লেলিষ্টলৈ প্ৰতিফলিত কৰক।</string>
     <string name="spotify_connect">Spotify সংযোগ কৰক</string>
     <string name="spotify_refresh">Spotify লাইব্ৰেৰী সতেজ কৰক</string>
     <string name="spotify_select_sources">Spotify প্লেলিষ্টসমূহ বাছক</string>
@@ -393,7 +393,7 @@
     <string name="recognition_notification_processing">চিনাক্ত কৰা হৈছে…</string>
     <string name="recognition_notification_no_match">কোনো মিল পোৱা নগ’ল</string>
     <string name="recognition_notification_failed">চিনাক্তকৰণ বিফল হ’ল</string>
-    <string name="listen_on_echo_music">Echo Music-ত শুনক</string>
+    <string name="listen_on_echo_music">NullMusic-ত শুনক</string>
     <string name="qs_tile_music_recognizer">সংগীত চিনাক্ত কৰক</string>
     <string name="echo_brain_beta">Echo Brain (বিটা)</string>
     <string name="echo_brain_enable">Echo Brain সক্ষম কৰক</string>

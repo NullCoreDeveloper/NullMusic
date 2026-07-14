@@ -410,7 +410,7 @@
     <string name="recognition_notification_processing">শনাক্ত করা হচ্ছে…</string>
     <string name="recognition_notification_no_match">কোনো মিল পাওয়া যায়নি</string>
     <string name="recognition_notification_failed">শনাক্তকরণ ব্যর্থ হয়েছে</string>
-    <string name="listen_on_echo_music">Echo Music-এ শুনুন</string>
+    <string name="listen_on_echo_music">NullMusic-এ শুনুন</string>
     <string name="qs_tile_music_recognizer">সঙ্গীত শনাক্ত করুন</string>
     <string name="echo_brain_beta">Echo Brain (বিটা)</string>
     <string name="echo_brain_enable">Echo Brain চালু করুন</string>

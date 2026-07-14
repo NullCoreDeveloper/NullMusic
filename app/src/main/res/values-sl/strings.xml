@@ -41,11 +41,8 @@
     <string name="filter_albums">Albumi</string>
     <string name="filter_artists">Izvajalci</string>
     <string name="filter_playlists">Seznami predvajanja</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Glasba</string>
-
     <!-- Top bar (plural already exists, but check if needed) -->
 
 
@@ -57,21 +54,19 @@
     <!-- Search - add missing filters -->
     <string name="filter_local">Lokalno</string>
     <string name="filter_bookmarked">Zaznamki</string>
-    <string name="no_results_found">Ni najdenih rezultatov</string> <!-- already present? No, it's missing -->
+    <string name="no_results_found">Ni najdenih rezultatov</string>
+    <!-- already present? No, it's missing -->
 
     <!-- Library -->
     <string name="library_song_empty">Skladbe iz knjižnice bodo prikazane tukaj</string>
     <string name="library_artist_empty">Izvajalci iz knjižnice bodo prikazani tukaj</string>
     <string name="library_album_empty">Albumi iz knjižnice bodo prikazani tukaj</string>
     <string name="library_playlist_empty">Vaši seznami predvajanja bodo prikazani tukaj</string>
-
     <!-- Artist screen -->
     <string name="from_your_library">Iz vaše knjižnice</string>
-
     <!-- Album screen -->
     <string name="other_versions">Druge različice</string>
     <string name="album_description_placeholder">To je opis albuma za prikaz. Uživajte v poslušanju spodnjih skladb!</string>
-
     <!-- Playlist -->
     <string name="liked_songs">Všečkane skladbe</string>
     <string name="downloaded_songs">Prenesene skladbe</string>
@@ -79,7 +74,6 @@
     <string name="remove_download_playlist_confirm">Ali res želite odstraniti vse skladbe s seznama \"%s\" iz shrambe prenesenih skladb?</string>
     <string name="delete_playlist_confirm">Ali res želite izbrisati seznam predvajanja \"%s\"?</string>
     <string name="you_might_also_like">Sorodni seznam predvajanja</string>
-
     <!-- Button -->
     <string name="retry">Poskusi znova</string>
     <string name="radio">Radio</string>
@@ -88,7 +82,6 @@
     <string name="shuffle_label">Premešaj</string>
     <string name="reset">Ponastavi</string>
     <string name="pause">Premor</string>
-
     <!-- Menu -->
     <string name="details">Podrobnosti</string>
     <string name="edit">Uredi</string>
@@ -123,7 +116,6 @@
     <string name="action_sync">Sinhroniziraj</string>
     <string name="advanced">Napredno</string>
     <string name="tempo_and_pitch">Tempo in višina tona</string>
-
     <!-- Sort menu -->
     <string name="sort_by_create_date">Datum dodajanja</string>
     <string name="sort_by_name">Ime</string>
@@ -133,7 +125,6 @@
     <string name="sort_by_length">Dolžina</string>
     <string name="sort_by_play_time">Čas predvajanja</string>
     <string name="sort_by_custom">Po meri</string>
-
     <!-- Dialog -->
     <string name="media_id">ID medija</string>
     <string name="mime_type">Vrsta MIME</string>
@@ -173,7 +164,6 @@
     <string name="duplicates_description_single">Skladba je že na vašem seznamu predvajanja</string>
     <string name="duplicates_description_multiple">%d skladb je že na vašem seznamu predvajanja</string>
     <string name="picker_not_available">Izbirnik dokumentov na tej napravi ni na voljo. Uporablja se privzeti izvozni imenik aplikacije.</string>
-
     <!-- Noun plurals (some already exist, but missing many) -->
     <plurals name="n_song">
         <item quantity="one">%d skladba</item>
@@ -224,13 +214,11 @@
         <item quantity="few">Najdeni %d APK</item>
         <item quantity="other">Najdenih %d APK</item>
     </plurals>
-
     <!-- Snackbar -->
     <string name="playlist_imported">Seznam predvajanja uvožen</string>
     <string name="removed_song_from_playlist">Odstranjeno \"%s\" s seznama predvajanja</string>
     <string name="playlist_synced">Seznam predvajanja sinhroniziran</string>
     <string name="undo">Razveljavi</string>
-
     <!-- Player -->
     <string name="lyrics_not_found">Besedilo ni najdeno</string>
     <string name="sleep_timer">Časovnik za spanje</string>
@@ -245,7 +233,6 @@
     <string name="error_no_internet">Brez omrežne povezave</string>
     <string name="error_timeout">Časovna omejitev</string>
     <string name="error_unknown">Neznana napaka</string>
-
     <!-- Player action -->
     <string name="action_like">Všeč mi je</string>
     <string name="action_like_all">Všečkaj vse</string>
@@ -256,14 +243,11 @@
     <string name="repeat_mode_off">Ponavljanje izklopljeno</string>
     <string name="repeat_mode_one">Ponovi trenutno skladbo</string>
     <string name="repeat_mode_all">Ponovi čakalno vrsto</string>
-
     <!-- Queue Title -->
     <string name="queue_all_songs">Vse skladbe</string>
     <string name="queue_searched_songs">Iskane skladbe</string>
-
     <!-- Notification name -->
     <string name="music_player">Glasbeni predvajalnik</string>
-
     <!-- Settings -->
     <string name="settings">Nastavitve</string>
     <string name="appearance">Videz</string>
@@ -394,8 +378,6 @@
     <string name="standard_lyrics_blur">Standardno zamegljevanje besedila</string>
     <string name="listen_together_smart_resync">Pametna ponovna sinhronizacija omrežja</string>
     <string name="listen_together_smart_resync_desc">Po prekinitvi povezave samodejno sledite gostitelju</string>
-
-
     <string name="spotify_import_title">Uvozi iz Spotifyja</string>
     <string name="spotify_import_desc">Povežite Spotify, izberite sezname predvajanja in jih preslikajte v lokalne sezname NullMusic.</string>
     <string name="spotify_connect">Poveži Spotify</string>
@@ -422,4 +404,119 @@
     <string name="spotify_account">Račun Spotify</string>
     <string name="spotify_waiting_for_login">Čakanje na prijavo v Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="filter_community_playlists">Seznami predvajanja skupnosti</string>
+    <string name="filter_featured_playlists">Izpostavljeni seznami predvajanja</string>
+    <string name="loading">Nalaganje</string>
+    <string name="added_to_playlist">Dodano na %s</string>
+    <string name="more_options">Več možnosti</string>
+    <string name="export_as_csv">Izvozi kot CSV</string>
+    <string name="export_playlist_desc">Izvozi skladbe s seznama predvajanja v datoteko CSV</string>
+    <string name="export_successful">Seznam predvajanja je bil uspešno izvožen</string>
+    <string name="activity_history">Povzetek poslušanja</string>
+    <string name="total_listening_time">Skupni čas poslušanja</string>
+    <string name="unique_songs">Edinstvene skladbe</string>
+    <string name="unique_artists">Edinstveni izvajalci</string>
+    <string name="unique_albums">Edinstveni albumi</string>
+    <string name="selected_period">Izbrano obdobje</string>
+    <string name="hours_minutes_format">%1$d h %2$d min</string>
+    <string name="content_sponsor_block">SponsorBlock (samodejni preskok)</string>
+    <string name="content_sponsor_block_desc">Samodejno preskoči sponzorske vsebine, uvode in dele videoposnetkov brez glasbe</string>
+    <string name="spotify_import_by_link">Uvozi seznam predvajanja prek povezave</string>
+    <string name="spotify_import_by_link_desc">Prilepite povezavo do seznama predvajanja Spotify, da ga uvozite, tudi če ni v vaši lasti</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Dodaj</string>
+    <string name="spotify_invalid_playlist_link">To ni videti kot povezava do seznama predvajanja Spotify. Uporabite povezavo, kot je https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Čas delovanja storitev</string>
+    <string name="service_uptime_desc">Preverite stanje ponudnikov glasbe</string>
+    <string name="music_providers">Ponudniki glasbe</string>
+    <string name="canvas_providers">Ponudniki Canvas</string>
+    <string name="lyrics_providers">Ponudniki besedil skladb</string>
+    <string name="other_services">Druge storitve</string>
+    <string name="status_online">Dosegljivo</string>
+    <string name="status_offline">Nedosegljivo</string>
+    <string name="status_checking">Preverjanje ...</string>
+    <string name="recognition_notification_channel_name">Prepoznavanje glasbe</string>
+    <string name="recognition_notification_channel_desc">Prikaže obvestilo med prepoznavanjem skladbe prek hitrih nastavitev</string>
+    <string name="recognition_notification_listening">Poslušanje glasbe …</string>
+    <string name="recognition_notification_processing">Prepoznavanje …</string>
+    <string name="recognition_notification_no_match">Ni najdenih zadetkov</string>
+    <string name="recognition_notification_failed">Prepoznavanje ni uspelo</string>
+    <string name="listen_on_echo_music">Poslušaj v aplikaciji Echo Music</string>
+    <string name="qs_tile_music_recognizer">Prepoznaj glasbo</string>
+    <string name="echo_brain_beta">Echo Brain (beta)</string>
+    <string name="echo_brain_enable">Omogoči Echo Brain</string>
+    <string name="echo_brain_enable_desc">Samodejno vključi priporočila umetne inteligence na podlagi vaših navad poslušanja</string>
+    <string name="echo_brain_profile_statistics">Statistika profila</string>
+    <string name="echo_brain_learning_level">Raven učenja</string>
+    <string name="echo_brain_initiate">Začni</string>
+    <string name="echo_brain_total_interactions">Skupno število interakcij</string>
+    <string name="echo_brain_interactions_tracked">Sledenih interakcij: %1$d</string>
+    <string name="echo_brain_discovered_genres">Odkrite zvrsti</string>
+    <string name="echo_brain_distinct_genres_identified">Prepoznanih različnih zvrsti: %1$d</string>
+    <string name="echo_brain_analyzed_artists">Analizirani izvajalci</string>
+    <string name="echo_brain_artists_mapped">Preslikanih izvajalcev: %1$d</string>
+    <string name="echo_brain_data_management">Upravljanje podatkov</string>
+    <string name="echo_brain_export_profile">Izvozi profil</string>
+    <string name="echo_brain_export_profile_desc">Shranite svoj nevronski zemljevid v datoteko</string>
+    <string name="echo_brain_import_profile">Uvozi profil</string>
+    <string name="echo_brain_import_profile_desc">Naložite predhodno shranjen nevronski zemljevid</string>
+    <string name="echo_brain_reset_profile">Ponastavi profil</string>
+    <string name="echo_brain_reset_profile_desc">Izbrišite vse naučene podatke in začnite znova</string>
+    <string name="echo_brain_reset_neural_profile">Ponastavi nevronski profil</string>
+    <string name="echo_brain_reset_neural_profile_desc">S tem boste trajno izbrisali vse naučene nastavitve. Mehanizem se bo začel učiti od začetka.</string>
+    <string name="echo_brain_profile_exported_successfully">Profil je bil uspešno izvožen</string>
+    <string name="echo_brain_export_failed">Izvoz ni uspel</string>
+    <string name="echo_brain_profile_imported_successfully">Profil je bil uspešno uvožen</string>
+    <string name="echo_brain_import_failed_invalid_file">Uvoz ni uspel: neveljavna datoteka</string>
+    <string name="listenbrainz_scrobbling">Beleženje poslušanja v ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Samodejno pošiljajte poslušane skladbe v ListenBrainz</string>
+    <string name="set_listenbrainz_token">Nastavi žeton ListenBrainz</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Konfigurirajte nastavitve ekstraktorja</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Samodejno pridobi konfiguracije predvajanja YouTube. Zaklenjeno na možnost »Aktivno«.</string>
+    <string name="force_update_cipher">Vsili posodobitev konfiguracij</string>
+    <string name="force_update_cipher_desc">Prenesite najnovejše nadomestne preslikave ekstraktorja. Omejeno na 3 posodobitve na dan.</string>
+    <string name="youtube_decryption_info">Preslikave ekstraktorja se dinamično pridobivajo iz vašega lastnega gostovanega vozlišča. Odštevanje na vrhu prikazuje preostali čas do naslednjega samodejnega preverjanja sinhronizacije. Če so ročne posodobitve zahtevane več kot trikrat, bodo za en dan blokirane.</string>
+    <string name="last_updated">Nazadnje posodobljeno</string>
+    <string name="last_updated_never">Nikoli</string>
+    <string name="cipher_update_success">Preslikave ekstraktorja so posodobljene! Naloženih predvajalnikov: %d.</string>
+    <string name="cipher_update_failed">Posodobitev preslikav ekstraktorja ni uspela: %s</string>
+    <string name="cipher_updating">Posodabljanje konfiguracij ekstraktorja …</string>
+    <string name="hours_label">Ure</string>
+    <string name="minutes_label">Minute</string>
+    <string name="seconds_label">Sekunde</string>
+    <string name="liquid_glass">Tekoče steklo (beta)</string>
+    <string name="player_background_liquid_glass">Tekoče steklo</string>
+    <string name="liquid_glass_settings">Tekoče steklo (beta)</string>
+    <string name="liquid_glass_global_enabled">Omogoči tekoče steklo</string>
+    <string name="liquid_glass_effects">Učinki</string>
+    <string name="liquid_glass_appearance">Videz</string>
+    <string name="liquid_glass_per_component">Po komponentah</string>
+    <string name="liquid_glass_vibrancy">Živahnost</string>
+    <string name="liquid_glass_vibrancy_desc">Poveča nasičenost steklenega ozadja</string>
+    <string name="liquid_glass_blur_radius">Polmer zameglitve</string>
+    <string name="liquid_glass_blur_radius_desc">Količina zameglitve na stekleni površini</string>
+    <string name="liquid_glass_lens_height">Višina loma svetlobe leče</string>
+    <string name="liquid_glass_lens_amount">Količina loma svetlobe leče</string>
+    <string name="liquid_glass_chromatic_aberration">Kromatska aberacija</string>
+    <string name="liquid_glass_depth_effect">Učinek globine</string>
+    <string name="liquid_glass_surface_opacity">Neprosojnost površine</string>
+    <string name="liquid_glass_surface_opacity_desc">Neprosojnost barvnega sloja stekla za boljšo berljivost</string>
+    <string name="liquid_glass_surface_tint">Odtenek površine</string>
+    <string name="liquid_glass_surface_tint_desc">Barvni odtenek, uporabljen na stekleni površini</string>
+    <string name="liquid_glass_text_color">Barva besedila na steklu</string>
+    <string name="liquid_glass_text_color_desc">Barva besedila, uporabljena na steklenih površinah</string>
+    <string name="liquid_glass_player">Stekleni predvajalnik</string>
+    <string name="liquid_glass_mini_player">Stekleni mini predvajalnik</string>
+    <string name="liquid_glass_nav_bar">Steklena navigacijska vrstica</string>
+    <string name="nav_bar_style">Slog navigacijske vrstice</string>
+    <string name="floating_nav_bar">Plavajoča navigacijska vrstica</string>
+    <string name="floating_nav_bar_desc">Plavajoča vrstica z zavihki v slogu sistema iOS, ki se med pomikanjem skrči</string>
+    <string name="liquid_glass_performance_warning">Upodabljanje tekočega stekla je zahtevno in lahko v nekaterih napravah zmanjša tekočnost delovanja ter skrajša čas delovanja baterije</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Zahteva omogočeno plavajočo navigacijsko vrstico</string>
+    <string name="color_picker_hex">Šestnajstiško</string>
+    <string name="color_white">Bela</string>
+    <string name="color_light_gray">Svetlo siva</string>
+    <string name="color_black">Črna</string>
 </resources>

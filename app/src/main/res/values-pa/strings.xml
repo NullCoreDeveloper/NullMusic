@@ -229,24 +229,18 @@
     <string name="library_album_empty">ਲਾਇਬ੍ਰੇਰੀ ਟੇਪਾਂ ਇੱਥੇ ਦਿਖਣ ਗੀਆਂ</string>
     <string name="library_playlist_empty">ਤੁਹਾਡੀਆਂ ਚਾਲ ਸੂਚੀਆਂ ਇੱਥੇ ਦਿਖਣ ਗਿਆਂ</string>
     <string name="other_versions">ਟੇਪ ਦ੍ਰਿਸ਼</string>
-
     <!-- Bottom navigation -->
     <string name="music">ਸੰਗੀਤ</string>
-
     <!-- Search -->
     <string name="filter_local">ਸਥਾਨਕ</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">ਇਹ ਐਲਬਮ ਲਈ ਇੱਕ ਪਲੇਸਹੋਲਡਰ ਵੇਰਵਾ ਹੈ। ਹੇਠਾਂ ਦਿੱਤੇ ਟਰੈਕਾਂ ਨੂੰ ਸੁਣ ਕੇ ਅਨੰਦ ਲਓ!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">ਸੰਬੰਧਿਤ ਪਲੇਲਿਸਟ</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">ਸ਼ਫਲ</string>
     <string name="shuffle_label">ਸ਼ਫਲ</string>
     <string name="pause">ਰੋਕੋ</string>
-
     <!-- Menu -->
     <string name="saving">ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</string>
     <string name="saved">ਸੰਭਾਲਿਆ ਗਿਆ</string>
@@ -254,7 +248,6 @@
     <string name="add_to_an_playlist">ਸ਼ਾਮਲ ਕਰੋ</string>
     <string name="more_label">ਹੋਰ</string>
     <string name="releases_for_you">ਤੁਹਾਡੇ ਲਈ ਰਿਲੀਜ਼</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">ਪੂਰੀ ਸਕ੍ਰੀਨ \'ਤੇ ਸਟੇਟਸ ਬਾਰ ਲੁਕਾਓ</string>
     <string name="hide_status_bar_on_fullscreen_desc">ਜਦੋਂ ਬੋਲਾਂ ਦਾ ਪੂਰੀ ਸਕ੍ਰੀਨ ਮੋਡ ਸਰਗਰਮ ਹੋਵੇ ਤਾਂ ਸਟੇਟਸ ਬਾਰ ਨੂੰ ਲੁਕਾਓ</string>
@@ -263,13 +256,11 @@
     <string name="lyrics_thumbnail_play_pause">ਥੰਬਨੇਲ \'ਤੇ ਚਲਾਓ/ਰੋਕੋ ਦਿਖਾਓ</string>
     <string name="lyrics_thumbnail_play_pause_desc">ਪੂਰੀ ਸਕ੍ਰੀਨ ਬੋਲਾਂ ਵਿੱਚ ਗੀਤ ਦੇ ਥੰਬਨੇਲ \'ਤੇ ਚਲਾਓ/ਰੋਕੋ ਬਟਨ ਦਾ ਓਵਰਲੇ ਦਿਖਾਓ</string>
     <string name="picker_not_available">ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਦਸਤਾਵੇਜ਼ ਚੁਣਨ ਵਾਲਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਐਪ ਦੀ ਡਿਫੌਲਟ ਐਕਸਪੋਰਟ ਡਾਇਰੈਕਟਰੀ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK ਮਿਲਿਆ</item>
         <item quantity="other">%d APK ਮਿਲੇ</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">ਆਪਣੀ ਐਪ ਥੀਮ ਨੂੰ ਅਨੁਕੂਲ ਬਣਾਓ</string>
     <string name="theme_colors">ਥੀਮ ਅਤੇ ਰੰਗ</string>
@@ -300,8 +291,6 @@
     <string name="standard_lyrics_blur">ਮਿਆਰੀ ਬੋਲ ਧੁੰਦਲਾਪਣ</string>
     <string name="listen_together_smart_resync">ਸਮਾਰਟ ਨੈੱਟਵਰਕ ਰੀਸਿੰਕ</string>
     <string name="listen_together_smart_resync_desc">ਕਨੈਕਸ਼ਨ ਡਿੱਗਣ ਤੋਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹੋਸਟ ਨਾਲ ਮੇਲ ਕਰੋ</string>
-
-
     <string name="spotify_import_title">Spotify ਤੋਂ ਅਯਾਤ ਕਰੋ</string>
     <string name="spotify_import_desc">Spotify ਨਾਲ ਕਨੈਕਟ ਕਰੋ, ਪਲੇਲਿਸਟਾਂ ਚੁਣੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਸਥਾਨਕ NullMusic ਪਲੇਲਿਸਟਾਂ ਵਿੱਚ ਸ਼ੀਸ਼ਾ ਬਣਾਓ।</string>
     <string name="spotify_connect">Spotify ਕਨੈਕਟ ਕਰੋ</string>
@@ -327,7 +316,6 @@
     <string name="spotify_clear_selection">ਚੋਣ ਸਾਫ਼ ਕਰੋ</string>
     <string name="spotify_account">Spotify ਖਾਤਾ</string>
     <string name="spotify_waiting_for_login">Spotify ਲੌਗਿਨ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</string>
-
     <!-- Additional missing strings -->
     <string name="add_all_to_library">ਸਭ ਨੂੰ ਲਾਇਬ੍ਰੇਰੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</string>
     <string name="remove_all_from_library">ਸਭ ਨੂੰ ਲਾਇਬ੍ਰੇਰੀ ਤੋਂ ਹਟਾਓ</string>
@@ -374,5 +362,123 @@
     <string name="preview">ਪੂਰਵ ਝਲਕ</string>
     <string name="enable_discord_rpc">Rich Presence ਸਮਰੱਥ ਕਰੋ</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
-
+    <string name="remove_download_playlist_confirm">ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ ਡਾਊਨਲੋਡ ਕੀਤੇ ਗੀਤਾਂ ਦੀ ਸਟੋਰੇਜ ਵਿੱਚੋਂ \"%s\" ਪਲੇਲਿਸਟ ਦੇ ਸਾਰੇ ਗੀਤ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</string>
+    <string name="delete_playlist_confirm">ਕੀ ਤੁਸੀਂ ਸੱਚਮੁੱਚ \"%s\" ਪਲੇਲਿਸਟ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</string>
+    <string name="loading">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</string>
+    <string name="added_to_playlist">%s ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ</string>
+    <string name="more_options">ਹੋਰ ਵਿਕਲਪ</string>
+    <string name="export_as_csv">CSV ਵਜੋਂ ਐਕਸਪੋਰਟ ਕਰੋ</string>
+    <string name="export_playlist_desc">ਪਲੇਲਿਸਟ ਦੇ ਗੀਤਾਂ ਨੂੰ CSV ਫ਼ਾਈਲ ਵਿੱਚ ਐਕਸਪੋਰਟ ਕਰੋ</string>
+    <string name="export_successful">ਪਲੇਲਿਸਟ ਸਫਲਤਾਪੂਰਵਕ ਐਕਸਪੋਰਟ ਕੀਤੀ ਗਈ</string>
+    <string name="activity_history">ਸੁਣਨ ਦਾ ਸਾਰ</string>
+    <string name="total_listening_time">ਕੁੱਲ ਸੁਣਨ ਦਾ ਸਮਾਂ</string>
+    <string name="unique_songs">ਵਿਲੱਖਣ ਗੀਤ</string>
+    <string name="unique_artists">ਵਿਲੱਖਣ ਕਲਾਕਾਰ</string>
+    <string name="unique_albums">ਵਿਲੱਖਣ ਐਲਬਮਾਂ</string>
+    <string name="selected_period">ਚੁਣੀ ਹੋਈ ਮਿਆਦ</string>
+    <string name="hours_minutes_format">%1$d ਘੰ. %2$d ਮਿੰ.</string>
+    <string name="action_logout">ਲੌਗ ਆਉਟ ਕਰੋ</string>
+    <string name="action_login">ਲੌਗ ਇਨ ਕਰੋ</string>
+    <string name="login_failed">ਲੌਗ ਇਨ ਅਸਫਲ ਰਿਹਾ</string>
+    <string name="content_sponsor_block">SponsorBlock (ਆਪਣੇ-ਆਪ ਛੱਡੋ)</string>
+    <string name="content_sponsor_block_desc">ਵੀਡੀਓ ਵਿੱਚ ਸਪਾਂਸਰਸ਼ਿਪਾਂ, ਸ਼ੁਰੂਆਤੀ ਭਾਗਾਂ ਅਤੇ ਗੈਰ-ਸੰਗੀਤ ਭਾਗਾਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਛੱਡੋ</string>
+    <string name="auto_skip_next_on_error_desc">ਆਪਣਾ ਲਗਾਤਾਰ ਪਲੇਬੈਕ ਅਨੁਭਵ ਯਕੀਨੀ ਬਣਾਓ</string>
+    <string name="spotify_import_by_link">ਲਿੰਕ ਰਾਹੀਂ ਪਲੇਲਿਸਟ ਇੰਪੋਰਟ ਕਰੋ</string>
+    <string name="spotify_import_by_link_desc">Spotify ਪਲੇਲਿਸਟ ਨੂੰ ਇੰਪੋਰਟ ਕਰਨ ਲਈ ਉਸਦਾ ਲਿੰਕ ਪੇਸਟ ਕਰੋ, ਉਹ ਪਲੇਲਿਸਟ ਵੀ ਜਿਸਦੇ ਤੁਸੀਂ ਮਾਲਕ ਨਹੀਂ ਹੋ</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">ਜੋੜੋ</string>
+    <string name="spotify_invalid_playlist_link">ਇਹ Spotify ਪਲੇਲਿਸਟ ਦਾ ਲਿੰਕ ਨਹੀਂ ਲੱਗਦਾ। https://open.spotify.com/playlist/… ਵਰਗਾ ਲਿੰਕ ਵਰਤੋ</string>
+    <string name="service_uptime">ਸੇਵਾ ਦਾ ਚਾਲੂ ਸਮਾਂ</string>
+    <string name="service_uptime_desc">ਸੰਗੀਤ ਪ੍ਰਦਾਤਾਵਾਂ ਦੀ ਸਥਿਤੀ ਜਾਂਚੋ</string>
+    <string name="music_providers">ਸੰਗੀਤ ਪ੍ਰਦਾਤਾ</string>
+    <string name="canvas_providers">ਕੈਨਵਸ ਪ੍ਰਦਾਤਾ</string>
+    <string name="lyrics_providers">ਗੀਤ-ਬੋਲ ਪ੍ਰਦਾਤਾ</string>
+    <string name="other_services">ਹੋਰ ਸੇਵਾਵਾਂ</string>
+    <string name="status_online">ਆਨਲਾਈਨ</string>
+    <string name="status_offline">ਆਫਲਾਈਨ</string>
+    <string name="status_checking">ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</string>
+    <string name="recognition_notification_channel_name">ਸੰਗੀਤ ਪਛਾਣ</string>
+    <string name="recognition_notification_channel_desc">ਤੁਰੰਤ ਸੈਟਿੰਗਾਂ ਤੋਂ ਗੀਤ ਦੀ ਪਛਾਣ ਕਰਦੇ ਸਮੇਂ ਸੂਚਨਾ ਦਿਖਾਉਂਦਾ ਹੈ</string>
+    <string name="recognition_notification_listening">ਸੰਗੀਤ ਸੁਣਿਆ ਜਾ ਰਿਹਾ ਹੈ…</string>
+    <string name="recognition_notification_processing">ਪਛਾਣ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</string>
+    <string name="recognition_notification_no_match">ਕੋਈ ਮੇਲ ਨਹੀਂ ਮਿਲਿਆ</string>
+    <string name="recognition_notification_failed">ਪਛਾਣ ਅਸਫਲ ਰਹੀ</string>
+    <string name="listen_on_echo_music">Echo Music ਉੱਤੇ ਸੁਣੋ</string>
+    <string name="qs_tile_music_recognizer">ਸੰਗੀਤ ਪਛਾਣੋ</string>
+    <string name="echo_brain_beta">Echo Brain (ਬੀਟਾ)</string>
+    <string name="echo_brain_enable">Echo Brain ਚਾਲੂ ਕਰੋ</string>
+    <string name="echo_brain_enable_desc">ਤੁਹਾਡੀਆਂ ਸੁਣਨ ਦੀਆਂ ਆਦਤਾਂ ਦੇ ਆਧਾਰ ਉੱਤੇ AI ਸਿਫਾਰਸ਼ਾਂ ਆਪਣੇ-ਆਪ ਸ਼ਾਮਲ ਕਰੋ</string>
+    <string name="echo_brain_profile_statistics">ਪ੍ਰੋਫਾਈਲ ਅੰਕੜੇ</string>
+    <string name="echo_brain_learning_level">ਸਿੱਖਣ ਦਾ ਪੱਧਰ</string>
+    <string name="echo_brain_initiate">ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="echo_brain_total_interactions">ਕੁੱਲ ਅੰਤਰਕਿਰਿਆਵਾਂ</string>
+    <string name="echo_brain_interactions_tracked">%1$d ਅੰਤਰਕਿਰਿਆਵਾਂ ਟਰੈਕ ਕੀਤੀਆਂ ਗਈਆਂ</string>
+    <string name="echo_brain_discovered_genres">ਖੋਜੀਆਂ ਗਈਆਂ ਸੰਗੀਤ ਸ਼ੈਲੀਆਂ</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d ਵੱਖਰੀਆਂ ਸੰਗੀਤ ਸ਼ੈਲੀਆਂ ਪਛਾਣੀਆਂ ਗਈਆਂ</string>
+    <string name="echo_brain_analyzed_artists">ਵਿਸ਼ਲੇਸ਼ਣ ਕੀਤੇ ਕਲਾਕਾਰ</string>
+    <string name="echo_brain_artists_mapped">%1$d ਕਲਾਕਾਰ ਮੈਪ ਕੀਤੇ ਗਏ</string>
+    <string name="echo_brain_data_management">ਡਾਟਾ ਪ੍ਰਬੰਧਨ</string>
+    <string name="echo_brain_export_profile">ਪ੍ਰੋਫਾਈਲ ਐਕਸਪੋਰਟ ਕਰੋ</string>
+    <string name="echo_brain_export_profile_desc">ਆਪਣਾ ਨਿਊਰਲ ਨਕਸ਼ਾ ਫ਼ਾਈਲ ਵਿੱਚ ਸੰਭਾਲੋ</string>
+    <string name="echo_brain_import_profile">ਪ੍ਰੋਫਾਈਲ ਇੰਪੋਰਟ ਕਰੋ</string>
+    <string name="echo_brain_import_profile_desc">ਪਹਿਲਾਂ ਸੰਭਾਲਿਆ ਨਿਊਰਲ ਨਕਸ਼ਾ ਲੋਡ ਕਰੋ</string>
+    <string name="echo_brain_reset_profile">ਪ੍ਰੋਫਾਈਲ ਰੀਸੈੱਟ ਕਰੋ</string>
+    <string name="echo_brain_reset_profile_desc">ਸਾਰਾ ਸਿੱਖਿਆ ਹੋਇਆ ਡਾਟਾ ਮਿਟਾ ਕੇ ਮੁੜ ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="echo_brain_reset_neural_profile">ਨਿਊਰਲ ਪ੍ਰੋਫਾਈਲ ਰੀਸੈੱਟ ਕਰੋ</string>
+    <string name="echo_brain_reset_neural_profile_desc">ਇਸ ਨਾਲ ਸਾਰੀਆਂ ਸਿੱਖੀਆਂ ਹੋਈਆਂ ਤਰਜੀਹਾਂ ਪੱਕੇ ਤੌਰ ਉੱਤੇ ਮਿਟ ਜਾਣਗੀਆਂ। ਇੰਜਣ ਸ਼ੁਰੂ ਤੋਂ ਸਿੱਖਣਾ ਆਰੰਭ ਕਰੇਗਾ।</string>
+    <string name="echo_brain_profile_exported_successfully">ਪ੍ਰੋਫਾਈਲ ਸਫਲਤਾਪੂਰਵਕ ਐਕਸਪੋਰਟ ਕੀਤੀ ਗਈ</string>
+    <string name="echo_brain_export_failed">ਐਕਸਪੋਰਟ ਅਸਫਲ ਰਿਹਾ</string>
+    <string name="echo_brain_profile_imported_successfully">ਪ੍ਰੋਫਾਈਲ ਸਫਲਤਾਪੂਰਵਕ ਇੰਪੋਰਟ ਕੀਤੀ ਗਈ</string>
+    <string name="echo_brain_import_failed_invalid_file">ਇੰਪੋਰਟ ਅਸਫਲ ਰਿਹਾ, ਫ਼ਾਈਲ ਅਵੈਧ ਹੈ</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz ਸਕ੍ਰੌਬਲਿੰਗ</string>
+    <string name="listenbrainz_scrobbling_description">ਤੁਹਾਡੇ ਸੁਣੇ ਹੋਏ ਟਰੈਕ ਆਪਣੇ-ਆਪ ListenBrainz ਨੂੰ ਭੇਜੋ</string>
+    <string name="set_listenbrainz_token">ListenBrainz ਟੋਕਨ ਸੈੱਟ ਕਰੋ</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">ਐਕਸਟ੍ਰੈਕਟਰ ਸੈਟਿੰਗਾਂ ਦੀ ਸੰਰਚਨਾ ਕਰੋ</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">YouTube ਪਲੇਬੈਕ ਸੰਰਚਨਾਵਾਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਕੱਢਦਾ ਹੈ। ਹਮੇਸ਼ਾ ਸਰਗਰਮ ਵਜੋਂ ਲੌਕ ਹੈ।</string>
+    <string name="force_update_cipher">ਸੰਰਚਨਾਵਾਂ ਨੂੰ ਜ਼ਬਰਦਸਤੀ ਅੱਪਡੇਟ ਕਰੋ</string>
+    <string name="force_update_cipher_desc">ਐਕਸਟ੍ਰੈਕਟਰ ਦੇ ਨਵੀਨਤਮ ਓਵਰਰਾਈਡ ਮੈਪਿੰਗ ਡਾਊਨਲੋਡ ਕਰੋ। ਹਰ ਦਿਨ ਵੱਧ ਤੋਂ ਵੱਧ 3 ਅੱਪਡੇਟਾਂ ਦੀ ਸੀਮਾ ਹੈ।</string>
+    <string name="youtube_decryption_info">ਐਕਸਟ੍ਰੈਕਟਰ ਮੈਪਿੰਗ ਤੁਹਾਡੇ ਸਵੈ-ਹੋਸਟ ਕੀਤੇ ਨੋਡ ਤੋਂ ਗਤੀਸ਼ੀਲ ਤੌਰ ਉੱਤੇ ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਉੱਪਰਲੀ ਉਲਟੀ ਗਿਣਤੀ ਅਗਲੀ ਸਵੈਚਾਲਿਤ ਸਮਕਾਲੀਕਰਨ ਜਾਂਚ ਤੱਕ ਬਚਿਆ ਸਮਾਂ ਦਿਖਾਉਂਦੀ ਹੈ। ਜੇ ਹੱਥੀਂ ਅੱਪਡੇਟਾਂ ਦੀ ਬੇਨਤੀ 3 ਤੋਂ ਵੱਧ ਵਾਰ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਉਹਨਾਂ ਨੂੰ 1 ਦਿਨ ਲਈ ਬਲੌਕ ਕਰ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="last_updated">ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕੀਤਾ</string>
+    <string name="last_updated_never">ਕਦੇ ਨਹੀਂ</string>
+    <string name="cipher_update_success">ਐਕਸਟ੍ਰੈਕਟਰ ਮੈਪਿੰਗ ਅੱਪਡੇਟ ਹੋ ਗਈਆਂ! %d ਪਲੇਅਰ ਲੋਡ ਕੀਤੇ ਗਏ।</string>
+    <string name="cipher_update_failed">ਐਕਸਟ੍ਰੈਕਟਰ ਮੈਪਿੰਗ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: %s</string>
+    <string name="cipher_updating">ਐਕਸਟ੍ਰੈਕਟਰ ਸੰਰਚਨਾਵਾਂ ਅੱਪਡੇਟ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ…</string>
+    <string name="hours_label">ਘੰਟੇ</string>
+    <string name="minutes_label">ਮਿੰਟ</string>
+    <string name="seconds_label">ਸਕਿੰਟ</string>
+    <string name="liquid_glass">ਤਰਲ ਕੱਚ (ਬੀਟਾ)</string>
+    <string name="player_background_liquid_glass">ਤਰਲ ਕੱਚ</string>
+    <string name="liquid_glass_settings">ਤਰਲ ਕੱਚ (ਬੀਟਾ)</string>
+    <string name="liquid_glass_global_enabled">ਤਰਲ ਕੱਚ ਚਾਲੂ ਕਰੋ</string>
+    <string name="liquid_glass_effects">ਪ੍ਰਭਾਵ</string>
+    <string name="liquid_glass_appearance">ਦਿੱਖ</string>
+    <string name="liquid_glass_per_component">ਹਰੇਕ ਭਾਗ ਲਈ</string>
+    <string name="liquid_glass_vibrancy">ਰੰਗਾਂ ਦੀ ਤੀਬਰਤਾ</string>
+    <string name="liquid_glass_vibrancy_desc">ਕੱਚ ਦੀ ਪਿੱਠਭੂਮੀ ਦੇ ਰੰਗਾਂ ਦੀ ਸੰਤ੍ਰਿਪਤੀ ਵਧਾਓ</string>
+    <string name="liquid_glass_blur_radius">ਧੁੰਦਲਾਪਣ ਅਰਧ-ਵਿਆਸ</string>
+    <string name="liquid_glass_blur_radius_desc">ਕੱਚ ਦੀ ਸਤ੍ਹਾ ਉੱਤੇ ਧੁੰਦਲੇਪਣ ਦੀ ਮਾਤਰਾ</string>
+    <string name="liquid_glass_lens_height">ਲੈਂਸ ਅਪਵਰਤਨ ਉਚਾਈ</string>
+    <string name="liquid_glass_lens_amount">ਲੈਂਸ ਅਪਵਰਤਨ ਮਾਤਰਾ</string>
+    <string name="liquid_glass_chromatic_aberration">ਰੰਗੀਨ ਵਿਪਥਨ</string>
+    <string name="liquid_glass_depth_effect">ਡੂੰਘਾਈ ਪ੍ਰਭਾਵ</string>
+    <string name="liquid_glass_surface_opacity">ਸਤ੍ਹਾ ਦੀ ਅਪਾਰਦਰਸ਼ਤਾ</string>
+    <string name="liquid_glass_surface_opacity_desc">ਪੜ੍ਹਨਯੋਗਤਾ ਲਈ ਕੱਚ ਦੀ ਰੰਗਤ ਵਾਲੀ ਉੱਪਰੀ ਪਰਤ ਦੀ ਅਪਾਰਦਰਸ਼ਤਾ</string>
+    <string name="liquid_glass_surface_tint">ਸਤ੍ਹਾ ਦੀ ਰੰਗਤ</string>
+    <string name="liquid_glass_surface_tint_desc">ਕੱਚ ਦੀ ਸਤ੍ਹਾ ਉੱਤੇ ਲਾਗੂ ਕੀਤਾ ਰੰਗਤ ਰੰਗ</string>
+    <string name="liquid_glass_text_color">ਕੱਚ ਉੱਤੇ ਲਿਖਤ ਦਾ ਰੰਗ</string>
+    <string name="liquid_glass_text_color_desc">ਕੱਚ ਦੀਆਂ ਸਤ੍ਹਾਂ ਉੱਤੇ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਲਿਖਤ ਰੰਗ</string>
+    <string name="liquid_glass_player">ਕੱਚ ਪਲੇਅਰ</string>
+    <string name="liquid_glass_mini_player">ਕੱਚ ਮਿਨੀ ਪਲੇਅਰ</string>
+    <string name="liquid_glass_nav_bar">ਕੱਚ ਨੈਵੀਗੇਸ਼ਨ ਪੱਟੀ</string>
+    <string name="nav_bar_style">ਨੈਵੀਗੇਸ਼ਨ ਪੱਟੀ ਦੀ ਸ਼ੈਲੀ</string>
+    <string name="floating_nav_bar">ਤੈਰਦੀ ਨੈਵੀਗੇਸ਼ਨ ਪੱਟੀ</string>
+    <string name="floating_nav_bar_desc">iOS ਸ਼ੈਲੀ ਦੀ ਤੈਰਦੀ ਟੈਬ ਪੱਟੀ, ਜੋ ਸਕ੍ਰੌਲ ਕਰਨ ਵੇਲੇ ਛੋਟੀ ਹੋ ਜਾਂਦੀ ਹੈ</string>
+    <string name="liquid_glass_performance_warning">ਤਰਲ ਕੱਚ ਨੂੰ ਰੈਂਡਰ ਕਰਨ ਲਈ ਵੱਧ ਪ੍ਰਦਰਸ਼ਨ ਸਮਰੱਥਾ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ ਅਤੇ ਕੁਝ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਸੁਚਾਰੂਪਣ ਅਤੇ ਬੈਟਰੀ ਮਿਆਦ ਘਟ ਸਕਦੀ ਹੈ</string>
+    <string name="liquid_glass_requires_floating_nav_bar">ਤੈਰਦੀ ਨੈਵੀਗੇਸ਼ਨ ਪੱਟੀ ਦਾ ਚਾਲੂ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</string>
+    <string name="color_picker_hex">ਹੈਕਸ</string>
+    <string name="color_white">ਚਿੱਟਾ</string>
+    <string name="color_light_gray">ਹਲਕਾ ਸਲੇਟੀ</string>
+    <string name="color_black">ਕਾਲਾ</string>
 </resources>

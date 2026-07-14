@@ -279,25 +279,18 @@
     <string name="new_version_available">కొత్త వెర్షన్ అందుబాటులో ఉంది</string>
     <string name="translation_models">అనువాద మోడల్స్</string>
     <string name="clear_translation_models">అనువాద నమూనాలను క్లియర్ చెయ్యండి</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">సంగీతం</string>
-
     <!-- Search -->
     <string name="filter_local">స్థానిక</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">ఇది ఆల్బమ్ కోసం ఒక ప్లేస్హోల్డర్ వివరణ. దిగువన ఉన్న ట్రాక్‌లను ఆస్వాదించండి!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">సంబంధిత ప్లేలిస్ట్</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">కలపండి</string>
     <string name="shuffle_label">కలపండి</string>
     <string name="pause">విరామం</string>
-
     <!-- Menu -->
     <string name="saving">సేవ్ అవుతోంది</string>
     <string name="saved">సేవ్ చేయబడింది</string>
@@ -305,7 +298,6 @@
     <string name="add_to_an_playlist">జోడించు</string>
     <string name="more_label">మరింత</string>
     <string name="releases_for_you">మీ కోసం విడుదలలు</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">పూర్తి స్క్రీన్‌లో స్థితి పట్టీని దాచు</string>
     <string name="hide_status_bar_on_fullscreen_desc">సాహిత్యం పూర్తి స్క్రీన్ మోడ్ సక్రియంగా ఉన్నప్పుడు స్థితి పట్టీని దాచు</string>
@@ -314,13 +306,11 @@
     <string name="lyrics_thumbnail_play_pause">థంబ్‌నెయిల్‌పై ప్లే/పాజ్ చూపు</string>
     <string name="lyrics_thumbnail_play_pause_desc">పూర్తి స్క్రీన్ సాహిత్యంలో పాట యొక్క థంబ్‌నెయిల్ మీద ప్లే/పాజ్ బటన్ ఓవర్‌లేను చూపు</string>
     <string name="picker_not_available">ఈ పరికరంలో డాక్యుమెంట్ పికర్ అందుబాటులో లేదు. అనువర్తనం యొక్క డిఫాల్ట్ ఎగుమతి డైరెక్టరీని ఉపయోగిస్తోంది.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK కనుగొనబడింది</item>
         <item quantity="other">%d APK లు కనుగొనబడ్డాయి</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">మీ యాప్ థీమ్‌ను అనుకూలీకరించండి</string>
     <string name="theme_colors">థీమ్ &amp; రంగులు</string>
@@ -351,8 +341,6 @@
     <string name="standard_lyrics_blur">ప్రామాణిక సాహిత్యం మసక</string>
     <string name="listen_together_smart_resync">స్మార్ట్ నెట్‌వర్క్ రీసింక్</string>
     <string name="listen_together_smart_resync_desc">కనెక్షన్ పడిపోయిన తర్వాత హోస్ట్‌తో స్వయంచాలకంగా అనుగుణంగా ఉండండి</string>
-
-
     <string name="spotify_import_title">Spotify నుండి దిగుమతి చేయండి</string>
     <string name="spotify_import_desc">Spotify ను కనెక్ట్ చేయండి, ప్లేలిస్ట్‌లను ఎంచుకోండి మరియు వాటిని స్థానిక NullMusic ప్లేలిస్ట్‌లలో ప్రతిబింబించండి.</string>
     <string name="spotify_connect">Spotify ను కనెక్ట్ చేయి</string>
@@ -379,4 +367,117 @@
     <string name="spotify_account">Spotify ఖాతా</string>
     <string name="spotify_waiting_for_login">Spotify లాగిన్ కోసం వేచి ఉంది</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">లోడ్ అవుతోంది</string>
+    <string name="added_to_playlist">%sకి జోడించబడింది</string>
+    <string name="more_options">మరిన్ని ఎంపికలు</string>
+    <string name="export_as_csv">CSVగా ఎగుమతి చేయండి</string>
+    <string name="export_playlist_desc">ప్లేలిస్ట్‌లోని పాటలను CSV ఫైల్‌కు ఎగుమతి చేయండి</string>
+    <string name="export_successful">ప్లేలిస్ట్ విజయవంతంగా ఎగుమతి చేయబడింది</string>
+    <string name="activity_history">వినికిడి సారాంశం</string>
+    <string name="total_listening_time">మొత్తం వినికిడి సమయం</string>
+    <string name="unique_songs">విభిన్న పాటలు</string>
+    <string name="unique_artists">విభిన్న కళాకారులు</string>
+    <string name="unique_albums">విభిన్న ఆల్బమ్‌లు</string>
+    <string name="selected_period">ఎంచుకున్న వ్యవధి</string>
+    <string name="hours_minutes_format">%1$dగం %2$dని</string>
+    <string name="content_sponsor_block">SponsorBlock (స్వయంచాలక దాటవేత)</string>
+    <string name="content_sponsor_block_desc">వీడియోలలోని స్పాన్సర్‌షిప్‌లు, పరిచయాలు మరియు సంగీతేతర భాగాలను స్వయంచాలకంగా దాటవేయండి</string>
+    <string name="spotify_import_by_link">లింక్ ద్వారా ప్లేలిస్ట్‌ను దిగుమతి చేయండి</string>
+    <string name="spotify_import_by_link_desc">మీకు చెందని ప్లేలిస్ట్‌లతో సహా, దిగుమతి చేయడానికి Spotify ప్లేలిస్ట్ లింక్‌ను అతికించండి</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">జోడించండి</string>
+    <string name="spotify_invalid_playlist_link">అది Spotify ప్లేలిస్ట్ లింక్‌లా కనిపించడం లేదు. https://open.spotify.com/playlist/… వంటి లింక్‌ను ఉపయోగించండి</string>
+    <string name="service_uptime">సేవ అందుబాటు సమయం</string>
+    <string name="service_uptime_desc">సంగీత ప్రదాతల స్థితిని తనిఖీ చేయండి</string>
+    <string name="music_providers">సంగీత ప్రదాతలు</string>
+    <string name="canvas_providers">క్యాన్వాస్ ప్రదాతలు</string>
+    <string name="lyrics_providers">సాహిత్య ప్రదాతలు</string>
+    <string name="other_services">ఇతర సేవలు</string>
+    <string name="status_online">ఆన్‌లైన్</string>
+    <string name="status_offline">ఆఫ్‌లైన్</string>
+    <string name="status_checking">తనిఖీ చేస్తోంది...</string>
+    <string name="recognition_notification_channel_name">సంగీత గుర్తింపు</string>
+    <string name="recognition_notification_channel_desc">త్వరిత సెట్టింగ్‌ల ద్వారా పాటను గుర్తిస్తున్నప్పుడు నోటిఫికేషన్‌ను చూపుతుంది</string>
+    <string name="recognition_notification_listening">సంగీతం కోసం వింటోంది…</string>
+    <string name="recognition_notification_processing">గుర్తిస్తోంది…</string>
+    <string name="recognition_notification_no_match">సరిపోలిక కనుగొనబడలేదు</string>
+    <string name="recognition_notification_failed">గుర్తింపు విఫలమైంది</string>
+    <string name="listen_on_echo_music">Echo Musicలో వినండి</string>
+    <string name="qs_tile_music_recognizer">సంగీతాన్ని గుర్తించండి</string>
+    <string name="echo_brain_beta">Echo Brain (బీటా)</string>
+    <string name="echo_brain_enable">Echo Brainను ప్రారంభించండి</string>
+    <string name="echo_brain_enable_desc">మీ వినికిడి అలవాట్ల ఆధారంగా AI సిఫార్సులను స్వయంచాలకంగా చేర్చండి</string>
+    <string name="echo_brain_profile_statistics">ప్రొఫైల్ గణాంకాలు</string>
+    <string name="echo_brain_learning_level">అభ్యాస స్థాయి</string>
+    <string name="echo_brain_initiate">ప్రారంభించండి</string>
+    <string name="echo_brain_total_interactions">మొత్తం పరస్పర చర్యలు</string>
+    <string name="echo_brain_interactions_tracked">%1$d పరస్పర చర్యలు ట్రాక్ చేయబడ్డాయి</string>
+    <string name="echo_brain_discovered_genres">కనుగొన్న శైలులు</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d విభిన్న శైలులు గుర్తించబడ్డాయి</string>
+    <string name="echo_brain_analyzed_artists">విశ్లేషించిన కళాకారులు</string>
+    <string name="echo_brain_artists_mapped">%1$d కళాకారులు మ్యాప్ చేయబడ్డారు</string>
+    <string name="echo_brain_data_management">డేటా నిర్వహణ</string>
+    <string name="echo_brain_export_profile">ప్రొఫైల్‌ను ఎగుమతి చేయండి</string>
+    <string name="echo_brain_export_profile_desc">మీ న్యూరల్ మ్యాప్‌ను ఫైల్‌లో సేవ్ చేయండి</string>
+    <string name="echo_brain_import_profile">ప్రొఫైల్‌ను దిగుమతి చేయండి</string>
+    <string name="echo_brain_import_profile_desc">గతంలో సేవ్ చేసిన న్యూరల్ మ్యాప్‌ను లోడ్ చేయండి</string>
+    <string name="echo_brain_reset_profile">ప్రొఫైల్‌ను రీసెట్ చేయండి</string>
+    <string name="echo_brain_reset_profile_desc">నేర్చుకున్న మొత్తం డేటాను తొలగించి మళ్లీ ప్రారంభించండి</string>
+    <string name="echo_brain_reset_neural_profile">న్యూరల్ ప్రొఫైల్‌ను రీసెట్ చేయండి</string>
+    <string name="echo_brain_reset_neural_profile_desc">ఇది నేర్చుకున్న అన్ని ప్రాధాన్యతలను శాశ్వతంగా తొలగిస్తుంది. ఇంజిన్ మొదటి నుంచి నేర్చుకోవడం ప్రారంభిస్తుంది.</string>
+    <string name="echo_brain_profile_exported_successfully">ప్రొఫైల్ విజయవంతంగా ఎగుమతి చేయబడింది</string>
+    <string name="echo_brain_export_failed">ఎగుమతి విఫలమైంది</string>
+    <string name="echo_brain_profile_imported_successfully">ప్రొఫైల్ విజయవంతంగా దిగుమతి చేయబడింది</string>
+    <string name="echo_brain_import_failed_invalid_file">దిగుమతి విఫలమైంది: చెల్లని ఫైల్</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz స్క్రాబ్లింగ్</string>
+    <string name="listenbrainz_scrobbling_description">మీరు విన్న ట్రాక్‌లను ListenBrainzకు స్వయంచాలకంగా సమర్పించండి</string>
+    <string name="set_listenbrainz_token">ListenBrainz టోకెన్‌ను సెట్ చేయండి</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">ఎక్స్‌ట్రాక్టర్ సెట్టింగ్‌లను కాన్ఫిగర్ చేయండి</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">YouTube ప్లేబ్యాక్ కాన్ఫిగరేషన్‌లను స్వయంచాలకంగా సంగ్రహిస్తుంది. సక్రియ స్థితికి లాక్ చేయబడింది.</string>
+    <string name="force_update_cipher">కాన్ఫిగరేషన్‌లను బలవంతంగా నవీకరించండి</string>
+    <string name="force_update_cipher_desc">తాజా ఎక్స్‌ట్రాక్టర్ ఓవర్‌రైడ్ మ్యాపింగ్‌లను డౌన్‌లోడ్ చేయండి. రోజుకు 3 నవీకరణలకు పరిమితం.</string>
+    <string name="youtube_decryption_info">ఎక్స్‌ట్రాక్టర్ మ్యాపింగ్‌లు మీ స్వీయ-హోస్ట్ చేసిన నోడ్ నుంచి డైనమిక్‌గా పొందబడతాయి. ఎగువన ఉన్న కౌంట్‌డౌన్ తదుపరి స్వయంచాలక సమకాలీకరణ తనిఖీ వరకు మిగిలిన సమయాన్ని చూపుతుంది. మాన్యువల్ నవీకరణలను 3 కంటే ఎక్కువసార్లు అభ్యర్థిస్తే, అవి 1 రోజు పాటు నిరోధించబడతాయి.</string>
+    <string name="last_updated">చివరిగా నవీకరించబడింది</string>
+    <string name="last_updated_never">ఎప్పుడూ లేదు</string>
+    <string name="cipher_update_success">ఎక్స్‌ట్రాక్టర్ మ్యాపింగ్‌లు నవీకరించబడ్డాయి! %d ప్లేయర్‌లు లోడ్ అయ్యాయి.</string>
+    <string name="cipher_update_failed">ఎక్స్‌ట్రాక్టర్ మ్యాపింగ్‌లను నవీకరించడం విఫలమైంది: %s</string>
+    <string name="cipher_updating">ఎక్స్‌ట్రాక్టర్ కాన్ఫిగరేషన్‌లు నవీకరించబడుతున్నాయి…</string>
+    <string name="hours_label">గంటలు</string>
+    <string name="minutes_label">నిమిషాలు</string>
+    <string name="seconds_label">సెకన్లు</string>
+    <string name="liquid_glass">లిక్విడ్ గ్లాస్ (బీటా)</string>
+    <string name="player_background_liquid_glass">లిక్విడ్ గ్లాస్</string>
+    <string name="liquid_glass_settings">లిక్విడ్ గ్లాస్ (బీటా)</string>
+    <string name="liquid_glass_global_enabled">లిక్విడ్ గ్లాస్‌ను ప్రారంభించండి</string>
+    <string name="liquid_glass_effects">ప్రభావాలు</string>
+    <string name="liquid_glass_appearance">రూపం</string>
+    <string name="liquid_glass_per_component">ఒక్కో భాగానికి</string>
+    <string name="liquid_glass_vibrancy">రంగుల తీవ్రత</string>
+    <string name="liquid_glass_vibrancy_desc">గాజు నేపథ్య రంగు సంతృప్తిని పెంచండి</string>
+    <string name="liquid_glass_blur_radius">బ్లర్ వ్యాసార్థం</string>
+    <string name="liquid_glass_blur_radius_desc">గాజు ఉపరితలంపై బ్లర్ పరిమాణం</string>
+    <string name="liquid_glass_lens_height">లెన్స్ వక్రీభవన ఎత్తు</string>
+    <string name="liquid_glass_lens_amount">లెన్స్ వక్రీభవన పరిమాణం</string>
+    <string name="liquid_glass_chromatic_aberration">వర్ణ విపథనం</string>
+    <string name="liquid_glass_depth_effect">లోతు ప్రభావం</string>
+    <string name="liquid_glass_surface_opacity">ఉపరితల అపారదర్శకత</string>
+    <string name="liquid_glass_surface_opacity_desc">చదవడానికి అనుకూలంగా గాజు రంగు ఓవర్‌లే అపారదర్శకత</string>
+    <string name="liquid_glass_surface_tint">ఉపరితల రంగు</string>
+    <string name="liquid_glass_surface_tint_desc">గాజు ఉపరితలానికి వర్తించే రంగు</string>
+    <string name="liquid_glass_text_color">గాజు వచన రంగు</string>
+    <string name="liquid_glass_text_color_desc">గాజు ఉపరితలాలపై ఉపయోగించే వచన రంగు</string>
+    <string name="liquid_glass_player">గ్లాస్ ప్లేయర్</string>
+    <string name="liquid_glass_mini_player">గ్లాస్ మినీ ప్లేయర్</string>
+    <string name="liquid_glass_nav_bar">గ్లాస్ నావిగేషన్ బార్</string>
+    <string name="nav_bar_style">నావిగేషన్ బార్ శైలి</string>
+    <string name="floating_nav_bar">తేలియాడే నావిగేషన్ బార్</string>
+    <string name="floating_nav_bar_desc">స్క్రోల్ చేస్తున్నప్పుడు కుదించే iOS శైలి తేలియాడే ట్యాబ్ బార్</string>
+    <string name="liquid_glass_performance_warning">లిక్విడ్ గ్లాస్‌ను రెండర్ చేయడానికి అధిక పనితీరు అవసరం. కొన్ని పరికరాల్లో ఇది సున్నితత్వాన్ని మరియు బ్యాటరీ జీవితాన్ని తగ్గించవచ్చు</string>
+    <string name="liquid_glass_requires_floating_nav_bar">తేలియాడే నావిగేషన్ బార్‌ను ప్రారంభించడం అవసరం</string>
+    <string name="color_picker_hex">హెక్స్</string>
+    <string name="color_white">తెలుపు</string>
+    <string name="color_light_gray">లేత బూడిద రంగు</string>
+    <string name="color_black">నలుపు</string>
 </resources>

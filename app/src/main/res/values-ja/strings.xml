@@ -270,26 +270,18 @@
     <string name="use_login_for_browse_desc">例えば、Premiumのアカウントでログインした時に、Premium限定のアルバムが表示されるようになります</string>
     <string name="use_login_for_browse">表示されるコンテンツをアカウントと結び付ける</string>
     <string name="action_login">ログイン</string>
-
-
-
     <!-- Bottom navigation -->
     <string name="music">音楽</string>
-
     <!-- Search -->
     <string name="filter_local">ローカル</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">これはアルバムのプレースホルダー説明です。以下のトラックをお楽しみください！</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">関連するプレイリスト</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">シャッフル</string>
     <string name="shuffle_label">シャッフル</string>
     <string name="pause">一時停止</string>
-
     <!-- Menu -->
     <string name="saving">保存中</string>
     <string name="saved">保存済み</string>
@@ -297,7 +289,6 @@
     <string name="add_to_an_playlist">追加</string>
     <string name="more_label">もっと見る</string>
     <string name="releases_for_you">あなたへの新着</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">全画面でステータスバーを隠す</string>
     <string name="hide_status_bar_on_fullscreen_desc">歌詞の全画面モードが有効なときにステータスバーを非表示にします</string>
@@ -306,14 +297,12 @@
     <string name="lyrics_thumbnail_play_pause">サムネイルに再生/一時停止を表示</string>
     <string name="lyrics_thumbnail_play_pause_desc">全画面歌詞の曲のサムネイルに再生/一時停止ボタンを重ねて表示します</string>
     <string name="picker_not_available">このデバイスではドキュメントピッカーが利用できません。アプリのデフォルトのエクスポートディレクトリを使用します。</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="zero">APKは見つかりませんでした</item>
         <item quantity="one">%d 個のAPKが見つかりました</item>
         <item quantity="other">%d 個のAPKが見つかりました</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">アプリのテーマをカスタマイズ</string>
     <string name="theme_colors">テーマと色</string>
@@ -344,8 +333,6 @@
     <string name="standard_lyrics_blur">標準の歌詞ぼかし</string>
     <string name="listen_together_smart_resync">スマートネットワーク再同期</string>
     <string name="listen_together_smart_resync_desc">接続が切れた後にホストに自動的に追いつく</string>
-
-
     <string name="spotify_import_title">Spotifyからインポート</string>
     <string name="spotify_import_desc">Spotifyに接続し、プレイリストを選択して、ローカルのNullMusicプレイリストにミラーリングします。</string>
     <string name="spotify_connect">Spotifyに接続</string>
@@ -372,4 +359,117 @@
     <string name="spotify_account">Spotifyアカウント</string>
     <string name="spotify_waiting_for_login">Spotifyのログインを待機中</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">読み込み中</string>
+    <string name="added_to_playlist">%sに追加しました</string>
+    <string name="more_options">その他のオプション</string>
+    <string name="export_as_csv">CSVとしてエクスポート</string>
+    <string name="export_playlist_desc">プレイリストの曲をCSVファイルにエクスポートします</string>
+    <string name="export_successful">プレイリストをエクスポートしました</string>
+    <string name="activity_history">再生履歴の概要</string>
+    <string name="total_listening_time">合計再生時間</string>
+    <string name="unique_songs">ユニークな曲</string>
+    <string name="unique_artists">ユニークなアーティスト</string>
+    <string name="unique_albums">ユニークなアルバム</string>
+    <string name="selected_period">選択した期間</string>
+    <string name="hours_minutes_format">%1$d時間%2$d分</string>
+    <string name="content_sponsor_block">SponsorBlock（自動スキップ）</string>
+    <string name="content_sponsor_block_desc">動画内のスポンサー部分、イントロ、音楽以外の部分を自動的にスキップします</string>
+    <string name="spotify_import_by_link">リンクからプレイリストをインポート</string>
+    <string name="spotify_import_by_link_desc">Spotifyプレイリストのリンクを貼り付けてインポートします。自分が所有していないプレイリストもインポートできます</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">追加</string>
+    <string name="spotify_invalid_playlist_link">Spotifyプレイリストのリンクではないようです。https://open.spotify.com/playlist/… のようなリンクを使用してください</string>
+    <string name="service_uptime">サービス稼働状況</string>
+    <string name="service_uptime_desc">音楽プロバイダーの稼働状況を確認します</string>
+    <string name="music_providers">音楽プロバイダー</string>
+    <string name="canvas_providers">Canvasプロバイダー</string>
+    <string name="lyrics_providers">歌詞プロバイダー</string>
+    <string name="other_services">その他のサービス</string>
+    <string name="status_online">オンライン</string>
+    <string name="status_offline">オフライン</string>
+    <string name="status_checking">確認中...</string>
+    <string name="recognition_notification_channel_name">音楽認識</string>
+    <string name="recognition_notification_channel_desc">クイック設定から曲を識別している間、通知を表示します</string>
+    <string name="recognition_notification_listening">音楽を聴き取っています…</string>
+    <string name="recognition_notification_processing">識別中…</string>
+    <string name="recognition_notification_no_match">一致する曲が見つかりませんでした</string>
+    <string name="recognition_notification_failed">認識に失敗しました</string>
+    <string name="listen_on_echo_music">Echo Musicで聴く</string>
+    <string name="qs_tile_music_recognizer">音楽を認識</string>
+    <string name="echo_brain_beta">Echo Brain（ベータ版）</string>
+    <string name="echo_brain_enable">Echo Brainを有効にする</string>
+    <string name="echo_brain_enable_desc">再生傾向に基づくAIのおすすめを自動的に追加します</string>
+    <string name="echo_brain_profile_statistics">プロフィール統計</string>
+    <string name="echo_brain_learning_level">学習レベル</string>
+    <string name="echo_brain_initiate">開始</string>
+    <string name="echo_brain_total_interactions">合計インタラクション数</string>
+    <string name="echo_brain_interactions_tracked">%1$d件のインタラクションを追跡済み</string>
+    <string name="echo_brain_discovered_genres">検出されたジャンル</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d個の異なるジャンルを特定済み</string>
+    <string name="echo_brain_analyzed_artists">分析済みのアーティスト</string>
+    <string name="echo_brain_artists_mapped">%1$d組のアーティストをマッピング済み</string>
+    <string name="echo_brain_data_management">データ管理</string>
+    <string name="echo_brain_export_profile">プロフィールをエクスポート</string>
+    <string name="echo_brain_export_profile_desc">ニューラルマップをファイルに保存します</string>
+    <string name="echo_brain_import_profile">プロフィールをインポート</string>
+    <string name="echo_brain_import_profile_desc">以前保存したニューラルマップを読み込みます</string>
+    <string name="echo_brain_reset_profile">プロフィールをリセット</string>
+    <string name="echo_brain_reset_profile_desc">学習済みデータをすべて消去して最初からやり直します</string>
+    <string name="echo_brain_reset_neural_profile">ニューラルプロフィールをリセット</string>
+    <string name="echo_brain_reset_neural_profile_desc">学習済みの設定がすべて完全に削除されます。エンジンは最初から学習を開始します。</string>
+    <string name="echo_brain_profile_exported_successfully">プロフィールをエクスポートしました</string>
+    <string name="echo_brain_export_failed">エクスポートに失敗しました</string>
+    <string name="echo_brain_profile_imported_successfully">プロフィールをインポートしました</string>
+    <string name="echo_brain_import_failed_invalid_file">インポートに失敗しました：無効なファイルです</string>
+    <string name="listenbrainz_scrobbling">ListenBrainzへのScrobble</string>
+    <string name="listenbrainz_scrobbling_description">再生したトラックをListenBrainzへ自動的に送信します</string>
+    <string name="set_listenbrainz_token">ListenBrainzトークンを設定</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">抽出ツールの設定を構成します</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">YouTubeの再生設定を自動的に抽出します。常に有効に設定されています。</string>
+    <string name="force_update_cipher">設定を強制更新</string>
+    <string name="force_update_cipher_desc">抽出ツールの最新オーバーライドマッピングをダウンロードします。更新は1日3回までです。</string>
+    <string name="youtube_decryption_info">抽出ツールのマッピングは、セルフホストされたノードから動的に取得されます。上部のカウントダウンには、次回の自動同期チェックまでの残り時間が表示されます。手動更新を3回より多くリクエストすると、1日間ブロックされます。</string>
+    <string name="last_updated">最終更新</string>
+    <string name="last_updated_never">未更新</string>
+    <string name="cipher_update_success">抽出ツールのマッピングを更新しました！%d個のプレーヤーを読み込みました。</string>
+    <string name="cipher_update_failed">抽出ツールのマッピングを更新できませんでした：%s</string>
+    <string name="cipher_updating">抽出ツールの設定を更新しています…</string>
+    <string name="hours_label">時間</string>
+    <string name="minutes_label">分</string>
+    <string name="seconds_label">秒</string>
+    <string name="liquid_glass">Liquid Glass（ベータ版）</string>
+    <string name="player_background_liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_settings">Liquid Glass（ベータ版）</string>
+    <string name="liquid_glass_global_enabled">Liquid Glassを有効にする</string>
+    <string name="liquid_glass_effects">エフェクト</string>
+    <string name="liquid_glass_appearance">外観</string>
+    <string name="liquid_glass_per_component">コンポーネント別</string>
+    <string name="liquid_glass_vibrancy">鮮やかさ</string>
+    <string name="liquid_glass_vibrancy_desc">ガラス背景の彩度を高めます</string>
+    <string name="liquid_glass_blur_radius">ぼかし半径</string>
+    <string name="liquid_glass_blur_radius_desc">ガラス表面のぼかし量</string>
+    <string name="liquid_glass_lens_height">レンズ屈折の高さ</string>
+    <string name="liquid_glass_lens_amount">レンズ屈折量</string>
+    <string name="liquid_glass_chromatic_aberration">色収差</string>
+    <string name="liquid_glass_depth_effect">奥行き効果</string>
+    <string name="liquid_glass_surface_opacity">表面の不透明度</string>
+    <string name="liquid_glass_surface_opacity_desc">読みやすさを調整するガラス色オーバーレイの不透明度</string>
+    <string name="liquid_glass_surface_tint">表面の色合い</string>
+    <string name="liquid_glass_surface_tint_desc">ガラス表面に適用する色合い</string>
+    <string name="liquid_glass_text_color">ガラス上の文字色</string>
+    <string name="liquid_glass_text_color_desc">ガラス表面で使用する文字色</string>
+    <string name="liquid_glass_player">ガラスプレーヤー</string>
+    <string name="liquid_glass_mini_player">ガラスミニプレーヤー</string>
+    <string name="liquid_glass_nav_bar">ガラスナビゲーションバー</string>
+    <string name="nav_bar_style">ナビゲーションバーのスタイル</string>
+    <string name="floating_nav_bar">フローティングナビゲーションバー</string>
+    <string name="floating_nav_bar_desc">スクロール中に縮小するiOS風のフローティングタブバー</string>
+    <string name="liquid_glass_performance_warning">Liquid Glassの描画は処理負荷が高く、一部の端末では動作の滑らかさやバッテリー駆動時間が低下する場合があります</string>
+    <string name="liquid_glass_requires_floating_nav_bar">フローティングナビゲーションバーを有効にする必要があります</string>
+    <string name="color_picker_hex">16進数</string>
+    <string name="color_white">白</string>
+    <string name="color_light_gray">ライトグレー</string>
+    <string name="color_black">黒</string>
 </resources>

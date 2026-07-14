@@ -279,25 +279,18 @@
     <string name="new_version_available">Uusi versio saatavilla</string>
     <string name="translation_models">Käännösmallit</string>
     <string name="clear_translation_models">Tyhjennä käännösmallit</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Musiikki</string>
-
     <!-- Search -->
     <string name="filter_local">Paikalliset</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Tämä on albumin paikkamerkkikuvaus. Nauti alla olevien kappaleiden kuuntelusta!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Aiheeseen liittyvä soittolista</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Sekoita</string>
     <string name="shuffle_label">Sekoita</string>
     <string name="pause">Keskeytä</string>
-
     <!-- Menu -->
     <string name="saving">Tallennetaan</string>
     <string name="saved">Tallennettu</string>
@@ -305,7 +298,6 @@
     <string name="add_to_an_playlist">Lisää</string>
     <string name="more_label">Lisää</string>
     <string name="releases_for_you">Julkaisut sinulle</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Piilota tilapalkki koko näytön tilassa</string>
     <string name="hide_status_bar_on_fullscreen_desc">Piilota tilapalkki, kun sanoitusten koko näytön tila on käytössä</string>
@@ -314,13 +306,11 @@
     <string name="lyrics_thumbnail_play_pause">Näytä toisto/keskeytys -painike esikatselukuvassa</string>
     <string name="lyrics_thumbnail_play_pause_desc">Näytä toisto/keskeytys -painike kappaleen esikatselukuvan päällä koko näytön sanoituksissa</string>
     <string name="picker_not_available">Asiakirjavalitsin ei ole käytettävissä tässä laitteessa. Käytetään sovelluksen oletusvientihakemistoa.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK löytyi</item>
         <item quantity="other">%d APK:ta löytyi</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Mukauta sovelluksen teemaa</string>
     <string name="theme_colors">Teema ja värit</string>
@@ -351,8 +341,6 @@
     <string name="standard_lyrics_blur">Tavallinen sanoitusten sumennus</string>
     <string name="listen_together_smart_resync">Älykäs verkon uudelleensynkronointi</string>
     <string name="listen_together_smart_resync_desc">Tavoita isäntä automaattisesti yhteyden katkeamisen jälkeen</string>
-
-
     <string name="spotify_import_title">Tuo Spotifysta</string>
     <string name="spotify_import_desc">Yhdistä Spotify, valitse soittolistat ja peilaa ne paikallisiksi NullMusic-soittolistoiksi.</string>
     <string name="spotify_connect">Yhdistä Spotify</string>
@@ -379,4 +367,117 @@
     <string name="spotify_account">Spotify-tili</string>
     <string name="spotify_waiting_for_login">Odotetaan Spotify-kirjautumista</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Ladataan</string>
+    <string name="added_to_playlist">Lisätty soittolistaan %s</string>
+    <string name="more_options">Lisää vaihtoehtoja</string>
+    <string name="export_as_csv">Vie CSV-tiedostona</string>
+    <string name="export_playlist_desc">Vie soittolistan kappaleet CSV-tiedostoon</string>
+    <string name="export_successful">Soittolista vietiin onnistuneesti</string>
+    <string name="activity_history">Kuunteluyhteenveto</string>
+    <string name="total_listening_time">Kuunteluaika yhteensä</string>
+    <string name="unique_songs">Eri kappaleita</string>
+    <string name="unique_artists">Eri artisteja</string>
+    <string name="unique_albums">Eri albumeita</string>
+    <string name="selected_period">Valittu ajanjakso</string>
+    <string name="hours_minutes_format">%1$d t %2$d min</string>
+    <string name="content_sponsor_block">SponsorBlock (automaattinen ohitus)</string>
+    <string name="content_sponsor_block_desc">Ohita automaattisesti sponsoriosuudet, aloitukset ja videoiden osuudet, jotka eivät sisällä musiikkia</string>
+    <string name="spotify_import_by_link">Tuo soittolista linkistä</string>
+    <string name="spotify_import_by_link_desc">Liitä Spotify-soittolistan linkki tuodaksesi sen, vaikka soittolista ei olisi omasi</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Lisää</string>
+    <string name="spotify_invalid_playlist_link">Tämä ei vaikuta Spotify-soittolistan linkiltä. Käytä linkkiä, kuten https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Palveluiden käytettävyys</string>
+    <string name="service_uptime_desc">Tarkista musiikkipalveluntarjoajien tila</string>
+    <string name="music_providers">Musiikkipalveluntarjoajat</string>
+    <string name="canvas_providers">Canvas-palveluntarjoajat</string>
+    <string name="lyrics_providers">Sanoituspalveluntarjoajat</string>
+    <string name="other_services">Muut palvelut</string>
+    <string name="status_online">Verkossa</string>
+    <string name="status_offline">Ei verkossa</string>
+    <string name="status_checking">Tarkistetaan...</string>
+    <string name="recognition_notification_channel_name">Musiikin tunnistus</string>
+    <string name="recognition_notification_channel_desc">Näyttää ilmoituksen, kun kappaletta tunnistetaan pika-asetuksista</string>
+    <string name="recognition_notification_listening">Kuunnellaan musiikkia…</string>
+    <string name="recognition_notification_processing">Tunnistetaan…</string>
+    <string name="recognition_notification_no_match">Vastaavuutta ei löytynyt</string>
+    <string name="recognition_notification_failed">Tunnistus epäonnistui</string>
+    <string name="listen_on_echo_music">Kuuntele Echo Musicissa</string>
+    <string name="qs_tile_music_recognizer">Tunnista musiikki</string>
+    <string name="echo_brain_beta">Echo Brain (beeta)</string>
+    <string name="echo_brain_enable">Ota Echo Brain käyttöön</string>
+    <string name="echo_brain_enable_desc">Lisää automaattisesti tekoälysuosituksia kuuntelutottumustesi perusteella</string>
+    <string name="echo_brain_profile_statistics">Profiilin tilastot</string>
+    <string name="echo_brain_learning_level">Oppimistaso</string>
+    <string name="echo_brain_initiate">Aloita</string>
+    <string name="echo_brain_total_interactions">Vuorovaikutuksia yhteensä</string>
+    <string name="echo_brain_interactions_tracked">%1$d vuorovaikutusta seurattu</string>
+    <string name="echo_brain_discovered_genres">Löydetyt tyylilajit</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d eri tyylilajia tunnistettu</string>
+    <string name="echo_brain_analyzed_artists">Analysoidut artistit</string>
+    <string name="echo_brain_artists_mapped">%1$d artistia kartoitettu</string>
+    <string name="echo_brain_data_management">Tietojen hallinta</string>
+    <string name="echo_brain_export_profile">Vie profiili</string>
+    <string name="echo_brain_export_profile_desc">Tallenna neuroverkkokarttasi tiedostoon</string>
+    <string name="echo_brain_import_profile">Tuo profiili</string>
+    <string name="echo_brain_import_profile_desc">Lataa aiemmin tallennettu neuroverkkokartta</string>
+    <string name="echo_brain_reset_profile">Nollaa profiili</string>
+    <string name="echo_brain_reset_profile_desc">Poista kaikki opitut tiedot ja aloita alusta</string>
+    <string name="echo_brain_reset_neural_profile">Nollaa neuroverkkoprofiili</string>
+    <string name="echo_brain_reset_neural_profile_desc">Tämä poistaa pysyvästi kaikki opitut mieltymykset. Järjestelmä aloittaa oppimisen alusta.</string>
+    <string name="echo_brain_profile_exported_successfully">Profiili vietiin onnistuneesti</string>
+    <string name="echo_brain_export_failed">Vienti epäonnistui</string>
+    <string name="echo_brain_profile_imported_successfully">Profiili tuotiin onnistuneesti</string>
+    <string name="echo_brain_import_failed_invalid_file">Tuonti epäonnistui: virheellinen tiedosto</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz-skrobblaus</string>
+    <string name="listenbrainz_scrobbling_description">Lähetä kuuntelemasi kappaleet automaattisesti ListenBrainziin</string>
+    <string name="set_listenbrainz_token">Aseta ListenBrainz-tunniste</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Määritä poimijan asetukset</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Poimii YouTuben toistomääritykset automaattisesti. Lukittu aktiiviseksi.</string>
+    <string name="force_update_cipher">Pakota määritysten päivitys</string>
+    <string name="force_update_cipher_desc">Lataa uusimmat poimijan ohitusmääritykset. Enintään 3 päivitystä päivässä.</string>
+    <string name="youtube_decryption_info">Poimijan määritykset haetaan dynaamisesti itse ylläpitämästäsi solmusta. Yläreunan ajastin näyttää seuraavaan automaattiseen synkronointitarkistukseen jäljellä olevan ajan. Jos manuaalista päivitystä pyydetään yli 3 kertaa, päivitykset estetään vuorokaudeksi.</string>
+    <string name="last_updated">Päivitetty viimeksi</string>
+    <string name="last_updated_never">Ei koskaan</string>
+    <string name="cipher_update_success">Poimijan määritykset päivitettiin! Ladattiin %d soitinta.</string>
+    <string name="cipher_update_failed">Poimijan määritysten päivitys epäonnistui: %s</string>
+    <string name="cipher_updating">Päivitetään poimijan määrityksiä…</string>
+    <string name="hours_label">Tunnit</string>
+    <string name="minutes_label">Minuutit</string>
+    <string name="seconds_label">Sekunnit</string>
+    <string name="liquid_glass">Liquid Glass (beeta)</string>
+    <string name="player_background_liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_settings">Liquid Glass (beeta)</string>
+    <string name="liquid_glass_global_enabled">Ota Liquid Glass käyttöön</string>
+    <string name="liquid_glass_effects">Tehosteet</string>
+    <string name="liquid_glass_appearance">Ulkoasu</string>
+    <string name="liquid_glass_per_component">Komponenttikohtaisesti</string>
+    <string name="liquid_glass_vibrancy">Värikylläisyys</string>
+    <string name="liquid_glass_vibrancy_desc">Lisää lasitaustan värikylläisyyttä</string>
+    <string name="liquid_glass_blur_radius">Sumennussäde</string>
+    <string name="liquid_glass_blur_radius_desc">Lasipinnan sumennuksen määrä</string>
+    <string name="liquid_glass_lens_height">Linssin taittumiskorkeus</string>
+    <string name="liquid_glass_lens_amount">Linssin taittumisen määrä</string>
+    <string name="liquid_glass_chromatic_aberration">Kromaattinen aberraatio</string>
+    <string name="liquid_glass_depth_effect">Syvyystehoste</string>
+    <string name="liquid_glass_surface_opacity">Pinnan peittävyys</string>
+    <string name="liquid_glass_surface_opacity_desc">Lasipinnan sävykerroksen peittävyys luettavuuden parantamiseksi</string>
+    <string name="liquid_glass_surface_tint">Pinnan sävy</string>
+    <string name="liquid_glass_surface_tint_desc">Lasipintaan käytettävä sävyväri</string>
+    <string name="liquid_glass_text_color">Lasipinnan tekstin väri</string>
+    <string name="liquid_glass_text_color_desc">Lasipinnoilla käytettävä tekstin väri</string>
+    <string name="liquid_glass_player">Lasissoitin</string>
+    <string name="liquid_glass_mini_player">Lasinen minisoitin</string>
+    <string name="liquid_glass_nav_bar">Lasinen siirtymispalkki</string>
+    <string name="nav_bar_style">Siirtymispalkin tyyli</string>
+    <string name="floating_nav_bar">Kelluva siirtymispalkki</string>
+    <string name="floating_nav_bar_desc">iOS-tyylinen kelluva välilehtipalkki, joka pienenee vieritettäessä</string>
+    <string name="liquid_glass_performance_warning">Liquid Glass -tehosteen renderöinti vaatii paljon suorituskykyä ja saattaa heikentää sujuvuutta sekä lyhentää akun kestoa joillakin laitteilla</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Edellyttää kelluvan siirtymispalkin käyttöönottoa</string>
+    <string name="color_picker_hex">Heksa</string>
+    <string name="color_white">Valkoinen</string>
+    <string name="color_light_gray">Vaaleanharmaa</string>
+    <string name="color_black">Musta</string>
 </resources>

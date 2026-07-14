@@ -279,25 +279,18 @@
     <string name="use_login_for_browse">Използвай вход за разглеждане на съдържание</string>
     <string name="use_login_for_browse_desc">Това може да повлияе какво съдържание виждате и например показва само премиум албуми, ако сте влезли с Премиум профил</string>
     <string name="action_login">Вход</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Музика</string>
-
     <!-- Search -->
     <string name="filter_local">Локални</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Това е описание-заместител за албума. Насладете се на слушане на песните по-долу!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Свързани плейлисти</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Разбъркай</string>
     <string name="shuffle_label">Разбъркай</string>
     <string name="pause">Пауза</string>
-
     <!-- Menu -->
     <string name="saving">Запазване</string>
     <string name="saved">Запазено</string>
@@ -305,7 +298,6 @@
     <string name="add_to_an_playlist">Добави</string>
     <string name="more_label">Още</string>
     <string name="releases_for_you">Издания за вас</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Скрий лентата за състояние на цял екран</string>
     <string name="hide_status_bar_on_fullscreen_desc">Скрий лентата за състояние, когато е активен режим на цял екран на текста на песента</string>
@@ -314,13 +306,11 @@
     <string name="lyrics_thumbnail_play_pause">Покажи бутона за пускане/пауза върху миниатюрата</string>
     <string name="lyrics_thumbnail_play_pause_desc">Покажи наслагване на бутон за пускане/пауза върху миниатюрата на песента в текста на цял екран</string>
     <string name="picker_not_available">Изборът на документи не е наличен на това устройство. Използва се директорията за експорт по подразбиране на приложението.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK файл е намерен</item>
         <item quantity="other">%d APK файла са намерени</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Персонализирайте темата на приложението</string>
     <string name="theme_colors">Тема и цветове</string>
@@ -351,8 +341,6 @@
     <string name="standard_lyrics_blur">Стандартно замъгляване на текста</string>
     <string name="listen_together_smart_resync">Умна мрежова повторна синхронизация</string>
     <string name="listen_together_smart_resync_desc">Автоматично наваксване на водещия след прекъсване на връзката</string>
-
-
     <string name="spotify_import_title">Импортиране от Spotify</string>
     <string name="spotify_import_desc">Свържете Spotify, изберете плейлисти и ги огледайте в локални плейлисти на NullMusic.</string>
     <string name="spotify_connect">Свързване със Spotify</string>
@@ -379,4 +367,117 @@
     <string name="spotify_account">Профил в Spotify</string>
     <string name="spotify_waiting_for_login">Изчакване на входа в Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Зареждане</string>
+    <string name="added_to_playlist">Добавено към %s</string>
+    <string name="more_options">Още опции</string>
+    <string name="export_as_csv">Експортиране като CSV</string>
+    <string name="export_playlist_desc">Експортиране на песните от плейлиста в CSV файл</string>
+    <string name="export_successful">Плейлистът е експортиран успешно</string>
+    <string name="activity_history">Обобщение на слушането</string>
+    <string name="total_listening_time">Общо време на слушане</string>
+    <string name="unique_songs">Уникални песни</string>
+    <string name="unique_artists">Уникални изпълнители</string>
+    <string name="unique_albums">Уникални албуми</string>
+    <string name="selected_period">Избран период</string>
+    <string name="hours_minutes_format">%1$d ч %2$d мин</string>
+    <string name="content_sponsor_block">SponsorBlock (автоматично пропускане)</string>
+    <string name="content_sponsor_block_desc">Автоматично пропускане на спонсорства, интрота и немузикални части във видеоклиповете</string>
+    <string name="spotify_import_by_link">Импортиране на плейлист чрез връзка</string>
+    <string name="spotify_import_by_link_desc">Поставете връзка към плейлист в Spotify, за да го импортирате, дори ако не е ваш</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Добавяне</string>
+    <string name="spotify_invalid_playlist_link">Това не прилича на връзка към плейлист в Spotify. Използвайте връзка като https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Работно състояние на услугите</string>
+    <string name="service_uptime_desc">Проверете състоянието на доставчиците на музика</string>
+    <string name="music_providers">Доставчици на музика</string>
+    <string name="canvas_providers">Доставчици на Canvas</string>
+    <string name="lyrics_providers">Доставчици на текстове</string>
+    <string name="other_services">Други услуги</string>
+    <string name="status_online">На линия</string>
+    <string name="status_offline">Извън линия</string>
+    <string name="status_checking">Проверяване...</string>
+    <string name="recognition_notification_channel_name">Разпознаване на музика</string>
+    <string name="recognition_notification_channel_desc">Показва известие, докато се разпознава песен от бързите настройки</string>
+    <string name="recognition_notification_listening">Слушане за музика…</string>
+    <string name="recognition_notification_processing">Разпознаване…</string>
+    <string name="recognition_notification_no_match">Не е намерено съвпадение</string>
+    <string name="recognition_notification_failed">Разпознаването е неуспешно</string>
+    <string name="listen_on_echo_music">Слушане в Echo Music</string>
+    <string name="qs_tile_music_recognizer">Разпознаване на музика</string>
+    <string name="echo_brain_beta">Echo Brain (бета)</string>
+    <string name="echo_brain_enable">Активиране на Echo Brain</string>
+    <string name="echo_brain_enable_desc">Автоматично добавяне на препоръки от ИИ въз основа на навиците ви за слушане</string>
+    <string name="echo_brain_profile_statistics">Статистика на профила</string>
+    <string name="echo_brain_learning_level">Ниво на обучение</string>
+    <string name="echo_brain_initiate">Стартиране</string>
+    <string name="echo_brain_total_interactions">Общо взаимодействия</string>
+    <string name="echo_brain_interactions_tracked">Проследени взаимодействия: %1$d</string>
+    <string name="echo_brain_discovered_genres">Открити жанрове</string>
+    <string name="echo_brain_distinct_genres_identified">Разпознати отделни жанрове: %1$d</string>
+    <string name="echo_brain_analyzed_artists">Анализирани изпълнители</string>
+    <string name="echo_brain_artists_mapped">Картографирани изпълнители: %1$d</string>
+    <string name="echo_brain_data_management">Управление на данните</string>
+    <string name="echo_brain_export_profile">Експортиране на профила</string>
+    <string name="echo_brain_export_profile_desc">Запазване на невронната ви карта във файл</string>
+    <string name="echo_brain_import_profile">Импортиране на профил</string>
+    <string name="echo_brain_import_profile_desc">Зареждане на запазена по-рано невронна карта</string>
+    <string name="echo_brain_reset_profile">Нулиране на профила</string>
+    <string name="echo_brain_reset_profile_desc">Изтриване на всички научени данни и започване отначало</string>
+    <string name="echo_brain_reset_neural_profile">Нулиране на невронния профил</string>
+    <string name="echo_brain_reset_neural_profile_desc">Това ще изтрие завинаги всички научени предпочитания. Системата ще започне обучението си отначало.</string>
+    <string name="echo_brain_profile_exported_successfully">Профилът е експортиран успешно</string>
+    <string name="echo_brain_export_failed">Експортирането е неуспешно</string>
+    <string name="echo_brain_profile_imported_successfully">Профилът е импортиран успешно</string>
+    <string name="echo_brain_import_failed_invalid_file">Импортирането е неуспешно: невалиден файл</string>
+    <string name="listenbrainz_scrobbling">Скроблинг в ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Автоматично изпращане на слушаните песни към ListenBrainz</string>
+    <string name="set_listenbrainz_token">Задаване на токен за ListenBrainz</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Конфигуриране на настройките на екстрактора</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Автоматично извлича конфигурациите за възпроизвеждане от YouTube. Заключено в активно състояние.</string>
+    <string name="force_update_cipher">Принудително обновяване на конфигурациите</string>
+    <string name="force_update_cipher_desc">Изтегляне на най-новите заместващи съпоставяния за екстрактора. Ограничено до 3 обновявания на ден.</string>
+    <string name="youtube_decryption_info">Съпоставянията на екстрактора се извличат динамично от вашия собствен хостван възел. Обратното броене в горната част показва оставащото време до следващата автоматична проверка за синхронизиране. Ако ръчните обновявания бъдат заявени повече от 3 пъти, те се блокират за 1 ден.</string>
+    <string name="last_updated">Последно обновяване</string>
+    <string name="last_updated_never">Никога</string>
+    <string name="cipher_update_success">Съпоставянията на екстрактора са обновени! Заредени плейъри: %d.</string>
+    <string name="cipher_update_failed">Обновяването на съпоставянията на екстрактора е неуспешно: %s</string>
+    <string name="cipher_updating">Обновяване на конфигурациите на екстрактора…</string>
+    <string name="hours_label">Часове</string>
+    <string name="minutes_label">Минути</string>
+    <string name="seconds_label">Секунди</string>
+    <string name="liquid_glass">Течно стъкло (бета)</string>
+    <string name="player_background_liquid_glass">Течно стъкло</string>
+    <string name="liquid_glass_settings">Течно стъкло (бета)</string>
+    <string name="liquid_glass_global_enabled">Активиране на Течно стъкло</string>
+    <string name="liquid_glass_effects">Ефекти</string>
+    <string name="liquid_glass_appearance">Външен вид</string>
+    <string name="liquid_glass_per_component">За всеки компонент</string>
+    <string name="liquid_glass_vibrancy">Наситеност</string>
+    <string name="liquid_glass_vibrancy_desc">Увеличаване на наситеността на стъкления фон</string>
+    <string name="liquid_glass_blur_radius">Радиус на замъгляване</string>
+    <string name="liquid_glass_blur_radius_desc">Степен на замъгляване на стъклената повърхност</string>
+    <string name="liquid_glass_lens_height">Височина на пречупване на лещата</string>
+    <string name="liquid_glass_lens_amount">Степен на пречупване на лещата</string>
+    <string name="liquid_glass_chromatic_aberration">Хроматична аберация</string>
+    <string name="liquid_glass_depth_effect">Ефект на дълбочина</string>
+    <string name="liquid_glass_surface_opacity">Непрозрачност на повърхността</string>
+    <string name="liquid_glass_surface_opacity_desc">Непрозрачност на стъкления цветен слой за по-добра четимост</string>
+    <string name="liquid_glass_surface_tint">Оттенък на повърхността</string>
+    <string name="liquid_glass_surface_tint_desc">Цветният оттенък, приложен върху стъклената повърхност</string>
+    <string name="liquid_glass_text_color">Цвят на текста върху стъклото</string>
+    <string name="liquid_glass_text_color_desc">Цвят на текста, използван върху стъклените повърхности</string>
+    <string name="liquid_glass_player">Стъклен плейър</string>
+    <string name="liquid_glass_mini_player">Стъклен миниплейър</string>
+    <string name="liquid_glass_nav_bar">Стъклена лента за навигация</string>
+    <string name="nav_bar_style">Стил на лентата за навигация</string>
+    <string name="floating_nav_bar">Плаваща лента за навигация</string>
+    <string name="floating_nav_bar_desc">Плаваща лента с раздели в стила на iOS, която се свива при превъртане</string>
+    <string name="liquid_glass_performance_warning">Изобразяването на течно стъкло изисква много ресурси и може да намали плавността и живота на батерията при някои устройства</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Изисква плаващата лента за навигация да бъде активирана</string>
+    <string name="color_picker_hex">Шестнадесетичен код</string>
+    <string name="color_white">Бяло</string>
+    <string name="color_light_gray">Светлосиво</string>
+    <string name="color_black">Черно</string>
 </resources>

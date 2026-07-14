@@ -71,7 +71,7 @@
     <string name="remove_from_library">Удалить из библиотеки</string>
     <string name="remove_all_from_library">Удалить все из библиотеки</string>
     <string name="action_download">Загрузить</string>
-    <string name="downloading">Загрузка</string>
+    <string name="downloading">Скачивание</string>
     <string name="remove_download">Удалить из загруженных</string>
     <string name="import_playlist">Импортировать плейлист</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
@@ -297,25 +297,18 @@
     <string name="use_login_for_browse">Авторизуйтесь для просмотра контента</string>
     <string name="use_login_for_browse_desc">Это влияет на отображение контента и, в частности, открывает доступ к премиум-альбомам при входе с премиум-учётной записью</string>
     <string name="action_login">Войти</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Музыка</string>
-
     <!-- Search -->
     <string name="filter_local">Локальные</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Это примерное описание альбома. Наслаждайтесь прослушиванием треков ниже!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Похожие плейлисты</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Перемешать</string>
     <string name="shuffle_label">Перемешать</string>
     <string name="pause">Пауза</string>
-
     <!-- Menu -->
     <string name="saving">Сохранение</string>
     <string name="saved">Сохранено</string>
@@ -323,7 +316,6 @@
     <string name="add_to_an_playlist">Добавить</string>
     <string name="more_label">Ещё</string>
     <string name="releases_for_you">Релизы для вас</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Скрывать строку состояния в полноэкранном режиме</string>
     <string name="hide_status_bar_on_fullscreen_desc">Скрывать строку состояния, когда активен полноэкранный режим отображения текста песни</string>
@@ -332,7 +324,6 @@
     <string name="lyrics_thumbnail_play_pause">Показывать кнопку «Воспроизвести/Пауза» на миниатюре</string>
     <string name="lyrics_thumbnail_play_pause_desc">Показывать наложение кнопки воспроизведения/паузы поверх миниатюры трека в полноэкранном тексте песни</string>
     <string name="picker_not_available">Выбор документов недоступен на этом устройстве. Используется каталог экспорта приложения по умолчанию.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="zero">APK-файлов не найдено</item>
@@ -341,7 +332,6 @@
         <item quantity="many">Найдено %d APK-файлов</item>
         <item quantity="other">Найдено %d APK-файлов</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Настройте тему приложения</string>
     <string name="theme_colors">Тема и цвета</string>
@@ -372,8 +362,6 @@
     <string name="standard_lyrics_blur">Стандартное размытие текста</string>
     <string name="listen_together_smart_resync">Умная повторная синхронизация сети</string>
     <string name="listen_together_smart_resync_desc">Автоматически подстраиваться под ведущего после обрыва соединения</string>
-
-
     <string name="spotify_import_title">Импорт из Spotify</string>
     <string name="spotify_import_desc">Подключите Spotify, выберите плейлисты и зеркально отразите их в локальных плейлистах NullMusic.</string>
     <string name="spotify_connect">Подключить Spotify</string>
@@ -400,4 +388,117 @@
     <string name="spotify_account">Учётная запись Spotify</string>
     <string name="spotify_waiting_for_login">Ожидание входа в Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Загрузка</string>
+    <string name="added_to_playlist">Добавлен в%s</string>
+    <string name="more_options">Больше вариантов</string>
+    <string name="export_as_csv">Сохранить как CSV</string>
+    <string name="export_playlist_desc">Экспортировать песни плейлиста в CSV файл</string>
+    <string name="export_successful">Плейлист успешно экспортирован</string>
+    <string name="activity_history">Сводка прослушивания</string>
+    <string name="total_listening_time">Общее время прослушивания</string>
+    <string name="unique_songs">Уникальные треки</string>
+    <string name="unique_artists">Уникальные артисты</string>
+    <string name="unique_albums">Уникальные альбомы</string>
+    <string name="selected_period">Выбранный период</string>
+    <string name="hours_minutes_format">%1dч %2dм</string>
+    <string name="content_sponsor_block">SponsorBlock (Автопропуск)</string>
+    <string name="content_sponsor_block_desc">Автоматический пропуск спонсорских интеграций, заставок и немузыкальных фрагментов в видео</string>
+    <string name="spotify_import_by_link">Импорт плейлиста по ссылке</string>
+    <string name="spotify_import_by_link_desc">Вставьте ссылку на плейлист Spotify для его импорта — даже на плейлисты, которые вам не принадлежат</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Добавить</string>
+    <string name="spotify_invalid_playlist_link">Это не ссылка плейлиста Spotify. Используй ссылку формата https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Время работы сервиса</string>
+    <string name="service_uptime_desc">Проверить статус музыкальных провайдеров</string>
+    <string name="music_providers">Музыкальные провайдеры</string>
+    <string name="canvas_providers">Провайдеры обложек треков</string>
+    <string name="lyrics_providers">Провайдеры текста песен</string>
+    <string name="other_services">Другие сервисы</string>
+    <string name="status_online">Онлайн</string>
+    <string name="status_offline">Оффлайн</string>
+    <string name="status_checking">Проверка...</string>
+    <string name="recognition_notification_channel_name">Распознавание музыки</string>
+    <string name="recognition_notification_channel_desc">Показывает уведомление во время определения песни из быстрых настроек</string>
+    <string name="recognition_notification_listening">Слушаю музыку…</string>
+    <string name="recognition_notification_processing">Определяю…</string>
+    <string name="recognition_notification_no_match">Нет совпадений</string>
+    <string name="recognition_notification_failed">Ошибка распознавания</string>
+    <string name="listen_on_echo_music">Слушать в Echo Music</string>
+    <string name="qs_tile_music_recognizer">Распознать музыку</string>
+    <string name="echo_brain_beta">Echo Brain (Бета)</string>
+    <string name="echo_brain_enable">Включить Echo Brain</string>
+    <string name="echo_brain_enable_desc">Автоматически добавлять рекомендации ИИ на основе ваших привычек прослушивания</string>
+    <string name="echo_brain_profile_statistics">Статистика профиля</string>
+    <string name="echo_brain_learning_level">Уровень обучения</string>
+    <string name="echo_brain_initiate">Запустить</string>
+    <string name="echo_brain_total_interactions">Общее количество взаимодействий</string>
+    <string name="echo_brain_interactions_tracked">Отслежено взаимодействий: %1$d</string>
+    <string name="echo_brain_discovered_genres">Обнаруженные жанры</string>
+    <string name="echo_brain_distinct_genres_identified">Обнаружено %1$d различных жанров</string>
+    <string name="echo_brain_analyzed_artists">Проанализированные исполнители</string>
+    <string name="echo_brain_artists_mapped">Сопоставлено исполнителей: %1$d</string>
+    <string name="echo_brain_data_management">Управление данными</string>
+    <string name="echo_brain_export_profile">Экспорт профиля</string>
+    <string name="echo_brain_export_profile_desc">Сохранить вашу нейронную карту в файл</string>
+    <string name="echo_brain_import_profile">Импорт профиля</string>
+    <string name="echo_brain_import_profile_desc">Загрузить раннее сохранённую нейронную карту</string>
+    <string name="echo_brain_reset_profile">Сбросить профиль</string>
+    <string name="echo_brain_reset_profile_desc">Удалить все изученные данные и начать сначала</string>
+    <string name="echo_brain_reset_neural_profile">Сбросить нейронный профиль</string>
+    <string name="echo_brain_reset_neural_profile_desc">Это действие безвозвратно удалит все изученные предпочтения. Система начнет обучение с нуля.</string>
+    <string name="echo_brain_profile_exported_successfully">Профиль успешно экспортирован</string>
+    <string name="echo_brain_export_failed">Ошибка экспорта</string>
+    <string name="echo_brain_profile_imported_successfully">Успешный импорт профиля</string>
+    <string name="echo_brain_import_failed_invalid_file">Ошибка импорта: недопустимый файл</string>
+    <string name="listenbrainz_scrobbling">Скробблинг через ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Автоматическая отправка прослушанных треков в ListenBrainz</string>
+    <string name="set_listenbrainz_token">Установить токен ListenBrainz</string>
+    <string name="youtube_decryption_settings">Эхо извлекатель</string>
+    <string name="youtube_decryption_desc">Настройка параметров извлекателя</string>
+    <string name="youtube_decryption_support">Эхо извлекатель</string>
+    <string name="youtube_decryption_support_desc">Автоматически извлекает конфигурации воспроизведения YouTube. Заблокировано для активного состояния.</string>
+    <string name="force_update_cipher">Принудительное обновление конфигураций</string>
+    <string name="force_update_cipher_desc">Загрузить последние сопоставления переопределений извлекателя. Ограничение: 3 обновления в день.</string>
+    <string name="youtube_decryption_info">Сопоставления извлекателя динамически подгружаются с вашего собственного узла. Таймер в верхней части отображает время, оставшееся до следующей автоматической проверки синхронизации. Если ручные обновления запрашиваются более 3 раз, они блокируются на 1 день.</string>
+    <string name="last_updated">Последнее обновление</string>
+    <string name="last_updated_never">Никогда</string>
+    <string name="cipher_update_success">Сопоставления извлекателя обновлены! Загружено проигрывателей: %d.</string>
+    <string name="cipher_update_failed">Не удалось обновить сопоставления извлекателя: %s</string>
+    <string name="cipher_updating">Обновление конфигураций извлекателя…</string>
+    <string name="hours_label">Часов</string>
+    <string name="minutes_label">Минут</string>
+    <string name="seconds_label">Секунд</string>
+    <string name="liquid_glass">Жидкое стекло (Бета)</string>
+    <string name="player_background_liquid_glass">Жидкое стекло</string>
+    <string name="liquid_glass_settings">Жидкое стекло (Бета)</string>
+    <string name="liquid_glass_global_enabled">Включить Жидкое Стекло</string>
+    <string name="liquid_glass_effects">Эффекты</string>
+    <string name="liquid_glass_appearance">Внешний вид</string>
+    <string name="liquid_glass_per_component">На компонент</string>
+    <string name="liquid_glass_vibrancy">Вибрация</string>
+    <string name="liquid_glass_vibrancy_desc">Усилить насыщенность стеклянного фона</string>
+    <string name="liquid_glass_blur_radius">Радиус блюра</string>
+    <string name="liquid_glass_blur_radius_desc">Степень размытия стеклянной поверхности</string>
+    <string name="liquid_glass_lens_height">Высота преломления линзы</string>
+    <string name="liquid_glass_lens_amount">Степень преломления линзы</string>
+    <string name="liquid_glass_chromatic_aberration">Хроматическая аберрация</string>
+    <string name="liquid_glass_depth_effect">Эффект глубины</string>
+    <string name="liquid_glass_surface_opacity">Непрозрачность поверхности</string>
+    <string name="liquid_glass_surface_opacity_desc">Непрозрачность наложения оттенка стекла для удобства чтения</string>
+    <string name="liquid_glass_surface_tint">Оттенок поверхности</string>
+    <string name="liquid_glass_surface_tint_desc">Цвет оттенка, применяемый к поверхности стекла</string>
+    <string name="liquid_glass_text_color">Цвет текста на стекле</string>
+    <string name="liquid_glass_text_color_desc">Цвет текста, используемый на стеклянных поверхностях</string>
+    <string name="liquid_glass_player">Стеклянный плеер</string>
+    <string name="liquid_glass_mini_player">Стеклянный мини плеер</string>
+    <string name="liquid_glass_nav_bar">Стеклянная панель навигации</string>
+    <string name="nav_bar_style">Стиль панели навигации</string>
+    <string name="floating_nav_bar">Плавающая панель навигации</string>
+    <string name="floating_nav_bar_desc">Плавающая панель вкладок в стиле iOS, которая уменьшается при прокрутке</string>
+    <string name="liquid_glass_performance_warning">Рендеринг жидкого стекла требует больших вычислительных ресурсов и может снизить плавность работы и время автономной работы на некоторых устройствах</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Требует включения плавающей панели навигации</string>
+    <string name="color_picker_hex">Hex</string>
+    <string name="color_white">Белый</string>
+    <string name="color_light_gray">Светло-серый</string>
+    <string name="color_black">Черный</string>
 </resources>

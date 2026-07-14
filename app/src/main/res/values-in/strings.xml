@@ -270,25 +270,18 @@
     <string name="use_login_for_browse">Masuk untuk menjelajahi konten</string>
     <string name="use_login_for_browse_desc">Hal ini dapat memengaruhi konten yang Anda lihat dan misalnya menampilkan album khusus premium jika Anda masuk dengan akun Premium</string>
     <string name="action_login">Masuk</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Musik</string>
-
     <!-- Search -->
     <string name="filter_local">Lokal</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Ini adalah deskripsi placeholder untuk album. Nikmati mendengarkan trek di bawah ini!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Daftar putar terkait</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Acak</string>
     <string name="shuffle_label">Acak</string>
     <string name="pause">Jeda</string>
-
     <!-- Menu -->
     <string name="saving">Menyimpan</string>
     <string name="saved">Tersimpan</string>
@@ -296,7 +289,6 @@
     <string name="add_to_an_playlist">Tambahkan</string>
     <string name="more_label">Lainnya</string>
     <string name="releases_for_you">Rilis untuk Anda</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Sembunyikan bilah status saat layar penuh</string>
     <string name="hide_status_bar_on_fullscreen_desc">Sembunyikan bilah status saat mode layar penuh lirik aktif</string>
@@ -305,12 +297,10 @@
     <string name="lyrics_thumbnail_play_pause">Tampilkan putar/jeda pada thumbnail</string>
     <string name="lyrics_thumbnail_play_pause_desc">Tampilkan tombol putar/jeda yang melayang di atas thumbnail lagu dalam lirik layar penuh</string>
     <string name="picker_not_available">Pemilih dokumen tidak tersedia di perangkat ini. Menggunakan direktori ekspor default aplikasi.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="other">%d APK ditemukan</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Sesuaikan tema aplikasi Anda</string>
     <string name="theme_colors">Tema &amp; Warna</string>
@@ -341,8 +331,6 @@
     <string name="standard_lyrics_blur">Blur lirik standar</string>
     <string name="listen_together_smart_resync">Sinkronisasi Ulang Jaringan Cerdas</string>
     <string name="listen_together_smart_resync_desc">Secara otomatis mengejar ketertinggalan dari host setelah putus sambungan</string>
-
-
     <string name="spotify_import_title">Impor dari Spotify</string>
     <string name="spotify_import_desc">Hubungkan Spotify, pilih daftar putar, dan cerminkan ke dalam daftar putar NullMusic lokal.</string>
     <string name="spotify_connect">Hubungkan Spotify</string>
@@ -369,4 +357,117 @@
     <string name="spotify_account">Akun Spotify</string>
     <string name="spotify_waiting_for_login">Menunggu masuk ke Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Memuat</string>
+    <string name="added_to_playlist">Ditambahkan ke %s</string>
+    <string name="more_options">Opsi lainnya</string>
+    <string name="export_as_csv">Ekspor sebagai CSV</string>
+    <string name="export_playlist_desc">Ekspor lagu dalam playlist ke file CSV</string>
+    <string name="export_successful">Playlist berhasil diekspor</string>
+    <string name="activity_history">Ringkasan Mendengarkan</string>
+    <string name="total_listening_time">Total Waktu Mendengarkan</string>
+    <string name="unique_songs">Lagu Unik</string>
+    <string name="unique_artists">Artis Unik</string>
+    <string name="unique_albums">Album Unik</string>
+    <string name="selected_period">Periode Terpilih</string>
+    <string name="hours_minutes_format">%1$d j %2$d mnt</string>
+    <string name="content_sponsor_block">SponsorBlock (Lewati otomatis)</string>
+    <string name="content_sponsor_block_desc">Secara otomatis melewati sponsor, intro, dan bagian nonmusik dalam video</string>
+    <string name="spotify_import_by_link">Impor playlist melalui tautan</string>
+    <string name="spotify_import_by_link_desc">Tempel tautan playlist Spotify untuk mengimpornya, termasuk playlist yang bukan milik Anda</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Tambah</string>
+    <string name="spotify_invalid_playlist_link">Itu tampaknya bukan tautan playlist Spotify. Gunakan tautan seperti https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Waktu Aktif Layanan</string>
+    <string name="service_uptime_desc">Periksa status penyedia musik</string>
+    <string name="music_providers">Penyedia Musik</string>
+    <string name="canvas_providers">Penyedia Canvas</string>
+    <string name="lyrics_providers">Penyedia Lirik</string>
+    <string name="other_services">Layanan Lainnya</string>
+    <string name="status_online">Daring</string>
+    <string name="status_offline">Luring</string>
+    <string name="status_checking">Memeriksa...</string>
+    <string name="recognition_notification_channel_name">Pengenalan musik</string>
+    <string name="recognition_notification_channel_desc">Menampilkan notifikasi saat mengidentifikasi lagu dari setelan cepat</string>
+    <string name="recognition_notification_listening">Mendengarkan musik…</string>
+    <string name="recognition_notification_processing">Mengidentifikasi…</string>
+    <string name="recognition_notification_no_match">Tidak ditemukan kecocokan</string>
+    <string name="recognition_notification_failed">Pengenalan gagal</string>
+    <string name="listen_on_echo_music">Dengarkan di Echo Music</string>
+    <string name="qs_tile_music_recognizer">Kenali musik</string>
+    <string name="echo_brain_beta">Echo Brain (Beta)</string>
+    <string name="echo_brain_enable">Aktifkan Echo Brain</string>
+    <string name="echo_brain_enable_desc">Secara otomatis menyisipkan rekomendasi AI berdasarkan kebiasaan mendengarkan Anda</string>
+    <string name="echo_brain_profile_statistics">Statistik Profil</string>
+    <string name="echo_brain_learning_level">Tingkat Pembelajaran</string>
+    <string name="echo_brain_initiate">Mulai</string>
+    <string name="echo_brain_total_interactions">Total Interaksi</string>
+    <string name="echo_brain_interactions_tracked">%1$d interaksi dilacak</string>
+    <string name="echo_brain_discovered_genres">Genre yang Ditemukan</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d genre berbeda teridentifikasi</string>
+    <string name="echo_brain_analyzed_artists">Artis yang Dianalisis</string>
+    <string name="echo_brain_artists_mapped">%1$d artis dipetakan</string>
+    <string name="echo_brain_data_management">Manajemen Data</string>
+    <string name="echo_brain_export_profile">Ekspor Profil</string>
+    <string name="echo_brain_export_profile_desc">Simpan peta neural Anda ke file</string>
+    <string name="echo_brain_import_profile">Impor Profil</string>
+    <string name="echo_brain_import_profile_desc">Muat peta neural yang sebelumnya disimpan</string>
+    <string name="echo_brain_reset_profile">Atur Ulang Profil</string>
+    <string name="echo_brain_reset_profile_desc">Hapus semua data yang telah dipelajari dan mulai dari awal</string>
+    <string name="echo_brain_reset_neural_profile">Atur Ulang Profil Neural</string>
+    <string name="echo_brain_reset_neural_profile_desc">Tindakan ini akan menghapus secara permanen semua preferensi yang telah dipelajari. Mesin akan mulai belajar kembali dari awal.</string>
+    <string name="echo_brain_profile_exported_successfully">Profil berhasil diekspor</string>
+    <string name="echo_brain_export_failed">Ekspor gagal</string>
+    <string name="echo_brain_profile_imported_successfully">Profil berhasil diimpor</string>
+    <string name="echo_brain_import_failed_invalid_file">Impor gagal, file tidak valid</string>
+    <string name="listenbrainz_scrobbling">Scrobbling ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Secara otomatis mengirim lagu yang telah Anda dengarkan ke ListenBrainz</string>
+    <string name="set_listenbrainz_token">Atur Token ListenBrainz</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Konfigurasikan setelan ekstraktor</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Secara otomatis mengekstrak konfigurasi pemutaran YouTube. Dikunci pada status Aktif.</string>
+    <string name="force_update_cipher">Paksa Pembaruan Konfigurasi</string>
+    <string name="force_update_cipher_desc">Unduh pemetaan penggantian ekstraktor terbaru. Dibatasi hingga 3 pembaruan per hari.</string>
+    <string name="youtube_decryption_info">Pemetaan ekstraktor diambil secara dinamis dari node yang Anda host sendiri. Hitung mundur di bagian atas menampilkan waktu tersisa hingga pemeriksaan sinkronisasi otomatis berikutnya. Jika pembaruan manual diminta lebih dari 3 kali, pembaruan akan diblokir selama 1 hari.</string>
+    <string name="last_updated">Terakhir diperbarui</string>
+    <string name="last_updated_never">Belum pernah</string>
+    <string name="cipher_update_success">Pemetaan ekstraktor diperbarui! %d pemutar dimuat.</string>
+    <string name="cipher_update_failed">Gagal memperbarui pemetaan ekstraktor: %s</string>
+    <string name="cipher_updating">Memperbarui konfigurasi ekstraktor…</string>
+    <string name="hours_label">Jam</string>
+    <string name="minutes_label">Menit</string>
+    <string name="seconds_label">Detik</string>
+    <string name="liquid_glass">Liquid Glass (Beta)</string>
+    <string name="player_background_liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_settings">Liquid Glass (Beta)</string>
+    <string name="liquid_glass_global_enabled">Aktifkan Liquid Glass</string>
+    <string name="liquid_glass_effects">Efek</string>
+    <string name="liquid_glass_appearance">Tampilan</string>
+    <string name="liquid_glass_per_component">Per Komponen</string>
+    <string name="liquid_glass_vibrancy">Vibransi</string>
+    <string name="liquid_glass_vibrancy_desc">Tingkatkan saturasi latar kaca</string>
+    <string name="liquid_glass_blur_radius">Radius Buram</string>
+    <string name="liquid_glass_blur_radius_desc">Tingkat keburaman pada permukaan kaca</string>
+    <string name="liquid_glass_lens_height">Ketinggian Refraksi Lensa</string>
+    <string name="liquid_glass_lens_amount">Jumlah Refraksi Lensa</string>
+    <string name="liquid_glass_chromatic_aberration">Aberasi Kromatik</string>
+    <string name="liquid_glass_depth_effect">Efek Kedalaman</string>
+    <string name="liquid_glass_surface_opacity">Opasitas Permukaan</string>
+    <string name="liquid_glass_surface_opacity_desc">Opasitas lapisan rona kaca untuk meningkatkan keterbacaan</string>
+    <string name="liquid_glass_surface_tint">Rona Permukaan</string>
+    <string name="liquid_glass_surface_tint_desc">Warna rona yang diterapkan pada permukaan kaca</string>
+    <string name="liquid_glass_text_color">Warna Teks Kaca</string>
+    <string name="liquid_glass_text_color_desc">Warna teks yang digunakan pada permukaan kaca</string>
+    <string name="liquid_glass_player">Pemutar Kaca</string>
+    <string name="liquid_glass_mini_player">Pemutar Mini Kaca</string>
+    <string name="liquid_glass_nav_bar">Bilah Navigasi Kaca</string>
+    <string name="nav_bar_style">Gaya Bilah Navigasi</string>
+    <string name="floating_nav_bar">Bilah navigasi mengambang</string>
+    <string name="floating_nav_bar_desc">Bilah tab mengambang bergaya iOS yang mengecil saat menggulir</string>
+    <string name="liquid_glass_performance_warning">Rendering Liquid Glass membutuhkan performa tinggi dan dapat mengurangi kelancaran serta daya tahan baterai pada beberapa perangkat</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Memerlukan bilah navigasi mengambang untuk diaktifkan</string>
+    <string name="color_picker_hex">Heks</string>
+    <string name="color_white">Putih</string>
+    <string name="color_light_gray">Abu-abu Muda</string>
+    <string name="color_black">Hitam</string>
 </resources>

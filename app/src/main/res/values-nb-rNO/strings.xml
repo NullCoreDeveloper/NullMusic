@@ -276,25 +276,18 @@
     <string name="discord_information">nullmusic bruker KizzyRPC for å stille inn statusen på Discord-kontoen din. Dette innebærer bruk ave Discord Gateway-portneren, som kan anses som et brudd på Discords tjenestevilkår. Det finnes dog ingen kjente tilfelle av suspenderte brukerkonter på denne grunnen. Bruk på egen risiko. \n \nnullmusic henter bare inn symbolet ditt, og alt annet blir lagret lokalt.</string>
     <string name="preview">Forhåndsvisning</string>
     <string name="about">Om</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Musikk</string>
-
     <!-- Search -->
     <string name="filter_local">Lokale</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Dette er en plassholderbeskrivelse for albumet. Nyt låtene nedenfor!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Relatert spilleliste</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Omstokk</string>
     <string name="shuffle_label">Omstokk</string>
     <string name="pause">Pause</string>
-
     <!-- Menu -->
     <string name="saving">Lagrer</string>
     <string name="saved">Lagret</string>
@@ -302,7 +295,6 @@
     <string name="add_to_an_playlist">Legg til</string>
     <string name="more_label">Mer</string>
     <string name="releases_for_you">Utgivelser for deg</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Skjul statuslinje på fullskjerm</string>
     <string name="hide_status_bar_on_fullscreen_desc">Skjul statuslinjen når fullskjermsmodus for sangtekster er aktiv</string>
@@ -311,13 +303,11 @@
     <string name="lyrics_thumbnail_play_pause">Vis spill/pause på miniatyrbilde</string>
     <string name="lyrics_thumbnail_play_pause_desc">Vis et spill/pause-knappoverlegg på sangminiatyrbildet i fullskjermstekster</string>
     <string name="picker_not_available">Dokumentvelger er ikke tilgjengelig på denne enheten. Bruker appens standard eksportkatalog.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK funnet</item>
         <item quantity="other">%d APK-er funnet</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Tilpass app-temaet ditt</string>
     <string name="theme_colors">Tema og farger</string>
@@ -348,8 +338,6 @@
     <string name="standard_lyrics_blur">Standard uklarhet for sangtekster</string>
     <string name="listen_together_smart_resync">Smart nettverkssynkronisering</string>
     <string name="listen_together_smart_resync_desc">Ta automatisk igjen verten etter et tilkoblingsbrudd</string>
-
-
     <string name="spotify_import_title">Importer fra Spotify</string>
     <string name="spotify_import_desc">Koble til Spotify, velg spillelister, og speil dem til lokale NullMusic-spillelister.</string>
     <string name="spotify_connect">Koble til Spotify</string>
@@ -376,4 +364,120 @@
     <string name="spotify_account">Spotify-konto</string>
     <string name="spotify_waiting_for_login">Venter på Spotify-pålogging</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Laster inn</string>
+    <string name="added_to_playlist">Lagt til i %s</string>
+    <string name="more_options">Flere alternativer</string>
+    <string name="export_as_csv">Eksporter som CSV</string>
+    <string name="export_playlist_desc">Eksporter sangene i spillelisten til en CSV-fil</string>
+    <string name="export_successful">Spillelisten ble eksportert</string>
+    <string name="activity_history">Lyttesammendrag</string>
+    <string name="total_listening_time">Total lyttetid</string>
+    <string name="unique_songs">Unike sanger</string>
+    <string name="unique_artists">Unike artister</string>
+    <string name="unique_albums">Unike album</string>
+    <string name="selected_period">Valgt periode</string>
+    <string name="hours_minutes_format">%1$dt %2$dmin</string>
+    <string name="action_login">Logg inn</string>
+    <string name="content_sponsor_block">SponsorBlock (hopp over automatisk)</string>
+    <string name="content_sponsor_block_desc">Hopp automatisk over sponsorinnhold, introduksjoner og deler uten musikk i videoer</string>
+    <string name="use_login_for_browse">Bruk innlogging når du utforsker innhold</string>
+    <string name="use_login_for_browse_desc">Dette kan påvirke hvilket innhold du ser, og for eksempel vise album som kun er tilgjengelige med Premium hvis du er logget inn med en Premium-konto</string>
+    <string name="spotify_import_by_link">Importer spilleliste via lenke</string>
+    <string name="spotify_import_by_link_desc">Lim inn en lenke til en Spotify-spilleliste for å importere den, også spillelister du ikke eier</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Legg til</string>
+    <string name="spotify_invalid_playlist_link">Dette ser ikke ut som en lenke til en Spotify-spilleliste. Bruk en lenke som https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Tjenestenes oppetid</string>
+    <string name="service_uptime_desc">Sjekk statusen til musikkleverandørene</string>
+    <string name="music_providers">Musikkleverandører</string>
+    <string name="canvas_providers">Canvas-leverandører</string>
+    <string name="lyrics_providers">Leverandører av sangtekster</string>
+    <string name="other_services">Andre tjenester</string>
+    <string name="status_online">Tilkoblet</string>
+    <string name="status_offline">Frakoblet</string>
+    <string name="status_checking">Sjekker...</string>
+    <string name="recognition_notification_channel_name">Musikkgjenkjenning</string>
+    <string name="recognition_notification_channel_desc">Viser et varsel mens en sang identifiseres fra hurtiginnstillingene</string>
+    <string name="recognition_notification_listening">Lytter etter musikk…</string>
+    <string name="recognition_notification_processing">Identifiserer…</string>
+    <string name="recognition_notification_no_match">Fant ingen treff</string>
+    <string name="recognition_notification_failed">Gjenkjenningen mislyktes</string>
+    <string name="listen_on_echo_music">Lytt på Echo Music</string>
+    <string name="qs_tile_music_recognizer">Gjenkjenn musikk</string>
+    <string name="echo_brain_beta">Echo Brain (beta)</string>
+    <string name="echo_brain_enable">Aktiver Echo Brain</string>
+    <string name="echo_brain_enable_desc">Legg automatisk til KI-anbefalinger basert på lyttevanene dine</string>
+    <string name="echo_brain_profile_statistics">Profilstatistikk</string>
+    <string name="echo_brain_learning_level">Læringsnivå</string>
+    <string name="echo_brain_initiate">Start</string>
+    <string name="echo_brain_total_interactions">Totalt antall interaksjoner</string>
+    <string name="echo_brain_interactions_tracked">%1$d interaksjoner registrert</string>
+    <string name="echo_brain_discovered_genres">Oppdagede sjangre</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d forskjellige sjangre identifisert</string>
+    <string name="echo_brain_analyzed_artists">Analyserte artister</string>
+    <string name="echo_brain_artists_mapped">%1$d artister kartlagt</string>
+    <string name="echo_brain_data_management">Databehandling</string>
+    <string name="echo_brain_export_profile">Eksporter profil</string>
+    <string name="echo_brain_export_profile_desc">Lagre det nevrale kartet ditt i en fil</string>
+    <string name="echo_brain_import_profile">Importer profil</string>
+    <string name="echo_brain_import_profile_desc">Last inn et tidligere lagret nevralt kart</string>
+    <string name="echo_brain_reset_profile">Tilbakestill profil</string>
+    <string name="echo_brain_reset_profile_desc">Slett alle innlærte data og begynn på nytt</string>
+    <string name="echo_brain_reset_neural_profile">Tilbakestill nevral profil</string>
+    <string name="echo_brain_reset_neural_profile_desc">Dette sletter alle innlærte preferanser permanent. Motoren vil begynne innlæringen fra grunnen av.</string>
+    <string name="echo_brain_profile_exported_successfully">Profilen ble eksportert</string>
+    <string name="echo_brain_export_failed">Eksporten mislyktes</string>
+    <string name="echo_brain_profile_imported_successfully">Profilen ble importert</string>
+    <string name="echo_brain_import_failed_invalid_file">Importen mislyktes: ugyldig fil</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz-skrobbling</string>
+    <string name="listenbrainz_scrobbling_description">Send avspilte spor automatisk til ListenBrainz</string>
+    <string name="set_listenbrainz_token">Angi ListenBrainz-token</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Konfigurer innstillingene for uttrekkeren</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Henter automatisk ut konfigurasjoner for YouTube-avspilling. Låst til aktiv.</string>
+    <string name="force_update_cipher">Tving oppdatering av konfigurasjoner</string>
+    <string name="force_update_cipher_desc">Last ned de nyeste overstyringstilordningene for uttrekkeren. Begrenset til 3 oppdateringer per dag.</string>
+    <string name="youtube_decryption_info">Uttrekkertilordninger hentes dynamisk fra noden du drifter selv. Nedtellingen øverst viser tiden som gjenstår til neste automatiske synkroniseringssjekk. Hvis manuelle oppdateringer forespørres mer enn 3 ganger, blokkeres de i 1 dag.</string>
+    <string name="last_updated">Sist oppdatert</string>
+    <string name="last_updated_never">Aldri</string>
+    <string name="cipher_update_success">Uttrekkertilordningene er oppdatert! Lastet inn %d spillere.</string>
+    <string name="cipher_update_failed">Kunne ikke oppdatere uttrekkertilordningene: %s</string>
+    <string name="cipher_updating">Oppdaterer uttrekkerkonfigurasjonene…</string>
+    <string name="hours_label">Timer</string>
+    <string name="minutes_label">Minutter</string>
+    <string name="seconds_label">Sekunder</string>
+    <string name="liquid_glass">Liquid Glass (beta)</string>
+    <string name="player_background_liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_settings">Liquid Glass (beta)</string>
+    <string name="liquid_glass_global_enabled">Aktiver Liquid Glass</string>
+    <string name="liquid_glass_effects">Effekter</string>
+    <string name="liquid_glass_appearance">Utseende</string>
+    <string name="liquid_glass_per_component">Per komponent</string>
+    <string name="liquid_glass_vibrancy">Fargeintensitet</string>
+    <string name="liquid_glass_vibrancy_desc">Øk metningen i glassbakgrunnen</string>
+    <string name="liquid_glass_blur_radius">Uskarphetsradius</string>
+    <string name="liquid_glass_blur_radius_desc">Mengden uskarphet på glassoverflaten</string>
+    <string name="liquid_glass_lens_height">Høyde for linsebrytning</string>
+    <string name="liquid_glass_lens_amount">Mengde linsebrytning</string>
+    <string name="liquid_glass_chromatic_aberration">Kromatisk aberrasjon</string>
+    <string name="liquid_glass_depth_effect">Dybdeeffekt</string>
+    <string name="liquid_glass_surface_opacity">Overflatens ugjennomsiktighet</string>
+    <string name="liquid_glass_surface_opacity_desc">Ugjennomsiktigheten til glassfargeoverlegget for bedre lesbarhet</string>
+    <string name="liquid_glass_surface_tint">Overflatefarge</string>
+    <string name="liquid_glass_surface_tint_desc">Fargen som brukes på glassoverflaten</string>
+    <string name="liquid_glass_text_color">Tekstfarge på glass</string>
+    <string name="liquid_glass_text_color_desc">Tekstfargen som brukes på glassoverflater</string>
+    <string name="liquid_glass_player">Glasspiller</string>
+    <string name="liquid_glass_mini_player">Glassminispiller</string>
+    <string name="liquid_glass_nav_bar">Navigasjonsfelt i glass</string>
+    <string name="nav_bar_style">Stil for navigasjonsfelt</string>
+    <string name="floating_nav_bar">Flytende navigasjonsfelt</string>
+    <string name="floating_nav_bar_desc">Flytende fanelinje i iOS-stil som krymper når du ruller</string>
+    <string name="liquid_glass_performance_warning">Gjengivelse av Liquid Glass krever mye ytelse og kan redusere jevnheten og batteritiden på enkelte enheter</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Krever at det flytende navigasjonsfeltet er aktivert</string>
+    <string name="color_picker_hex">Hex</string>
+    <string name="color_white">Hvit</string>
+    <string name="color_light_gray">Lysegrå</string>
+    <string name="color_black">Svart</string>
 </resources>

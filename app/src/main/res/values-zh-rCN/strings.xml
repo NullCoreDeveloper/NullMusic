@@ -270,25 +270,18 @@
     <string name="use_login_for_browse_desc">这可能会影响您看到的内容，例如，如果您使用会员账号登录，则会显示仅会员专辑</string>
     <string name="use_login_for_browse">登录账号浏览内容</string>
     <string name="action_login">登录</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">音乐</string>
-
     <!-- Search -->
     <string name="filter_local">本地</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">这是专辑的占位说明。请欣赏下面的曲目！</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">相关播放列表</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">随机播放</string>
     <string name="shuffle_label">随机播放</string>
     <string name="pause">暂停</string>
-
     <!-- Menu -->
     <string name="saving">正在保存</string>
     <string name="saved">已保存</string>
@@ -296,7 +289,6 @@
     <string name="add_to_an_playlist">添加</string>
     <string name="more_label">更多</string>
     <string name="releases_for_you">为您推荐的新发行</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">全屏时隐藏状态栏</string>
     <string name="hide_status_bar_on_fullscreen_desc">歌词全屏模式激活时隐藏状态栏</string>
@@ -305,12 +297,10 @@
     <string name="lyrics_thumbnail_play_pause">在缩略图上显示播放/暂停</string>
     <string name="lyrics_thumbnail_play_pause_desc">在全屏歌词的歌曲缩略图上显示播放/暂停按钮覆盖层</string>
     <string name="picker_not_available">此设备不支持文档选择器。将使用应用默认的导出目录。</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="other">找到 %d 个 APK</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">自定义应用主题</string>
     <string name="theme_colors">主题和颜色</string>
@@ -341,8 +331,6 @@
     <string name="standard_lyrics_blur">标准歌词模糊</string>
     <string name="listen_together_smart_resync">智能网络重新同步</string>
     <string name="listen_together_smart_resync_desc">连接断开后自动与主机同步</string>
-
-
     <string name="spotify_import_title">从 Spotify 导入</string>
     <string name="spotify_import_desc">连接 Spotify，选择播放列表，并将其镜像到本地 NullMusic 播放列表。</string>
     <string name="spotify_connect">连接 Spotify</string>
@@ -369,6 +357,117 @@
     <string name="spotify_account">Spotify 账户</string>
     <string name="spotify_waiting_for_login">正在等待 Spotify 登录</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
-
-
+    <string name="loading">正在加载</string>
+    <string name="added_to_playlist">已添加到 %s</string>
+    <string name="more_options">更多选项</string>
+    <string name="export_as_csv">导出为 CSV</string>
+    <string name="export_playlist_desc">将播放列表中的歌曲导出到 CSV 文件</string>
+    <string name="export_successful">播放列表导出成功</string>
+    <string name="activity_history">收听摘要</string>
+    <string name="total_listening_time">总收听时长</string>
+    <string name="unique_songs">不同歌曲数</string>
+    <string name="unique_artists">不同艺人数</string>
+    <string name="unique_albums">不同专辑数</string>
+    <string name="selected_period">所选时间段</string>
+    <string name="hours_minutes_format">%1$d 小时 %2$d 分钟</string>
+    <string name="content_sponsor_block">SponsorBlock（自动跳过）</string>
+    <string name="content_sponsor_block_desc">自动跳过视频中的赞助内容、片头和非音乐片段</string>
+    <string name="spotify_import_by_link">通过链接导入播放列表</string>
+    <string name="spotify_import_by_link_desc">粘贴 Spotify 播放列表链接即可导入，即使该播放列表不属于你</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">添加</string>
+    <string name="spotify_invalid_playlist_link">这似乎不是 Spotify 播放列表链接。请使用类似 https://open.spotify.com/playlist/… 的链接</string>
+    <string name="service_uptime">服务运行状态</string>
+    <string name="service_uptime_desc">检查音乐提供商的状态</string>
+    <string name="music_providers">音乐提供商</string>
+    <string name="canvas_providers">动态封面提供商</string>
+    <string name="lyrics_providers">歌词提供商</string>
+    <string name="other_services">其他服务</string>
+    <string name="status_online">在线</string>
+    <string name="status_offline">离线</string>
+    <string name="status_checking">正在检查...</string>
+    <string name="recognition_notification_channel_name">音乐识别</string>
+    <string name="recognition_notification_channel_desc">通过快捷设置识别歌曲时显示通知</string>
+    <string name="recognition_notification_listening">正在聆听音乐…</string>
+    <string name="recognition_notification_processing">正在识别…</string>
+    <string name="recognition_notification_no_match">未找到匹配项</string>
+    <string name="recognition_notification_failed">识别失败</string>
+    <string name="listen_on_echo_music">在 Echo Music 中收听</string>
+    <string name="qs_tile_music_recognizer">识别音乐</string>
+    <string name="echo_brain_beta">Echo Brain（测试版）</string>
+    <string name="echo_brain_enable">启用 Echo Brain</string>
+    <string name="echo_brain_enable_desc">根据你的收听习惯自动加入 AI 推荐</string>
+    <string name="echo_brain_profile_statistics">配置文件统计</string>
+    <string name="echo_brain_learning_level">学习等级</string>
+    <string name="echo_brain_initiate">开始</string>
+    <string name="echo_brain_total_interactions">互动总数</string>
+    <string name="echo_brain_interactions_tracked">已追踪 %1$d 次互动</string>
+    <string name="echo_brain_discovered_genres">已发现的流派</string>
+    <string name="echo_brain_distinct_genres_identified">已识别 %1$d 种不同流派</string>
+    <string name="echo_brain_analyzed_artists">已分析的艺人</string>
+    <string name="echo_brain_artists_mapped">已映射 %1$d 位艺人</string>
+    <string name="echo_brain_data_management">数据管理</string>
+    <string name="echo_brain_export_profile">导出配置文件</string>
+    <string name="echo_brain_export_profile_desc">将你的神经映射保存到文件</string>
+    <string name="echo_brain_import_profile">导入配置文件</string>
+    <string name="echo_brain_import_profile_desc">加载之前保存的神经映射</string>
+    <string name="echo_brain_reset_profile">重置配置文件</string>
+    <string name="echo_brain_reset_profile_desc">清除所有已学习的数据并重新开始</string>
+    <string name="echo_brain_reset_neural_profile">重置神经配置文件</string>
+    <string name="echo_brain_reset_neural_profile_desc">这将永久删除所有已学习的偏好。引擎将从头开始学习。</string>
+    <string name="echo_brain_profile_exported_successfully">配置文件导出成功</string>
+    <string name="echo_brain_export_failed">导出失败</string>
+    <string name="echo_brain_profile_imported_successfully">配置文件导入成功</string>
+    <string name="echo_brain_import_failed_invalid_file">导入失败：文件无效</string>
+    <string name="listenbrainz_scrobbling">ListenBrainz 收听记录同步</string>
+    <string name="listenbrainz_scrobbling_description">自动将你收听过的曲目提交到 ListenBrainz</string>
+    <string name="set_listenbrainz_token">设置 ListenBrainz 令牌</string>
+    <string name="youtube_decryption_settings">Echo 提取器</string>
+    <string name="youtube_decryption_desc">配置提取器设置</string>
+    <string name="youtube_decryption_support">Echo 提取器</string>
+    <string name="youtube_decryption_support_desc">自动提取 YouTube 播放配置。固定为启用状态。</string>
+    <string name="force_update_cipher">强制更新配置</string>
+    <string name="force_update_cipher_desc">下载最新的提取器覆盖映射。每天最多更新 3 次。</string>
+    <string name="youtube_decryption_info">提取器映射会从你的自托管节点动态获取。顶部的倒计时显示距离下一次自动同步检查的剩余时间。如果请求手动更新超过 3 次，手动更新将被禁用 1 天。</string>
+    <string name="last_updated">上次更新</string>
+    <string name="last_updated_never">从未</string>
+    <string name="cipher_update_success">提取器映射已更新！已加载 %d 个播放器。</string>
+    <string name="cipher_update_failed">更新提取器映射失败：%s</string>
+    <string name="cipher_updating">正在更新提取器配置…</string>
+    <string name="hours_label">小时</string>
+    <string name="minutes_label">分钟</string>
+    <string name="seconds_label">秒</string>
+    <string name="liquid_glass">液态玻璃（测试版）</string>
+    <string name="player_background_liquid_glass">液态玻璃</string>
+    <string name="liquid_glass_settings">液态玻璃（测试版）</string>
+    <string name="liquid_glass_global_enabled">启用液态玻璃</string>
+    <string name="liquid_glass_effects">效果</string>
+    <string name="liquid_glass_appearance">外观</string>
+    <string name="liquid_glass_per_component">按组件设置</string>
+    <string name="liquid_glass_vibrancy">鲜艳度</string>
+    <string name="liquid_glass_vibrancy_desc">增强玻璃背景的饱和度</string>
+    <string name="liquid_glass_blur_radius">模糊半径</string>
+    <string name="liquid_glass_blur_radius_desc">玻璃表面的模糊程度</string>
+    <string name="liquid_glass_lens_height">透镜折射高度</string>
+    <string name="liquid_glass_lens_amount">透镜折射强度</string>
+    <string name="liquid_glass_chromatic_aberration">色差</string>
+    <string name="liquid_glass_depth_effect">景深效果</string>
+    <string name="liquid_glass_surface_opacity">表面不透明度</string>
+    <string name="liquid_glass_surface_opacity_desc">用于提高可读性的玻璃色调叠层不透明度</string>
+    <string name="liquid_glass_surface_tint">表面色调</string>
+    <string name="liquid_glass_surface_tint_desc">应用于玻璃表面的色调颜色</string>
+    <string name="liquid_glass_text_color">玻璃界面文字颜色</string>
+    <string name="liquid_glass_text_color_desc">玻璃表面上使用的文字颜色</string>
+    <string name="liquid_glass_player">玻璃播放器</string>
+    <string name="liquid_glass_mini_player">玻璃迷你播放器</string>
+    <string name="liquid_glass_nav_bar">玻璃导航栏</string>
+    <string name="nav_bar_style">导航栏样式</string>
+    <string name="floating_nav_bar">悬浮导航栏</string>
+    <string name="floating_nav_bar_desc">滚动时会缩小的 iOS 风格悬浮标签栏</string>
+    <string name="liquid_glass_performance_warning">渲染液态玻璃会消耗大量性能，可能会降低部分设备的流畅度和电池续航时间</string>
+    <string name="liquid_glass_requires_floating_nav_bar">需要启用悬浮导航栏</string>
+    <string name="color_picker_hex">十六进制</string>
+    <string name="color_white">白色</string>
+    <string name="color_light_gray">浅灰色</string>
+    <string name="color_black">黑色</string>
 </resources>

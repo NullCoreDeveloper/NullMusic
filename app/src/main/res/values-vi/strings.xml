@@ -270,16 +270,12 @@
     <string name="use_login_for_browse">Đăng nhập để xem nội dung</string>
     <string name="use_login_for_browse_desc">Điều này có thể ảnh hưởng đến nội dung bạn nhìn thấy, ví dụ như hiện những album dành riêng cho premium nếu bạn đăng nhập với tài khoản Premium</string>
     <string name="action_login">Đăng nhập</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Nhạc</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Trộn bài</string>
     <string name="shuffle_label">Trộn bài</string>
     <string name="pause">Tạm dừng</string>
-
     <!-- Menu -->
     <string name="saving">Đang lưu</string>
     <string name="saved">Đã lưu</string>
@@ -287,7 +283,6 @@
     <string name="add_to_an_playlist">Thêm</string>
     <string name="more_label">Thêm</string>
     <string name="releases_for_you">Phát hành cho bạn</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Ẩn thanh trạng thái ở chế độ toàn màn hình</string>
     <string name="hide_status_bar_on_fullscreen_desc">Ẩn thanh trạng thái khi chế độ toàn màn hình lời bài hát đang hoạt động</string>
@@ -296,12 +291,10 @@
     <string name="lyrics_thumbnail_play_pause">Hiển thị nút phát/tạm dừng trên hình thu nhỏ</string>
     <string name="lyrics_thumbnail_play_pause_desc">Hiển thị lớp phủ nút phát/tạm dừng trên hình thu nhỏ bài hát trong lời bài hát toàn màn hình</string>
     <string name="picker_not_available">Trình chọn tài liệu không có sẵn trên thiết bị này. Đang sử dụng thư mục xuất mặc định của ứng dụng.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="other">%d tệp APK được tìm thấy</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Tuỳ chỉnh giao diện ứng dụng</string>
     <string name="theme_colors">Giao diện và màu sắc</string>
@@ -332,8 +325,6 @@
     <string name="standard_lyrics_blur">Làm mờ lời bài hát tiêu chuẩn</string>
     <string name="listen_together_smart_resync">Đồng bộ lại mạng thông minh</string>
     <string name="listen_together_smart_resync_desc">Tự động bắt kịp máy chủ sau khi mất kết nối</string>
-
-
     <string name="spotify_import_title">Nhập từ Spotify</string>
     <string name="spotify_import_desc">Kết nối Spotify, chọn danh sách phát và phản chiếu chúng vào danh sách phát NullMusic cục bộ.</string>
     <string name="spotify_connect">Kết nối Spotify</string>
@@ -360,4 +351,120 @@
     <string name="spotify_account">Tài khoản Spotify</string>
     <string name="spotify_waiting_for_login">Đang chờ đăng nhập Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="filter_local">Cục bộ</string>
+    <string name="album_description_placeholder">Đây là phần mô tả mẫu cho album. Hãy thưởng thức các bản nhạc bên dưới!</string>
+    <string name="you_might_also_like">Danh sách phát liên quan</string>
+    <string name="loading">Đang tải</string>
+    <string name="added_to_playlist">Đã thêm vào %s</string>
+    <string name="more_options">Tùy chọn khác</string>
+    <string name="export_as_csv">Xuất dưới dạng CSV</string>
+    <string name="export_playlist_desc">Xuất các bài hát trong danh sách phát ra tệp CSV</string>
+    <string name="export_successful">Đã xuất danh sách phát thành công</string>
+    <string name="activity_history">Tóm tắt hoạt động nghe</string>
+    <string name="total_listening_time">Tổng thời gian nghe</string>
+    <string name="unique_songs">Bài hát riêng biệt</string>
+    <string name="unique_artists">Nghệ sĩ riêng biệt</string>
+    <string name="unique_albums">Album riêng biệt</string>
+    <string name="selected_period">Khoảng thời gian đã chọn</string>
+    <string name="hours_minutes_format">%1$d giờ %2$d phút</string>
+    <string name="content_sponsor_block">SponsorBlock (Tự động bỏ qua)</string>
+    <string name="content_sponsor_block_desc">Tự động bỏ qua nội dung tài trợ, phần giới thiệu và các đoạn không có nhạc trong video</string>
+    <string name="spotify_import_by_link">Nhập danh sách phát bằng liên kết</string>
+    <string name="spotify_import_by_link_desc">Dán liên kết danh sách phát Spotify để nhập, kể cả danh sách phát không thuộc sở hữu của bạn</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Thêm</string>
+    <string name="spotify_invalid_playlist_link">Đây có vẻ không phải là liên kết danh sách phát Spotify. Hãy dùng liên kết như https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Thời gian hoạt động của dịch vụ</string>
+    <string name="service_uptime_desc">Kiểm tra trạng thái của các nhà cung cấp nhạc</string>
+    <string name="music_providers">Nhà cung cấp nhạc</string>
+    <string name="canvas_providers">Nhà cung cấp Canvas</string>
+    <string name="lyrics_providers">Nhà cung cấp lời bài hát</string>
+    <string name="other_services">Dịch vụ khác</string>
+    <string name="status_online">Trực tuyến</string>
+    <string name="status_offline">Ngoại tuyến</string>
+    <string name="status_checking">Đang kiểm tra...</string>
+    <string name="recognition_notification_channel_name">Nhận diện nhạc</string>
+    <string name="recognition_notification_channel_desc">Hiển thị thông báo khi nhận diện bài hát từ phần cài đặt nhanh</string>
+    <string name="recognition_notification_listening">Đang nghe nhạc…</string>
+    <string name="recognition_notification_processing">Đang nhận diện…</string>
+    <string name="recognition_notification_no_match">Không tìm thấy kết quả phù hợp</string>
+    <string name="recognition_notification_failed">Nhận diện thất bại</string>
+    <string name="listen_on_echo_music">Nghe trên Echo Music</string>
+    <string name="qs_tile_music_recognizer">Nhận diện nhạc</string>
+    <string name="echo_brain_beta">Echo Brain (Beta)</string>
+    <string name="echo_brain_enable">Bật Echo Brain</string>
+    <string name="echo_brain_enable_desc">Tự động thêm các đề xuất của AI dựa trên thói quen nghe nhạc của bạn</string>
+    <string name="echo_brain_profile_statistics">Thống kê hồ sơ</string>
+    <string name="echo_brain_learning_level">Mức độ học hỏi</string>
+    <string name="echo_brain_initiate">Khởi tạo</string>
+    <string name="echo_brain_total_interactions">Tổng số lượt tương tác</string>
+    <string name="echo_brain_interactions_tracked">Đã theo dõi %1$d lượt tương tác</string>
+    <string name="echo_brain_discovered_genres">Thể loại đã khám phá</string>
+    <string name="echo_brain_distinct_genres_identified">Đã xác định %1$d thể loại riêng biệt</string>
+    <string name="echo_brain_analyzed_artists">Nghệ sĩ đã phân tích</string>
+    <string name="echo_brain_artists_mapped">Đã lập bản đồ %1$d nghệ sĩ</string>
+    <string name="echo_brain_data_management">Quản lý dữ liệu</string>
+    <string name="echo_brain_export_profile">Xuất hồ sơ</string>
+    <string name="echo_brain_export_profile_desc">Lưu bản đồ nơ-ron của bạn vào một tệp</string>
+    <string name="echo_brain_import_profile">Nhập hồ sơ</string>
+    <string name="echo_brain_import_profile_desc">Tải bản đồ nơ-ron đã lưu trước đó</string>
+    <string name="echo_brain_reset_profile">Đặt lại hồ sơ</string>
+    <string name="echo_brain_reset_profile_desc">Xóa toàn bộ dữ liệu đã học và bắt đầu lại</string>
+    <string name="echo_brain_reset_neural_profile">Đặt lại hồ sơ nơ-ron</string>
+    <string name="echo_brain_reset_neural_profile_desc">Thao tác này sẽ xóa vĩnh viễn mọi tùy chọn đã học. Công cụ sẽ bắt đầu học lại từ đầu.</string>
+    <string name="echo_brain_profile_exported_successfully">Đã xuất hồ sơ thành công</string>
+    <string name="echo_brain_export_failed">Xuất thất bại</string>
+    <string name="echo_brain_profile_imported_successfully">Đã nhập hồ sơ thành công</string>
+    <string name="echo_brain_import_failed_invalid_file">Nhập thất bại: tệp không hợp lệ</string>
+    <string name="listenbrainz_scrobbling">Scrobble với ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Tự động gửi các bản nhạc bạn đã nghe tới ListenBrainz</string>
+    <string name="set_listenbrainz_token">Đặt mã thông báo ListenBrainz</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Định cấu hình trình trích xuất</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Tự động trích xuất cấu hình phát của YouTube. Luôn được đặt ở trạng thái Hoạt động.</string>
+    <string name="force_update_cipher">Buộc cập nhật cấu hình</string>
+    <string name="force_update_cipher_desc">Tải xuống các ánh xạ ghi đè mới nhất của trình trích xuất. Giới hạn 3 lần cập nhật mỗi ngày.</string>
+    <string name="youtube_decryption_info">Các ánh xạ của trình trích xuất được tải động từ nút tự lưu trữ của bạn. Bộ đếm ngược ở phía trên hiển thị thời gian còn lại cho đến lần kiểm tra đồng bộ tự động tiếp theo. Nếu yêu cầu cập nhật thủ công quá 3 lần, tính năng này sẽ bị khóa trong 1 ngày.</string>
+    <string name="last_updated">Cập nhật lần cuối</string>
+    <string name="last_updated_never">Chưa bao giờ</string>
+    <string name="cipher_update_success">Đã cập nhật ánh xạ trình trích xuất! Đã tải %d trình phát.</string>
+    <string name="cipher_update_failed">Không thể cập nhật ánh xạ trình trích xuất: %s</string>
+    <string name="cipher_updating">Đang cập nhật cấu hình trình trích xuất…</string>
+    <string name="hours_label">Giờ</string>
+    <string name="minutes_label">Phút</string>
+    <string name="seconds_label">Giây</string>
+    <string name="liquid_glass">Kính lỏng (Beta)</string>
+    <string name="player_background_liquid_glass">Kính lỏng</string>
+    <string name="liquid_glass_settings">Kính lỏng (Beta)</string>
+    <string name="liquid_glass_global_enabled">Bật Kính lỏng</string>
+    <string name="liquid_glass_effects">Hiệu ứng</string>
+    <string name="liquid_glass_appearance">Giao diện</string>
+    <string name="liquid_glass_per_component">Theo từng thành phần</string>
+    <string name="liquid_glass_vibrancy">Độ rực</string>
+    <string name="liquid_glass_vibrancy_desc">Tăng độ bão hòa của nền kính</string>
+    <string name="liquid_glass_blur_radius">Bán kính làm mờ</string>
+    <string name="liquid_glass_blur_radius_desc">Mức độ làm mờ trên bề mặt kính</string>
+    <string name="liquid_glass_lens_height">Chiều cao khúc xạ của thấu kính</string>
+    <string name="liquid_glass_lens_amount">Mức độ khúc xạ của thấu kính</string>
+    <string name="liquid_glass_chromatic_aberration">Quang sai màu</string>
+    <string name="liquid_glass_depth_effect">Hiệu ứng chiều sâu</string>
+    <string name="liquid_glass_surface_opacity">Độ mờ bề mặt</string>
+    <string name="liquid_glass_surface_opacity_desc">Độ mờ của lớp phủ màu kính để nội dung dễ đọc hơn</string>
+    <string name="liquid_glass_surface_tint">Màu phủ bề mặt</string>
+    <string name="liquid_glass_surface_tint_desc">Màu phủ được áp dụng cho bề mặt kính</string>
+    <string name="liquid_glass_text_color">Màu chữ trên kính</string>
+    <string name="liquid_glass_text_color_desc">Màu chữ được sử dụng trên các bề mặt kính</string>
+    <string name="liquid_glass_player">Trình phát dạng kính</string>
+    <string name="liquid_glass_mini_player">Trình phát thu nhỏ dạng kính</string>
+    <string name="liquid_glass_nav_bar">Thanh điều hướng dạng kính</string>
+    <string name="nav_bar_style">Kiểu thanh điều hướng</string>
+    <string name="floating_nav_bar">Thanh điều hướng nổi</string>
+    <string name="floating_nav_bar_desc">Thanh tab nổi kiểu iOS tự thu nhỏ khi cuộn</string>
+    <string name="liquid_glass_performance_warning">Việc kết xuất hiệu ứng kính lỏng tiêu tốn nhiều tài nguyên và có thể làm giảm độ mượt cũng như thời lượng pin trên một số thiết bị</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Yêu cầu bật thanh điều hướng nổi</string>
+    <string name="color_picker_hex">Mã hex</string>
+    <string name="color_white">Trắng</string>
+    <string name="color_light_gray">Xám nhạt</string>
+    <string name="color_black">Đen</string>
 </resources>

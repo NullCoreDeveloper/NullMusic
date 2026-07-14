@@ -279,25 +279,18 @@
     <string name="use_login_for_browse_desc">Dit kan invloed hebben op welke inhoud u ziet en laat bijvoorbeeld alleen premium albums zien als u bent ingelogd met een Premium account</string>
     <string name="use_login_for_browse">Gebruik login om inhoud te bekijken</string>
     <string name="action_login">Inloggen</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Muziek</string>
-
     <!-- Search -->
     <string name="filter_local">Lokaal</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Dit is een tijdelijke beschrijving van het album. Geniet van de nummers hieronder!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Gerelateerde afspeellijst</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Schuifelen</string>
     <string name="shuffle_label">Schuifelen</string>
     <string name="pause">Pauze</string>
-
     <!-- Menu -->
     <string name="saving">Opslaan</string>
     <string name="saved">Opgeslagen</string>
@@ -305,7 +298,6 @@
     <string name="add_to_an_playlist">Toevoegen</string>
     <string name="more_label">Meer</string>
     <string name="releases_for_you">Nieuwe uitgaven voor jou</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Statusbalk verbergen op volledig scherm</string>
     <string name="hide_status_bar_on_fullscreen_desc">Verberg de statusbalk wanneer de volledige schermmodus voor songteksten actief is</string>
@@ -314,13 +306,11 @@
     <string name="lyrics_thumbnail_play_pause">Toon afspelen/pauzeren op miniatuur</string>
     <string name="lyrics_thumbnail_play_pause_desc">Toon een afspeel/pauze-knop over de miniatuur van het nummer in de songtekst op volledig scherm</string>
     <string name="picker_not_available">Documentkiezer is niet beschikbaar op dit apparaat. De standaard exportmap van de app wordt gebruikt.</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK gevonden</item>
         <item quantity="other">%d APK\'s gevonden</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Pas het thema van de app aan</string>
     <string name="theme_colors">Thema en kleuren</string>
@@ -351,8 +341,6 @@
     <string name="standard_lyrics_blur">Standaard vervaging van songtekst</string>
     <string name="listen_together_smart_resync">Slimme netwerkresynchronisatie</string>
     <string name="listen_together_smart_resync_desc">Loop automatisch weer gelijk met de host na een verbindingsonderbreking</string>
-
-
     <string name="spotify_import_title">Importeren vanuit Spotify</string>
     <string name="spotify_import_desc">Verbind Spotify, kies afspeellijsten en kopieer ze naar lokale NullMusic-afspeellijsten.</string>
     <string name="spotify_connect">Spotify verbinden</string>
@@ -379,4 +367,117 @@
     <string name="spotify_account">Spotify-account</string>
     <string name="spotify_waiting_for_login">Wachten op Spotify-inloggen</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">Laden</string>
+    <string name="added_to_playlist">Toegevoegd aan %s</string>
+    <string name="more_options">Meer opties</string>
+    <string name="export_as_csv">Exporteren als CSV</string>
+    <string name="export_playlist_desc">Exporteer nummers uit de afspeellijst naar een CSV-bestand</string>
+    <string name="export_successful">Afspeellijst succesvol geëxporteerd</string>
+    <string name="activity_history">Luisteroverzicht</string>
+    <string name="total_listening_time">Totale luistertijd</string>
+    <string name="unique_songs">Unieke nummers</string>
+    <string name="unique_artists">Unieke artiesten</string>
+    <string name="unique_albums">Unieke albums</string>
+    <string name="selected_period">Geselecteerde periode</string>
+    <string name="hours_minutes_format">%1$du %2$dm</string>
+    <string name="content_sponsor_block">SponsorBlock (automatisch overslaan)</string>
+    <string name="content_sponsor_block_desc">Sla sponsoring, intro\'s en delen zonder muziek in video\'s automatisch over</string>
+    <string name="spotify_import_by_link">Afspeellijst importeren via link</string>
+    <string name="spotify_import_by_link_desc">Plak een link naar een Spotify-afspeellijst om deze te importeren, ook als de afspeellijst niet van jou is</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Toevoegen</string>
+    <string name="spotify_invalid_playlist_link">Dit lijkt niet op een link naar een Spotify-afspeellijst. Gebruik een link zoals https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Beschikbaarheid van services</string>
+    <string name="service_uptime_desc">Controleer de status van muziekaanbieders</string>
+    <string name="music_providers">Muziekaanbieders</string>
+    <string name="canvas_providers">Canvas-aanbieders</string>
+    <string name="lyrics_providers">Songtekstproviders</string>
+    <string name="other_services">Andere services</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_checking">Controleren...</string>
+    <string name="recognition_notification_channel_name">Muziekherkenning</string>
+    <string name="recognition_notification_channel_desc">Toont een melding tijdens het herkennen van een nummer via de snelle instellingen</string>
+    <string name="recognition_notification_listening">Luisteren naar muziek…</string>
+    <string name="recognition_notification_processing">Herkennen…</string>
+    <string name="recognition_notification_no_match">Geen overeenkomst gevonden</string>
+    <string name="recognition_notification_failed">Herkenning mislukt</string>
+    <string name="listen_on_echo_music">Luisteren op Echo Music</string>
+    <string name="qs_tile_music_recognizer">Muziek herkennen</string>
+    <string name="echo_brain_beta">Echo Brain (bèta)</string>
+    <string name="echo_brain_enable">Echo Brain inschakelen</string>
+    <string name="echo_brain_enable_desc">Voeg automatisch AI-aanbevelingen toe op basis van je luistergewoonten</string>
+    <string name="echo_brain_profile_statistics">Profielstatistieken</string>
+    <string name="echo_brain_learning_level">Leerniveau</string>
+    <string name="echo_brain_initiate">Initialiseren</string>
+    <string name="echo_brain_total_interactions">Totaal aantal interacties</string>
+    <string name="echo_brain_interactions_tracked">%1$d interacties bijgehouden</string>
+    <string name="echo_brain_discovered_genres">Ontdekte genres</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d verschillende genres geïdentificeerd</string>
+    <string name="echo_brain_analyzed_artists">Geanalyseerde artiesten</string>
+    <string name="echo_brain_artists_mapped">%1$d artiesten in kaart gebracht</string>
+    <string name="echo_brain_data_management">Gegevensbeheer</string>
+    <string name="echo_brain_export_profile">Profiel exporteren</string>
+    <string name="echo_brain_export_profile_desc">Sla je neurale kaart op in een bestand</string>
+    <string name="echo_brain_import_profile">Profiel importeren</string>
+    <string name="echo_brain_import_profile_desc">Laad een eerder opgeslagen neurale kaart</string>
+    <string name="echo_brain_reset_profile">Profiel resetten</string>
+    <string name="echo_brain_reset_profile_desc">Wis alle aangeleerde gegevens en begin opnieuw</string>
+    <string name="echo_brain_reset_neural_profile">Neuraal profiel resetten</string>
+    <string name="echo_brain_reset_neural_profile_desc">Hiermee worden alle aangeleerde voorkeuren permanent verwijderd. De engine begint daarna helemaal opnieuw met leren.</string>
+    <string name="echo_brain_profile_exported_successfully">Profiel succesvol geëxporteerd</string>
+    <string name="echo_brain_export_failed">Exporteren mislukt</string>
+    <string name="echo_brain_profile_imported_successfully">Profiel succesvol geïmporteerd</string>
+    <string name="echo_brain_import_failed_invalid_file">Importeren mislukt: ongeldig bestand</string>
+    <string name="listenbrainz_scrobbling">Scrobblen met ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Stuur beluisterde nummers automatisch naar ListenBrainz</string>
+    <string name="set_listenbrainz_token">ListenBrainz-token instellen</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Extractorinstellingen configureren</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Extraheert automatisch YouTube-afspeelconfiguraties. Permanent ingesteld op Actief.</string>
+    <string name="force_update_cipher">Configuraties geforceerd bijwerken</string>
+    <string name="force_update_cipher_desc">Download de nieuwste vervangende extractortoewijzingen. Beperkt tot 3 updates per dag.</string>
+    <string name="youtube_decryption_info">Extractortoewijzingen worden dynamisch opgehaald van je zelfgehoste node. Het aftellen bovenaan toont de resterende tijd tot de volgende automatische synchronisatiecontrole. Als er meer dan 3 handmatige updates worden aangevraagd, worden deze gedurende 1 dag geblokkeerd.</string>
+    <string name="last_updated">Laatst bijgewerkt</string>
+    <string name="last_updated_never">Nooit</string>
+    <string name="cipher_update_success">Extractortoewijzingen bijgewerkt! %d spelers geladen.</string>
+    <string name="cipher_update_failed">Bijwerken van extractortoewijzingen mislukt: %s</string>
+    <string name="cipher_updating">Extractorconfiguraties bijwerken…</string>
+    <string name="hours_label">Uren</string>
+    <string name="minutes_label">Minuten</string>
+    <string name="seconds_label">Seconden</string>
+    <string name="liquid_glass">Liquid Glass (bèta)</string>
+    <string name="player_background_liquid_glass">Liquid Glass</string>
+    <string name="liquid_glass_settings">Liquid Glass (bèta)</string>
+    <string name="liquid_glass_global_enabled">Liquid Glass inschakelen</string>
+    <string name="liquid_glass_effects">Effecten</string>
+    <string name="liquid_glass_appearance">Uiterlijk</string>
+    <string name="liquid_glass_per_component">Per onderdeel</string>
+    <string name="liquid_glass_vibrancy">Levendigheid</string>
+    <string name="liquid_glass_vibrancy_desc">Verhoog de verzadiging van de glazen achtergrond</string>
+    <string name="liquid_glass_blur_radius">Vervagingsstraal</string>
+    <string name="liquid_glass_blur_radius_desc">Hoeveelheid vervaging op het glazen oppervlak</string>
+    <string name="liquid_glass_lens_height">Hoogte van lensbreking</string>
+    <string name="liquid_glass_lens_amount">Sterkte van lensbreking</string>
+    <string name="liquid_glass_chromatic_aberration">Chromatische aberratie</string>
+    <string name="liquid_glass_depth_effect">Diepte-effect</string>
+    <string name="liquid_glass_surface_opacity">Oppervlakdekking</string>
+    <string name="liquid_glass_surface_opacity_desc">Dekking van de glastintlaag voor betere leesbaarheid</string>
+    <string name="liquid_glass_surface_tint">Oppervlaktetint</string>
+    <string name="liquid_glass_surface_tint_desc">Tintkleur die op het glazen oppervlak wordt toegepast</string>
+    <string name="liquid_glass_text_color">Tekstkleur op glas</string>
+    <string name="liquid_glass_text_color_desc">Tekstkleur die op glazen oppervlakken wordt gebruikt</string>
+    <string name="liquid_glass_player">Glazen speler</string>
+    <string name="liquid_glass_mini_player">Glazen minispeler</string>
+    <string name="liquid_glass_nav_bar">Glazen navigatiebalk</string>
+    <string name="nav_bar_style">Stijl van navigatiebalk</string>
+    <string name="floating_nav_bar">Zwevende navigatiebalk</string>
+    <string name="floating_nav_bar_desc">Zwevende tabbladbalk in iOS-stijl die tijdens het scrollen kleiner wordt</string>
+    <string name="liquid_glass_performance_warning">Het renderen van Liquid Glass vergt veel rekenkracht en kan op sommige apparaten de vloeiendheid en batterijduur verminderen</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Hiervoor moet de zwevende navigatiebalk zijn ingeschakeld</string>
+    <string name="color_picker_hex">Hex</string>
+    <string name="color_white">Wit</string>
+    <string name="color_light_gray">Lichtgrijs</string>
+    <string name="color_black">Zwart</string>
 </resources>

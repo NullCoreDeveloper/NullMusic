@@ -288,25 +288,18 @@
     <string name="enable_discord_rpc">Activa \"Rich Presence\"</string>
     <string name="error_no_stream">Cap transmissió disponible</string>
     <string name="sided">Amb vores</string>
-
-
     <!-- Bottom navigation -->
     <string name="music">Música</string>
-
     <!-- Search -->
     <string name="filter_local">Local</string>
-
     <!-- Album screen -->
     <string name="album_description_placeholder">Aquesta és una descripció de marc de posició per a l’àlbum. Gaudiu escoltant les pistes següents!</string>
-
     <!-- Playlist -->
     <string name="you_might_also_like">Llista relacionada</string>
-
     <!-- Button -->
     <string name="shuffle_content_desc">Mescla</string>
     <string name="shuffle_label">Mescla</string>
     <string name="pause">Pausa</string>
-
     <!-- Menu -->
     <string name="saving">S’està desant</string>
     <string name="saved">Desat</string>
@@ -314,7 +307,6 @@
     <string name="add_to_an_playlist">Afegeix</string>
     <string name="more_label">Més</string>
     <string name="releases_for_you">Nous llançaments per a tu</string>
-
     <!-- Dialog -->
     <string name="hide_status_bar_on_fullscreen">Amaga la barra d’estat a pantalla completa</string>
     <string name="hide_status_bar_on_fullscreen_desc">Amaga la barra d’estat quan el mode de pantalla completa de la lletra està actiu</string>
@@ -322,14 +314,12 @@
     <string name="lyrics_swipe_to_change_song_desc">Llisqueu cap a l’esquerra o la dreta a la secció de l’artista i el nom de la cançó a la lletra a pantalla completa per canviar de cançó</string>
     <string name="lyrics_thumbnail_play_pause">Mostra reproduir/pausa a la miniatura</string>
     <string name="lyrics_thumbnail_play_pause_desc">Mostra un botó de reproduir/pausa sobre la miniatura de la cançó a la lletra a pantalla completa</string>
-
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK trobat</item>
         <item quantity="many">%d d’APK trobats</item>
         <item quantity="other">%d APK trobats</item>
     </plurals>
-
     <!-- Settings -->
     <string name="theme_desc">Personalitza el tema de l’aplicació</string>
     <string name="theme_colors">Tema i colors</string>
@@ -360,8 +350,6 @@
     <string name="standard_lyrics_blur">Desenfocament estàndard de la lletra</string>
     <string name="listen_together_smart_resync">Resincronització intel·ligent de xarxa</string>
     <string name="listen_together_smart_resync_desc">Posi’s al dia automàticament amb l’amfitrió després d’una caiguda de la connexió</string>
-
-
     <string name="spotify_import_title">Importa des de Spotify</string>
     <string name="spotify_import_desc">Connecteu Spotify, trieu llistes de reproducció i copieu-les a les llistes locals d’NullMusic.</string>
     <string name="spotify_connect">Connecta Spotify</string>
@@ -388,4 +376,118 @@
     <string name="spotify_account">Compte de Spotify</string>
     <string name="spotify_waiting_for_login">S’està esperant l’inici de sessió a Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
+    <string name="loading">S\'està carregant</string>
+    <string name="added_to_playlist">S\'ha afegit a %s</string>
+    <string name="more_options">Més opcions</string>
+    <string name="picker_not_available">El selector de documents no està disponible en aquest dispositiu. S\'utilitza el directori d\'exportació predeterminat de l\'aplicació.</string>
+    <string name="export_as_csv">Exporta com a CSV</string>
+    <string name="export_playlist_desc">Exporta les cançons de la llista de reproducció a un fitxer CSV</string>
+    <string name="export_successful">La llista de reproducció s\'ha exportat correctament</string>
+    <string name="activity_history">Resum d\'escolta</string>
+    <string name="total_listening_time">Temps total d\'escolta</string>
+    <string name="unique_songs">Cançons úniques</string>
+    <string name="unique_artists">Artistes únics</string>
+    <string name="unique_albums">Àlbums únics</string>
+    <string name="selected_period">Període seleccionat</string>
+    <string name="hours_minutes_format">%1$d h %2$d min</string>
+    <string name="content_sponsor_block">SponsorBlock (omissió automàtica)</string>
+    <string name="content_sponsor_block_desc">Omet automàticament els patrocinis, les introduccions i les seccions sense música dels vídeos</string>
+    <string name="spotify_import_by_link">Importa una llista de reproducció mitjançant un enllaç</string>
+    <string name="spotify_import_by_link_desc">Enganxeu l\'enllaç d\'una llista de reproducció de Spotify per importar-la, fins i tot si no és vostra</string>
+    <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
+    <string name="spotify_add">Afegeix</string>
+    <string name="spotify_invalid_playlist_link">Això no sembla un enllaç d\'una llista de reproducció de Spotify. Utilitzeu un enllaç com ara https://open.spotify.com/playlist/…</string>
+    <string name="service_uptime">Temps d\'activitat dels serveis</string>
+    <string name="service_uptime_desc">Comproveu l\'estat dels proveïdors de música</string>
+    <string name="music_providers">Proveïdors de música</string>
+    <string name="canvas_providers">Proveïdors de Canvas</string>
+    <string name="lyrics_providers">Proveïdors de lletres</string>
+    <string name="other_services">Altres serveis</string>
+    <string name="status_online">En línia</string>
+    <string name="status_offline">Fora de línia</string>
+    <string name="status_checking">S\'està comprovant...</string>
+    <string name="recognition_notification_channel_name">Reconeixement de música</string>
+    <string name="recognition_notification_channel_desc">Mostra una notificació mentre s\'identifica una cançó des de la configuració ràpida</string>
+    <string name="recognition_notification_listening">S\'està escoltant la música…</string>
+    <string name="recognition_notification_processing">S\'està identificant…</string>
+    <string name="recognition_notification_no_match">No s\'ha trobat cap coincidència</string>
+    <string name="recognition_notification_failed">Ha fallat el reconeixement</string>
+    <string name="listen_on_echo_music">Escolta-ho a Echo Music</string>
+    <string name="qs_tile_music_recognizer">Reconeix música</string>
+    <string name="echo_brain_beta">Echo Brain (beta)</string>
+    <string name="echo_brain_enable">Activa Echo Brain</string>
+    <string name="echo_brain_enable_desc">Insereix automàticament recomanacions d\'IA basades en els vostres hàbits d\'escolta</string>
+    <string name="echo_brain_profile_statistics">Estadístiques del perfil</string>
+    <string name="echo_brain_learning_level">Nivell d\'aprenentatge</string>
+    <string name="echo_brain_initiate">Inicia</string>
+    <string name="echo_brain_total_interactions">Interaccions totals</string>
+    <string name="echo_brain_interactions_tracked">%1$d interaccions registrades</string>
+    <string name="echo_brain_discovered_genres">Gèneres descoberts</string>
+    <string name="echo_brain_distinct_genres_identified">%1$d gèneres diferents identificats</string>
+    <string name="echo_brain_analyzed_artists">Artistes analitzats</string>
+    <string name="echo_brain_artists_mapped">%1$d artistes mapats</string>
+    <string name="echo_brain_data_management">Gestió de dades</string>
+    <string name="echo_brain_export_profile">Exporta el perfil</string>
+    <string name="echo_brain_export_profile_desc">Desa el vostre mapa neuronal en un fitxer</string>
+    <string name="echo_brain_import_profile">Importa un perfil</string>
+    <string name="echo_brain_import_profile_desc">Carrega un mapa neuronal desat anteriorment</string>
+    <string name="echo_brain_reset_profile">Restableix el perfil</string>
+    <string name="echo_brain_reset_profile_desc">Esborra totes les dades apreses i torna a començar</string>
+    <string name="echo_brain_reset_neural_profile">Restableix el perfil neuronal</string>
+    <string name="echo_brain_reset_neural_profile_desc">Això suprimirà permanentment totes les preferències apreses. El motor començarà a aprendre des de zero.</string>
+    <string name="echo_brain_profile_exported_successfully">El perfil s\'ha exportat correctament</string>
+    <string name="echo_brain_export_failed">Ha fallat l\'exportació</string>
+    <string name="echo_brain_profile_imported_successfully">El perfil s\'ha importat correctament</string>
+    <string name="echo_brain_import_failed_invalid_file">Ha fallat la importació: el fitxer no és vàlid</string>
+    <string name="listenbrainz_scrobbling">Scrobbling de ListenBrainz</string>
+    <string name="listenbrainz_scrobbling_description">Envia automàticament a ListenBrainz les peces que heu escoltat</string>
+    <string name="set_listenbrainz_token">Defineix el testimoni de ListenBrainz</string>
+    <string name="youtube_decryption_settings">Echo Extractor</string>
+    <string name="youtube_decryption_desc">Configura els paràmetres de l\'extractor</string>
+    <string name="youtube_decryption_support">Echo Extractor</string>
+    <string name="youtube_decryption_support_desc">Extreu automàticament les configuracions de reproducció de YouTube. Està bloquejat en l\'estat Actiu.</string>
+    <string name="force_update_cipher">Força l\'actualització de les configuracions</string>
+    <string name="force_update_cipher_desc">Baixa els mapatges de substitució més recents de l\'extractor. Limitat a 3 actualitzacions al dia.</string>
+    <string name="youtube_decryption_info">Els mapatges de l\'extractor s\'obtenen dinàmicament del vostre node autoallotjat. El compte enrere de la part superior mostra el temps restant fins a la pròxima comprovació automàtica de sincronització. Si se sol·liciten actualitzacions manuals més de 3 vegades, es bloquegen durant 1 dia.</string>
+    <string name="last_updated">Darrera actualització</string>
+    <string name="last_updated_never">Mai</string>
+    <string name="cipher_update_success">S\'han actualitzat els mapatges de l\'extractor! S\'han carregat %d reproductors.</string>
+    <string name="cipher_update_failed">No s\'han pogut actualitzar els mapatges de l\'extractor: %s</string>
+    <string name="cipher_updating">S\'estan actualitzant les configuracions de l\'extractor…</string>
+    <string name="hours_label">Hores</string>
+    <string name="minutes_label">Minuts</string>
+    <string name="seconds_label">Segons</string>
+    <string name="liquid_glass">Vidre líquid (beta)</string>
+    <string name="player_background_liquid_glass">Vidre líquid</string>
+    <string name="liquid_glass_settings">Vidre líquid (beta)</string>
+    <string name="liquid_glass_global_enabled">Activa el vidre líquid</string>
+    <string name="liquid_glass_effects">Efectes</string>
+    <string name="liquid_glass_appearance">Aparença</string>
+    <string name="liquid_glass_per_component">Per component</string>
+    <string name="liquid_glass_vibrancy">Vivacitat</string>
+    <string name="liquid_glass_vibrancy_desc">Augmenta la saturació del fons de vidre</string>
+    <string name="liquid_glass_blur_radius">Radi de desenfocament</string>
+    <string name="liquid_glass_blur_radius_desc">Quantitat de desenfocament de la superfície de vidre</string>
+    <string name="liquid_glass_lens_height">Alçada de refracció de la lent</string>
+    <string name="liquid_glass_lens_amount">Quantitat de refracció de la lent</string>
+    <string name="liquid_glass_chromatic_aberration">Aberració cromàtica</string>
+    <string name="liquid_glass_depth_effect">Efecte de profunditat</string>
+    <string name="liquid_glass_surface_opacity">Opacitat de la superfície</string>
+    <string name="liquid_glass_surface_opacity_desc">Opacitat de la capa de tint del vidre per millorar la llegibilitat</string>
+    <string name="liquid_glass_surface_tint">Tint de la superfície</string>
+    <string name="liquid_glass_surface_tint_desc">Color de tint aplicat a la superfície de vidre</string>
+    <string name="liquid_glass_text_color">Color del text sobre el vidre</string>
+    <string name="liquid_glass_text_color_desc">Color del text utilitzat a les superfícies de vidre</string>
+    <string name="liquid_glass_player">Reproductor de vidre</string>
+    <string name="liquid_glass_mini_player">Minireproductor de vidre</string>
+    <string name="liquid_glass_nav_bar">Barra de navegació de vidre</string>
+    <string name="nav_bar_style">Estil de la barra de navegació</string>
+    <string name="floating_nav_bar">Barra de navegació flotant</string>
+    <string name="floating_nav_bar_desc">Barra de pestanyes flotant a l\'estil d\'iOS que es redueix durant el desplaçament</string>
+    <string name="liquid_glass_performance_warning">La renderització del vidre líquid requereix molts recursos i pot reduir la fluïdesa i la durada de la bateria en alguns dispositius</string>
+    <string name="liquid_glass_requires_floating_nav_bar">Cal que la barra de navegació flotant estigui activada</string>
+    <string name="color_picker_hex">Hexadecimal</string>
+    <string name="color_white">Blanc</string>
+    <string name="color_light_gray">Gris clar</string>
+    <string name="color_black">Negre</string>
 </resources>

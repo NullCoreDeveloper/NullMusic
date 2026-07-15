@@ -232,29 +232,25 @@ highlightKey: String? = null) {
         defaultValue = 1f
     )
 
-    var showAudioQualityDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var showDownloadQualityDialog by remember {
-        mutableStateOf(false)
-    }
+    var showAudioQualityDialog by remember { mutableStateOf(false) }
+    var showDownloadQualityDialog by remember { mutableStateOf(false) }
+    var showSaavnAudioWarning by remember { mutableStateOf(false) }
+    var showLosslessAudioWarning by remember { mutableStateOf(false) }
+    var showSaavnDownloadWarning by remember { mutableStateOf(false) }
+    var showLosslessDownloadWarning by remember { mutableStateOf(false) }
 
     val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
         iad1tya.echo.music.constants.DownloadQualityKey,
         defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
     )
 
-    var showSaavnAudioWarning by remember { mutableStateOf(false) }
-
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
             onSelect = {
                 if (it == AudioQuality.LOSSLESS) {
-                    android.widget.Toast.makeText(context, "Lossless servers require continuous maintenance and funding to stay active. Please consider donating!", android.widget.Toast.LENGTH_LONG).show()
-                }
-                if (it == AudioQuality.SAAVN) {
+                    showLosslessAudioWarning = true
+                } else if (it == AudioQuality.SAAVN) {
                     showSaavnAudioWarning = true
                 } else {
                     onAudioQualityChange(it)
@@ -284,7 +280,13 @@ highlightKey: String? = null) {
         EnumDialog(
             onDismiss = { showDownloadQualityDialog = false },
             onSelect = {
-                onDownloadQualityChange(it)
+                if (it == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS) {
+                    showLosslessDownloadWarning = true
+                } else if (it == iad1tya.echo.music.constants.DownloadQuality.SAAVN) {
+                    showSaavnDownloadWarning = true
+                } else {
+                    onDownloadQualityChange(it)
+                }
                 showDownloadQualityDialog = false
             },
             title = stringResource(R.string.download_quality_title),
@@ -337,12 +339,6 @@ highlightKey: String? = null) {
                 onDismiss = { showSaavnAudioWarning = false },
                 title = { Text("Enable Saavn (320kbps)?") },
                 buttons = {
-                    TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
-                        context.startActivity(intent)
-                    }) {
-                        Text("Donate")
-                    }
                     TextButton(onClick = { showSaavnAudioWarning = false }) {
                         Text(stringResource(R.string.cancel))
                     }
@@ -354,7 +350,79 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("Saavn (320kbps) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
+                Text("Saavn (320kbps) streams run through Echo Music's servers. The server keeps getting down and is not consistent.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
+            }
+        }
+
+        if (showLosslessAudioWarning) {
+            DefaultDialog(
+                onDismiss = { showLosslessAudioWarning = false },
+                title = { Text("Enable Lossless Audio?") },
+                buttons = {
+                    TextButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        context.startActivity(intent)
+                    }) {
+                        Text("Donate")
+                    }
+                    TextButton(onClick = { showLosslessAudioWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showLosslessAudioWarning = false
+                        onAudioQualityChange(AudioQuality.LOSSLESS)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("Lossless is uncompressed music which is higher in size and requires significant server load. Continuous maintenance requires funding. We have a monthly goal of $100 to keep this active.\n\nPlease consider donating!")
+            }
+        }
+
+        if (showSaavnDownloadWarning) {
+            DefaultDialog(
+                onDismiss = { showSaavnDownloadWarning = false },
+                title = { Text("Enable Saavn (320kbps) Downloads?") },
+                buttons = {
+                    TextButton(onClick = { showSaavnDownloadWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showSaavnDownloadWarning = false
+                        onDownloadQualityChange(iad1tya.echo.music.constants.DownloadQuality.SAAVN)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("Saavn (320kbps) servers keep getting down and are not consistent.\n\nNote: If Saavn download fails, the app automatically falls back to YouTube Music's AAC stream.")
+            }
+        }
+
+        if (showLosslessDownloadWarning) {
+            DefaultDialog(
+                onDismiss = { showLosslessDownloadWarning = false },
+                title = { Text("Enable Lossless Downloads?") },
+                buttons = {
+                    TextButton(onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                        context.startActivity(intent)
+                    }) {
+                        Text("Donate")
+                    }
+                    TextButton(onClick = { showLosslessDownloadWarning = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        showLosslessDownloadWarning = false
+                        onDownloadQualityChange(iad1tya.echo.music.constants.DownloadQuality.LOSSLESS)
+                    }) {
+                        Text(stringResource(R.string.enable))
+                    }
+                }
+            ) {
+                Text("Lossless downloads require significant server load and bandwidth. Continuous maintenance requires funding. We have a monthly goal of $100 to keep this active.\n\nPlease consider donating!")
             }
         }
 

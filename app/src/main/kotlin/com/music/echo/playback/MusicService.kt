@@ -521,6 +521,19 @@ class MusicService :
         }
     }
 
+    override fun startForegroundService(service: Intent): android.content.ComponentName? {
+        return try {
+            super.startForegroundService(service)
+        } catch (e: Exception) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is android.app.ForegroundServiceStartNotAllowedException) {
+                Timber.e(e, "Suppressed ForegroundServiceStartNotAllowedException in MusicService")
+                null
+            } else {
+                throw e
+            }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         isRunning = true

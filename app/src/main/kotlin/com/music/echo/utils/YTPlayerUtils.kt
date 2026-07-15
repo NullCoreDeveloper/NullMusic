@@ -149,7 +149,7 @@ object YTPlayerUtils {
             Timber.tag(TAG).d("JioSaavn streaming enabled (via SAAVN) — trying Saavn for videoId=$videoId")
             try {
                 saavnAttempt = kotlinx.coroutines.withTimeoutOrNull(15000L) {
-                    val metadata = playerResponseForMetadata(videoId).getOrNull()
+                    val metadata = if (knownTitle == null || knownArtist == null) playerResponseForMetadata(videoId).getOrNull() else null
                     val title = knownTitle ?: metadata?.videoDetails?.title.orEmpty()
                     val artist = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "").orEmpty()
 
@@ -287,7 +287,7 @@ object YTPlayerUtils {
             var lastException: Exception? = null
             try {
                 attemptResult = kotlinx.coroutines.withTimeoutOrNull(15000L) {
-                    val metadata = playerResponseForMetadata(videoId).getOrNull()
+                    val metadata = if (knownTitle == null || knownArtist == null) playerResponseForMetadata(videoId).getOrNull() else null
                     val title = knownTitle ?: metadata?.videoDetails?.title
                     val author = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "")
                     if (title != null && author != null) {

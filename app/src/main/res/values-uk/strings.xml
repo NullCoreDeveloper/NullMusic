@@ -500,4 +500,12 @@
     <string name="color_white">Білий</string>
     <string name="color_light_gray">Світло-сірий</string>
     <string name="color_black">Чорний</string>
+    <string name="enable_haptics">Увімкнути вібрацію</string>
+    <string name="enable_haptics_desc">Забезпечує тактильний відгук під час прокручування, натискання та взаємодії з застосунком</string>
+    <string name="ai_auto_translate">Автопереклад</string>
+    <string name="ai_auto_translate_desc">Автоматично перекладати тексти пісень, якщо вони доступні</string>
+    <string name="lyrics_translation_menu">Переклад текстів пісень</string>
+    <string name="ai_recommendations">Рекомендації ШІ</string>
+    <string name="ai_recommendations_desc">Щоденне оновлення персоналізованого плейліста на основі вашого смаку</string>
+    <string name="ai_recommendations_refresh">Оновити рекомендації</string>
 </resources>

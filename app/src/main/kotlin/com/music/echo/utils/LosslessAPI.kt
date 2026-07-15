@@ -35,7 +35,7 @@ object LosslessAPI {
 
         try {
             val request = Request.Builder()
-                .url("https://lossless.echomusic.fun/music.json")
+                .url("https://lossless.nullmusic.fun/music.json")
                 .get()
                 .build()
 
@@ -70,7 +70,7 @@ object LosslessAPI {
         
         return track?.let {
             val resolvedUrl = it.url.replace(
-                "https://lossless.echomusic.fun/Music/",
+                "https://lossless.nullmusic.fun/Music/",
                 "https://raw.githubusercontent.com/EchoMusicApp/Lossless/main/Music/"
             )
             it.copy(url = resolvedUrl)

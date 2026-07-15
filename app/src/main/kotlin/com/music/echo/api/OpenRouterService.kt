@@ -29,8 +29,10 @@ object OpenRouterService {
         model: String,
         mode: String,
         maxRetries: Int = 3,
-        sourceLanguage: String? = null
+        sourceLanguage: String? = null,
+        onLog: ((String) -> Unit)? = null
     ): Result<List<String>> = withContext(Dispatchers.IO) {
+        onLog?.invoke("Starting translation...")
         var currentAttempt = 0
         
         
@@ -146,8 +148,9 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
                     .post(jsonBody.toString().toRequestBody(JSON))
                     .build()
 
+                onLog?.invoke("Calling OpenRouter API (Attempt ${currentAttempt + 1})...")
                 val response = client.newCall(request).execute()
-                val responseBody = response.body?.string()
+                val responseBody = response.body?.string() ?: ""
 
                 if (!response.isSuccessful) {
                     
@@ -164,11 +167,6 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
                         "HTTP ${response.code}: ${response.message}"
                     }
                     return@withContext Result.failure(Exception("Translation failed: $errorMsg"))
-                }
-
-                if (responseBody == null) {
-                    currentAttempt++
-                    continue
                 }
 
                 val jsonResponse = JSONObject(responseBody)
@@ -213,7 +211,7 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
                         }
                         
                         if (translatedLines != null) {
-                            
+                            onLog?.invoke("Successfully parsed ${translatedLines.size} lines")
                             if (translatedLines.size == lineCount) {
                                 return@withContext Result.success(translatedLines)
                             } else if (translatedLines.size > lineCount) {

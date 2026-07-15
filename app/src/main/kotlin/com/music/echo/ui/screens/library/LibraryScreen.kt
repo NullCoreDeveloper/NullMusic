@@ -56,6 +56,8 @@ fun LibraryScreen(navController: NavController) {
     var showImportMenu by remember { mutableStateOf(false) }
     var showYoutubeImportDialog by remember { mutableStateOf(false) }
     var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var showCreatePlaylistOptionsDialog by rememberSaveable { mutableStateOf(false) }
+    var showAiPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     BackHandler(enabled = filterType != LibraryFilter.LIBRARY) {
@@ -146,7 +148,7 @@ fun LibraryScreen(navController: NavController) {
                 ExtendedFloatingActionButton(
                     text = { Text(stringResource(R.string.create_playlist)) },
                     icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = "Create playlist") },
-                    onClick = { showCreatePlaylistDialog = true },
+                    onClick = { showCreatePlaylistOptionsDialog = true },
                     shape = androidx.compose.foundation.shape.CircleShape,
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -223,6 +225,40 @@ fun LibraryScreen(navController: NavController) {
             allowSyncing = true,
             onPlaylistCreated = { playlistId ->
                 showCreatePlaylistDialog = false
+                navController.navigate("local_playlist/$playlistId")
+            }
+        )
+    }
+
+    if (showCreatePlaylistOptionsDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showCreatePlaylistOptionsDialog = false },
+            title = { Text(stringResource(R.string.create_playlist)) },
+            text = { Text("How would you like to create your playlist?") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    showCreatePlaylistOptionsDialog = false
+                    showAiPlaylistDialog = true
+                }) {
+                    Text("Create with AI")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    showCreatePlaylistOptionsDialog = false
+                    showCreatePlaylistDialog = true
+                }) {
+                    Text("Normally")
+                }
+            }
+        )
+    }
+
+    if (showAiPlaylistDialog) {
+        iad1tya.echo.music.ui.component.CreateAiPlaylistDialog(
+            onDismiss = { showAiPlaylistDialog = false },
+            onPlaylistCreated = { playlistId ->
+                showAiPlaylistDialog = false
                 navController.navigate("local_playlist/$playlistId")
             }
         )

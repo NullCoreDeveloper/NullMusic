@@ -146,6 +146,7 @@ import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import iad1tya.echo.music.constants.AppBarHeight
+import iad1tya.echo.music.constants.AiRecommendationsKey
 import iad1tya.echo.music.constants.AppLanguageKey
 import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.DefaultOpenTabKey
@@ -247,13 +248,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
-
-    @Inject
-    lateinit var echoBrainEngine: iad1tya.echo.music.engine.EchoBrainEngine
-
-    @Inject
-    lateinit var echoBrainRepository: iad1tya.echo.music.data.EchoBrainRepository
-
     private lateinit var navController: NavHostController
     private var pendingIntent: Intent? = null
 
@@ -267,7 +261,6 @@ class MainActivity : ComponentActivity() {
                     Timber.tag("MainActivity").d("PlayerConnection created successfully")
                     
                     listenTogetherManager.setPlayerConnection(playerConnection)
-                    playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                 } catch (e: Exception) {
                     Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
                     
@@ -276,7 +269,6 @@ class MainActivity : ComponentActivity() {
                         try {
                             playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
                             listenTogetherManager.setPlayerConnection(playerConnection)
-                            playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                         } catch (e2: Exception) {
                             Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
                         }
@@ -374,13 +366,25 @@ class MainActivity : ComponentActivity() {
                     }
                 }
         }
-
+        
         lifecycleScope.launch {
             dataStore.data
-                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: false }
+                .map { it[AiRecommendationsKey] ?: false }
                 .distinctUntilChanged()
                 .collectLatest { enabled ->
-                    echoBrainEngine.isEnabled.value = enabled
+                    val workManager = androidx.work.WorkManager.getInstance(this@MainActivity)
+                    if (enabled) {
+                        val request = androidx.work.PeriodicWorkRequestBuilder<iad1tya.echo.music.ai.AiRecommendationWorker>(1, java.util.concurrent.TimeUnit.DAYS)
+                            .setConstraints(androidx.work.Constraints.Builder().setRequiredNetworkType(androidx.work.NetworkType.CONNECTED).build())
+                            .build()
+                        workManager.enqueueUniquePeriodicWork(
+                            "AiRecommendationWorker",
+                            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+                            request
+                        )
+                    } else {
+                        workManager.cancelUniqueWork("AiRecommendationWorker")
+                    }
                 }
         }
 

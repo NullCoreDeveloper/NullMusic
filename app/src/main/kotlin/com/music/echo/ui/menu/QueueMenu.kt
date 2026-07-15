@@ -78,7 +78,6 @@ import iad1tya.echo.music.utils.listItemShape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import iad1tya.echo.music.engine.brain.FlowNeuroEngine
 import iad1tya.echo.music.models.QueueItemSource
 
 @Composable
@@ -310,45 +309,6 @@ fun QueueMenu(
             )
         }
         
-        if (mediaMetadata.source == QueueItemSource.ECHO_BRAIN) {
-            item {
-                Material3MenuGroup(
-                    items = listOf(
-                        Material3MenuItemData(
-                            title = { Text(text = "Not Interested") },
-                            description = { Text(text = "Improve Echo Brain's recommendations") },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.remove),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            },
-                            onClick = {
-                                onDismiss()
-                                coroutineScope.launch {
-                                    FlowNeuroEngine.markNotInterested(context, mediaMetadata)
-                                    val index = playerConnection.player.currentTimeline.let { timeline ->
-                                        for (i in 0 until timeline.windowCount) {
-                                            if (timeline.getWindow(i, androidx.media3.common.Timeline.Window()).mediaItem.mediaId == mediaMetadata.id) {
-                                                return@let i
-                                            }
-                                        }
-                                        -1
-                                    }
-                                    if (index != -1) {
-                                        playerConnection.player.removeMediaItem(index)
-                                    }
-                                }
-                            }
-                        )
-                    ),
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
-                )
-            }
-        }
-
-        
         item {
             Material3MenuGroup(
                 items = listOf(
@@ -562,7 +522,14 @@ fun QueueMenu(
                             },
                             onClick = {
                                 refetchIconDegree -= 360
+                                androidx.media3.exoplayer.offline.DownloadService.sendRemoveDownload(context, iad1tya.echo.music.playback.ExoDownloadService::class.java, mediaMetadata.id, false)
+                                val intent = android.content.Intent(context, iad1tya.echo.music.playback.MusicService::class.java).apply {
+                                    action = "iad1tya.echo.music.ACTION_CLEAR_SONG_CACHE"
+                                    putExtra("songId", mediaMetadata.id)
+                                }
+                                context.startService(intent)
                                 coroutineScope.launch(Dispatchers.IO) {
+                                    database.query { deleteFormat(mediaMetadata.id) }
                                     YouTube.queue(listOf(mediaMetadata.id)).onSuccess {
                                         val newSong = it.firstOrNull()
                                         if (newSong != null && librarySong != null) {

@@ -114,7 +114,26 @@ private fun Material3SettingsItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         
-        item.icon?.let { icon ->
+        if (item.customIcon != null) {
+            Box(
+                modifier = Modifier
+                    .size(if (compact) 34.dp else 40.dp)
+                    .clip(item.iconShape ?: RoundedCornerShape(12.dp))
+                    .background(
+                        if (item.tintIcon) {
+                            MaterialTheme.colorScheme.primary.copy(
+                                alpha = if (item.isHighlighted) 0.15f else 0.1f
+                            )
+                        } else {
+                            androidx.compose.ui.graphics.Color.Transparent
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                item.customIcon.invoke()
+            }
+            Spacer(modifier = Modifier.width(if (compact) 14.dp else 20.dp))
+        } else item.icon?.let { icon ->
             Box(
                 modifier = Modifier
                     .size(if (compact) 34.dp else 40.dp)
@@ -229,6 +248,7 @@ private fun Material3SettingsItemRow(
 
 data class Material3SettingsItem(
     val icon: Painter? = null,
+    val customIcon: (@Composable () -> Unit)? = null,
     val title: @Composable () -> Unit,
     val description: (@Composable () -> Unit)? = null,
     val trailingContent: (@Composable () -> Unit)? = null,

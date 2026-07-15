@@ -338,17 +338,6 @@ fun NavGraphBuilder.navigationBuilder(
         SettingsScreen(navController, scrollBehavior)
     }
 
-    composable(
-        route = "settings/echo_brain?highlightKey={highlightKey}",
-        arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
-    ) { backStackEntry ->
-        iad1tya.echo.music.ui.screens.settings.EchoBrainScreen(
-            navController, 
-            (activity as iad1tya.echo.music.MainActivity).echoBrainEngine, 
-            (activity as iad1tya.echo.music.MainActivity).echoBrainRepository,
-            highlightKey = backStackEntry.arguments?.getString("highlightKey")
-        )
-    }
 
     composable(
         route = "settings/update?highlightKey={highlightKey}",

@@ -69,56 +69,25 @@ fun FundingProgressCard() {
                     }
 
                     val raisedInt = data.raised.toInt()
-                    val targetInt = data.target.toInt()
-                    val remainingInt = targetInt - raisedInt
 
                     Text(
-                        text = "We are raising funds to host our own independent, open-source servers for lossless streaming to permanently solve the issue of third-party services going down. Every $1 helps us achieve full independence.",
+                        text = "We are raising funds to host our own independent, open-source servers for lossless streaming to permanently solve the issue of third-party services going down. We have started calculating this from today. Every $1 helps us keep it active and helps it survive.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    // Animated Progress Bar
-                    val targetProgress = (data.raised / data.target).toFloat().coerceIn(0f, 1f)
-                    var progress by remember { mutableFloatStateOf(0f) }
-                    
-                    LaunchedEffect(targetProgress) {
-                        progress = targetProgress
-                    }
-                    
-                    val animatedProgress by animateFloatAsState(
-                        targetValue = progress,
-                        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-                        label = "progress"
                     )
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = "$$raisedInt raised",
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
-                            Text(
-                                text = "$$targetInt goal",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
                         }
-                        
-                        LinearProgressIndicator(
-                            progress = { animatedProgress },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
                     }
 
                     Row(

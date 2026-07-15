@@ -153,6 +153,7 @@ import iad1tya.echo.music.constants.OpenRouterBaseUrlKey
 import iad1tya.echo.music.constants.OpenRouterModelKey
 import iad1tya.echo.music.constants.TranslateLanguageKey
 import iad1tya.echo.music.constants.TranslateModeKey
+import iad1tya.echo.music.constants.AutoTranslateKey
 import iad1tya.echo.music.constants.DeeplFormalityKey
 import iad1tya.echo.music.constants.PlayerBackgroundStyleKey
 import iad1tya.echo.music.db.entities.LyricsEntity.Companion.LYRICS_NOT_FOUND
@@ -240,6 +241,7 @@ fun Lyrics(
     val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
     val translateMode by rememberPreference(TranslateModeKey, "Literal")
+    val autoTranslate by rememberPreference(AutoTranslateKey, false)
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
     
     val scope = rememberCoroutineScope()
@@ -460,7 +462,7 @@ fun Lyrics(
     }
     
     
-    LaunchedEffect(lines, lyricsEntity, translateLanguage, translateMode) {
+    LaunchedEffect(lines, lyricsEntity, translateLanguage, translateMode, autoTranslate) {
         if (lines.isNotEmpty() && lyricsEntity != null) {
             LyricsTranslationHelper.loadTranslationsFromDatabase(
                 lyrics = lines,
@@ -468,6 +470,14 @@ fun Lyrics(
                 targetLanguage = translateLanguage,
                 mode = translateMode
             )
+            
+            kotlinx.coroutines.delay(100)
+            
+            if (autoTranslate && !LyricsTranslationHelper.hasTranslations(lyricsEntity) &&
+                LyricsTranslationHelper.status.value !is LyricsTranslationHelper.TranslationStatus.Translating &&
+                !LyricsTranslationHelper.hasActiveTranslations.value) {
+                LyricsTranslationHelper.triggerManualTranslation()
+            }
         }
     }
     
@@ -749,7 +759,7 @@ fun Lyrics(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Text(
-                                text = stringResource(R.string.ai_translating_lyrics),
+                                text = if (status.logs.isNotEmpty()) status.logs.last() else stringResource(R.string.ai_translating_lyrics),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )

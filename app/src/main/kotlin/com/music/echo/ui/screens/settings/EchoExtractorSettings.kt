@@ -106,7 +106,7 @@ fun EchoExtractorSettings(
         while (true) {
             val now = System.currentTimeMillis()
             currentTimeMillis = now
-            val nextFetchTime = lastUpdated + (24 * 60 * 60 * 1000L)
+            val nextFetchTime = lastUpdated + (6 * 60 * 60 * 1000L)
             val remaining = nextFetchTime - now
             if (remaining <= 0L) {
                 timeRemaining = 0L

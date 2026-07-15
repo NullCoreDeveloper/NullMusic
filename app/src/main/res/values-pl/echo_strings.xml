@@ -59,7 +59,6 @@
     <string name="background_color">Kolor tła</string>
     <string name="show_downloaded_playlist">Pokaż playlistę \"Pobrane\"</string>
     <string name="customize_colors">Dostosuj kolory</string>
-    <string name="more_options">Więcej opcji</string>
     <string name="token_adv_login_description">Jest to ZAAWANSOWANA metoda logowania. Alternatywnie do portalu internetowego można tutaj bezpośrednio wprowadzić lub zaktualizować token logowania. Może to na przykład przyspieszyć logowanie na wielu urządzeniach. Należy pamiętać, że wszelkie nieprawidłowe formaty tokenów, których aplikacja nie przeanalizuje, nie zostaną zaakceptowane</string>
     <string name="text_color">Kolor tekstu</string>
     <string name="secondary_text_color">Drugi kolor tekstu</string>

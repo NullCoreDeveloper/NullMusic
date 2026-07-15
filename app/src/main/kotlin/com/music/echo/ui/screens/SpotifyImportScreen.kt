@@ -136,6 +136,13 @@ private fun spotifyImportItems(
                 enabled = state.progress == null && !state.isLoading,
                 onClick = onConnect,
             ),
+            Material3SettingsItem(
+                title = { Text(stringResource(R.string.spotify_import_by_link)) },
+                description = { Text(stringResource(R.string.spotify_import_by_link_desc)) },
+                icon = painterResource(R.drawable.link),
+                enabled = state.progress == null && !state.isLoading,
+                onClick = onAddByLink,
+            ),
         )
     }
 

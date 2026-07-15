@@ -44,11 +44,6 @@ object AppModule {
         database: InternalDatabase,
     ) = database.dao
 
-    @Singleton
-    @Provides
-    fun provideEchoBrainDao(
-        database: InternalDatabase,
-    ) = database.echoBrainDao
 
     @Singleton
     @Provides

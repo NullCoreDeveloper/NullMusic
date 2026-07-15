@@ -54,7 +54,6 @@
     <string name="max_selection_limit">Valiku ülempiir</string>
     <string name="share_selected">Jaga valitut</string>
     <string name="customize_colors">Kohenda värve</string>
-    <string name="more_options">Lisavalikud</string>
     <string name="text_color">Teksti värv</string>
     <string name="secondary_text_color">Teisane tekstivärv</string>
     <string name="background_color">Taustavärv</string>

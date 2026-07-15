@@ -1034,9 +1034,6 @@ fun MediaMetadataListItem(
             )
         },
         badges = {
-            if (mediaMetadata.source == iad1tya.echo.music.models.QueueItemSource.ECHO_BRAIN) {
-                Icon.EchoBrain()
-            }
             if (mediaMetadata.explicit) Icon.Explicit()
         },
         thumbnailContent = {
@@ -1839,26 +1836,13 @@ object Icon {
         )
     }
 
-    @Composable
-    fun EchoBrain() {
-        Icon(
-            imageVector = Icons.Outlined.AutoAwesome,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .size(18.dp)
-                .padding(end = 2.dp)
-        )
-    }
 }
 
 @Composable
-fun rememberQobuzMatch(
+fun rememberLosslessMatch(
     id: String,
     artist: String,
     title: String,
-    durationMs: Long?,
-    audioQuality: iad1tya.echo.music.constants.AudioQuality,
     cachedFlac: Boolean
 ): androidx.compose.runtime.State<Boolean?> {
     return androidx.compose.runtime.produceState<Boolean?>(initialValue = if (cachedFlac) true else null, id) {
@@ -1867,20 +1851,8 @@ fun rememberQobuzMatch(
             return@produceState
         }
         kotlinx.coroutines.delay(300) // Debounce fast scrolling
-        val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
-        var found = false
-        for (term in iad1tya.echo.music.utils.qobuzSearchTerms(artist, title)) {
-            val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
-            val candidates = searchResult.tracks?.items.orEmpty()
-            if (candidates.isEmpty()) continue
-            val scored = candidates.map { it to iad1tya.echo.music.utils.confidence(artist, title, durationMs, it) }
-            val match = scored.filter { it.second >= 0.5f }.maxByOrNull { it.second }
-            if (match != null) {
-                found = true
-                break
-            }
-        }
-        value = found
+        val track = iad1tya.echo.music.utils.LosslessAPI.search(title, artist)
+        value = track != null
     }
 }
 

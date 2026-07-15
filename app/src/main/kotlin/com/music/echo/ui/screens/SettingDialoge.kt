@@ -130,6 +130,21 @@ fun SettingDialoge(
                                 }
                             } else null,
                             onClick = { if (isLoggedIn) onNavigate("settings/account") else onNavigate("login") }
+                        ),
+                        Material3SettingsItem(
+                            title = { Text(androidx.compose.ui.res.stringResource(R.string.ai_lyrics_translation)) },
+                            customIcon = {
+                                Text(
+                                    text = "Ai",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            onClick = {
+                                onDismissRequest()
+                                onNavigate("settings/ai")
+                            }
                         )
                     )
                 )

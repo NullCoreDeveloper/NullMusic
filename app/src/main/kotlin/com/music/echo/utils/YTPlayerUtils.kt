@@ -283,96 +283,63 @@ object YTPlayerUtils {
         }
 
         suspend fun tryLossless(): Result<PlaybackData> {
-            var qobuzAttempt: Result<PlaybackData>? = null
+            var attemptResult: Result<PlaybackData>? = null
             var lastException: Exception? = null
-            for (attempt in 1..3) {
-                try {
-                    qobuzAttempt = kotlinx.coroutines.withTimeoutOrNull(15000L) {
-                        val metadata = playerResponseForMetadata(videoId).getOrNull()
-                        val title = knownTitle ?: metadata?.videoDetails?.title
-                        val author = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "")
-                        if (title != null && author != null) {
-                            val qobuzClient = iad1tya.echo.music.utils.qobuz.QobuzApiClient()
-                            val queryArtist = author
-                            val queryTitle = title
-                            val durationSeconds = metadata?.videoDetails?.lengthSeconds?.toLongOrNull()
-                            val durationMs = knownDurationMs ?: (if (durationSeconds != null) durationSeconds * 1000L else null)
-                            
-                            var resolvedPlaybackData: PlaybackData? = null
-                            for (term in qobuzSearchTerms(queryArtist, queryTitle)) {
-                                val searchResult = runCatching { qobuzClient.search(term) }.getOrNull() ?: continue
-                                val candidates = searchResult.tracks?.items ?: continue
-                                val validCandidates = candidates.filter {
-                                    val streamable = it.streamable ?: false
-                                    val maxDepth = it.maximumBitDepth ?: 0
-                                    streamable && maxDepth >= 16
-                                }
-                                val sorted = validCandidates.sortedByDescending { confidence(queryArtist, queryTitle, durationMs, it) }
-                                for (candidate in sorted) {
-                                    if (confidence(queryArtist, queryTitle, durationMs, candidate) >= 0.5f) {
-                                        val downloadData = runCatching { qobuzClient.getFileUrl(candidate.id) }.getOrNull()
-                                        val url = downloadData?.url
-                                        if (url != null) {
-                                            val format = PlayerResponse.StreamingData.Format(
-                                                itag = 0,
-                                                mimeType = "audio/flac; codecs=\"flac\"",
-                                                bitrate = (candidate.maximumSamplingRate * 1000 * candidate.maximumBitDepth * 2).toInt(),
-                                                audioSampleRate = (candidate.maximumSamplingRate * 1000).toInt(),
-                                                contentLength = 0L,
-                                                url = url,
-                                                cipher = null,
-                                                signatureCipher = null,
-                                                audioQuality = "LOSSLESS",
-                                                fps = null,
-                                                width = null,
-                                                height = null,
-                                                quality = "lossless",
-                                                qualityLabel = null,
-                                                averageBitrate = null,
-                                                approxDurationMs = null,
-                                                audioChannels = null,
-                                                loudnessDb = null,
-                                                lastModified = null,
-                                                audioTrack = null
-                                            )
-                                            resolvedPlaybackData = PlaybackData(
-                                                audioConfig = null,
-                                                videoDetails = metadata?.videoDetails,
-                                                playbackTracking = null,
-                                                format = format,
-                                                streamUrl = url,
-                                                streamExpiresInSeconds = 3600
-                                            )
-                                            break
-                                        }
-                                    }
-                                }
-                                if (resolvedPlaybackData != null) {
-                                    break
-                                }
-                            }
-    
-                            if (resolvedPlaybackData != null) {
-                                return@withTimeoutOrNull Result.success(resolvedPlaybackData)
-                            } else {
-                                throw Exception("No streamable match resolved on Qobuz")
-                            }
+            try {
+                attemptResult = kotlinx.coroutines.withTimeoutOrNull(15000L) {
+                    val metadata = playerResponseForMetadata(videoId).getOrNull()
+                    val title = knownTitle ?: metadata?.videoDetails?.title
+                    val author = knownArtist ?: metadata?.videoDetails?.author?.replace(" - Topic", "")
+                    if (title != null && author != null) {
+                        val track = iad1tya.echo.music.utils.LosslessAPI.search(title, author)
+                        if (track != null) {
+                            val format = com.music.innertube.models.response.PlayerResponse.StreamingData.Format(
+                                itag = 0,
+                                mimeType = "audio/flac; codecs=\"flac\"",
+                                bitrate = 1411000,
+                                audioSampleRate = 44100,
+                                contentLength = 0L,
+                                url = track.url,
+                                cipher = null,
+                                signatureCipher = null,
+                                audioQuality = "LOSSLESS",
+                                fps = null,
+                                width = null,
+                                height = null,
+                                quality = "lossless",
+                                qualityLabel = null,
+                                averageBitrate = null,
+                                approxDurationMs = null,
+                                audioChannels = null,
+                                loudnessDb = null,
+                                lastModified = null,
+                                audioTrack = null
+                            )
+                            val resolvedPlaybackData = PlaybackData(
+                                audioConfig = null,
+                                videoDetails = metadata?.videoDetails,
+                                playbackTracking = null,
+                                format = format,
+                                streamUrl = track.url,
+                                streamExpiresInSeconds = 3600,
+                                isSaavnStream = false
+                            )
+                            return@withTimeoutOrNull Result.success(resolvedPlaybackData)
                         } else {
-                            throw Exception("Missing title or artist for lookup")
+                            throw Exception("No streamable match resolved on Lossless index")
                         }
+                    } else {
+                        throw Exception("Missing title or artist for lookup")
                     }
-                    if (qobuzAttempt == null) {
-                        lastException = Exception("Timeout fetching Qobuz stream")
-                    }
-                } catch (e: Exception) {
-                    lastException = e
                 }
-                
-                if (qobuzAttempt != null && qobuzAttempt.isSuccess) {
-                    break
+                if (attemptResult == null) {
+                    lastException = Exception("Timeout fetching Lossless stream")
                 }
+            } catch (e: Exception) {
+                lastException = e
             }
-            return qobuzAttempt ?: Result.failure(lastException ?: Exception("Qobuz resolution failed"))
+            
+            return attemptResult ?: Result.failure(lastException ?: Exception("Lossless resolution failed"))
         }
 
         fun showToastMsg(msg: String) {
@@ -961,101 +928,3 @@ object YTPlayerUtils {
 }
 
 
-
-
-fun cleanSearchTerm(term: String): String {
-    return term
-        .replace(Regex("(?i)\\b(official video|music video|official audio|lyric video|lyrics|audio|video|hq|high quality)\\b"), "")
-        .replace(Regex("\\([^)]*\\)"), "")
-        .replace(Regex("\\[[^]]*\\]"), "")
-        .replace(Regex("[^\\p{L}\\p{N}\\s]"), " ")
-        .replace(Regex("\\s+"), " ")
-        .trim()
-}
-
-fun qobuzSearchTerms(artist: String, title: String): List<String> {
-    val cleanArtist = cleanSearchTerm(artist)
-    val cleanTitle = cleanSearchTerm(title)
-    
-    val terms = mutableListOf<String>()
-    
-    terms.add("$artist $title".trim())
-    
-    if (cleanArtist.isNotEmpty() && cleanTitle.isNotEmpty()) {
-        terms.add("$cleanArtist $cleanTitle".trim())
-    }
-    
-    val primary = artist.substringBefore(",").trim()
-    if (primary.isNotEmpty() && !primary.equals(artist.trim(), ignoreCase = true)) {
-        terms.add("$primary $title".trim())
-        val cleanPrimary = cleanSearchTerm(primary)
-        if (cleanPrimary.isNotEmpty() && cleanTitle.isNotEmpty()) {
-            terms.add("$cleanPrimary $cleanTitle".trim())
-        }
-    }
-    
-    return terms.distinct()
-}
-
-private fun normalize(s: String): String =
-    s.lowercase()
-        .replace(Regex("\\([^)]*\\)"), " ")
-        .replace(Regex("\\[[^]]*\\]"), " ")
-        .replace(Regex("(?i)\\b(feat\\.?|ft\\.?|featuring)\\b.*"), " ")
-        .replace(Regex("[''`]"), "")
-        .replace(Regex("[^\\p{L}\\p{N}\\p{S}\\s]"), " ")
-        .replace(Regex("\\s+"), " ")
-        .trim()
-
-private fun jaccard(a: String, b: String): Float {
-    val setA = a.split(" ").filter { it.isNotEmpty() }.toSet()
-    val setB = b.split(" ").filter { it.isNotEmpty() }.toSet()
-    if (setA.isEmpty() || setB.isEmpty()) return 0f
-    val intersection = setA.intersect(setB).size.toFloat()
-    val union = setA.union(setB).size.toFloat()
-    return intersection / union
-}
-
-private fun artistSimilarity(a: String, b: String): Float {
-    val setA = a.split(" ").filter { it.isNotEmpty() }.toSet()
-    val setB = b.split(" ").filter { it.isNotEmpty() }.toSet()
-    if (setA.isEmpty() || setB.isEmpty()) return 0f
-
-    val intersection = setA.intersect(setB)
-    val union = setA.union(setB)
-    val jaccardScore = intersection.size.toFloat() / union.size.toFloat()
-
-    val smallerSize = minOf(setA.size, setB.size)
-    val smallerFullyCovered = intersection.size == smallerSize
-    val hasDistinctiveOverlap = intersection.any { token ->
-        token.length > 3 || token.any { ch -> !ch.isLetterOrDigit() }
-    }
-
-    val coverageScore = if (smallerFullyCovered && hasDistinctiveOverlap) 1.0f else 0f
-    return maxOf(jaccardScore, coverageScore)
-}
-
-fun confidence(queryArtist: String, queryTitle: String, queryDuration: Long?, candidate: iad1tya.echo.music.utils.qobuz.QobuzTrack): Float {
-    if (!candidate.streamable) return 0f
-
-    val titleSim = jaccard(normalize(queryTitle), normalize(candidate.title))
-    val artistSim = artistSimilarity(
-        normalize(queryArtist),
-        normalize(candidate.performer?.name.orEmpty()),
-    )
-
-    val durationFactor: Float = run {
-        val queryMs = queryDuration ?: return@run 1.0f
-        if (queryMs <= 0 || candidate.duration <= 0) return@run 1.0f
-        val candidateMs = candidate.duration * 1000L
-        val drift = kotlin.math.abs(queryMs - candidateMs).toDouble() / queryMs.toDouble()
-        when {
-            drift < 0.05 -> 1.0f      
-            drift < 0.10 -> 0.85f     
-            drift < 0.20 -> 0.6f      
-            else -> 0.3f              
-        }
-    }
-
-    return (titleSim * artistSim * durationFactor)
-}

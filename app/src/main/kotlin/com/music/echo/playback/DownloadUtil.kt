@@ -66,7 +66,7 @@ constructor(
 ) {
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
     private val downloadQuality by enumPreference(context, iad1tya.echo.music.constants.DownloadQualityKey, iad1tya.echo.music.constants.DownloadQuality.YOUTUBE)
-    private val ipVersion by enumPreference(context, IpVersionKey, IpVersion.AUTO)
+    private val ipVersion by enumPreference(context, IpVersionKey, IpVersion.IPV4)
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

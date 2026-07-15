@@ -699,7 +699,7 @@
     <string name="user_blocked_by_host">User blocked by host</string>
 
     <!-- AI Lyrics Translation -->
-    <string name="ai_lyrics_translation">AI Lyrics Translation</string>
+    <string name="ai_lyrics_translation">AI Hub</string>
     <string name="ai_translating_lyrics">Translating lyrics...</string>
     <string name="ai_lyrics_translated">Lyrics translated</string>
     <string name="ai_provider">Provider</string>
@@ -732,6 +732,7 @@
     <string name="ai_provider_deepl_help">Visit deepl.com/pro-api for free and paid keys</string>
     <string name="ai_provider_nvidia_help">Visit build.nvidia.com for API keys</string>
     <string name="ai_provider_groq_help">Visit console.groq.com/keys for free API keys</string>
+    <string name="ai_provider_puter_help">Visit puter.com/dashboard to get an auth token</string>
     <string name="ai_deepl_formality">Formality</string>
     <string name="ai_deepl_formality_default">Default</string>
     <string name="ai_deepl_formality_more">More Formal</string>

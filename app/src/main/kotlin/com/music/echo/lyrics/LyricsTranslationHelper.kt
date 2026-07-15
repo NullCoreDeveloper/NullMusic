@@ -224,7 +224,7 @@ object LyricsTranslationHelper {
         database: MusicDatabase? = null,
     ) {
         translationJob?.cancel()
-        _status.value = TranslationStatus.Translating
+        _status.value = TranslationStatus.Translating()
 
         
         lyrics.forEach { it.translatedTextFlow.value = null }
@@ -318,6 +318,12 @@ object LyricsTranslationHelper {
                         targetLanguage = targetLanguage,
                         apiKey = deeplApiKey,
                         formality = deeplFormality,
+                        onLog = { logMsg ->
+                            val currentStatus = _status.value
+                            if (currentStatus is TranslationStatus.Translating) {
+                                _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                            }
+                        }
                     )
                 } else if (provider == "Mistral") {
                     Timber.d("Using Mistral for translation")
@@ -327,6 +333,12 @@ object LyricsTranslationHelper {
                         apiKey = apiKey,
                         model = model,
                         mode = mode,
+                        onLog = { logMsg ->
+                            val currentStatus = _status.value
+                            if (currentStatus is TranslationStatus.Translating) {
+                                _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                            }
+                        }
                     )
                 } else if (useStreaming && provider != "Custom") {
                     Timber.d("Using streaming for translation with provider: $provider")
@@ -357,7 +369,7 @@ object LyricsTranslationHelper {
                                             lyrics[originalIndex].translatedTextFlow.value = translation
                                         }
                                     }
-                                    _status.value = TranslationStatus.Translating
+                                    _status.value = TranslationStatus.Translating()
                                 }
                             }
                             is OpenRouterStreamingService.StreamChunk.Complete -> {
@@ -389,6 +401,12 @@ object LyricsTranslationHelper {
                         baseUrl = baseUrl,
                         model = model,
                         mode = mode,
+                        onLog = { logMsg ->
+                            val currentStatus = _status.value
+                            if (currentStatus is TranslationStatus.Translating) {
+                                _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                            }
+                        }
                     )
                 }
 
@@ -475,7 +493,7 @@ object LyricsTranslationHelper {
 
     sealed class TranslationStatus {
         data object Idle : TranslationStatus()
-        data object Translating : TranslationStatus()
+        data class Translating(val logs: List<String> = emptyList()) : TranslationStatus()
         data object Success : TranslationStatus()
         data class Error(val message: String) : TranslationStatus()
     }

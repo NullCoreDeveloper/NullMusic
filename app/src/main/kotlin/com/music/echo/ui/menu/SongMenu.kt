@@ -864,7 +864,14 @@ fun SongMenu(
                             onClick = {
                                 refetchIconDegree -= 360
                                 cacheViewModel.removeSongFromCache(song.id)
+                                androidx.media3.exoplayer.offline.DownloadService.sendRemoveDownload(context, iad1tya.echo.music.playback.ExoDownloadService::class.java, song.id, false)
+                                val intent = android.content.Intent(context, iad1tya.echo.music.playback.MusicService::class.java).apply {
+                                    action = "iad1tya.echo.music.ACTION_CLEAR_SONG_CACHE"
+                                    putExtra("songId", song.id)
+                                }
+                                context.startService(intent)
                                 scope.launch(Dispatchers.IO) {
+                                    database.query { deleteFormat(song.id) }
                                     YouTube.queue(listOf(song.id)).onSuccess {
                                         val newSong = it.firstOrNull()
                                         if (newSong != null) {

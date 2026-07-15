@@ -77,7 +77,6 @@
     <string name="text_color">Цвет текста</string>
     <string name="background_color">Цвет фона</string>
     <string name="added_to_play_next">Добавить в очередь</string>
-    <string name="more_options">Больше настроек</string>
     <string name="continuous">Непрерывно</string>
     <string name="share_as_text">Поделиться как текст</string>
     <string name="share_as_image">Поделиться как изображение</string>

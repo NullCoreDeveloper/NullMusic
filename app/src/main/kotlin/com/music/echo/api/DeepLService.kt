@@ -25,8 +25,10 @@ object DeepLService {
         targetLanguage: String,
         apiKey: String,
         formality: String = "default",
-        maxRetries: Int = 3
+        maxRetries: Int = 3,
+        onLog: ((String) -> Unit)? = null
     ): Result<List<String>> = withContext(Dispatchers.IO) {
+        onLog?.invoke("Starting DeepL translation...")
         var currentAttempt = 0
         
         
@@ -75,9 +77,9 @@ object DeepLService {
                     .post(jsonBody.toString().toRequestBody(JSON))
                     .build()
 
+                onLog?.invoke("Calling DeepL API (Attempt ${currentAttempt + 1})...")
                 val response = client.newCall(request).execute()
-                val responseBody = response.body?.string()
-
+                val responseBody = response.body?.string() ?: ""
                 if (!response.isSuccessful) {
                     
                     if (response.code >= 500) {
@@ -108,6 +110,7 @@ object DeepLService {
                     }
                     
                     if (translatedLines.size == lineCount) {
+                        onLog?.invoke("Successfully parsed ${translatedLines.size} lines")
                         return@withContext Result.success(translatedLines)
                     } else if (translatedLines.size > lineCount) {
                         return@withContext Result.success(translatedLines.take(lineCount))

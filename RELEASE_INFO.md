@@ -1,1 +1,24 @@
-NullMusic v5.2.6
+# Echo Music v5.2.6
+
+- Fixed an issue where the app's internal volume could get permanently stuck in a lowered state after restoring playback state.
+- Audio quality switches (e.g. standard to Lossless) now apply immediately rather than persisting an old cached stream format.
+- Moved the "Import from Spotify" option directly into the main Backup & Restore page, and added support for importing public playlists via link without requiring a Spotify login.
+- Removed the unused "Suggestions" section entirely from local playlists.
+- Greatly improved the AI Playlist Generator's accuracy by enforcing strict prompt adherence (e.g. enforcing exact eras, release years, and artists).
+- AI-generated playlists are now automatically marked as local playlists and appear instantly in your library.
+- Fixed an issue where AI Recommendations would spawn duplicate daily playlists; they now properly refresh into a single persistent playlist.
+- Refreshing AI Recommendations now correctly processes the AI model output and displays progress logs properly.
+- Redesigned the AI Lyrics Translation icon to display "Ai" text and moved it into the main Settings Dialog right below the Account option for easier access.
+- Added Puter.com as an AI lyrics translation provider.
+- Renamed "AI Hub" back to "Lyrics Translation" in Settings.
+- Linked the Auto Translate toggle in the lyrics menu to the global settings.
+- Added a new "Recommended by AI" feature in Lyrics Translation settings that automatically builds and updates a tailored playlist based on listening history using a background worker.
+- Displayed the "Recommended by AI" playlist dynamically on the Home Screen.
+- Added the ability to create highly custom AI playlists directly from the Library by supplying a text prompt (e.g. "Upbeat workout pop").
+- Removed Echo Brain and all its associated data collection modules.
+- Switched Lossless audio provider from Qobuz to a new GitHub-based Lossless index.
+- Removed Qobuz audio warnings and donation prompts from the Settings screen.
+- Fixed a build issue with duplicate string resources across multiple translations.
+- Fixed the Refetch button in menus to correctly clear offline caches and database formats, ensuring a fresh audio fetch.
+- Removed the "Charts" section completely from the Search screen.
+- Renamed the "Suggestions" section to "Echo Chart" in the Search screen.

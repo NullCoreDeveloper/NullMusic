@@ -23,7 +23,6 @@ import iad1tya.echo.music.db.entities.AlbumArtistMap
 import iad1tya.echo.music.db.entities.AlbumEntity
 import iad1tya.echo.music.db.entities.ArtistEntity
 import iad1tya.echo.music.db.entities.BeatInfoEntity
-import iad1tya.echo.music.db.entities.BrainActivityLogEntity
 import iad1tya.echo.music.db.entities.Event
 import iad1tya.echo.music.db.entities.FormatEntity
 import iad1tya.echo.music.db.entities.LyricsEntity
@@ -31,7 +30,6 @@ import iad1tya.echo.music.db.entities.PlayCountEntity
 import iad1tya.echo.music.db.entities.PlaylistEntity
 import iad1tya.echo.music.db.entities.PlaylistSongMap
 import iad1tya.echo.music.db.entities.PlaylistSongMapPreview
-import iad1tya.echo.music.db.entities.PlayEventEntity
 import iad1tya.echo.music.db.entities.RecognitionHistory
 import iad1tya.echo.music.db.entities.RelatedSongMap
 import iad1tya.echo.music.db.entities.SearchHistory
@@ -42,8 +40,6 @@ import iad1tya.echo.music.db.entities.SongEntity
 import iad1tya.echo.music.db.entities.SpeedDialItem
 import iad1tya.echo.music.db.entities.SortedSongAlbumMap
 import iad1tya.echo.music.db.entities.SortedSongArtistMap
-import iad1tya.echo.music.db.entities.TasteProfileEntity
-import iad1tya.echo.music.db.daos.EchoBrainDao
 import iad1tya.echo.music.extensions.toSQLiteQuery
 import timber.log.Timber
 import java.time.Instant
@@ -56,9 +52,6 @@ class MusicDatabase(
 ) : DatabaseDao by delegate.dao {
     val speedDialDao: SpeedDialDao
         get() = delegate.speedDialDao
-
-    val echoBrainDao: EchoBrainDao
-        get() = delegate.echoBrainDao
 
     val openHelper: SupportSQLiteOpenHelper
         get() = delegate.openHelper
@@ -112,9 +105,6 @@ class MusicDatabase(
         PlayCountEntity::class,
         RecognitionHistory::class,
         SpeedDialItem::class,
-        BrainActivityLogEntity::class,
-        PlayEventEntity::class,
-        TasteProfileEntity::class,
         BeatInfoEntity::class
     ],
     views = [
@@ -122,7 +112,7 @@ class MusicDatabase(
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 41,
+    version = 42,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -158,13 +148,13 @@ class MusicDatabase(
         AutoMigration(from = 34, to = 35),
         AutoMigration(from = 35, to = 36),
         AutoMigration(from = 36, to = 37, spec = Migration36To37Spec::class),
+        AutoMigration(from = 41, to = 42, spec = Migration41To42::class),
     ],
 )
 @TypeConverters(Converters::class)
 abstract class InternalDatabase : RoomDatabase() {
     abstract val dao: DatabaseDao
     abstract val speedDialDao: SpeedDialDao
-    abstract val echoBrainDao: EchoBrainDao
 
     companion object {
         const val DB_NAME = "song.db"
@@ -187,6 +177,7 @@ abstract class InternalDatabase : RoomDatabase() {
                             MIGRATION_38_39,
                             MIGRATION_39_40,
                             MIGRATION_40_41,
+                            MIGRATION_41_42,
                         )
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                         .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
@@ -914,3 +905,17 @@ val MIGRATION_40_41 =
             db.execSQL("ALTER TABLE beat_info ADD COLUMN mixOutPointMs INTEGER DEFAULT NULL")
         }
     }
+
+
+@DeleteTable.Entries(
+    DeleteTable(tableName = "brain_activity_log"),
+    DeleteTable(tableName = "play_event"),
+    DeleteTable(tableName = "taste_profile"),
+)
+class Migration41To42 : AutoMigrationSpec
+
+val MIGRATION_41_42 = object : Migration(41, 42) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Handled by AutoMigration
+    }
+}

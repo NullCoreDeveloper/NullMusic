@@ -63,7 +63,7 @@ class InnerTube {
     
     var proxyAuth: String? = null
 
-    var ipVersion: IpVersion = IpVersion.AUTO
+    var ipVersion: IpVersion = IpVersion.IPV4
         set(value) {
             field = value
             httpClient.close()

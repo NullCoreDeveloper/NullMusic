@@ -246,7 +246,6 @@ highlightKey: String? = null) {
     )
 
     var showSaavnAudioWarning by remember { mutableStateOf(false) }
-    var showLosslessAudioWarning by remember { mutableStateOf(false) }
 
     if (showAudioQualityDialog) {
         EnumDialog(
@@ -254,8 +253,6 @@ highlightKey: String? = null) {
             onSelect = {
                 if (it == AudioQuality.SAAVN) {
                     showSaavnAudioWarning = true
-                } else if (it == AudioQuality.LOSSLESS) {
-                    showLosslessAudioWarning = true
                 } else {
                     onAudioQualityChange(it)
                 }
@@ -263,12 +260,12 @@ highlightKey: String? = null) {
             },
             title = stringResource(R.string.audio_quality),
             current = audioQuality,
-            values = listOf(AudioQuality.OPUS, AudioQuality.SAAVN),
+            values = listOf(AudioQuality.OPUS, AudioQuality.SAAVN, AudioQuality.LOSSLESS),
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
                     AudioQuality.SAAVN -> "Saavn (320kbps)"
-                    AudioQuality.LOSSLESS -> "Qobuz (Lossless)"
+                    AudioQuality.LOSSLESS -> "Lossless"
                 }
             }
         )
@@ -283,12 +280,12 @@ highlightKey: String? = null) {
             },
             title = stringResource(R.string.download_quality_title),
             current = downloadQuality,
-            values = listOf(iad1tya.echo.music.constants.DownloadQuality.YOUTUBE, iad1tya.echo.music.constants.DownloadQuality.SAAVN),
+            values = listOf(iad1tya.echo.music.constants.DownloadQuality.YOUTUBE, iad1tya.echo.music.constants.DownloadQuality.SAAVN, iad1tya.echo.music.constants.DownloadQuality.LOSSLESS),
             valueText = {
                 when (it) {
                     iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
                     iad1tya.echo.music.constants.DownloadQuality.SAAVN -> "Saavn (320kbps)"
-                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Qobuz (Lossless)"
+                    iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
                 }
             }
         )
@@ -407,7 +404,7 @@ highlightKey: String? = null) {
                             when (audioQuality) {
                                 AudioQuality.OPUS -> "Opus"
                                 AudioQuality.SAAVN -> "Saavn (320kbps)"
-                                AudioQuality.LOSSLESS -> "Qobuz (Lossless)"
+                                AudioQuality.LOSSLESS -> "Lossless"
                             }
                         )
                     },
@@ -445,7 +442,7 @@ highlightKey: String? = null) {
                             when (downloadQuality) {
                                 iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
                                 iad1tya.echo.music.constants.DownloadQuality.SAAVN -> "Saavn (320kbps)"
-                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Qobuz (Lossless)"
+                                iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
                             }
                         )
                     },
@@ -460,7 +457,7 @@ highlightKey: String? = null) {
                     title = { Text(stringResource(R.string.crossfade)) },
                     description = { 
                         if (isLosslessSelected) {
-                            Text("Crossfade is disabled while using Qobuz (Lossless)")
+                            Text("Crossfade is disabled while using Lossless")
                         } else {
                             Text(stringResource(R.string.crossfade_desc)) 
                         }

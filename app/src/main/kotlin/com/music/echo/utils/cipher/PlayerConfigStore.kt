@@ -31,7 +31,7 @@ object PlayerConfigStore {
         String(Base64.decode(encoded, Base64.DEFAULT), StandardCharsets.UTF_8)
     }
 
-    private const val REFRESH_TTL_MS = 24 * 60 * 60 * 1000L
+    private const val REFRESH_TTL_MS = 6 * 60 * 60 * 1000L
     private const val FORCE_REFRESH_COOLDOWN_MS = 5 * 60 * 1000L
 
     private const val CACHE_FILE = "configs_remote.json"

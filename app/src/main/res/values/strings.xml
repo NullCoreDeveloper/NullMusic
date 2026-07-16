@@ -178,6 +178,9 @@
     <string name="create_playlist">Create playlist</string>
     <string name="playlist_name">Playlist name</string>
     <string name="error_playlist_name_empty">Playlist name cannot be empty.</string>
+    <string name="modify_with_ai">Modify with AI</string>
+    <string name="modify_with_ai_desc">Modify playlist using AI instructions</string>
+    <string name="ai_modify_prompt_hint">e.g., Remove sad songs, add some 90s hits</string>
 
     <string name="edit_artist">Edit artist</string>
     <string name="artist_name">Artist name</string>
@@ -289,7 +292,9 @@
     <string name="apple_music">Apple Music</string>
     <string name="squiggly">Squiggly</string>
     <string name="misc">Misc</string>
-    
+    <string name="enable_haptics">Enable haptics</string>
+    <string name="enable_haptics_desc">Provide haptic feedback while scrolling, clicking, and interacting with the app</string>
+
     <string name="activity_history">Listening Summary</string>
     <string name="total_listening_time">Total Listening Time</string>
     <string name="unique_songs">Unique Songs</string>

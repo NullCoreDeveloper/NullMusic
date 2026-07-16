@@ -23,6 +23,7 @@ val SpotifyAccessTokenExpiresAtKey = longPreferencesKey("spotify_access_token_ex
 val EnableDynamicIconKey = booleanPreferencesKey("enableDynamicIcon")
 val EnableLegacyIconKey = booleanPreferencesKey("enableLegacyIcon")
 val EnableHighRefreshRateKey = booleanPreferencesKey("enableHighRefreshRate")
+val EnableHapticsKey = booleanPreferencesKey("enableHaptics")
 val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")
 val SelectedThemeColorKey = intPreferencesKey("selectedThemeColor")
 val DarkModeKey = stringPreferencesKey("darkMode")
@@ -106,7 +107,6 @@ const val LOSSLESS_ENABLED = true
 
 enum class AudioQuality {
     OPUS,
-    SAAVN,
     LOSSLESS,
 }
 
@@ -114,7 +114,6 @@ val DownloadQualityKey = stringPreferencesKey("downloadQuality")
 
 enum class DownloadQuality {
     YOUTUBE,
-    SAAVN,
     LOSSLESS,
 }
 

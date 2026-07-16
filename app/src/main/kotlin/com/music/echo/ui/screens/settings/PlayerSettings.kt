@@ -232,27 +232,22 @@ highlightKey: String? = null) {
         defaultValue = 1f
     )
 
-    var showAudioQualityDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var showDownloadQualityDialog by remember {
-        mutableStateOf(false)
-    }
+    var showAudioQualityDialog by remember { mutableStateOf(false) }
+    var showDownloadQualityDialog by remember { mutableStateOf(false) }
+    var showLosslessAudioWarning by remember { mutableStateOf(false) }
+    var showLosslessDownloadWarning by remember { mutableStateOf(false) }
 
     val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
         iad1tya.echo.music.constants.DownloadQualityKey,
         defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
     )
 
-    var showSaavnAudioWarning by remember { mutableStateOf(false) }
-
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
             onSelect = {
-                if (it == AudioQuality.SAAVN) {
-                    showSaavnAudioWarning = true
+                if (it == AudioQuality.LOSSLESS) {
+                    showLosslessAudioWarning = true
                 } else {
                     onAudioQualityChange(it)
                 }
@@ -260,13 +255,15 @@ highlightKey: String? = null) {
             },
             title = stringResource(R.string.audio_quality),
             current = audioQuality,
-            values = listOf(AudioQuality.OPUS, AudioQuality.SAAVN, AudioQuality.LOSSLESS),
+            values = listOf(AudioQuality.OPUS, AudioQuality.LOSSLESS),
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
-                    AudioQuality.SAAVN -> "Saavn (320kbps)"
                     AudioQuality.LOSSLESS -> "Lossless"
                 }
+            },
+            valueDescription = {
+                ""
             }
         )
     }
@@ -275,16 +272,19 @@ highlightKey: String? = null) {
         EnumDialog(
             onDismiss = { showDownloadQualityDialog = false },
             onSelect = {
-                onDownloadQualityChange(it)
+                if (it == iad1tya.echo.music.constants.DownloadQuality.LOSSLESS) {
+                    showLosslessDownloadWarning = true
+                } else {
+                    onDownloadQualityChange(it)
+                }
                 showDownloadQualityDialog = false
             },
             title = stringResource(R.string.download_quality_title),
             current = downloadQuality,
-            values = listOf(iad1tya.echo.music.constants.DownloadQuality.YOUTUBE, iad1tya.echo.music.constants.DownloadQuality.SAAVN, iad1tya.echo.music.constants.DownloadQuality.LOSSLESS),
+            values = listOf(iad1tya.echo.music.constants.DownloadQuality.YOUTUBE, iad1tya.echo.music.constants.DownloadQuality.LOSSLESS),
             valueText = {
                 when (it) {
                     iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
-                    iad1tya.echo.music.constants.DownloadQuality.SAAVN -> "Saavn (320kbps)"
                     iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
                 }
             }
@@ -323,10 +323,11 @@ highlightKey: String? = null) {
             }
         }
 
-        if (showSaavnAudioWarning) {
+
+        if (showLosslessAudioWarning) {
             DefaultDialog(
-                onDismiss = { showSaavnAudioWarning = false },
-                title = { Text("Enable Saavn (320kbps)?") },
+                onDismiss = { showLosslessAudioWarning = false },
+                title = { Text("Enable Lossless Audio?") },
                 buttons = {
                     TextButton(onClick = {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nullmusic.fun/donate"))
@@ -334,12 +335,12 @@ highlightKey: String? = null) {
                     }) {
                         Text("Donate")
                     }
-                    TextButton(onClick = { showSaavnAudioWarning = false }) {
+                    TextButton(onClick = { showLosslessAudioWarning = false }) {
                         Text(stringResource(R.string.cancel))
                     }
                     TextButton(onClick = {
-                        showSaavnAudioWarning = false
-                        onAudioQualityChange(AudioQuality.SAAVN)
+                        showLosslessAudioWarning = false
+                        onAudioQualityChange(AudioQuality.LOSSLESS)
                     }) {
                         Text(stringResource(R.string.enable))
                     }
@@ -403,7 +404,6 @@ highlightKey: String? = null) {
                         Text(
                             when (audioQuality) {
                                 AudioQuality.OPUS -> "Opus"
-                                AudioQuality.SAAVN -> "Saavn (320kbps)"
                                 AudioQuality.LOSSLESS -> "Lossless"
                             }
                         )
@@ -441,7 +441,6 @@ highlightKey: String? = null) {
                         Text(
                             when (downloadQuality) {
                                 iad1tya.echo.music.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
-                                iad1tya.echo.music.constants.DownloadQuality.SAAVN -> "Saavn (320kbps)"
                                 iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> "Lossless"
                             }
                         )

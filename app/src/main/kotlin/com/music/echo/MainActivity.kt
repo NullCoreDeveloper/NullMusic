@@ -115,6 +115,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.platform.LocalView
+import android.view.HapticFeedbackConstants
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -332,6 +338,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var isPlaying = false
+
+    override fun startForegroundService(service: Intent): android.content.ComponentName? {
+        return try {
+            super.startForegroundService(service)
+        } catch (e: Exception) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is android.app.ForegroundServiceStartNotAllowedException) {
+                Timber.e(e, "Suppressed ForegroundServiceStartNotAllowedException in MainActivity")
+                null
+            } else {
+                throw e
+            }
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -534,6 +555,26 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
+                    .pointerInput(enableHaptics) {
+                        if (enableHaptics) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial)
+                                    val isClick = event.changes.any { it.changedToDown() }
+                                    val isScroll = event.changes.any { it.positionChange() != Offset.Zero && it.pressed }
+                                    if (isClick) {
+                                        view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                                    } else if (isScroll) {
+                                        val currentTime = System.currentTimeMillis()
+                                        if (currentTime - lastScrollHapticTime > 100) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                            lastScrollHapticTime = currentTime
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
             ) {
                 val focusManager = LocalFocusManager.current
                 val density = LocalDensity.current
@@ -637,7 +678,7 @@ class MainActivity : ComponentActivity() {
 
                 val playerBottomSheetState = rememberBottomSheetState(
                     dismissedBound = 0.dp,
-                    collapsedBound = if (useFloatingNavBar && !showRail) {
+                    collapsedBound = if (useFloatingNavBar && !showRail && shouldShowNavigationBar) {
                         0.dp
                     } else {
                         bottomInset +

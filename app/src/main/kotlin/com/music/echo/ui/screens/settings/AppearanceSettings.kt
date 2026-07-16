@@ -67,6 +67,7 @@ import iad1tya.echo.music.constants.DensityScaleKey
 import iad1tya.echo.music.constants.DynamicThemeKey
 import iad1tya.echo.music.constants.EnableDynamicIconKey
 import iad1tya.echo.music.constants.EnableHighRefreshRateKey
+import iad1tya.echo.music.constants.EnableHapticsKey
 import iad1tya.echo.music.constants.EnableLyricsThumbnailPlayPauseKey
 import iad1tya.echo.music.constants.GridItemSize
 import iad1tya.echo.music.constants.GridItemsSizeKey
@@ -148,6 +149,10 @@ highlightKey: String? = null) {
     )
     val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableHighRefreshRateKey,
+        defaultValue = true
+    )
+    val (enableHaptics, onEnableHapticsChange) = rememberPreference(
+        iad1tya.echo.music.constants.EnableHapticsKey,
         defaultValue = true
     )
     val (selectedThemeColorInt) = rememberPreference(
@@ -1799,6 +1804,28 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onSwipeToSongChange(!swipeToSong) }
+                ),
+                Material3SettingsItem(
+    isHighlighted = (highlightKey == stringResource(R.string.enable_haptics)),
+                    icon = painterResource(R.drawable.vibration),
+                    title = { Text(stringResource(R.string.enable_haptics)) },
+                    description = { Text(stringResource(R.string.enable_haptics_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = enableHaptics,
+                            onCheckedChange = onEnableHapticsChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (enableHaptics) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onEnableHapticsChange(!enableHaptics) }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.swipe_song_to_remove)),

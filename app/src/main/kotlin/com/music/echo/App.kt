@@ -71,11 +71,8 @@ class App : Application(), SingletonImageLoader.Factory {
         }
     }
 
-    override fun onCreate() {
+    override fun onCreate() 
         super.onCreate()
-        try {
-        } catch (e: Exception) {
-        }
 
         // Removed destructive database deletion to preserve user data
 

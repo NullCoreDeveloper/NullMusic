@@ -101,7 +101,7 @@ object LosslessAPI {
     suspend fun getDonationGoal(): DonationGoal = withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder()
-                .url("https://lossless.echomusic.fun/goal.json")
+                .url("https://lossless.nullmusic.fun/goal.json")
                 .get()
                 .build()
 

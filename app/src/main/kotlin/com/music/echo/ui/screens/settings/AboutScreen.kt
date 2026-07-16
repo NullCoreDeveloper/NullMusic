@@ -189,22 +189,22 @@ highlightKey: String? = null) {
                     AboutActionRow(
                         icon = painterResource(R.drawable.website),
                         title = "Echo Canvas",
-                        subtitle = "canvas.echomusic.fun",
-                        onClick = { uriHandler.openUri("https://canvas.echomusic.fun/") },
+                        subtitle = "canvas.nullmusic.fun",
+                        onClick = { uriHandler.openUri("https://canvas.nullmusic.fun/") },
                     )
                     AboutDivider()
                     AboutActionRow(
                         icon = painterResource(R.drawable.website),
                         title = "Echo Lossless",
-                        subtitle = "lossless.echomusic.fun",
-                        onClick = { uriHandler.openUri("https://lossless.echomusic.fun/") },
+                        subtitle = "lossless.nullmusic.fun",
+                        onClick = { uriHandler.openUri("https://lossless.nullmusic.fun/") },
                     )
                     AboutDivider()
                     AboutActionRow(
                         icon = painterResource(R.drawable.website),
                         title = "Echo Charts",
-                        subtitle = "charts.echomusic.fun",
-                        onClick = { uriHandler.openUri("https://charts.echomusic.fun/") },
+                        subtitle = "charts.nullmusic.fun",
+                        onClick = { uriHandler.openUri("https://charts.nullmusic.fun/") },
                     )
                 }
             }

@@ -1,4 +1,4 @@
-Echo Music v5.2.6
+NullMusic v5.2.6
 
 - Added AI-powered lyrics translation via Puter.com, with a redesigned "Ai" icon now placed under Account in Settings for quicker access.
 - Added a "Recommended by AI" playlist that builds and updates automatically from listening history, shown on the Home Screen with a last-updated timestamp.

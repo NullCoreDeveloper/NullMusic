@@ -351,7 +351,7 @@
     <string name="backup_create_failed">Níorbh fhéidir cúltaca a chruthú</string>
     <string name="restore_failed">Theip ar athchóiriú an chúltaca</string>
     <string name="discord_integration">Comhtháthú Discord</string>
-    <string name="discord_information">Úsáideann echomusic leabharlann KizzyRPC chun stádas do chuntais Discord a shocrú. Baineann sé seo úsáid as nasc Discord Gateway, rud a d’fhéadfaí a mheas gur sárú ar Théarmaí Seirbhíse Discord é. Mar sin féin, níl aon chás aitheanta ann inar cuireadh cuntas úsáideora ar fionraí ar an gcúis seo. Úsáid ar do phriacal féin.\nNí bhainfidh chomusic ach do chomhartha amach, agus stórálfar gach rud eile go háitiúil.</string>
+    <string name="discord_information">Úsáideann nullmusic leabharlann KizzyRPC chun stádas do chuntais Discord a shocrú. Baineann sé seo úsáid as nasc Discord Gateway, rud a d’fhéadfaí a mheas gur sárú ar Théarmaí Seirbhíse Discord é. Mar sin féin, níl aon chás aitheanta ann inar cuireadh cuntas úsáideora ar fionraí ar an gcúis seo. Úsáid ar do phriacal féin.\nNí bhainfidh chomusic ach do chomhartha amach, agus stórálfar gach rud eile go háitiúil.</string>
     <string name="dismiss">Dífhostaigh</string>
     <string name="options">Roghanna</string>
     <string name="preview">Réamhamharc</string>
@@ -377,7 +377,7 @@
     <string name="listen_together_smart_resync">Athshioncrónú cliste líonra</string>
     <string name="listen_together_smart_resync_desc">Déan suas go huathoibríoch leis an óstach tar éis titim naisc</string>
     <string name="spotify_import_title">Iompórtáil ó Spotify</string>
-    <string name="spotify_import_desc">Ceangail Spotify, roghnaigh seinnliostaí agus cóipeáil iad chuig seinnliostaí áitiúla Echo Music.</string>
+    <string name="spotify_import_desc">Ceangail Spotify, roghnaigh seinnliostaí agus cóipeáil iad chuig seinnliostaí áitiúla NullMusic.</string>
     <string name="spotify_connect">Ceangail Spotify</string>
     <string name="spotify_refresh">Athnuaigh leabharlann Spotify</string>
     <string name="spotify_select_sources">Roghnaigh seinnliostaí Spotify</string>
@@ -421,7 +421,7 @@
     <string name="recognition_notification_processing">Á aithint…</string>
     <string name="recognition_notification_no_match">Níor aimsíodh aon mheaitseáil</string>
     <string name="recognition_notification_failed">Theip ar an aithint</string>
-    <string name="listen_on_echo_music">Éist ar Echo Music</string>
+    <string name="listen_on_echo_music">Éist ar NullMusic</string>
     <string name="qs_tile_music_recognizer">Aithin ceol</string>
     <string name="echo_brain_beta">Echo Brain (Béite)</string>
     <string name="echo_brain_enable">Cumasaigh Echo Brain</string>

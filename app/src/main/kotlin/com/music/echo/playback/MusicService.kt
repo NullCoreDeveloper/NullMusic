@@ -153,7 +153,7 @@ import iad1tya.echo.music.extensions.toEnum
 import iad1tya.echo.music.extensions.toMediaItem
 import iad1tya.echo.music.extensions.toPersistQueue
 import iad1tya.echo.music.extensions.toQueue
-import iad1tya.echo.music.echomusic.updater.downloadmanager.EchoNotificationProvider
+import iad1tya.echo.music.nullmusic.updater.downloadmanager.EchoNotificationProvider
 import iad1tya.echo.music.lyrics.LyricsHelper
 import iad1tya.echo.music.models.PersistPlayerState
 import iad1tya.echo.music.models.PersistQueue

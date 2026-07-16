@@ -170,7 +170,7 @@ fun SettingDialoge(
                                         )
                                     },
                                     onClick = {
-                                        uriHandler.openUri("https://lossless.echomusic.fun")
+                                        uriHandler.openUri("https://lossless.nullmusic.fun")
                                         onDismissRequest()
                                     }
                                 )

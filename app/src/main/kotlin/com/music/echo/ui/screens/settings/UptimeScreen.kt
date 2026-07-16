@@ -53,7 +53,7 @@ highlightKey: String? = null) {
     val musicServices = remember {
         mutableStateListOf(
             ServiceStatus("YouTube Music", { "https://music.youtube.com" }),
-            ServiceStatus("Lossless", { "https://lossless.echomusic.fun" })
+            ServiceStatus("Lossless", { "https://lossless.nullmusic.fun" })
         )
     }
 

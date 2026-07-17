@@ -506,4 +506,12 @@
     <string name="color_white">Blanc</string>
     <string name="color_light_gray">Gris clair</string>
     <string name="color_black">Noir</string>
+    <string name="enable_haptics">Activer les vibrations</string>
+    <string name="enable_haptics_desc">Fournir un retour haptique lors du défilement, des clics et des interactions avec l\'application</string>
+    <string name="ai_auto_translate">Traduction automatique</string>
+    <string name="ai_auto_translate_desc">Traduire automatiquement les paroles lorsqu\'elles sont disponibles</string>
+    <string name="lyrics_translation_menu">Traduction des paroles</string>
+    <string name="ai_recommendations">Recommandations basées sur l\'IA</string>
+    <string name="ai_recommendations_desc">Mise à jour quotidienne d\'une playlist personnalisée en fonction de vos goûts</string>
+    <string name="ai_recommendations_refresh">Actualiser les recommandations</string>
 </resources>

@@ -193,13 +193,16 @@ object DiscordPresenceManager {
         if (!started.getAndSet(true)) {
             consecutiveFailures = 0
             scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-            lifecycleObserver =
+            val observer =
                 LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_DESTROY) {
                         stop()
                     }
                 }
-            ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver!!)
+            lifecycleObserver = observer
+            CoroutineScope(Dispatchers.Main).launch {
+                ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
+            }
         }
 
         requestProviderUpdate()
@@ -242,7 +245,9 @@ object DiscordPresenceManager {
         scope = null
 
         lifecycleObserver?.let { observer ->
-            ProcessLifecycleOwner.get().lifecycle.removeObserver(observer)
+            CoroutineScope(Dispatchers.Main).launch {
+                ProcessLifecycleOwner.get().lifecycle.removeObserver(observer)
+            }
         }
         lifecycleObserver = null
 

@@ -105,17 +105,23 @@ constructor(
                 }
             }
 
-            var failures = 0
-            while (failures < providers.size) {
+            var responses = 0
+            val receivedUnsynced = mutableListOf<LyricsWithProvider>()
+
+            while (responses < providers.size) {
                 val result = channel.receive()
+                responses++
                 if (result != null) {
-                    coroutineContext.cancelChildren()
-                    return@coroutineScope result
-                } else {
-                    failures++
+                    val isSynced = result.lyrics.trimStart().startsWith("[")
+                    if (isSynced) {
+                        coroutineContext.cancelChildren()
+                        return@coroutineScope result
+                    } else {
+                        receivedUnsynced.add(result)
+                    }
                 }
             }
-            return@coroutineScope LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
+            return@coroutineScope receivedUnsynced.firstOrNull() ?: LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
         }
     }
 

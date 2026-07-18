@@ -312,7 +312,6 @@ dependencies {
     implementation(project(":applecanvas"))
     implementation(project(":nullmusiccanvas"))
     implementation(project(":paxsenixlyrics"))
-    implementation(project(":jiosaavn"))
     implementation(project(":unison"))
 
 

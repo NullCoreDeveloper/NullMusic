@@ -28,7 +28,6 @@ include(
     ":youlyplus",
     ":shazamkit",
     ":artistvideo",
-    ":jiosaavn",
     ":canvas",
     ":nullmusiccanvas",
     ":applecanvas",
@@ -51,4 +50,3 @@ include(
 //        substitute(module("com.github.teamnewpipe:NewPipeExtractor")).using(project(":extractor"))
 //    }
 //}
-include(":jiosaavn")

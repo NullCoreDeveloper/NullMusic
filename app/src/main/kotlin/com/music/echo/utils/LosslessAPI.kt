@@ -62,6 +62,11 @@ object LosslessAPI {
         return@withContext cachedIndex ?: emptyList()
     }
 
+    suspend fun getRecentTracks(limit: Int = 10): List<LosslessTrack> {
+        val list = fetchMusicList()
+        return list.take(limit)
+    }
+
     suspend fun search(queryTitle: String, queryArtist: String): LosslessTrack? {
         val list = fetchMusicList()
         val titleTarget = queryTitle.trim().lowercase()

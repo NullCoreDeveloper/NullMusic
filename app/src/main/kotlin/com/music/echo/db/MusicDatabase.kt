@@ -112,7 +112,7 @@ class MusicDatabase(
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 42,
+    version = 43,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -178,6 +178,7 @@ abstract class InternalDatabase : RoomDatabase() {
                             MIGRATION_39_40,
                             MIGRATION_40_41,
                             MIGRATION_41_42,
+                            MIGRATION_42_43,
                         )
                         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
                         .setTransactionExecutor(java.util.concurrent.Executors.newFixedThreadPool(4))
@@ -953,5 +954,14 @@ class Migration41To42 : AutoMigrationSpec
 val MIGRATION_41_42 = object : Migration(41, 42) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Handled by AutoMigration
+    }
+}
+
+val MIGRATION_42_43 = object : Migration(42, 43) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS `_new_playlist` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `browseId` TEXT, `createdAt` INTEGER, `lastUpdateTime` INTEGER, `isEditable` INTEGER NOT NULL DEFAULT true, `bookmarkedAt` INTEGER, `remoteSongCount` INTEGER, `playEndpointParams` TEXT, `thumbnailUrl` TEXT, `shuffleEndpointParams` TEXT, `radioEndpointParams` TEXT, `isLocal` INTEGER NOT NULL DEFAULT false, `isAutoSync` INTEGER NOT NULL DEFAULT false, `isPinned` INTEGER NOT NULL DEFAULT false, PRIMARY KEY(`id`))")
+        db.execSQL("INSERT INTO `_new_playlist` (`id`,`name`,`browseId`,`createdAt`,`lastUpdateTime`,`isEditable`,`bookmarkedAt`,`remoteSongCount`,`playEndpointParams`,`thumbnailUrl`,`shuffleEndpointParams`,`radioEndpointParams`,`isLocal`,`isAutoSync`,`isPinned`) SELECT `id`,`name`,`browseId`,`createdAt`,`lastUpdateTime`,`isEditable`,`bookmarkedAt`,`remoteSongCount`,`playEndpointParams`,`thumbnailUrl`,`shuffleEndpointParams`,`radioEndpointParams`,`isLocal`,`isAutoSync`,`isPinned` FROM `playlist`")
+        db.execSQL("DROP TABLE `playlist`")
+        db.execSQL("ALTER TABLE `_new_playlist` RENAME TO `playlist`")
     }
 }

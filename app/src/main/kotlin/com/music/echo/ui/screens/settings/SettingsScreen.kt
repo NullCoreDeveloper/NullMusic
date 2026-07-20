@@ -163,6 +163,25 @@ highlightKey: String? = null) {
                 )
             }
 
+            val contributeLosslessText = stringResource(R.string.contribute_to_lossless)
+            if (contributeLosslessText.lowercase().contains(searchLower)) {
+                add(
+                    Material3SettingsItem(
+                        isHighlighted = (highlightKey == contributeLosslessText),
+                        customIcon = {
+                            Text(
+                                text = "HQ",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        title = { Text(contributeLosslessText) },
+                        onClick = { navController.navigate("settings/lossless") }
+                    )
+                )
+            }
+
             if (appearanceText.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(

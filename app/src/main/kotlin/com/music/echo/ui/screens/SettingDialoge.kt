@@ -160,10 +160,10 @@ fun SettingDialoge(
                         if (audioQuality == AudioQuality.LOSSLESS) {
                             add(
                                 Material3SettingsItem(
-                                    title = { Text("Contribute in Lossless") },
+                                    title = { Text("Donate for lossless music") },
                                     customIcon = {
                                         Text(
-                                            text = "HQ",
+                                            text = "$",
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant

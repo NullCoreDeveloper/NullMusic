@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
@@ -301,13 +302,20 @@ fun ArtistScreen(
                         }
                     }
 
-                    Box {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
                         
+                        val configuration = LocalConfiguration.current
+                        val isTablet = configuration.screenWidthDp > 600
+                        val artHeightDp = if (isTablet) 400.dp else configuration.screenWidthDp.dp
+                        val artHeightPx = with(density) { artHeightDp.toPx() }
+
                         if (thumbnail != null || backgroundVideoUrl != null) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
+                                    .matchParentSize()
                                     .offset {
                                         IntOffset(x = 0, y = headerOffset)
                                     }
@@ -347,10 +355,8 @@ fun ArtistScreen(
                                     top = if (thumbnail != null) {
                                         
                                         
-                                        LocalResources.current.displayMetrics.widthPixels.let { screenWidth ->
-                                            with(density) {
-                                                ((screenWidth / 1.2f) - 144).toDp()
-                                            }
+                                        with(density) {
+                                            ((artHeightPx / 1.2f) - 144).toDp()
                                         }
                                     } else {
                                         16.dp

@@ -74,6 +74,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -248,14 +249,19 @@ fun AlbumScreen(
                     -(systemBarsTopPadding + AppBarHeight).roundToPx()
                 }
 
+                val configuration = LocalConfiguration.current
+                val isTablet = configuration.screenWidthDp > 600
+                val artSizeDp = if (isTablet) 300.dp else configuration.screenWidthDp.dp
+                val artSizePx = with(density) { artSizeDp.toPx() }
+
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopCenter
                 ) {
                     
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
+                            .matchParentSize()
                             .offset {
                                 IntOffset(x = 0, y = headerOffset)
                             }
@@ -301,10 +307,8 @@ fun AlbumScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                top = LocalContext.current.resources.displayMetrics.widthPixels.let { screenWidth ->
-                                    with(density) {
-                                        ((screenWidth / 1.2f) - 144).toDp()
-                                    }
+                                top = with(density) {
+                                    ((artSizePx / 1.2f) - 144).toDp()
                                 }
                             )
                             .padding(bottom = 24.dp),

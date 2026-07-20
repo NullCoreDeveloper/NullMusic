@@ -69,7 +69,7 @@ class LosslessContributeViewModel @Inject constructor(
     companion object {
         val GITHUB_CLIENT_ID = iad1tya.echo.music.BuildConfig.GH_CLIENT_ID
         val GITHUB_CLIENT_SECRET = iad1tya.echo.music.BuildConfig.GH_CLIENT_SECRET
-        const val REDIRECT_URI = "echomusic://oauth2callback"
+        const val REDIRECT_URI = "nullmusic://oauth2callback"
         
         const val TARGET_OWNER = "EchoMusicApp"
         const val TARGET_REPO = "Lossless"
@@ -288,7 +288,7 @@ class LosslessContributeViewModel @Inject constructor(
 
                 // 5. Update music.json
                 _uiState.value = LosslessContributeState.Uploading("Updating server database...")
-                val trackUrl = "https://lossless.echomusic.fun/$targetPath"
+                val trackUrl = "https://lossless.nullmusic.fun/$targetPath"
                 updateMusicJson(forkOwner, forkName, branchName, songTitle, artistName, trackUrl)
 
                 // 6. Create PR
@@ -449,7 +449,7 @@ class LosslessContributeViewModel @Inject constructor(
 
     private suspend fun createPullRequest(forkOwner: String, forkName: String, branchName: String, songTitle: String, artistName: String, targetPath: String): String {
         val prTitle = "feat: add lossless track for $songTitle — $artistName"
-        val prBody = "This Pull Request was submitted automatically via the Echo Music native app.\n\n### \uD83C\uDFB5 Submission Metadata\n* **Category:** Music\n* **Track URL / Path:** `$targetPath`\n\n### \uD83C\uDFB6 Song Entries\n| Song Title | Artist |\n|---|---|\n| $songTitle | $artistName |"
+        val prBody = "This Pull Request was submitted automatically via the NullMusic native app.\n\n### \uD83C\uDFB5 Submission Metadata\n* **Category:** Music\n* **Track URL / Path:** `$targetPath`\n\n### \uD83C\uDFB6 Song Entries\n| Song Title | Artist |\n|---|---|\n| $songTitle | $artistName |"
         
         val prJson = buildJsonObject {
             put("title", prTitle)

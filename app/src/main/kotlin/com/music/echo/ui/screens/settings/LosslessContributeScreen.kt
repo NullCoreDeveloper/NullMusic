@@ -206,7 +206,7 @@ fun LosslessContributeScreen(
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Help us build the ultimate high-fidelity audio library! Connect your account to upload and verify 16-bit or 24-bit FLAC files directly to the Echo Music ecosystem. Ensure files are properly tagged and follow our quality guidelines.",
+                            text = "Help us build the ultimate high-fidelity audio library! Connect your account to upload and verify 16-bit or 24-bit FLAC files directly to the NullMusic ecosystem. Ensure files are properly tagged and follow our quality guidelines.",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center

@@ -702,7 +702,7 @@
     <string name="ai_lyrics_translation">AI Hub</string>
     <string name="contribute_to_lossless">Contribute to Lossless Music</string>
     <string name="lossless_music_hub">Lossless Music Hub</string>
-    <string name="lossless_desc">Add high-fidelity lossless .flac audio to the Echo Music ecosystem. Max file size: 99MB.</string>
+    <string name="lossless_desc">Add high-fidelity lossless .flac audio to the NullMusic ecosystem. Max file size: 99MB.</string>
     <string name="login_with_github">Log in with GitHub</string>
     <string name="lossless_audio_file">Lossless Audio File</string>
     <string name="choose_file">Choose .flac file (Max 99MB)</string>

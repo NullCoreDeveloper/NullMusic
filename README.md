@@ -100,6 +100,9 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 ## Features
 
 ### What's New
+- **Lossless Music Hub** — Stream and contribute 16-bit/24-bit FLAC files directly to the Echo Music ecosystem.
+- **Data Saver Mode (Beta)** — Automatically reduces data usage during playback for limited connections.
+- **Settings Search Index** — Quickly find and navigate to any settings option instantly.
 - **Redesigned UI** — Cleaner, faster, and more intuitive interface from the ground up.
 - **Import from Spotify** — Bring your playlists and tracks over with ease.
 - **Listen Together** — Sync music in real time, similar to Spotify Jam.
@@ -109,6 +112,8 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 
 ### Streaming & Playback
 - **Ad-Free** — Stream without any interruptions.
+- **Lossless Audio** — Support for 16-bit and 24-bit high fidelity FLAC audio.
+- **Data Saver Mode** — Reduce data consumption when streaming on cellular networks.
 - **Seamless Playback** — Switch effortlessly between audio-only and video modes.
 - **Background Playback** — Listen while using other apps or with the screen off.
 - **Offline Mode** — Download tracks, albums, and playlists via a dedicated download manager.

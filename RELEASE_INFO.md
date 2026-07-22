@@ -1,5 +1,8 @@
 # Echo Music v5.2.8
 
+- Added Data Saver Mode (Beta) to player and audio settings.
+- Added a unified Settings Search Index to easily find configuration options.
+- Improved the Lossless Music Hub UI by dynamically showing total lossless tracks and adjusting icon aesthetics.
 - Added Apple Music inspired Lossless and Download quality options to the player bottom sheet.
 - Disabled haptics by default for a smoother out-of-the-box experience.
 - Enabled "swipe to add song" by default.

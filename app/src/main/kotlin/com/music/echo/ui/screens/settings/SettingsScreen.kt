@@ -174,7 +174,10 @@ highlightKey: String? = null) {
                                 painter = painterResource(R.drawable.ic_apple_lossless),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = if (highlightKey == contributeLosslessText)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                             )
                         },
                         title = { Text(contributeLosslessText) },

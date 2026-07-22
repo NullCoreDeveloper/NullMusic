@@ -148,7 +148,7 @@ fun SettingDialoge(
                                         text = "Ai",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                                     )
                                 },
                                 onClick = {
@@ -166,7 +166,7 @@ fun SettingDialoge(
                                             text = "$",
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                                         )
                                     },
                                     onClick = {

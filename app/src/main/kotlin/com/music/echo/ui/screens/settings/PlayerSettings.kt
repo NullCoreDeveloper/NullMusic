@@ -351,7 +351,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("Lossless is uncompressed music which is higher in size and requires significant server load. Continuous maintenance requires funding. We have a monthly goal of $100 to keep this active.\n\nPlease consider donating!")
+                Text("Lossless is uncompressed music which is higher in size and requires significant server load. Continuous maintenance requires funding. We have a monthly goal of $200 to keep this active.\n\nPlease consider donating!")
             }
         }
 
@@ -378,7 +378,7 @@ highlightKey: String? = null) {
                     }
                 }
             ) {
-                Text("Lossless downloads require significant server load and bandwidth. Continuous maintenance requires funding. We have a monthly goal of $100 to keep this active.\n\nPlease consider donating!")
+                Text("Lossless downloads require significant server load and bandwidth. Continuous maintenance requires funding. We have a monthly goal of $200 to keep this active.\n\nPlease consider donating!")
             }
         }
 

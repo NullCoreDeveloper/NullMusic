@@ -633,10 +633,9 @@ object YouTube {
         ).body<BrowseResponse>()
 
         val mainContents: List<MusicShelfRenderer.Content> = response.continuationContents?.sectionListContinuation?.contents
-            ?.mapNotNull { content: SectionListRenderer.Content -> 
+            ?.firstOrNull()?.let { content ->
                 content.musicPlaylistShelfRenderer?.contents ?: content.musicShelfRenderer?.contents 
             }
-            ?.flatten()
             ?: emptyList()
 
         val shelfContents: List<MusicShelfRenderer.Content> =

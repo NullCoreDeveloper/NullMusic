@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Alignment
 
@@ -169,11 +170,11 @@ highlightKey: String? = null) {
                     Material3SettingsItem(
                         isHighlighted = (highlightKey == contributeLosslessText),
                         customIcon = {
-                            Text(
-                                text = "HQ",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            Icon(
+                                painter = painterResource(R.drawable.ic_apple_lossless),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         title = { Text(contributeLosslessText) },

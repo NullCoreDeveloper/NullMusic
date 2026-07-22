@@ -7,3 +7,4 @@
 - Secured GitHub OAuth credentials using Android build configuration fields.
 - Fixed an issue where the cover art on album, artist, and playlist screens was too large on tablets.
 - Fixed a bug where random recommended songs were incorrectly added to user playlists during YouTube Music sync.
+- Updated the Contribute to Lossless icon to use the Apple Lossless logo.

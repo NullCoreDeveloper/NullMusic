@@ -198,7 +198,7 @@ fun LosslessContributeScreen(
                     ) {
 
                         Icon(
-                            painter = painterResource(R.drawable.cloud),
+                            painter = painterResource(R.drawable.ic_apple_lossless),
                             contentDescription = null,
                             modifier = Modifier.size(72.dp),
                             tint = MaterialTheme.colorScheme.primary

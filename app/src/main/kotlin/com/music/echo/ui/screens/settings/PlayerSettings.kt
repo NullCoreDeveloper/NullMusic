@@ -158,6 +158,11 @@ highlightKey: String? = null) {
         defaultValue = true
     )
 
+    val (dataSaverEnabled, onDataSaverEnabledChange) = rememberPreference(
+        key = iad1tya.echo.music.constants.DataSaverEnabledKey,
+        defaultValue = false
+    )
+
     val (enableExportAsMp3, onEnableExportAsMp3Change) = rememberPreference(
         key = EnableExportAsMp3Key,
         defaultValue = false
@@ -391,6 +396,35 @@ highlightKey: String? = null) {
         )
 
         iad1tya.echo.music.ui.component.FundingProgressCard()
+
+        Material3SettingsGroup(
+            scrollState = scrollState,
+            title = "Data Saver",
+            items = buildList {
+                add(Material3SettingsItem(
+                    isHighlighted = (highlightKey == "Data Saver Mode (Beta)"),
+                    icon = painterResource(R.drawable.offline),
+                    title = { Text("Data Saver Mode (Beta)") },
+                    description = { Text("Disable lyrics, videos, preloading, background syncs, and force Opus audio to save data.") },
+                    trailingContent = {
+                        Switch(
+                            checked = dataSaverEnabled,
+                            onCheckedChange = onDataSaverEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (dataSaverEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onDataSaverEnabledChange(!dataSaverEnabled) }
+                ))
+            }
+        )
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.player),

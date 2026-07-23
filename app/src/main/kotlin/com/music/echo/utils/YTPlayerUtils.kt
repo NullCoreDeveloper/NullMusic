@@ -119,9 +119,7 @@ object YTPlayerUtils {
         knownDurationMs: Long? = null,
         isDownload: Boolean = false
     ): Result<PlaybackData> {
-        val showFallbackToast = context?.let { 
-            it.dataStore.data.first()[iad1tya.echo.music.constants.ShowAudioFallbackToastKey] 
-        } ?: true
+        val showFallbackToast = false
 
         var hasShownLosslessToast = false
         var hasShownOpusToast = false

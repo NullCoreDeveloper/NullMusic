@@ -1,5 +1,6 @@
 Echo Music v5.2.81
 - Fixed playback failure for age-restricted songs by seamlessly falling back to a JioSaavn stream.
+- Dramatically improved song downloading speeds by bypassing YouTube's network throttling using 5MB download chunks.
 - Fixed an issue where playing offline downloaded songs would incorrectly use network data to fetch "Up Next" recommended tracks in the background.
 - Users can now directly contribute to Lossless Music directly from the app—no need to visit the website anymore!
 - Added Data Saver Mode (Beta) to player and audio settings.

@@ -3080,7 +3080,7 @@ class MusicService :
                                 id = mediaId,
                                 itag = format.itag,
                                 mimeType = format.mimeType.split(";")[0],
-                                codecs = format.mimeType.split("codecs=")[1].removeSurrounding("\""),
+                                codecs = format.mimeType.substringAfter("codecs=", "\"\"").substringBefore(";").removeSurrounding("\"").takeIf { it.isNotEmpty() } ?: "unknown",
                                 bitrate = format.bitrate,
                                 sampleRate = format.audioSampleRate,
                                 contentLength = format.contentLength ?: 0L,

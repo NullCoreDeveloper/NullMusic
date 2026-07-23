@@ -1,4 +1,5 @@
 Echo Music v5.2.81
+- Fixed playback failure for age-restricted songs by seamlessly falling back to a JioSaavn stream.
 - Users can now directly contribute to Lossless Music directly from the app—no need to visit the website anymore!
 - Added Data Saver Mode (Beta) to player and audio settings.
 - Added a unified Settings Search Index to easily find configuration options.

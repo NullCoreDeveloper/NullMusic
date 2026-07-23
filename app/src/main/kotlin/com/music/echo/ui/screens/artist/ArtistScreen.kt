@@ -172,8 +172,11 @@ fun ArtistScreen(
     val showArtistDescription by rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val showArtistSubscriberCount by rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
     val showMonthlyListeners by rememberPreference(key = ShowMonthlyListenersKey, defaultValue = true)
-    val showArtistVideo by rememberPreference(key = ShowArtistVideoKey, defaultValue = true)
-    val showArtistBackgroundVideo by rememberPreference(key = ShowArtistBackgroundVideoKey, defaultValue = true)
+    val dataSaverEnabled by rememberPreference(key = iad1tya.echo.music.constants.DataSaverEnabledKey, defaultValue = false)
+    val showArtistVideoPref by rememberPreference(key = ShowArtistVideoKey, defaultValue = true)
+    val showArtistVideo = if (dataSaverEnabled) false else showArtistVideoPref
+    val showArtistBackgroundVideoPref by rememberPreference(key = ShowArtistBackgroundVideoKey, defaultValue = true)
+    val showArtistBackgroundVideo = if (dataSaverEnabled) false else showArtistBackgroundVideoPref
 
     val lazyListState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }

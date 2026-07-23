@@ -711,7 +711,11 @@ class MusicService :
         
         scope.launch {
             dataStore.data
-                .map { it[iad1tya.echo.music.constants.ListenBrainzEnabledKey] ?: false }
+                .map { 
+                    val listenBrainz = it[iad1tya.echo.music.constants.ListenBrainzEnabledKey] ?: false
+                    val dataSaver = it[iad1tya.echo.music.constants.DataSaverEnabledKey] ?: false
+                    if (dataSaver) false else listenBrainz
+                }
                 .distinctUntilChanged()
                 .collect { listenBrainzEnabled = it }
         }
@@ -726,9 +730,14 @@ class MusicService :
         var isFirstQualityEmit = true
         scope.launch {
             dataStore.data
-                .map { it[AudioQualityKey]?.let { value ->
-                    iad1tya.echo.music.constants.AudioQuality.entries.find { it.name == value }
-                } ?: iad1tya.echo.music.constants.AudioQuality.OPUS }
+                .map { 
+                    val qualityStr = it[AudioQualityKey]
+                    val quality = qualityStr?.let { value ->
+                        iad1tya.echo.music.constants.AudioQuality.entries.find { enumVal -> enumVal.name == value }
+                    } ?: iad1tya.echo.music.constants.AudioQuality.OPUS
+                    val dataSaver = it[iad1tya.echo.music.constants.DataSaverEnabledKey] ?: false
+                    if (dataSaver) iad1tya.echo.music.constants.AudioQuality.OPUS else quality
+                }
                 .distinctUntilChanged()
                 .collect { newQuality ->
                     val oldQuality = audioQuality
@@ -807,7 +816,11 @@ class MusicService :
 
         combine(
             currentMediaMetadata.distinctUntilChangedBy { it?.id },
-            dataStore.data.map { it[ShowLyricsKey] ?: false }.distinctUntilChanged(),
+            dataStore.data.map { 
+                val showLyrics = it[ShowLyricsKey] ?: false
+                val dataSaver = it[iad1tya.echo.music.constants.DataSaverEnabledKey] ?: false
+                if (dataSaver) false else showLyrics
+            }.distinctUntilChanged(),
         ) { mediaMetadata, showLyrics ->
             mediaMetadata to showLyrics
         }.collectLatest(scope) { (mediaMetadata, showLyrics) ->
@@ -930,7 +943,11 @@ class MusicService :
             .collect(scope) { cachedShuffleEnabled = it }
 
         dataStore.data
-            .map { it[PreloadNextSongEnabledKey] ?: true }
+            .map { 
+                val preload = it[PreloadNextSongEnabledKey] ?: true
+                val dataSaver = it[iad1tya.echo.music.constants.DataSaverEnabledKey] ?: false
+                if (dataSaver) false else preload
+            }
             .distinctUntilChanged()
             .collect(scope) { cachedPreloadEnabled = it }
 
@@ -1451,7 +1468,7 @@ class MusicService :
                 withContext(Dispatchers.IO) {
                     queue.getInitialStatus()
                         .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false) || dataStore.get(iad1tya.echo.music.constants.DataSaverEnabledKey, false))
                 }
             if (queue.preloadItem != null && player.playbackState == STATE_IDLE) return@launch
             if (initialStatus.title != null) {
@@ -1515,7 +1532,7 @@ class MusicService :
                 val initialStatus = withContext(Dispatchers.IO) {
                     radioQueue.getInitialStatus()
                         .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false) || dataStore.get(iad1tya.echo.music.constants.DataSaverEnabledKey, false))
                 }
 
                 if (initialStatus.title != null) {
@@ -1557,7 +1574,7 @@ class MusicService :
                                 .filter { it.id != currentMediaId }
                                 .map { it.toMediaItem() }
                                 .filterExplicit(dataStore.get(HideExplicitKey, false))
-                                .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                                .filterVideoSongs(dataStore.get(HideVideoSongsKey, false) || dataStore.get(iad1tya.echo.music.constants.DataSaverEnabledKey, false))
 
                             if (radioItems.isNotEmpty()) {
                                 val itemCount = player.mediaItemCount
@@ -2030,7 +2047,7 @@ class MusicService :
                 val mediaItems = withContext(Dispatchers.IO) {
                     currentQueue.nextPage()
                         .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false) || dataStore.get(iad1tya.echo.music.constants.DataSaverEnabledKey, false))
                 }
                 if (player.playbackState != STATE_IDLE && mediaItems.isNotEmpty()) {
                     player.addMediaItems(mediaItems)

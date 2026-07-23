@@ -452,6 +452,7 @@ fun getAllSearchableSettings(): List<Triple<String, String, String>> {
             Triple(stringResource(R.string.listen_together_view_logs), "Listen Together", "settings/integrations/listen_together"),
             Triple(stringResource(R.string.listen_together), "Listen Together", "settings/integrations/listen_together"),
             Triple(stringResource(R.string.listen_together_logs), "Listen Together", "settings/integrations/listen_together"),
-            Triple(stringResource(R.string.listen_together_choose_server), "Listen Together", "settings/integrations/listen_together")
+            Triple(stringResource(R.string.listen_together_choose_server), "Listen Together", "settings/integrations/listen_together"),
+            Triple("Data Saver Mode (Beta)", "Player and audio", "settings/player")
     )
 }

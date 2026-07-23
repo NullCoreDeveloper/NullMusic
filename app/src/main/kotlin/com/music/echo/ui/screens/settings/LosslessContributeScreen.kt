@@ -77,6 +77,7 @@ fun LosslessContributeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
     val recentTracks by viewModel.recentTracks.collectAsState()
+    val totalTracks by viewModel.totalTracks.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -165,7 +166,13 @@ fun LosslessContributeScreen(
                     }
                 },
                 update = { webView ->
-                    webView.loadUrl(viewModel.getAuthUrl())
+                    val url = viewModel.getAuthUrl()
+                    if (url.isNotEmpty()) {
+                        webView.loadUrl(url)
+                    } else {
+                        Toast.makeText(context, "GitHub Client ID is not configured.", Toast.LENGTH_LONG).show()
+                        showWebView = false
+                    }
                 },
                 modifier = Modifier
                     .fillMaxSize()
@@ -192,7 +199,7 @@ fun LosslessContributeScreen(
                     ) {
 
                         Icon(
-                            painter = painterResource(R.drawable.cloud),
+                            painter = painterResource(R.drawable.ic_apple_lossless),
                             contentDescription = null,
                             modifier = Modifier.size(72.dp),
                             tint = MaterialTheme.colorScheme.primary
@@ -225,9 +232,8 @@ fun LosslessContributeScreen(
                         }
                         
                         
-                        Spacer(modifier = Modifier.height(24.dp))
-                        LosslessHubGoalCard()
-                        
+                        Spacer(modifier = Modifier.height(32.dp))
+                        LosslessHubGoalCard(totalTracks)
                         Spacer(modifier = Modifier.height(32.dp))
                         if (recentTracks.isNotEmpty()) {
                             Text(
@@ -623,7 +629,7 @@ fun LosslessContributeScreen(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Your track has been successfully submitted and will be available soon.",
+                                text = "Thanks for the submission! It will take around 24 hours for the song to be available on the app to listen.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -720,7 +726,7 @@ fun LosslessContributeScreen(
 }
 
 @Composable
-private fun LosslessHubGoalCard() {
+private fun LosslessHubGoalCard(totalTracks: Int) {
     val context = LocalContext.current
     val fundingState by iad1tya.echo.music.utils.FundingRepository.fundingState.collectAsState()
 
@@ -789,6 +795,16 @@ private fun LosslessHubGoalCard() {
                         shape = RoundedCornerShape(24.dp)
                     ) {
                         Text("Support Lossless Music")
+                    }
+                    
+                    if (totalTracks > 0) {
+                        Text(
+                            text = "Currently, there are $totalTracks lossless songs available!",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }

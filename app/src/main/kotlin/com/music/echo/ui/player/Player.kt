@@ -327,7 +327,9 @@ fun BottomSheetPlayer(
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
-    val enableCanvas by rememberPreference(CanvasThumbnailAnimationKey, true)
+    val dataSaverEnabled by rememberPreference(key = iad1tya.echo.music.constants.DataSaverEnabledKey, defaultValue = false)
+    val enableCanvasPref by rememberPreference(CanvasThumbnailAnimationKey, true)
+    val enableCanvas = if (dataSaverEnabled) false else enableCanvasPref
 
     val shouldUseDarkButtonColors = remember(playerBackground, useDarkTheme) {
         when (playerBackground) {

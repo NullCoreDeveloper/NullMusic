@@ -187,21 +187,21 @@ highlightKey: String? = null) {
             item {
                 AboutSectionCard(title = "Our Services") {
                     AboutActionRow(
-                        icon = painterResource(R.drawable.website),
+                        icon = painterResource(R.drawable.ic_canvas),
                         title = "Echo Canvas",
                         subtitle = "canvas.nullmusic.fun",
                         onClick = { uriHandler.openUri("https://canvas.nullmusic.fun/") },
                     )
                     AboutDivider()
                     AboutActionRow(
-                        icon = painterResource(R.drawable.website),
+                        icon = painterResource(R.drawable.ic_apple_lossless),
                         title = "Echo Lossless",
                         subtitle = "lossless.nullmusic.fun",
                         onClick = { uriHandler.openUri("https://lossless.nullmusic.fun/") },
                     )
                     AboutDivider()
                     AboutActionRow(
-                        icon = painterResource(R.drawable.website),
+                        icon = painterResource(R.drawable.ic_chart),
                         title = "Echo Charts",
                         subtitle = "charts.nullmusic.fun",
                         onClick = { uriHandler.openUri("https://charts.nullmusic.fun/") },

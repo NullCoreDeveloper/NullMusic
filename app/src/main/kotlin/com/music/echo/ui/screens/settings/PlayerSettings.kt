@@ -60,7 +60,7 @@ import iad1tya.echo.music.constants.ResumeOnBluetoothConnectKey
 import iad1tya.echo.music.constants.SeekExtraSeconds
 import iad1tya.echo.music.constants.ShufflePlaylistFirstKey
 import iad1tya.echo.music.constants.SimilarContent
-import iad1tya.echo.music.constants.ShowAudioFallbackToastKey
+
 import iad1tya.echo.music.constants.SkipSilenceInstantKey
 import iad1tya.echo.music.constants.SkipSilenceKey
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
@@ -96,10 +96,7 @@ highlightKey: String? = null) {
         AudioQualityKey,
         defaultValue = AudioQuality.OPUS
     )
-    val (showAudioFallbackToast, onShowAudioFallbackToastChange) = rememberPreference(
-        ShowAudioFallbackToastKey,
-        defaultValue = true
-    )
+
     val (crossfadeEnabled, onCrossfadeEnabledChange) = rememberPreference(
         CrossfadeEnabledKey,
         defaultValue = false
@@ -445,28 +442,6 @@ highlightKey: String? = null) {
                     onClick = { showAudioQualityDialog = true }
                 ))
                 
-                add(Material3SettingsItem(
-    isHighlighted = (highlightKey == "Show audio fallback notifications"),
-                    icon = painterResource(R.drawable.notification),
-                    title = { Text("Show audio fallback notifications") },
-                    description = {
-                        Text("Show a toast notification when falling back to a lower stream quality")
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = showAudioFallbackToast,
-                            onCheckedChange = onShowAudioFallbackToastChange,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedThumbColor = androidx.compose.material3.MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-                    },
-                    onClick = { onShowAudioFallbackToastChange(!showAudioFallbackToast) }
-                ))
-
                 add(Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.download_quality_title)),
                     icon = painterResource(R.drawable.download),

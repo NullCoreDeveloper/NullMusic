@@ -28,8 +28,8 @@ android {
         applicationId = "com.nullcore.music"
         minSdk = 26
         targetSdk = 36
-        versionCode = 522
-        versionName = "5.2.8"
+        versionCode = 523
+        versionName = "5.2.81"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

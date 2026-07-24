@@ -92,7 +92,7 @@ object ListenBrainzManager {
                         .post(body)
                         .addHeader("Content-Type", "application/json")
                         .addHeader("Authorization", "Token $token")
-                        .addHeader("User-Agent", "EchoMusic/5.2.8")
+                        .addHeader("User-Agent", "EchoMusic/5.2.81")
                         .build()
 
                 httpClient.newCall(request).execute().use { resp ->
@@ -156,7 +156,7 @@ object ListenBrainzManager {
                         .post(body)
                         .addHeader("Content-Type", "application/json")
                         .addHeader("Authorization", "Token $token")
-                        .addHeader("User-Agent", "EchoMusic/5.2.8")
+                        .addHeader("User-Agent", "EchoMusic/5.2.81")
                         .build()
 
                 httpClient.newCall(request).execute().use { resp ->

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home">ホーム</string>
+    <string name="home">ホーム &gt;</string>
     <string name="songs">曲</string>
     <string name="artists">アーティスト</string>
     <string name="albums">アルバム</string>
@@ -92,7 +92,7 @@
     <string name="sort_by_length">長さ</string>
     <string name="sort_by_play_time">再生時間</string>
     <string name="sort_by_custom">カスタム</string>
-    <string name="media_id">メディア ID</string>
+    <string name="media_id">メディア id</string>
     <string name="mime_type">MIME タイプ</string>
     <string name="codecs">コーデック</string>
     <string name="bitrate">ビットレート</string>
@@ -162,9 +162,9 @@
     <string name="action_like_all">すべていいね</string>
     <string name="action_remove_like">いいねを削除</string>
     <string name="action_remove_like_all">すべてのいいねを削除</string>
-    <string name="action_shuffle_on">シャッフル ON</string>
-    <string name="action_shuffle_off">シャッフル OFF</string>
-    <string name="repeat_mode_off">リピートモード OFF</string>
+    <string name="action_shuffle_on">シャッフル On</string>
+    <string name="action_shuffle_off">シャッフル Off</string>
+    <string name="repeat_mode_off">リピートモード Off</string>
     <string name="repeat_mode_one">現在の曲をリピート</string>
     <string name="repeat_mode_all">キューをリピート</string>
     <string name="queue_all_songs">すべての曲</string>
@@ -271,7 +271,7 @@
     <string name="use_login_for_browse">表示されるコンテンツをアカウントと結び付ける</string>
     <string name="action_login">ログイン</string>
     <!-- Bottom navigation -->
-    <string name="music">音楽</string>
+    <string name="music">ミュージック</string>
     <!-- Search -->
     <string name="filter_local">ローカル</string>
     <!-- Album screen -->
@@ -378,7 +378,7 @@
     <string name="spotify_import_by_link_desc">Spotifyプレイリストのリンクを貼り付けてインポートします。自分が所有していないプレイリストもインポートできます</string>
     <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
     <string name="spotify_add">追加</string>
-    <string name="spotify_invalid_playlist_link">Spotifyプレイリストのリンクではないようです。https://open.spotify.com/playlist/… のようなリンクを使用してください</string>
+    <string name="spotify_invalid_playlist_link">Spotifyプレイリストのリンクではないようです。次のようなリンクを使用してください。https://open.spotify.com/playlist/…</string>
     <string name="service_uptime">サービス稼働状況</string>
     <string name="service_uptime_desc">音楽プロバイダーの稼働状況を確認します</string>
     <string name="music_providers">音楽プロバイダー</string>
@@ -472,4 +472,15 @@
     <string name="color_white">白</string>
     <string name="color_light_gray">ライトグレー</string>
     <string name="color_black">黒</string>
+    <string name="ai_recommendations_refresh">おすすめを更新</string>
+    <string name="ai_recommendations_desc">あなたの好みに合わせたカスタムプレイリストを毎日更新</string>
+    <string name="ai_recommendations">AIによる提案</string>
+    <string name="lyrics_translation_menu">歌詞翻訳</string>
+    <string name="ai_auto_translate_desc">利用可能なときに自動的に歌詞を翻訳</string>
+    <string name="ai_auto_translate">自動翻訳</string>
+    <string name="enable_haptics_desc">アプリのスクロール、クリック、操作時にフィードバックを提供</string>
+    <string name="enable_haptics">ハプティックを有効にする</string>
+    <string name="ai_modify_prompt_hint">例: 悲しい曲を削除し、90\'sのヒットを追加</string>
+    <string name="modify_with_ai_desc">AIを利用してプレイリストを変更する</string>
+    <string name="modify_with_ai">AIで修正する</string>
 </resources>

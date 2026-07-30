@@ -356,52 +356,7 @@ object YTPlayerUtils {
         )
 
         if (isAgeRestricted) {
-            Timber.tag(logTag).d("Content needs fallback (status: $currentStatus), trying JioSaavn")
             android.util.Log.i("YTPlayerUtils", "Unplayable content detected: videoId=$videoId, status=$currentStatus")
-
-            if (context != null) {
-                val rawTitle = videoDetails?.title ?: knownTitle ?: ""
-                val rawArtist = videoDetails?.author ?: knownArtist ?: ""
-                val cleanTitle = rawTitle.replace(Regex("\\(.*?\\)"), "").replace(Regex("\\[.*?\\]"), "").trim()
-                val cleanArtist = rawArtist.replace(Regex("(?i)\\s*-\\s*Topic"), "").trim()
-                Timber.tag(logTag).d("JioSaavn query: '$cleanTitle' / '$cleanArtist'")
-                if (cleanTitle.isNotEmpty()) {
-                    val fallbackUrl = iad1tya.echo.music.utils.JioSaavnFallback.resolveAgeRestrictedSong(context, cleanTitle, cleanArtist)
-                    if (fallbackUrl != null) {
-                        Timber.tag(logTag).d("JioSaavn fallback successful!")
-                        val mockFormat = com.music.innertube.models.response.PlayerResponse.StreamingData.Format(
-                            itag = 140,
-                            url = fallbackUrl,
-                            mimeType = "audio/mp4; codecs=\"mp4a.40.2\"",
-                            bitrate = 160000,
-                            width = null,
-                            height = null,
-                            contentLength = null,
-                            quality = "tiny",
-                            fps = null,
-                            qualityLabel = null,
-                            averageBitrate = null,
-                            audioQuality = "AUDIO_QUALITY_MEDIUM",
-                            approxDurationMs = null,
-                            audioSampleRate = 44100,
-                            audioChannels = 2,
-                            loudnessDb = null,
-                            lastModified = null,
-                            signatureCipher = null,
-                            cipher = null,
-                            audioTrack = null
-                        )
-                        return@runCatching PlaybackData(
-                            audioConfig = audioConfig,
-                            videoDetails = videoDetails,
-                            playbackTracking = playbackTracking,
-                            format = mockFormat,
-                            streamUrl = fallbackUrl,
-                            streamExpiresInSeconds = (System.currentTimeMillis() / 1000).toInt() + 3600
-                        )
-                    }
-                }
-            }
         }
         
         val isPrivateTrack = mainPlayerResponse.videoDetails?.musicVideoType == "MUSIC_VIDEO_TYPE_PRIVATELY_OWNED_TRACK"

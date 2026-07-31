@@ -110,6 +110,7 @@ import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.MiniPlayerBackgroundStyleKey
 import iad1tya.echo.music.constants.MiniPlayerHeight
 import iad1tya.echo.music.constants.PlayerBackgroundStyle
+import iad1tya.echo.music.constants.UseFloatingNavBarKey
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.SwipeSensitivityKey
 import iad1tya.echo.music.constants.SwipeThumbnailKey
@@ -201,23 +202,60 @@ class ProgressState(
 fun MiniPlayer(
     positionState: MutableLongState,
     durationState: MutableLongState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
     
     
+    val (useFloatingNavBar) = rememberPreference(UseFloatingNavBarKey, defaultValue = false)
     val progressState = remember { ProgressState(positionState, durationState) }
 
-    if (useNewMiniPlayerDesign) {
-        NewMiniPlayer(
-            progressState = progressState,
+    if (useFloatingNavBar) {
+        val glassConfig = LocalGlassEffectConfig.current
+        val pureBlack by rememberPreference(PureBlackMiniPlayerKey, defaultValue = false)
+        val useGlass = glassConfig.isEnabledFor(GlassComponent.MINI_PLAYER) && isGlassSupported()
+        
+        val contentColor = if (useGlass) glassConfig.textColor else if (pureBlack) Color.White else MaterialTheme.colorScheme.onSurface
+        
+        val tabBarContentModifier = if (useGlass) {
+            Modifier.liquidGlass(
+                config = glassConfig,
+                shape = RoundedCornerShape(percent = 50),
+            )
+        } else {
+            Modifier.background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(percent = 50))
+        }
+
+        Box(
             modifier = modifier
-        )
+                .fillMaxWidth()
+                .height(MiniPlayerHeight)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            FloatingMiniPlayer(
+                isInline = false,
+                contentColor = contentColor,
+                onClick = onClick,
+                modifier = Modifier
+                    .widthIn(max = 540.dp)
+                    .fillMaxWidth()
+                    .then(tabBarContentModifier)
+            )
+        }
+    } else if (useNewMiniPlayerDesign) {
+        Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            NewMiniPlayer(
+                progressState = progressState,
+                modifier = Modifier.widthIn(max = 540.dp)
+            )
+        }
     } else {
-        Box(modifier = modifier.fillMaxWidth()) {
+        Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             LegacyMiniPlayer(
                 progressState = progressState,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.widthIn(max = 540.dp)
             )
         }
     }
@@ -259,6 +297,7 @@ private fun NewMiniPlayer(
         }
     }
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
+    val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf(null) }
 
     
     val context = LocalContext.current
@@ -433,10 +472,19 @@ private fun NewMiniPlayer(
                 if (isCasting) {
                     Icon(
                         painter = painterResource(R.drawable.cast_connected),
-                        contentDescription = "Casting",
+                        contentDescription = "Casting to ${castDeviceName ?: "device"}",
                         tint = primaryColor,
                         modifier = Modifier.size(20.dp)
                     )
+                    if (castDeviceName != null) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = castDeviceName!!,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = primaryColor,
+                            maxLines = 1
+                        )
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                 }
 

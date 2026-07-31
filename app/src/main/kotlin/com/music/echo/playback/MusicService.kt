@@ -361,6 +361,7 @@ class MusicService :
     lateinit var connectivityObserver: NetworkConnectivityObserver
     val waitingForNetworkConnection = MutableStateFlow(false)
     private val isNetworkConnected = MutableStateFlow(false)
+    val currentStreamClient = MutableStateFlow<String?>(null)
 
     private lateinit var audioQuality: iad1tya.echo.music.constants.AudioQuality
     private lateinit var ipVersion: IpVersion
@@ -2662,7 +2663,8 @@ class MusicService :
 
         
         songUrlCache.remove("${mediaId}_${audioQuality.name}")
-        Timber.tag(TAG).d("Cleared cached URL for $mediaId")
+        YTPlayerUtils.markWebRemixFailed(mediaId)
+        Timber.tag(TAG).d("Cleared cached URL for $mediaId and marked WEB_REMIX failed")
 
         
         try {
@@ -2746,8 +2748,10 @@ class MusicService :
                     .Factory()
                     .setCache(playerCache)
                     .setUpstreamDataSourceFactory(
-                        OkHttpDataSource.Factory(
-                            OkHttpClient
+                        DefaultDataSource.Factory(
+                            this,
+                            OkHttpDataSource.Factory(
+                                OkHttpClient
                                     .Builder()
                                     .dns(object : Dns {
                                         override fun lookup(hostname: String): List<InetAddress> {
@@ -2769,8 +2773,10 @@ class MusicService :
                                     }
                                     .build()
                             )
+                        )
                     )
             ).setCacheWriteDataSinkFactory(null)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
             .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
 
     
@@ -2899,9 +2905,7 @@ class MusicService :
     }
 
     private fun createDataSourceFactory(): DataSource.Factory {
-        return ResolvingDataSource.Factory(
-            DefaultDataSource.Factory(this, createCacheDataSource())
-        ) { dataSpec ->
+        return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
             if (mediaId.isLocalMediaId()) {
                 val localUri = android.net.Uri.parse(mediaId)
@@ -2993,7 +2997,11 @@ class MusicService :
                     context = this@MusicService,
                     knownArtist = knownArtist,
                     knownTitle = knownTitle,
-                    knownDurationMs = knownDuration
+                    knownDurationMs = knownDuration,
+                    contentHints = com.music.innertube.strategy.ContentHints(
+                        isExplicit = dbSong?.song?.explicit,
+                        isUploaded = dbSong?.song?.isUploaded
+                    )
                 )
             }.getOrElse { throwable ->
                 when (throwable) {
@@ -3099,6 +3107,7 @@ class MusicService :
                 }
 
                 val streamUrl = nonNullPlayback.streamUrl
+                currentStreamClient.value = nonNullPlayback.streamClient
 
                 songUrlCache["${mediaId}_${lockedQuality.name}"] =
                     streamUrl to System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
@@ -3436,10 +3445,21 @@ class MusicService :
         if (dataStore.get(iad1tya.echo.music.constants.EnableGoogleCastKey, true)) {
             try {
                 castConnectionHandler = CastConnectionHandler(this, scope, this)
-                castConnectionHandler?.initialize()
-                timber.log.Timber.d("Google Cast initialized")
+                if (castConnectionHandler?.initialize() != true) {
+                    castConnectionHandler?.release()
+                    castConnectionHandler = null
+                    timber.log.Timber.w("Google Cast not available on this device")
+                } else {
+                    timber.log.Timber.d("Google Cast initialized")
+                }
+            } catch (e: RuntimeException) {
+                timber.log.Timber.e(e, "Google Play Services not available for Cast")
+                castConnectionHandler?.release()
+                castConnectionHandler = null
             } catch (e: Exception) {
                 timber.log.Timber.e(e, "Failed to initialize Google Cast")
+                castConnectionHandler?.release()
+                castConnectionHandler = null
             }
         }
     }

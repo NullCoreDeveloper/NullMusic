@@ -134,7 +134,11 @@ private fun calculateThumbnailDimensions(
     isLandscape: Boolean = false
 ): ThumbnailDimensions {
     
-    val effectiveSize = minOf(containerWidth, containerHeight) - (horizontalPadding * 2)
+    val effectiveSize = if (isLandscape) {
+        minOf(containerWidth, containerHeight) - (horizontalPadding * 2)
+    } else {
+        containerWidth - (horizontalPadding * 2)
+    }
     return ThumbnailDimensions(
         itemWidth = containerWidth,
         containerSize = containerWidth,
@@ -884,6 +888,7 @@ private fun ThumbnailImage(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         var currentUrl by remember(artworkUri) {
             mutableStateOf(artworkUri)

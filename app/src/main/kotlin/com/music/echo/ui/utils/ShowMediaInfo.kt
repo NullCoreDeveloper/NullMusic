@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +68,6 @@ fun ShowMediaInfo(videoId: String) {
     var song by remember { mutableStateOf<Song?>(null) }
     var currentFormat by remember { mutableStateOf<FormatEntity?>(null) }
     val playerConnection = LocalPlayerConnection.current
-    val currentStreamClient by playerConnection?.currentStreamClient?.collectAsState() ?: remember { mutableStateOf(null) }
     val context = LocalContext.current
     val sheetState = LocalBottomSheetPageState.current
     val clipboardManager = LocalClipboard.current
@@ -229,17 +227,6 @@ fun ShowMediaInfo(videoId: String) {
                             value = currentFormat?.itag?.toString() ?: "N/A",
                             modifier = Modifier.weight(1f)
                         )
-                        InfoItem(
-                            label = stringResource(R.string.stream_client),
-                            value = currentStreamClient ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
                         InfoItem(
                             label = stringResource(R.string.loudness),
                             value = currentFormat?.loudnessDb?.let { "$it dB" } ?: "N/A",

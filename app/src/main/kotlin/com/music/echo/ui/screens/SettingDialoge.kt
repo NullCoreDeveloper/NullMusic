@@ -70,7 +70,6 @@ fun SettingDialoge(
         Card(
             modifier = Modifier
                 .padding(24.dp)
-                .widthIn(max = 540.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(

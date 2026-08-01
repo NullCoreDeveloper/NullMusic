@@ -361,7 +361,6 @@ class MusicService :
     lateinit var connectivityObserver: NetworkConnectivityObserver
     val waitingForNetworkConnection = MutableStateFlow(false)
     private val isNetworkConnected = MutableStateFlow(false)
-    val currentStreamClient = MutableStateFlow<String?>(null)
 
     private lateinit var audioQuality: iad1tya.echo.music.constants.AudioQuality
     private lateinit var ipVersion: IpVersion
@@ -2663,8 +2662,7 @@ class MusicService :
 
         
         songUrlCache.remove("${mediaId}_${audioQuality.name}")
-        YTPlayerUtils.markWebRemixFailed(mediaId)
-        Timber.tag(TAG).d("Cleared cached URL for $mediaId and marked WEB_REMIX failed")
+        Timber.tag(TAG).d("Cleared cached URL for $mediaId")
 
         
         try {
@@ -2748,10 +2746,8 @@ class MusicService :
                     .Factory()
                     .setCache(playerCache)
                     .setUpstreamDataSourceFactory(
-                        DefaultDataSource.Factory(
-                            this,
-                            OkHttpDataSource.Factory(
-                                OkHttpClient
+                        OkHttpDataSource.Factory(
+                            OkHttpClient
                                     .Builder()
                                     .dns(object : Dns {
                                         override fun lookup(hostname: String): List<InetAddress> {
@@ -2773,10 +2769,8 @@ class MusicService :
                                     }
                                     .build()
                             )
-                        )
                     )
             ).setCacheWriteDataSinkFactory(null)
-            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
             .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
 
     
@@ -2905,7 +2899,9 @@ class MusicService :
     }
 
     private fun createDataSourceFactory(): DataSource.Factory {
-        return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
+        return ResolvingDataSource.Factory(
+            DefaultDataSource.Factory(this, createCacheDataSource())
+        ) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
             if (mediaId.isLocalMediaId()) {
                 val localUri = android.net.Uri.parse(mediaId)
@@ -2934,10 +2930,11 @@ class MusicService :
 
             if (!shouldBypassCache && !isFullyDownloaded && dbFormat != null) {
                 val isLosslessCache = dbFormat.codecs == "flac"
+                val isSaavnCache = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
                 
                 val cacheMatchesTarget = when (lockedQuality) {
                     iad1tya.echo.music.constants.AudioQuality.LOSSLESS -> isLosslessCache
-                    iad1tya.echo.music.constants.AudioQuality.OPUS -> !isLosslessCache
+                    iad1tya.echo.music.constants.AudioQuality.OPUS -> !isLosslessCache && !isSaavnCache
                 }
                 
                 if (!cacheMatchesTarget) {
@@ -2997,11 +2994,7 @@ class MusicService :
                     context = this@MusicService,
                     knownArtist = knownArtist,
                     knownTitle = knownTitle,
-                    knownDurationMs = knownDuration,
-                    contentHints = com.music.innertube.strategy.ContentHints(
-                        isExplicit = dbSong?.song?.explicit,
-                        isUploaded = dbSong?.song?.isUploaded
-                    )
+                    knownDurationMs = knownDuration
                 )
             }.getOrElse { throwable ->
                 when (throwable) {
@@ -3038,15 +3031,15 @@ class MusicService :
                 val format = nonNullPlayback.format
                 
                 val isFinalLossless = format.mimeType.contains("flac", ignoreCase = true)
-                val isFinalMp4 = format.mimeType.contains("mp4", ignoreCase = true) || format.mimeType.contains("m4a", ignoreCase = true)
+                val isFinalSaavn = format.mimeType.contains("mp4", ignoreCase = true) || format.mimeType.contains("m4a", ignoreCase = true)
                 
                 var targetCacheKey = mediaId
                 
                 if (dbFormat != null && !shouldBypassCache) {
                     val cacheIsLossless = dbFormat.codecs == "flac"
-                    val cacheIsMp4 = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
+                    val cacheIsSaavn = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
                     
-                    if (isFinalLossless != cacheIsLossless || isFinalMp4 != cacheIsMp4) {
+                    if (isFinalLossless != cacheIsLossless || isFinalSaavn != cacheIsSaavn) {
                         Timber.tag(TAG).w("Format fallback detected AFTER fetch. Clearing playerCache to prevent mismatch crash.")
                         playerCache.removeResource(mediaId)
                         
@@ -3062,9 +3055,9 @@ class MusicService :
                     }
                 } else if (dbFormat != null && shouldBypassCache) {
                     val cacheIsLossless = dbFormat.codecs == "flac"
-                    val cacheIsMp4 = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
+                    val cacheIsSaavn = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
                     
-                    if (isFinalLossless != cacheIsLossless || isFinalMp4 != cacheIsMp4) {
+                    if (isFinalLossless != cacheIsLossless || isFinalSaavn != cacheIsSaavn) {
                         Timber.tag(TAG).i("Bypassed cache and fetched different format. Using custom cache key to prevent intercept.")
                         targetCacheKey = "${mediaId}_diff"
                     } else {
@@ -3107,7 +3100,6 @@ class MusicService :
                 }
 
                 val streamUrl = nonNullPlayback.streamUrl
-                currentStreamClient.value = nonNullPlayback.streamClient
 
                 songUrlCache["${mediaId}_${lockedQuality.name}"] =
                     streamUrl to System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
@@ -3445,21 +3437,10 @@ class MusicService :
         if (dataStore.get(iad1tya.echo.music.constants.EnableGoogleCastKey, true)) {
             try {
                 castConnectionHandler = CastConnectionHandler(this, scope, this)
-                if (castConnectionHandler?.initialize() != true) {
-                    castConnectionHandler?.release()
-                    castConnectionHandler = null
-                    timber.log.Timber.w("Google Cast not available on this device")
-                } else {
-                    timber.log.Timber.d("Google Cast initialized")
-                }
-            } catch (e: RuntimeException) {
-                timber.log.Timber.e(e, "Google Play Services not available for Cast")
-                castConnectionHandler?.release()
-                castConnectionHandler = null
+                castConnectionHandler?.initialize()
+                timber.log.Timber.d("Google Cast initialized")
             } catch (e: Exception) {
                 timber.log.Timber.e(e, "Failed to initialize Google Cast")
-                castConnectionHandler?.release()
-                castConnectionHandler = null
             }
         }
     }

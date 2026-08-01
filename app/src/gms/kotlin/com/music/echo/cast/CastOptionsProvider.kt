@@ -11,13 +11,7 @@ import com.google.android.gms.cast.framework.media.NotificationOptions
 
 /**
  * CastOptionsProvider for Google Cast integration.
- *
- * Key settings:
- * - [CastOptions.Builder.setResumeSavedSession]: When true, the SDK
- *   automatically resumes the last-used Cast session on app restart.
- * - [CastOptions.Builder.setLaunchOptions]: Use
- *   [com.google.android.gms.cast.LaunchOptions] to set the
- *   reconnection policy (reconnect within same WiFi).
+ * This class provides the Cast options for the app.
  */
 class CastOptionsProvider : OptionsProvider {
 
@@ -30,7 +24,7 @@ class CastOptionsProvider : OptionsProvider {
                     MediaIntentReceiver.ACTION_SKIP_NEXT,
                     MediaIntentReceiver.ACTION_STOP_CASTING
                 ),
-                intArrayOf(1, 2)
+                intArrayOf(1, 2) // Indices of actions for compact view
             )
             .build()
 
@@ -42,7 +36,6 @@ class CastOptionsProvider : OptionsProvider {
             .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
             .setCastMediaOptions(mediaOptions)
             .setStopReceiverApplicationWhenEndingSession(true)
-            .setResumeSavedSession(true)
             .build()
     }
 

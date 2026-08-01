@@ -69,7 +69,6 @@ import androidx.compose.material.icons.filled.Battery4Bar
 import androidx.compose.material.icons.filled.Battery6Bar
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Bluetooth
-import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.MusicNote
@@ -105,8 +104,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -152,7 +149,6 @@ enum class AudioDeviceType {
     EXTERNAL_SPEAKER,
     USB_HEADSET,
     HDMI,
-    CHROMECAST,
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -165,45 +161,14 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
 
-    val playerConnection = LocalPlayerConnection.current
-    val service = playerConnection?.service
-
-    // Cast volume support
-    val castHandler = remember(service) {
-        try { service?.castConnectionHandler } catch (_: Exception) { null }
-    }
-    val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
-    val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf(null) }
-    val castVolume by castHandler?.castVolume?.collectAsState() ?: remember { mutableFloatStateOf(1f) }
-
-    // For Cast: use 0-100 range. For local: use system max.
-    val effectiveMaxVolume = if (isCasting) 100 else audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-
     var currentVolume by remember {
-        mutableFloatStateOf(
-            if (isCasting) castVolume * 100f
-            else audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
-        )
+        mutableFloatStateOf(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat())
     }
     var isUserDragging by remember { mutableStateOf(false) }
-    var maxVolume by remember { mutableStateOf(effectiveMaxVolume) }
+    var maxVolume by remember { mutableStateOf(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) }
 
-    // Sync maxVolume when casting state changes
-    LaunchedEffect(isCasting) {
-        maxVolume = effectiveMaxVolume
-        if (!isUserDragging) {
-            currentVolume = if (isCasting) castVolume * 100f
-                else audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
-        }
-    }
-
-    // Sync Cast volume changes from remote
-    LaunchedEffect(castVolume, isCasting) {
-        if (isCasting && !isUserDragging) {
-            currentVolume = castVolume * 100f
-        }
-    }
-
+    val playerConnection = LocalPlayerConnection.current
+    val service = playerConnection?.service
     var showDevicePopup by remember { mutableStateOf(false) }
 
     val bluetoothLauncher = rememberLauncherForActivityResult(
@@ -229,15 +194,12 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
         }, onError = {})
     }
 
-    // Keep a stable reference for BroadcastReceiver inside DisposableEffect
-    val isCastingUpdated by rememberUpdatedState(isCasting)
-
     DisposableEffect(Unit) {
         val volumeChangeReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 if (intent.action == "android.media.VOLUME_CHANGED_ACTION") {
                     val streamType = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE", -1)
-                    if (streamType == AudioManager.STREAM_MUSIC && !isUserDragging && !isCastingUpdated) {
+                    if (streamType == AudioManager.STREAM_MUSIC && !isUserDragging) {
                         currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
                     }
                 }
@@ -399,20 +361,8 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                 }
 
                 else -> {
-                    // Add Cast device as active when casting, keep all local devices
-                    val effectiveDevices = if (isCasting) {
-                        val castDevice = AudioDevice(
-                            name = castDeviceName ?: stringResource(R.string.volume),
-                            type = AudioDeviceType.CHROMECAST,
-                            isConnected = true,
-                            isActive = true
-                        )
-                        listOf(castDevice) + audioDevices.map { it.copy(isActive = false) }
-                    } else {
-                        audioDevices
-                    }
-                    val activeDevice = effectiveDevices.firstOrNull { it.isActive }
-                    val hasBluetooth = effectiveDevices.any { it.type == AudioDeviceType.BLUETOOTH }
+                    val activeDevice = audioDevices.firstOrNull { it.isActive }
+                    val hasBluetooth = audioDevices.any { it.type == AudioDeviceType.BLUETOOTH }
 
                     Column(
                         modifier = Modifier
@@ -507,8 +457,8 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
                                     )
 
-                                    effectiveDevices.forEachIndexed { index, dev ->
-                                        key(dev.name + dev.type) {
+                                    audioDevices.forEachIndexed { index, dev ->
+                                        key(dev.deviceId) {
                                             val isSelected = dev.isActive
                                             val deviceIcon = when (dev.type) {
                                                 AudioDeviceType.BLUETOOTH -> Icons.Filled.Bluetooth
@@ -517,24 +467,21 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                                                 AudioDeviceType.HDMI -> Icons.Filled.Tv
                                                 AudioDeviceType.EXTERNAL_SPEAKER -> Icons.Filled.Speaker
                                                 AudioDeviceType.PHONE_SPEAKER -> Icons.Filled.PhoneAndroid
-                                                AudioDeviceType.CHROMECAST -> Icons.Filled.Cast
                                             }
                                             
-                                            val itemShape = remember(index, effectiveDevices.size) {
+                                            val itemShape = remember(index, audioDevices.size) {
                                                 when {
-                                                    effectiveDevices.size == 1 -> RoundedCornerShape(24.dp)
+                                                    audioDevices.size == 1 -> RoundedCornerShape(24.dp)
                                                     index == 0 -> RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-                                                    index == effectiveDevices.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
+                                                    index == audioDevices.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
                                                     else -> RoundedCornerShape(4.dp)
                                                 }
                                             }
 
                                             Surface(
                                                 onClick = {
-                                                    if (dev.type != AudioDeviceType.CHROMECAST) {
-                                                        service?.setPreferredAudioDevice(dev.deviceId)
-                                                        refreshDevices()
-                                                    }
+                                                    service?.setPreferredAudioDevice(dev.deviceId)
+                                                    refreshDevices()
                                                     showDevicePopup = false
                                                 },
                                                 shape = itemShape,
@@ -591,21 +538,17 @@ fun AudioDeviceBottomSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier)
                     }
 
                     VolumeControlRow(
-                        label = if (isCasting) (castDeviceName ?: stringResource(R.string.volume)) else stringResource(R.string.volume),
+                        label = stringResource(R.string.volume),
                         icon = Icons.Filled.MusicNote,
                         volume = currentVolume,
                         maxVolume = maxVolume,
                         onVolumeChange = { newVolume ->
                             currentVolume = newVolume
-                            if (isCasting) {
-                                castHandler?.setVolume(newVolume / 100f)
-                            } else {
-                                audioManager.setStreamVolume(
-                                    AudioManager.STREAM_MUSIC,
-                                    newVolume.toInt(),
-                                    0
-                                )
-                            }
+                            audioManager.setStreamVolume(
+                                AudioManager.STREAM_MUSIC,
+                                newVolume.toInt(),
+                                0
+                            )
                         },
                         onDragStart = { isUserDragging = true },
                         onDragEnd = { isUserDragging = false }
@@ -1165,7 +1108,6 @@ private fun AudioDeviceRow(
         AudioDeviceType.USB_HEADSET -> Icons.Filled.Usb
         AudioDeviceType.HDMI -> Icons.Filled.Tv
         AudioDeviceType.EXTERNAL_SPEAKER -> Icons.Filled.Speaker
-        AudioDeviceType.CHROMECAST -> Icons.Filled.Cast
         else -> Icons.Filled.Speaker
     }
 
@@ -1289,7 +1231,6 @@ fun DeviceSelector(
                 AudioDeviceType.HDMI -> Icons.Filled.Tv
                 AudioDeviceType.EXTERNAL_SPEAKER -> Icons.Filled.Speaker
                 AudioDeviceType.PHONE_SPEAKER -> Icons.Filled.PhoneAndroid
-                AudioDeviceType.CHROMECAST -> Icons.Filled.Cast
             }
 
             ToggleButton(

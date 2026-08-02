@@ -431,6 +431,7 @@ fun BottomSheetPlayer(
         }
     }
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
+    val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf(null) }
     val castPosition by castHandler?.castPosition?.collectAsState() ?: remember { mutableLongStateOf(0L) }
     val castDuration by castHandler?.castDuration?.collectAsState() ?: remember { mutableLongStateOf(0L) }
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
@@ -1412,7 +1413,8 @@ fun BottomSheetPlayer(
         collapsedContent = {
             MiniPlayer(
                 positionState = positionState,
-                durationState = durationState
+                durationState = durationState,
+                onClick = { state.expandSoft() }
             )
         },
     ) {
@@ -1548,6 +1550,27 @@ fun BottomSheetPlayer(
                     }
 
                     Spacer(Modifier.height(4.dp))
+
+                    if (isCasting && castDeviceName != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cast_connected),
+                                contentDescription = null,
+                                tint = TextBackgroundColor.copy(alpha = 0.7f),
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                text = "Casting to $castDeviceName",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = TextBackgroundColor.copy(alpha = 0.7f)
+                            )
+                        }
+                        Spacer(Modifier.height(2.dp))
+                    }
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -2632,7 +2655,6 @@ fun BottomSheetPlayer(
                                         if (isCasting) {
                                             castHandler?.setVolume(newVolume)
                                         } else {
-                                            
                                             scope.launch(Dispatchers.Default) {
                                                 val newStep = (newVolume * maxSystemVolume).roundToInt()
                                                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newStep, 0)

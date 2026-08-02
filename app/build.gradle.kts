@@ -290,7 +290,6 @@ dependencies {
     implementation(libs.media3.okhttp)
 
     // Google Cast - only included in GMS flavor (not available in F-Droid/FOSS builds)
-    "gmsImplementation"(libs.media3.cast)
     "gmsImplementation"(libs.mediarouter)
     "gmsImplementation"(libs.cast.framework)
 

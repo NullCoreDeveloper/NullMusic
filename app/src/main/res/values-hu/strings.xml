@@ -493,4 +493,5 @@
     <string name="ai_recommendations">MI-ajánlások</string>
     <string name="ai_recommendations_desc">Naponta frissülő, az ízlésedhez igazított lejátszási lista</string>
     <string name="ai_recommendations_refresh">Ajánlások frissítése</string>
+    <string name="stream_client">Stream kliens</string>
 </resources>

@@ -524,4 +524,5 @@
     <string name="modify_with_ai">Modifier avec l\'IA</string>
     <string name="modify_with_ai_desc">Modifier une playlist à l\'aide d\'instructions générées par l\'IA</string>
     <string name="ai_modify_prompt_hint">Par exemple : supprimer les chansons tristes, ajouter quelques tubes des années 90</string>
+    <string name="stream_client">Client de streaming</string>
 </resources>

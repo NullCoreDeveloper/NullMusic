@@ -500,4 +500,15 @@
     <string name="color_white">سفید</string>
     <string name="color_light_gray">خاکستری روشن</string>
     <string name="color_black">سیاه</string>
+    <string name="ai_modify_prompt_hint">مثلا , آهنگ های غمگین را حذف کن , چند تا پرطرفدار دهه 90 میلادی اضافه کن</string>
+    <string name="enable_haptics">فعالسازی بازخورد لمسی</string>
+    <string name="enable_haptics_desc">هنگام پیمایش، کلیک کردن و تعامل با برنامه، بازخورد لمسی (لرزش‌های ظریف) ارائه می‌شود</string>
+    <string name="ai_auto_translate">ترجمه خودکار</string>
+    <string name="ai_auto_translate_desc">در صورت موجود بودن متن آهنگ به صورت خودکار ترجمه می شود</string>
+    <string name="lyrics_translation_menu">ترجمه متن آهنگ</string>
+    <string name="ai_recommendations">پیشنهاد های هوش مصنوعی</string>
+    <string name="ai_recommendations_desc">بروزرسانی یک لیست پخش شخصی بر اساس سلیقه شما به طور روزانه</string>
+    <string name="ai_recommendations_refresh">تازه سازی پیشنهاد ها</string>
+    <string name="modify_with_ai_desc">تغییر لیست پخش با هوش مصنوعی</string>
+    <string name="modify_with_ai">تغییر با هوش مصنوعی</string>
 </resources>

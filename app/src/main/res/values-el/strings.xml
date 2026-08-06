@@ -482,4 +482,15 @@
     <string name="color_white">Λευκό</string>
     <string name="color_light_gray">Ανοιχτό γκρι</string>
     <string name="color_black">Μαύρο</string>
+    <string name="modify_with_ai">Τροποποίηστε με Τεχνητή Νοημοσύνη</string>
+    <string name="modify_with_ai_desc">Τροποποίηστε την λίστα αναπαραγωγής με οδηγίες από την Τεχνητή Νοημοσύνη</string>
+    <string name="ai_modify_prompt_hint">π.χ., Βγάλε λυπητερά τραγούδια, πρόσθεσε ακούσματα των 90s</string>
+    <string name="enable_haptics">Ενεργοποίηση αφής</string>
+    <string name="enable_haptics_desc">Παροχή απτικής ανάδρασης κατά την κύλιση, το κλικ και την αλληλεπίδραση με την εφαρμογή</string>
+    <string name="ai_auto_translate">Αυτόματη μετάφραση</string>
+    <string name="ai_auto_translate_desc">Μετάφρασε αυτόματα στίχους όταν είναι διαθέσιμο</string>
+    <string name="lyrics_translation_menu">Μετάφραση στίχων</string>
+    <string name="ai_recommendations">Προτάσεις από Τεχνητή Νοημοσύνη</string>
+    <string name="ai_recommendations_desc">Καθημερινή ενημέρωση από μια τυχαία λίστα αναπαραγωγής, με βάση τον τύπο μουσικής σας</string>
+    <string name="ai_recommendations_refresh">Ανανέωση προτάσεων</string>
 </resources>

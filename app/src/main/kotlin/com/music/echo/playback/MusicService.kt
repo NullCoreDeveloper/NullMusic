@@ -681,7 +681,7 @@ class MusicService :
         audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
 
         audioQuality = dataStore.get(AudioQualityKey).toEnum(iad1tya.echo.music.constants.AudioQuality.OPUS)
-        ipVersion = dataStore.get(IpVersionKey).toEnum(IpVersion.IPV4)
+        ipVersion = dataStore.get(IpVersionKey).toEnum(IpVersion.AUTO)
         playerVolume = MutableStateFlow(restorePlayerVolume(dataStore.get(PlayerVolumeKey, 1f)))
 
         
@@ -789,7 +789,7 @@ class MusicService :
         
         scope.launch {
             dataStore.data
-                .map { it[IpVersionKey]?.toEnum(IpVersion.IPV4) ?: IpVersion.IPV4 }
+                .map { it[IpVersionKey]?.toEnum(IpVersion.AUTO) ?: IpVersion.AUTO }
                 .distinctUntilChanged()
                 .collect { newIpVersion ->
                     val oldIpVersion = ipVersion
@@ -2939,20 +2939,6 @@ class MusicService :
             }
             val lockedQuality = activeQualityInCache ?: audioQuality
 
-            if (!shouldBypassCache && !isFullyDownloaded && dbFormat != null) {
-                val isLosslessCache = dbFormat.codecs == "flac"
-                
-                val cacheMatchesTarget = when (lockedQuality) {
-                    iad1tya.echo.music.constants.AudioQuality.LOSSLESS -> isLosslessCache
-                    iad1tya.echo.music.constants.AudioQuality.OPUS -> !isLosslessCache
-                }
-                
-                if (!cacheMatchesTarget) {
-                    shouldBypassCache = true
-                    Timber.tag(TAG).i("Quality changed to $lockedQuality for $mediaId. Clearing playerCache to prevent container mismatch.")
-                    playerCache.removeResource(mediaId)
-                }
-            }
 
             if (!shouldBypassCache) {
                 if (isFullyDownloaded) {
@@ -3040,37 +3026,11 @@ class MusicService :
             run {
                 val format = nonNullPlayback.format
                 
-                val isFinalLossless = format.mimeType.contains("flac", ignoreCase = true)
-                
                 var targetCacheKey = mediaId
                 
-                if (dbFormat != null && !shouldBypassCache) {
-                    val cacheIsLossless = dbFormat.codecs == "flac"
-                    
-                    if (isFinalLossless != cacheIsLossless) {
-                        Timber.tag(TAG).w("Format fallback detected AFTER fetch. Clearing playerCache to prevent mismatch crash.")
-                        playerCache.removeResource(mediaId)
-                        
-                        if (activeQualityInCache != null) {
-                            Timber.tag(TAG).e("Format changed mid-stream for $mediaId. Throwing to force player restart.")
-                            runBlocking(Dispatchers.IO) { database.query { deleteFormat(mediaId) } }
-                            throw PlaybackException(
-                                "Container format changed mid-stream due to fallback",
-                                null,
-                                PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED
-                            )
-                        }
-                    }
-                } else if (dbFormat != null && shouldBypassCache) {
-                    val cacheIsLossless = dbFormat.codecs == "flac"
-                    
-                    if (isFinalLossless != cacheIsLossless) {
-                        Timber.tag(TAG).i("Bypassed cache and fetched different format. Using custom cache key to prevent intercept.")
-                        targetCacheKey = "${mediaId}_diff"
-                    } else {
-                        Timber.tag(TAG).i("Bypassed cache but fallback resulted in cached format. Using original cache key.")
-                        targetCacheKey = mediaId
-                    }
+                if (dbFormat != null && shouldBypassCache) {
+                    Timber.tag(TAG).i("Bypassed cache. Using custom cache key to prevent intercept.")
+                    targetCacheKey = "${mediaId}_diff"
                 }
 
                 val loudnessDb = nonNullPlayback.audioConfig?.loudnessDb

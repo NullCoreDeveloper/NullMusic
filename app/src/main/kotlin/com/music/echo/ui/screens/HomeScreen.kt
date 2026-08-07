@@ -1841,7 +1841,7 @@ fun HomeScreen(
                                             .width(250.dp)
                                             .height(290.dp)
                                             .clip(MaterialTheme.shapes.extraLarge)
-                                            .background(MaterialTheme.colorScheme.onSurface)
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
                                     )
                                 }
                             }

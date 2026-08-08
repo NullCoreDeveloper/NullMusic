@@ -1726,14 +1726,14 @@ class MusicService :
     }
 
     fun playNext(items: List<MediaItem>) {
+        val isCasting = castConnectionHandler?.isCasting?.value == true
+        Timber.d("CastFlow.playNext: items=${items.size}, isCasting=$isCasting, playerItemCount=${player.mediaItemCount}")
         
-        if (player.mediaItemCount == 0 || player.playbackState == STATE_IDLE) {
+        if ((player.mediaItemCount == 0 || player.playbackState == STATE_IDLE) && !isCasting) {
+            Timber.d("CastFlow.playNext: empty queue, setting items directly")
             player.setMediaItems(items)
             player.prepare()
-            
-            if (castConnectionHandler?.isCasting?.value != true) {
-                player.play()
-            }
+            player.play()
             return
         }
 
@@ -1758,9 +1758,16 @@ class MusicService :
         val insertIndex = player.currentMediaItemIndex + 1
         val shuffleEnabled = player.shuffleModeEnabled
 
-        
         player.addMediaItems(insertIndex, items)
         player.prepare()
+
+        // Sync new items to Cast queue after current item
+        if (isCasting) {
+            Timber.d("CastFlow.playNext: dispatching insertItemsAfterCurrent to Cast")
+            scope.launch {
+                castConnectionHandler?.insertItemsAfterCurrent(items)
+            }
+        }
 
         if (shuffleEnabled) {
             
@@ -1816,6 +1823,8 @@ class MusicService :
     }
 
     fun addToQueue(items: List<MediaItem>) {
+        val isCasting = castConnectionHandler?.isCasting?.value == true
+        Timber.d("CastFlow.addToQueue: items=${items.size}, isCasting=$isCasting, playerItemCount=${player.mediaItemCount}")
         
         if (dataStore.get(PreventDuplicateTracksInQueueKey, false)) {
             val itemIds = items.map { it.mediaId }.toSet()
@@ -1834,7 +1843,17 @@ class MusicService :
             }
         }
 
+        // Suppress onTimelineChanged Cast sync — we handle it directly below
         player.addMediaItems(items)
+
+        // Sync new items to end of Cast queue
+        if (isCasting) {
+            Timber.d("CastFlow.addToQueue: dispatching appendItemsToCastQueue to Cast")
+            scope.launch {
+                castConnectionHandler?.appendItemsToCastQueue(items)
+            }
+        }
+
         if (player.shuffleModeEnabled) {
             val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
             applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
@@ -2059,11 +2078,11 @@ class MusicService :
             mediaItem != null) {
             val metadata = mediaItem.metadata
             if (metadata != null) {
-                
-                
+                Timber.d("CastFlow.onMediaItemTransition: mediaId=${metadata.id}, reason=$reason")
                 val navigated = castConnectionHandler?.navigateToMediaIfInQueue(metadata.id) ?: false
+                Timber.d("CastFlow.onMediaItemTransition: navigated=$navigated")
                 if (!navigated) {
-                    
+                    Timber.d("CastFlow.onMediaItemTransition: item not in Cast queue, calling loadMedia")
                     castConnectionHandler?.loadMedia(metadata)
                 }
             }

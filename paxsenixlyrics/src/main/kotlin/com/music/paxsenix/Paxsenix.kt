@@ -172,12 +172,14 @@ object Paxsenix {
         try {
             val remaining = jobs.toMutableList()
             while (remaining.isNotEmpty()) {
-                val (_, lrcPair) = select {
-                    remaining.forEach { deferred -> deferred.onAwait { it } }
+                select<Unit> {
+                    remaining.forEach { deferred -> deferred.onAwait { } }
                 }
-                remaining.removeAll { it.isCompleted }
-                val (lrc, hasWordTimings) = lrcPair
-                if (lrc.isNotEmpty()) {
+                val completed = remaining.filter { it.isCompleted }
+                remaining.removeAll(completed)
+                for (deferred in completed) {
+                    val (lrc, hasWordTimings) = deferred.await().second
+                    if (lrc.isEmpty()) continue
                     if (hasWordTimings) {
                         return Result.success(lrc)
                     } else if (plainFallback == null) {
@@ -371,11 +373,14 @@ object Paxsenix {
         try {
             val remaining = jobs.toMutableList()
             while (remaining.isNotEmpty()) {
-                val (lrc, hasWordTimings) = select {
-                    remaining.forEach { deferred -> deferred.onAwait { it } }
+                select<Unit> {
+                    remaining.forEach { deferred -> deferred.onAwait { } }
                 }
-                remaining.removeAll { it.isCompleted }
-                if (lrc.isNotEmpty()) {
+                val completed = remaining.filter { it.isCompleted }
+                remaining.removeAll(completed)
+                for (deferred in completed) {
+                    val (lrc, hasWordTimings) = deferred.await()
+                    if (lrc.isEmpty()) continue
                     if (hasWordTimings) {
                         callback(lrc)
                         return

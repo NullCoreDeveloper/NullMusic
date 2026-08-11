@@ -130,6 +130,23 @@ fun SettingDialoge(
                                 }
                             )
                         )
+                        add(
+                            Material3SettingsItem(
+                                title = { Text(androidx.compose.ui.res.stringResource(R.string.ai_lyrics_translation)) },
+                                customIcon = {
+                                    Text(
+                                        text = "Ai",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                    )
+                                },
+                                onClick = {
+                                    onDismissRequest()
+                                    onNavigate("settings/ai")
+                                }
+                            )
+                        )
                         if (audioQuality == AudioQuality.LOSSLESS) {
                             add(
                                 Material3SettingsItem(
@@ -191,6 +208,30 @@ fun SettingDialoge(
                         )
                     )
                 }
+
+                Material3SettingsGroup(
+                    title = "App",
+                    compact = true,
+                    items = listOf(
+                        Material3SettingsItem(
+                            title = { Text("Settings") },
+                            icon = painterResource(R.drawable.settings),
+                            onClick = {
+                                onDismissRequest()
+                                onNavigate("settings")
+                            }
+                        ),
+                        Material3SettingsItem(
+                            title = { Text("About") },
+                            icon = painterResource(R.drawable.info),
+                            trailingContent = { Text(BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            onClick = {
+                                onDismissRequest()
+                                onNavigate("settings/about")
+                            }
+                        )
+                    )
+                )
 
                 // Footer Links
                 Row(

@@ -61,7 +61,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import okio.ByteString.Companion.encodeUtf8
 import kotlin.math.roundToInt
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -296,20 +295,27 @@ fun StorageSettings(
                         emptyList()
                     }
                     downloadedSongs.forEach { song ->
-                        song.thumbnailUrl?.let { urlsToPreserve.add(it.encodeUtf8().sha256().hex()) }
-                        song.album?.thumbnailUrl?.let { urlsToPreserve.add(it.encodeUtf8().sha256().hex()) }
+                        song.thumbnailUrl?.let { urlsToPreserve.add(it) }
+                        song.album?.thumbnailUrl?.let { urlsToPreserve.add(it) }
                     }
-                    val directory = imageDiskCache.directory.toFile()
-                    if (directory.exists() && directory.isDirectory) {
-                        directory.listFiles()?.forEach { file ->
-                            if (file.isFile && !file.name.startsWith("journal")) {
-                                val isPreserved = urlsToPreserve.any { hash -> file.name.startsWith(hash) }
-                                if (!isPreserved) {
-                                    file.delete()
-                                }
-                            }
+                    val preserved = urlsToPreserve.mapNotNull { url ->
+                        imageDiskCache.openSnapshot(url)?.use { snapshot ->
+                            Triple(
+                                url,
+                                snapshot.metadata.toFile().readBytes(),
+                                snapshot.data.toFile().readBytes()
+                            )
                         }
                     }
+                    imageDiskCache.clear()
+                    preserved.forEach { (url, metadata, data) ->
+                        imageDiskCache.openEditor(url)?.let { editor ->
+                            editor.metadata.toFile().writeBytes(metadata)
+                            editor.data.toFile().writeBytes(data)
+                            editor.commit()
+                        }
+                    }
+                    context.imageLoader.memoryCache?.clear()
                 }
                 clearImageCacheDialog = false
             },

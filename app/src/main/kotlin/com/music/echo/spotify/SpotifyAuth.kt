@@ -34,7 +34,7 @@ object SpotifyAuth {
     private const val SERVER_TIME_URL = "https://open.spotify.com/api/server-time"
     private const val NUANCE_GIST_URL =
         "https://gist.githubusercontent.com/sonic-liberation/22ed9c6ba463899e933427f7de1f0eef/raw/"
-    private const val USER_AGENT =
+    const val USER_AGENT =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
     const val LOGIN_URL = "https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com%2F"

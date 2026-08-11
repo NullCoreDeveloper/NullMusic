@@ -61,6 +61,10 @@ class ScrobbleManager(
                 }
             }
         }
+
+        if (isPlaying) {
+            startTracking()
+        }
     }
 
     fun onSongResume(metadata: MediaMetadata) {

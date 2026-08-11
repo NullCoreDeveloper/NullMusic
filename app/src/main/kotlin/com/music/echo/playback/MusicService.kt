@@ -1843,6 +1843,8 @@ class MusicService :
             }
         }
 
+        val countBeforeAppend = player.mediaItemCount
+
         // Suppress onTimelineChanged Cast sync — we handle it directly below
         player.addMediaItems(items)
 
@@ -1855,8 +1857,7 @@ class MusicService :
         }
 
         if (player.shuffleModeEnabled) {
-            val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
-            applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+            appendToShuffleOrder(countBeforeAppend)
         }
         player.prepare()
     }
@@ -2102,10 +2103,10 @@ class MusicService :
                         .filterVideoSongs(dataStore.get(HideVideoSongsKey, false) || dataStore.get(iad1tya.echo.music.constants.DataSaverEnabledKey, false))
                 }
                 if (player.playbackState != STATE_IDLE && mediaItems.isNotEmpty()) {
+                    val countBeforeAppend = player.mediaItemCount
                     player.addMediaItems(mediaItems)
                     if (player.shuffleModeEnabled) {
-                        val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
-                        applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+                        appendToShuffleOrder(countBeforeAppend)
                     }
                 }
             }
@@ -2337,6 +2338,40 @@ class MusicService :
             }
             player.setShuffleOrder(DefaultShuffleOrder(shuffledIndices, System.currentTimeMillis()))
         }
+    }
+
+    /**
+     * Shuffles the items that were just appended to the end of the queue and schedules them
+     * after everything that was already queued, keeping the existing shuffle order untouched.
+     *
+     * Rebuilding the whole order with [applyShuffleOrder] would discard a manual reorder made
+     * from the queue screen and would schedule already played songs again, so it must only be
+     * used when the queue itself is replaced, not when items are appended to it.
+     *
+     * @param countBeforeAppend number of items the queue had before the new items were added.
+     */
+    private fun appendToShuffleOrder(countBeforeAppend: Int) {
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return
+
+        val totalCount = timeline.windowCount
+        if (countBeforeAppend < 0 || countBeforeAppend >= totalCount) return
+
+        // Walk the current shuffle order and keep only the items that were already queued.
+        val existingOrder = ArrayList<Int>(countBeforeAppend)
+        var index = timeline.getFirstWindowIndex(true)
+        while (index != C.INDEX_UNSET) {
+            if (index < countBeforeAppend) existingOrder.add(index)
+            index = timeline.getNextWindowIndex(index, Player.REPEAT_MODE_OFF, true)
+        }
+
+        // Bail out on an unexpected timeline rather than building an invalid shuffle order.
+        if (existingOrder.size != countBeforeAppend) return
+
+        val appendedOrder = (countBeforeAppend until totalCount).shuffled()
+        val finalOrder = (existingOrder + appendedOrder).toIntArray()
+
+        player.setShuffleOrder(DefaultShuffleOrder(finalOrder, System.currentTimeMillis()))
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {

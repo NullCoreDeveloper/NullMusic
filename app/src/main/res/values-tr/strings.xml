@@ -70,7 +70,7 @@
     <string name="liked_songs">Beğenilen şarkılar</string>
     <string name="downloaded_songs">İndirilen şarkılar</string>
     <string name="playlist_is_empty">Çalma listesi boş</string>
-    <string name="remove_download_playlist_confirm">İndirilen şarkılar deposundaki \"%s\" şarkının hepsini silmek istiyor musunuz?</string>
+    <string name="remove_download_playlist_confirm">İndirilen şarkılar deposundaki \"%s\" şarkıların hepsini silmek istiyor musunuz?</string>
     <string name="delete_playlist_confirm">\"%s\" çalma listesini silmek istiyor musunuz?</string>
     <string name="you_might_also_like">İlgili Çalma Listesi</string>
     <!-- Button -->
@@ -130,7 +130,7 @@
     <string name="edit_lyrics">Sözleri düzenle</string>
     <string name="search_lyrics">Sözleri ara</string>
     <string name="lyrics_swipe_to_change_song">Şarkıyı değiştirmek için kaydır</string>
-    <string name="lyrics_swipe_to_change_song_desc">Şarkıyı değiştirmek için tam ekran şarkı sözleri sayfasındaki sanatçı ve şarkı adı bölümünde sola / sağa kaydırın.</string>
+    <string name="lyrics_swipe_to_change_song_desc">Tam ekran şarkı sözü görünümünde, sanatçı ve şarkı adı bölümünü sola veya sağa kaydırarak şarkıyı değiştirin.</string>
     <string name="lyrics_thumbnail_play_pause">Kapak resminde oynat/duraklat düğmesini göster</string>
     <string name="lyrics_thumbnail_play_pause_desc">Tam ekran şarkı sözü sayfasında, şarkı kapağının üzerinde oynat/duraklat düğmesini göster</string>
     <string name="edit_song">Şarkıyı düzenle</string>
@@ -511,4 +511,23 @@
     <string name="ai_auto_translate">Otomatik Çeviri</string>
     <string name="lyrics_translation_menu">Şarkı Sözü Çevirisi</string>
     <string name="ai_recommendations">Yapay Zeka Önerileri</string>
+    <string name="modify_with_ai_desc">Yapay zeka talimatlarını kullanarak şarkı listesini düzenle</string>
+    <string name="ai_modify_prompt_hint">örn. , Hüzünlü şarkıları kaldır, 90\'lar hit müziği ekle</string>
+    <string name="enable_haptics_desc">Kaydırma, tıklama ve etkileşim sırasında uygulamada dokunsal geri bildirim sağla</string>
+    <string name="setting_desc_account">Oturum açma ve entegrasyonları yönet</string>
+    <string name="setting_desc_ai">Yapay zeka tabanlı şarkı sözleri ve çeviriler</string>
+    <string name="setting_desc_appearance">Temalar, renkler ve kullanıcı arayüzü düzeni</string>
+    <string name="setting_desc_player">Oynatma, kalite ve ekolayzır</string>
+    <string name="setting_desc_listen_together">Oynatmayı arkadaşlarınızla senkronize edin</string>
+    <string name="setting_desc_content">Dil, bölge ve sağlayıcılar</string>
+    <string name="setting_desc_privacy">Geçmiş ve izleme</string>
+    <string name="setting_desc_storage">Ön bellek ve indirilenler</string>
+    <string name="setting_desc_backup">Veriyi içe veya dışa aktar</string>
+    <string name="setting_desc_update">Yeni sürümleri kontrol et</string>
+    <string name="setting_desc_about">Uygulama bilgileri ve lisanslar</string>
+    <string name="setting_desc_settings_main">Uygulama tercihleri ve yapılandırmaları</string>
+    <string name="ai_auto_translate_desc">Mevcut olduğunda şarkı sözlerini otomatik olarak çevir</string>
+    <string name="ai_recommendations_desc">Zevkinize göre hazırlanmış özel bir çalma listesinin günlük güncellemesi</string>
+    <string name="ai_recommendations_refresh">Önerileri Yenile</string>
+    <string name="account_desc">Hesap Ayarlarını yönet</string>
 </resources>

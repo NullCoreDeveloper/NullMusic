@@ -38,6 +38,7 @@ import java.io.FileOutputStream
 import java.util.zip.ZipEntry
 import javax.inject.Inject
 import kotlin.system.exitProcess
+import iad1tya.echo.music.yandeximport.YandexImportRepository
 
 data class CsvImportState(
     val previewRows: List<List<String>> = emptyList(),
@@ -55,6 +56,7 @@ data class ConvertedSongLog(
 @HiltViewModel
 class BackupRestoreViewModel @Inject constructor(
     val database: MusicDatabase,
+    private val yandexImportRepository: YandexImportRepository,
 ) : ViewModel() {
 
     suspend fun backup(context: Context, uri: Uri) = withContext(Dispatchers.IO) {
@@ -380,6 +382,22 @@ class BackupRestoreViewModel @Inject constructor(
         }
         
         songs
+    }
+
+    suspend fun importFromYandexUrl(
+        context: Context,
+        url: String,
+        onProgress: (Int, Int) -> Unit
+    ): Boolean = withContext(Dispatchers.IO) {
+        val success = yandexImportRepository.importFromUrl(url, onProgress)
+        withContext(Dispatchers.Main) {
+            if (success) {
+                Toast.makeText(context, "Yandex Music import complete", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Failed to import from Yandex Music. Invalid URL or network error.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        success
     }
 
     companion object {

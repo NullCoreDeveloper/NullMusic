@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.music.innertube.utils.parseCookieString
+import kotlinx.coroutines.launch
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.AccountEmailKey
@@ -57,6 +58,15 @@ fun SettingDialoge(
 
     val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
     val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val backupRestoreViewModel = androidx.hilt.navigation.compose.hiltViewModel<iad1tya.echo.music.viewmodels.BackupRestoreViewModel>()
+
+    var showYandexDialog by remember { mutableStateOf(false) }
+    var isYandexImporting by remember { mutableStateOf(false) }
+    var yandexUrl by remember { mutableStateOf("") }
+    var yandexProgress by remember { mutableStateOf("") }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -223,6 +233,11 @@ fun SettingDialoge(
                             }
                         ),
                         Material3SettingsItem(
+                            title = { Text("Import from Yandex") },
+                            icon = painterResource(R.drawable.download),
+                            onClick = { showYandexDialog = true }
+                        ),
+                        Material3SettingsItem(
                             title = { Text("About") },
                             icon = painterResource(R.drawable.info),
                             trailingContent = { Text(BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
@@ -256,5 +271,56 @@ fun SettingDialoge(
                 }
             }
         }
+    }
+
+    if (showYandexDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!isYandexImporting) showYandexDialog = false },
+            title = { Text("Import from Yandex Music") },
+            text = {
+                Column {
+                    if (isYandexImporting) {
+                        Text("Importing... $yandexProgress")
+                    } else {
+                        Text("Paste the link to your public Yandex Music playlist.")
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        OutlinedTextField(
+                            value = yandexUrl,
+                            onValueChange = { yandexUrl = it },
+                            label = { Text("Playlist URL") },
+                            singleLine = true
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                if (!isYandexImporting) {
+                    TextButton(
+                        onClick = {
+                            if (yandexUrl.isNotBlank()) {
+                                isYandexImporting = true
+                                coroutineScope.launch {
+                                    backupRestoreViewModel.importFromYandexUrl(context, yandexUrl) { current, total ->
+                                        yandexProgress = "$current / $total"
+                                    }
+                                    isYandexImporting = false
+                                    showYandexDialog = false
+                                    yandexUrl = ""
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Import")
+                    }
+                }
+            },
+            dismissButton = {
+                if (!isYandexImporting) {
+                    TextButton(onClick = { showYandexDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
     }
 }

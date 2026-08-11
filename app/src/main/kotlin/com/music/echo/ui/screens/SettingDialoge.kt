@@ -72,6 +72,7 @@ fun SettingDialoge(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f, fill = false)
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 32.dp, start = 16.dp, end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

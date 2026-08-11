@@ -528,6 +528,7 @@ object YTPlayerUtils {
             ?.maxByOrNull {
                 it.bitrate * when (audioQuality) {
                     AudioQuality.OPUS -> 1
+                    AudioQuality.LOSSLESS -> 1
                 } + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0) 
             }
 

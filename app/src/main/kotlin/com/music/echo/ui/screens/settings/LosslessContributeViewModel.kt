@@ -295,7 +295,8 @@ class LosslessContributeViewModel @Inject constructor(
                 // 5. Create submission JSON
                 _uiState.value = LosslessContributeState.Uploading("Updating server database...")
                 val trackUrl = "https://lossless.nullmusic.fun/$targetPath"
-                updateMusicJson(forkOwner, forkName, branchName, songTitle, artistName, trackUrl)
+                val jsonFileName = "${songTitle.replace(Regex("[^a-zA-Z0-9]"), "-").take(20)}-${System.currentTimeMillis()}.json"
+                createSubmissionJson(forkOwner, forkName, branchName, songTitle, artistName, trackUrl, jsonFileName)
 
                 // 6. Create PR
                 _uiState.value = LosslessContributeState.Uploading("Finalizing submission...")

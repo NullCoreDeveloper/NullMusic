@@ -546,6 +546,10 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val (enableHaptics) = rememberPreference(EnableHapticsKey, defaultValue = false)
+        val view = androidx.compose.ui.platform.LocalView.current
+        var lastScrollHapticTime by remember { mutableStateOf(0L) }
+
         nullmusicTheme(
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,

@@ -100,33 +100,36 @@ fun SettingDialoge(
                         color = primaryColor,
                         textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.size(24.dp))
+                }
 
-            // Account Group
-            Material3SettingsGroup(
-                title = "Account",
-                compact = true,
-                items = buildList {
-                    add(
-                        Material3SettingsItem(
-                            title = { Text(if (isLoggedIn) accountName else "Anonymous") },
-                            description = { Text(if (isLoggedIn) accountEmail.ifEmpty { "Logged In" } else "Not Logged In") },
-                            icon = painterResource(R.drawable.account),
-                            trailingContent = if (isLoggedIn && !accountImageUrl.isNullOrBlank()) {
-                                {
-                                    AsyncImage(
-                                        model = accountImageUrl,
-                                        contentDescription = "Profile Photo",
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                    )
+                // Account Group
+                Material3SettingsGroup(
+                    title = "Account",
+                    compact = true,
+                    items = buildList {
+                        add(
+                            Material3SettingsItem(
+                                title = { Text(if (isLoggedIn) accountName else "Anonymous") },
+                                description = { Text(if (isLoggedIn) accountEmail.ifEmpty { "Logged In" } else "Not Logged In") },
+                                icon = painterResource(R.drawable.account),
+                                trailingContent = if (isLoggedIn && !accountImageUrl.isNullOrBlank()) {
+                                    {
+                                        AsyncImage(
+                                            model = accountImageUrl,
+                                            contentDescription = "Profile Photo",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    }
+                                } else null,
+                                onClick = {
+                                    onDismissRequest()
+                                    if (isLoggedIn) onNavigate("settings/account") else onNavigate("login") 
                                 }
-                            } else null,
-                            onClick = {
-                                onDismissRequest()
-                                if (isLoggedIn) onNavigate("settings/account") else onNavigate("login") 
-                            }
+                            )
                         )
                         if (audioQuality == AudioQuality.LOSSLESS) {
                             add(
@@ -145,55 +148,50 @@ fun SettingDialoge(
                                         onDismissRequest()
                                     }
                                 )
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onNavigate("settings/ai")
-                            }
+                            )
+                        }
+                    }
+                )
+
+                if (isLoggedIn) {
+                    Material3SettingsGroup(
+                        title = "Preferences",
+                        compact = true,
+                        items = listOf(
+                            Material3SettingsItem(
+                                title = { Text("Use Account for Browsing") },
+                                icon = painterResource(R.drawable.add_circle),
+                                trailingContent = {
+                                    Switch(
+                                        checked = useLoginForBrowse,
+                                        onCheckedChange = {
+                                            com.music.innertube.YouTube.useLoginForBrowse = it
+                                            onUseLoginForBrowseChange(it)
+                                        },
+                                        modifier = Modifier.scale(0.8f)
+                                    )
+                                },
+                                onClick = {
+                                    val newVal = !useLoginForBrowse
+                                    com.music.innertube.YouTube.useLoginForBrowse = newVal
+                                    onUseLoginForBrowseChange(newVal)
+                                }
+                            ),
+                            Material3SettingsItem(
+                                title = { Text("YouTube Music Sync") },
+                                icon = painterResource(R.drawable.cached),
+                                trailingContent = {
+                                    Switch(
+                                        checked = ytmSync,
+                                        onCheckedChange = onYtmSyncChange,
+                                        modifier = Modifier.scale(0.8f)
+                                    )
+                                },
+                                onClick = { onYtmSyncChange(!ytmSync) }
+                            )
                         )
                     )
                 }
-            )
-
-            if (isLoggedIn) {
-                Material3SettingsGroup(
-                    title = "Preferences",
-                    compact = true,
-                    items = listOf(
-                        Material3SettingsItem(
-                            title = { Text("Use Account for Browsing") },
-                            icon = painterResource(R.drawable.add_circle),
-                            trailingContent = {
-                                Switch(
-                                    checked = useLoginForBrowse,
-                                    onCheckedChange = {
-                                        com.music.innertube.YouTube.useLoginForBrowse = it
-                                        onUseLoginForBrowseChange(it)
-                                    },
-                                    modifier = Modifier.scale(0.8f)
-                                )
-                            },
-                            onClick = {
-                                val newVal = !useLoginForBrowse
-                                com.music.innertube.YouTube.useLoginForBrowse = newVal
-                                onUseLoginForBrowseChange(newVal)
-                            }
-                        ),
-                        Material3SettingsItem(
-                            title = { Text("YouTube Music Sync") },
-                            icon = painterResource(R.drawable.cached),
-                            trailingContent = {
-                                Switch(
-                                    checked = ytmSync,
-                                    onCheckedChange = onYtmSyncChange,
-                                    modifier = Modifier.scale(0.8f)
-                                )
-                            },
-                            onClick = { onYtmSyncChange(!ytmSync) }
-                        )
-                    )
-                )
-            }
 
                 // Footer Links
                 Row(

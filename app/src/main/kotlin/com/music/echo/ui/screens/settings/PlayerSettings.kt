@@ -241,21 +241,27 @@ highlightKey: String? = null) {
         iad1tya.echo.music.constants.DownloadQualityKey,
         defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
     )
+    var showLosslessAudioWarning by remember { mutableStateOf(false) }
 
     if (showAudioQualityDialog) {
         EnumDialog(
             onDismiss = { showAudioQualityDialog = false },
             onSelect = {
-                onAudioQualityChange(it)
-                showAudioQualityDialog = false
+                if (it == AudioQuality.LOSSLESS) {
+                    showLosslessAudioWarning = true
+                    showAudioQualityDialog = false
+                } else {
+                    onAudioQualityChange(it)
+                    showAudioQualityDialog = false
+                }
             },
             title = stringResource(R.string.audio_quality),
             current = audioQuality,
-            values = listOf(AudioQuality.OPUS),
+            values = listOf(AudioQuality.OPUS, AudioQuality.LOSSLESS),
             valueText = {
                 when (it) {
                     AudioQuality.OPUS -> "Opus"
-                    else -> ""
+                    AudioQuality.LOSSLESS -> "Saavn (320kbps)"
                 }
             },
             valueDescription = {
@@ -312,33 +318,6 @@ highlightKey: String? = null) {
                 }
             ) {
                 Text(stringResource(R.string.crossfade_beta_message))
-            }
-        }
-
-
-        if (showLosslessAudioWarning) {
-            DefaultDialog(
-                onDismiss = { showLosslessAudioWarning = false },
-                title = { Text("Enable Lossless Audio?") },
-                buttons = {
-                    TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nullmusic.fun/donate"))
-                        context.startActivity(intent)
-                    }) {
-                        Text("Donate")
-                    }
-                    TextButton(onClick = { showLosslessAudioWarning = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showLosslessAudioWarning = false
-                        onAudioQualityChange(AudioQuality.LOSSLESS)
-                    }) {
-                        Text(stringResource(R.string.enable))
-                    }
-                }
-            ) {
-                Text("Saavn (320kbps) streams run through NullMusic's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
             }
         }
 

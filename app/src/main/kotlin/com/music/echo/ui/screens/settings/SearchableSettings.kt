@@ -140,7 +140,5 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
 
 
             // Hardcoded Settings Missed by Generator
-
-,
-    )
+    ).map { SearchableSetting(it.first, null, it.second, it.third) }
 }

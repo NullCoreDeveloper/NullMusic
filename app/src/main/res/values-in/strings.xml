@@ -565,7 +565,7 @@
     <string name="display_density_desc">Kelola pengaturan Densitas tampilan</string>
     <string name="download_quality_title_desc">Kelola pengaturan Kualitas Unduhan</string>
     <string name="downloaded_songs_desc">Kelola pengaturan Lagu yang Diunduh</string>
-    <string name="echomusic_1_desc">Kelola pengaturan Vivi Music (Fluid)</string>
+    <string name="nullmusic_1_desc">Kelola pengaturan Vivi Music (Fluid)</string>
     <string name="enable_desc">Aktifkan atau nonaktifkan</string>
     <string name="enable_authentication_desc">Aktifkan atau nonaktifkan autentikasi</string>
     <string name="enable_dynamic_theme_desc">Aktifkan atau nonaktifkan tema dinamis</string>

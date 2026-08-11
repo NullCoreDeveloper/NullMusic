@@ -100,8 +100,6 @@
     <string name="error_playlist_name_empty">प्लेलिस्ट का नाम खाली नहीं हो सकता</string>
     <string name="cancel">रद्द करें</string>
     <string name="save">सहेजें</string>
-    <string name="edit_playlist">चाल सूची मे बदलाव करें</string>
-    <string name="error_playlist_name_empty">चाल सूची के नाम को खाली नहीं छोड़ा जा सकता ।</string>
     <string name="edit_artist">कलाकार बदलें</string>
     <string name="artist_name">कलाकार का नाम</string>
     <string name="playlist_name">चाल सूची का नाम</string>
@@ -121,7 +119,6 @@
         <item quantity="one">%d महीना</item>
         <item quantity="other">%d महीने</item>
     </plurals>
-    <string name="lyrics_not_found">गीतिकाव्य नहीं मिला</string>
     <string name="queue_searched_songs">खोजे गए गाने</string>
     <plurals name="n_year">
         <item quantity="one">%d साल</item>

@@ -75,6 +75,7 @@ jobs:
           # Force overwrite new author references
           python3 -c '
           import os
+          import re
           replacements = {
               "applicationId = \"iad1tya.echo.music\"": "applicationId = \"com.nullcore.music\"",
               "https://t.me/EchoMusicApp": "https://t.me/NullCoreDeveloper",
@@ -98,6 +99,23 @@ jobs:
                           with open(path, "r", encoding="utf-8") as f: content = f.read()
                           new_content = content
                           for old, new in replacements.items(): new_content = new_content.replace(old, new)
+                          
+                          # Automatically strip duplicate string keys in Android XML resources
+                          if path.endswith(".xml") and "values" in path:
+                              keys_seen = set()
+                              lines = new_content.splitlines()
+                              dedup_lines = []
+                              for line in lines:
+                                  match = re.search(r"<string name=\"([^\"]+)\"", line)
+                                  if match:
+                                      key = match.group(1)
+                                      if key in keys_seen:
+                                          continue
+                                      keys_seen.add(key)
+                                  dedup_lines.append(line)
+                              if lines:
+                                  new_content = "\n".join(dedup_lines) + "\n"
+                          
                           if new_content != content:
                               with open(path, "w", encoding="utf-8") as f: f.write(new_content)
                       except Exception: pass

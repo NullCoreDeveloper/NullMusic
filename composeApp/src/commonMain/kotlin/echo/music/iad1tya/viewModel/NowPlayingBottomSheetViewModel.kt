@@ -38,19 +38,19 @@ import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.added_to_playlist
-import echomusic.composeapp.generated.resources.added_to_queue
-import echomusic.composeapp.generated.resources.added_to_youtube_playlist
-import echomusic.composeapp.generated.resources.delete_song_from_playlist
-import echomusic.composeapp.generated.resources.downloading
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.error_occurred
-import echomusic.composeapp.generated.resources.play_next
-import echomusic.composeapp.generated.resources.removed_download
-import echomusic.composeapp.generated.resources.removed_from_YouTube_playlist
-import echomusic.composeapp.generated.resources.share_url
-import echomusic.composeapp.generated.resources.sleep_timer_off_done
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.added_to_playlist
+import nullmusic.composeapp.generated.resources.added_to_queue
+import nullmusic.composeapp.generated.resources.added_to_youtube_playlist
+import nullmusic.composeapp.generated.resources.delete_song_from_playlist
+import nullmusic.composeapp.generated.resources.downloading
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.error_occurred
+import nullmusic.composeapp.generated.resources.play_next
+import nullmusic.composeapp.generated.resources.removed_download
+import nullmusic.composeapp.generated.resources.removed_from_YouTube_playlist
+import nullmusic.composeapp.generated.resources.share_url
+import nullmusic.composeapp.generated.resources.sleep_timer_off_done
 
 class NowPlayingBottomSheetViewModel(
     private val dataStoreManager: DataStoreManager,

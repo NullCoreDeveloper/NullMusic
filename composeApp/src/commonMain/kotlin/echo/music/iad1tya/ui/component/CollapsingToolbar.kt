@@ -77,7 +77,7 @@ import echo.music.iad1tya.ui.icon.echoIcons
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.painterResource
-import echomusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.Res
 
 private val paddingMedium = 0.dp
 

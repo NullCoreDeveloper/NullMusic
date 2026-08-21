@@ -403,8 +403,8 @@
     <string name="other_version">Başka versiyon</string>
     <string name="later">Daha sonra</string>
     <string name="give_a_star">Yıldız bırak</string>
-    <string name="enjoying_echomusic">EchoMusic'in keyfini çıkarın</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">EchoMusic'i kullanmaktan hoşlanıyorsanız, GitHub'da EchoMusic'i yıldızlayın veya</string>
+    <string name="enjoying_nullmusic">EchoMusic'in keyfini çıkarın</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">EchoMusic'i kullanmaktan hoşlanıyorsanız, GitHub'da EchoMusic'i yıldızlayın veya</string>
     <string name="if_you_love_my_work_consider">"Eğer çalışmalarımı seviyorsanız"</string>
     <string name="buying_me_a_coffee">bana bir kavhe ısmarla.</string>
     <string name="fade_audio_effect">Ses efektini soldur</string>
@@ -455,8 +455,8 @@
     <string name="contributor_name">Katkıda bulunanın adı</string>
     <string name="contributor_email">Katkıda bulunanın e-postası</string>
     <string name="anonymous">Anonim</string>
-    <string name="echomusic_lyrics">EchoMusic Şarkı Sözleri</string>
-    <string name="lyrics_provider_echomusic">Şarkı sözleri EchoMusic tarafından sağlanmıştır</string>
+    <string name="nullmusic_lyrics">EchoMusic Şarkı Sözleri</string>
+    <string name="lyrics_provider_nullmusic">Şarkı sözleri EchoMusic tarafından sağlanmıştır</string>
     <string name="backup_in_progress">Yedekleme devam ediyor</string>
     <string name="restore_in_progress">Geri yükleme devam ediyor</string>
     <string name="backup_downloaded">İndirilen verileri yedekleyin</string>

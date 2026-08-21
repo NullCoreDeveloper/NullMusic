@@ -29,11 +29,11 @@ import echo.music.iad1tya.ui.icon.Download
 import echo.music.iad1tya.ui.icon.echoIcons
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.home_offline_subtitle
-import echomusic.composeapp.generated.resources.home_offline_title
-import echomusic.composeapp.generated.resources.listen_to_downloaded
-import echomusic.composeapp.generated.resources.retry
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.home_offline_subtitle
+import nullmusic.composeapp.generated.resources.home_offline_title
+import nullmusic.composeapp.generated.resources.listen_to_downloaded
+import nullmusic.composeapp.generated.resources.retry
 
 /**
  * Spotify-style minimal offline / error state shown on the Home tab when

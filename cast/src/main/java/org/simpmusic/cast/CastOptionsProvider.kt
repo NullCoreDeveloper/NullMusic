@@ -1,4 +1,4 @@
-package org.echomusic.cast
+package org.nullmusic.cast
 
 import android.content.Context
 import com.google.android.gms.cast.CastMediaControlIntent

@@ -419,8 +419,8 @@
     <string name="other_version">Altra versione</string>
     <string name="later">Dopo</string>
     <string name="give_a_star">Dai una stella</string>
-    <string name="enjoying_echomusic">Divertiti con EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Se ti piace usare EchoMusic, stella EchoMusic su GitHub o lasciare una recensione su</string>
+    <string name="enjoying_nullmusic">Divertiti con EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Se ti piace usare EchoMusic, stella EchoMusic su GitHub o lasciare una recensione su</string>
     <string name="if_you_love_my_work_consider">"Se ami il mio lavoro, considera"</string>
     <string name="buying_me_a_coffee">di offrirmi un caffè.</string>
     <string name="fade_audio_effect">Effetto di dissolvenza audio</string>
@@ -473,8 +473,8 @@
     <string name="contributor_name">Nome del collaboratore</string>
     <string name="contributor_email">E-mail del collaboratore</string>
     <string name="anonymous">Anonimo</string>
-    <string name="echomusic_lyrics">Testi di EchoMusic</string>
-    <string name="lyrics_provider_echomusic">Testi forniti da EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">Testi di EchoMusic</string>
+    <string name="lyrics_provider_nullmusic">Testi forniti da EchoMusic Lyrics</string>
     <string name="backup_in_progress">Duplicazione in corso</string>
     <string name="restore_in_progress">Ripristino in corso</string>
     <string name="backup_downloaded">Copia dei dati scaricati</string>
@@ -548,7 +548,7 @@
     <string name="local_tracking_description">Registra la cronologia di ascolto nel database locale</string>
     <string name="blog_notification_title">Notifiche post blog</string>
     <string name="blog_notification_description">Ricevi una notifica quando viene pubblicato un nuovo post sul blog</string>
-    <string name="echomusic_charts">Classifica EchoMusic</string>
+    <string name="nullmusic_charts">Classifica EchoMusic</string>
     <string name="crossfading">Dissolvenza incrociata</string>
     <string name="your_320kbps_url">Il tuo URL 320kbps</string>
     <string name="your_320kbps_url_description">Lascia vuoto per scegliere automaticamente un URL di lavoro dal checker uptime.</string>

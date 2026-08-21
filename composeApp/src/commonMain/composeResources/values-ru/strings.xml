@@ -421,8 +421,8 @@
     <string name="other_version">Другие версии</string>
     <string name="later">Позже</string>
     <string name="give_a_star">Дать звезду</string>
-    <string name="enjoying_echomusic">Нравится EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Если вам нравится пользоваться EchoMusic, оцените EchoMusic на GitHub или оставьте свой отзыв на</string>
+    <string name="enjoying_nullmusic">Нравится EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Если вам нравится пользоваться EchoMusic, оцените EchoMusic на GitHub или оставьте свой отзыв на</string>
     <string name="if_you_love_my_work_consider">"Если вам нравится моя работа, рассмотрите "</string>
     <string name="buying_me_a_coffee">купить мне кофе.</string>
     <string name="fade_audio_effect">Эффект затухания звука</string>
@@ -475,8 +475,8 @@
     <string name="contributor_name">Имя участника</string>
     <string name="contributor_email">Почта участника</string>
     <string name="anonymous">Анонимно</string>
-    <string name="echomusic_lyrics">EchoMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">Текст песни предоставлен EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">EchoMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">Текст песни предоставлен EchoMusic Lyrics</string>
     <string name="backup_in_progress">Выполняется резервное копирование</string>
     <string name="restore_in_progress">Выполняется восстановление</string>
     <string name="backup_downloaded">Резервное копирование загруженных данных</string>
@@ -551,7 +551,7 @@
     <string name="local_tracking_description">Записывать историю прослушивания в локальную базу данных</string>
     <string name="blog_notification_title">Уведомления о публикациях в блоге</string>
     <string name="blog_notification_description">Получайте уведомления о публикации новых записей в блоге</string>
-    <string name="echomusic_charts">Чарты EchoMusic</string>
+    <string name="nullmusic_charts">Чарты EchoMusic</string>
     <string name="crossfading">Кроссфейд</string>
     <string name="your_320kbps_url">Ваш URL 320 кбит/с</string>
     <string name="your_320kbps_url_description">Оставьте пустым для автоматического выбора рабочего URL-адреса из контроллера обновления.</string>

@@ -15,11 +15,11 @@ import echo.music.iad1tya.ui.navigation.destination.library.LibraryDestination
 import echo.music.iad1tya.ui.navigation.destination.search.SearchDestination
 import echo.music.iad1tya.viewModel.SharedViewModel
 import org.jetbrains.compose.resources.StringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.analytics
-import echomusic.composeapp.generated.resources.home
-import echomusic.composeapp.generated.resources.library
-import echomusic.composeapp.generated.resources.search
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.analytics
+import nullmusic.composeapp.generated.resources.home
+import nullmusic.composeapp.generated.resources.library
+import nullmusic.composeapp.generated.resources.search
 import kotlin.reflect.KClass
 
 @Composable

@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.import_invalid_file
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.import_invalid_file
 
 /**
  * Drives an import of a file produced by the echoMusic web converter.

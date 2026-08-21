@@ -23,8 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.loading
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.loading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

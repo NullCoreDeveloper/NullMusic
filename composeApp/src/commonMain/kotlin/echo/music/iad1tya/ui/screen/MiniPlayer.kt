@@ -146,7 +146,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import echomusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.Res
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.time.Duration.Companion.seconds

@@ -52,7 +52,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
-import org.echomusic.crashlytics.pushPlayerError
+import org.nullmusic.crashlytics.pushPlayerError
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.Locale
 

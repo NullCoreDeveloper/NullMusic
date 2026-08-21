@@ -11,8 +11,8 @@ import kotlinx.coroutines.runBlocking
 import multiplatform.network.cmptoast.ToastGravity
 import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.getString
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.no_equalizer
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.no_equalizer
 
 @Composable
 actual fun openEqResult(audioSessionId: Int): OpenEqLauncher {

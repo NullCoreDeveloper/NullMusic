@@ -2,10 +2,10 @@ package echo.music.iad1tya.extension
 
 import com.eygraber.uri.Uri
 
-private const val APP_SCHEME = "echomusic"
+private const val APP_SCHEME = "nullmusic"
 
 /**
- * Turn a pasted YouTube link into the `echomusic://` deep link that already drives the app.
+ * Turn a pasted YouTube link into the `nullmusic://` deep link that already drives the app.
  *
  * Deliberately a *translation* rather than a second link handler: `App.kt` already knows what to do
  * with `watch` / `playlist` / `channel` — including that a `OLAK5uy_` list is an album and that a

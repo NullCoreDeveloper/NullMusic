@@ -8144,7 +8144,7 @@
             ]
         },
         {
-            "uniqueId": "org.echomusic.gemini-kotlin:openai-client",
+            "uniqueId": "org.nullmusic.gemini-kotlin:openai-client",
             "funding": [
                 
             ],
@@ -8167,7 +8167,7 @@
             ]
         },
         {
-            "uniqueId": "org.echomusic.gemini-kotlin:openai-core",
+            "uniqueId": "org.nullmusic.gemini-kotlin:openai-core",
             "funding": [
                 
             ],

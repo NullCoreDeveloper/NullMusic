@@ -95,10 +95,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album_length
-import echomusic.composeapp.generated.resources.no_description
-import echomusic.composeapp.generated.resources.podcasts
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album_length
+import nullmusic.composeapp.generated.resources.no_description
+import nullmusic.composeapp.generated.resources.podcasts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

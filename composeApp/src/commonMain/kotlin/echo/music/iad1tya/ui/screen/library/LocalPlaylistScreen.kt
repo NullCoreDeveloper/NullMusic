@@ -177,22 +177,22 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album_length
-import echomusic.composeapp.generated.resources.baseline_downloaded
-import echomusic.composeapp.generated.resources.cancel
-import echomusic.composeapp.generated.resources.created_at
-import echomusic.composeapp.generated.resources.downloaded
-import echomusic.composeapp.generated.resources.downloading
-import echomusic.composeapp.generated.resources.reload
-import echomusic.composeapp.generated.resources.sort_by
-import echomusic.composeapp.generated.resources.suggest
-import echomusic.composeapp.generated.resources.sync_playlist_warning
-import echomusic.composeapp.generated.resources.synced_playlist_cannot_change_order
-import echomusic.composeapp.generated.resources.unsync_playlist_warning
-import echomusic.composeapp.generated.resources.warning
-import echomusic.composeapp.generated.resources.yes
-import echomusic.composeapp.generated.resources.your_playlist
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album_length
+import nullmusic.composeapp.generated.resources.baseline_downloaded
+import nullmusic.composeapp.generated.resources.cancel
+import nullmusic.composeapp.generated.resources.created_at
+import nullmusic.composeapp.generated.resources.downloaded
+import nullmusic.composeapp.generated.resources.downloading
+import nullmusic.composeapp.generated.resources.reload
+import nullmusic.composeapp.generated.resources.sort_by
+import nullmusic.composeapp.generated.resources.suggest
+import nullmusic.composeapp.generated.resources.sync_playlist_warning
+import nullmusic.composeapp.generated.resources.synced_playlist_cannot_change_order
+import nullmusic.composeapp.generated.resources.unsync_playlist_warning
+import nullmusic.composeapp.generated.resources.warning
+import nullmusic.composeapp.generated.resources.yes
+import nullmusic.composeapp.generated.resources.your_playlist
 
 private const val TAG = "LocalPlaylistScreen"
 

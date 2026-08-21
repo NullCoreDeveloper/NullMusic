@@ -36,8 +36,8 @@ import org.koin.core.component.inject
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import org.echomusic.crashlytics.configCrashlytics
-import org.echomusic.lastfm.configLastfm
+import org.nullmusic.crashlytics.configCrashlytics
+import org.nullmusic.lastfm.configLastfm
 import java.lang.reflect.Field
 
 class EchoMusicApplication :

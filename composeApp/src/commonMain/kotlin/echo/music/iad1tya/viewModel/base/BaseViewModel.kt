@@ -18,8 +18,8 @@ import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.StringResource
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.loading
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.loading
 
 abstract class BaseViewModel :
     ViewModel(),

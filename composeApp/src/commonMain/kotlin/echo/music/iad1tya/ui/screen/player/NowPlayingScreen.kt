@@ -190,27 +190,27 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.artists
-import echomusic.composeapp.generated.resources.crossfading
-import echomusic.composeapp.generated.resources.description
-import echomusic.composeapp.generated.resources.like_and_dislike
-import echomusic.composeapp.generated.resources.line_synced
-import echomusic.composeapp.generated.resources.lyrics
-import echomusic.composeapp.generated.resources.lyrics_provider_betterlyrics
-import echomusic.composeapp.generated.resources.lyrics_provider_lrc
-import echomusic.composeapp.generated.resources.lyrics_provider_echomusic
-import echomusic.composeapp.generated.resources.lyrics_provider_youtube
-import echomusic.composeapp.generated.resources.now_playing_upper
-import echomusic.composeapp.generated.resources.offline_mode
-import echomusic.composeapp.generated.resources.playing_on_device
-import echomusic.composeapp.generated.resources.published_at
-import echomusic.composeapp.generated.resources.rate_lyrics
-import echomusic.composeapp.generated.resources.rich_synced
-import echomusic.composeapp.generated.resources.show
-import echomusic.composeapp.generated.resources.spotify_lyrics_provider
-import echomusic.composeapp.generated.resources.unsynced
-import echomusic.composeapp.generated.resources.view_count
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.artists
+import nullmusic.composeapp.generated.resources.crossfading
+import nullmusic.composeapp.generated.resources.description
+import nullmusic.composeapp.generated.resources.like_and_dislike
+import nullmusic.composeapp.generated.resources.line_synced
+import nullmusic.composeapp.generated.resources.lyrics
+import nullmusic.composeapp.generated.resources.lyrics_provider_betterlyrics
+import nullmusic.composeapp.generated.resources.lyrics_provider_lrc
+import nullmusic.composeapp.generated.resources.lyrics_provider_nullmusic
+import nullmusic.composeapp.generated.resources.lyrics_provider_youtube
+import nullmusic.composeapp.generated.resources.now_playing_upper
+import nullmusic.composeapp.generated.resources.offline_mode
+import nullmusic.composeapp.generated.resources.playing_on_device
+import nullmusic.composeapp.generated.resources.published_at
+import nullmusic.composeapp.generated.resources.rate_lyrics
+import nullmusic.composeapp.generated.resources.rich_synced
+import nullmusic.composeapp.generated.resources.show
+import nullmusic.composeapp.generated.resources.spotify_lyrics_provider
+import nullmusic.composeapp.generated.resources.unsynced
+import nullmusic.composeapp.generated.resources.view_count
 import kotlin.math.roundToLong
 
 private const val TAG = "NowPlayingScreen"
@@ -2271,7 +2271,7 @@ fun NowPlayingScreenContent(
                                             text =
                                                 when (screenDataState.lyricsData?.lyricsProvider) {
                                                     LyricsProvider.echoMUSIC -> {
-                                                        stringResource(Res.string.lyrics_provider_echomusic)
+                                                        stringResource(Res.string.lyrics_provider_nullmusic)
                                                     }
 
                                                     LyricsProvider.LRCLIB -> {

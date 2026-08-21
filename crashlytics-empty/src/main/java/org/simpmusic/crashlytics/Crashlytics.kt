@@ -1,4 +1,4 @@
-package org.echomusic.crashlytics
+package org.nullmusic.crashlytics
 
 import android.content.Context
 import echo.music.iad1tya.domain.data.player.PlayerError

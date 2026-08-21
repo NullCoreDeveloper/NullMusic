@@ -77,19 +77,19 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album_length
-import echomusic.composeapp.generated.resources.artists
-import echomusic.composeapp.generated.resources.downloaded
-import echomusic.composeapp.generated.resources.favorite
-import echomusic.composeapp.generated.resources.followed
-import echomusic.composeapp.generated.resources.lower_plays
-import echomusic.composeapp.generated.resources.most_played
-import echomusic.composeapp.generated.resources.search
-import echomusic.composeapp.generated.resources.seconds
-import echomusic.composeapp.generated.resources.your_top_albums
-import echomusic.composeapp.generated.resources.your_top_artists
-import echomusic.composeapp.generated.resources.your_top_tracks
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album_length
+import nullmusic.composeapp.generated.resources.artists
+import nullmusic.composeapp.generated.resources.downloaded
+import nullmusic.composeapp.generated.resources.favorite
+import nullmusic.composeapp.generated.resources.followed
+import nullmusic.composeapp.generated.resources.lower_plays
+import nullmusic.composeapp.generated.resources.most_played
+import nullmusic.composeapp.generated.resources.search
+import nullmusic.composeapp.generated.resources.seconds
+import nullmusic.composeapp.generated.resources.your_top_albums
+import nullmusic.composeapp.generated.resources.your_top_artists
+import nullmusic.composeapp.generated.resources.your_top_tracks
 
 @OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable

@@ -421,8 +421,8 @@
     <string name="other_version">Інші версії</string>
     <string name="later">Пізніше</string>
     <string name="give_a_star">Дати зірку</string>
-    <string name="enjoying_echomusic">Подобається EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Якщо вам подобається користуватися EchoMusic, оцініть EchoMusic на GitHub, або залиште свій відгук на</string>
+    <string name="enjoying_nullmusic">Подобається EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Якщо вам подобається користуватися EchoMusic, оцініть EchoMusic на GitHub, або залиште свій відгук на</string>
     <string name="if_you_love_my_work_consider">"Якщо ви любите мою роботу, подумайте "</string>
     <string name="buying_me_a_coffee">купити мені каву.</string>
     <string name="fade_audio_effect">Ефект затухання звуку</string>
@@ -475,8 +475,8 @@
     <string name="contributor_name">Ім'я учасника</string>
     <string name="contributor_email">Електронна пошта учасника</string>
     <string name="anonymous">Анонімно</string>
-    <string name="echomusic_lyrics">Тексти пісень EchoMusic</string>
-    <string name="lyrics_provider_echomusic">Тексти пісень надано EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">Тексти пісень EchoMusic</string>
+    <string name="lyrics_provider_nullmusic">Тексти пісень надано EchoMusic Lyrics</string>
     <string name="backup_in_progress">Виконується резервне копіювання</string>
     <string name="restore_in_progress">Виконується відновлення</string>
     <string name="backup_downloaded">Резервне копіювання завантажених даних</string>
@@ -550,7 +550,7 @@
     <string name="local_tracking_description">Запис історії прослуховування в локальну базу даних</string>
     <string name="blog_notification_title">Сповіщення про публікації в блозі</string>
     <string name="blog_notification_description">Отримуйте сповіщення про публікацію нової публікації в блозі</string>
-    <string name="echomusic_charts">Чарти EchoMusic</string>
+    <string name="nullmusic_charts">Чарти EchoMusic</string>
     <string name="crossfading">Кроссфейдинг</string>
     <string name="your_320kbps_url">Ваша URL-адреса 320 Кбіт/с</string>
     <string name="your_320kbps_url_description">Залиште поле порожнім, щоб автоматично вибрати робочу URL-адресу з перевірки часу безперебійної роботи.</string>

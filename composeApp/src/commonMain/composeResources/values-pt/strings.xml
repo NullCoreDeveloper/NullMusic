@@ -416,8 +416,8 @@
     <string name="other_version">Outra versão</string>
     <string name="later">Depois</string>
     <string name="give_a_star">Dê uma estrela</string>
-    <string name="enjoying_echomusic">Aproveitando o EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Se gosta de usar o EchoMusic, dê-nos uma estrela no GitHub ou deixe-nos uma avaliação</string>
+    <string name="enjoying_nullmusic">Aproveitando o EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Se gosta de usar o EchoMusic, dê-nos uma estrela no GitHub ou deixe-nos uma avaliação</string>
     <string name="if_you_love_my_work_consider">"Se aprecia o meu trabalho, considere "</string>
     <string name="buying_me_a_coffee">compre-me um café.</string>
     <string name="fade_audio_effect">Efeito de Áudio em Fade</string>
@@ -470,8 +470,8 @@
     <string name="contributor_name">Nome do colaborador</string>
     <string name="contributor_email">E-mail do colaborador</string>
     <string name="anonymous">Anônimo</string>
-    <string name="echomusic_lyrics">EchoMusic Letras</string>
-    <string name="lyrics_provider_echomusic">Lyrics provided by EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">EchoMusic Letras</string>
+    <string name="lyrics_provider_nullmusic">Lyrics provided by EchoMusic Lyrics</string>
     <string name="backup_in_progress">Recuperação Em Progresso</string>
     <string name="restore_in_progress">Restauração Em Progresso</string>
     <string name="backup_downloaded">Recuperação dos dados baixados</string>
@@ -543,7 +543,7 @@
     <string name="quit_app">Sair do app</string>
     <string name="local_tracking_title">Histórico de reprodução local</string>
     <string name="local_tracking_description">Registrar seu histórico de reprodução no banco de dados local</string>
-    <string name="echomusic_charts">Paradas EchoMusic</string>
+    <string name="nullmusic_charts">Paradas EchoMusic</string>
     <string name="crossfading">Crossfading</string>
     <string name="your_320kbps_url">Sua URL de 320kbps</string>
     <string name="your_320kbps_url_description">Deixe vazio para escolher automaticamente uma URL de trabalho do verificador.</string>

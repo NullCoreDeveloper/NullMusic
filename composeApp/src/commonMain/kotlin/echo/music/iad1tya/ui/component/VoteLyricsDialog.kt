@@ -23,13 +23,13 @@ import echo.music.iad1tya.ui.theme.typo
 import echo.music.iad1tya.viewModel.VoteData
 import echo.music.iad1tya.viewModel.VoteState
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.cancel
-import echomusic.composeapp.generated.resources.downvote
-import echomusic.composeapp.generated.resources.rate_lyrics
-import echomusic.composeapp.generated.resources.rate_translated_lyrics
-import echomusic.composeapp.generated.resources.upvote
-import echomusic.composeapp.generated.resources.vote_for_lyrics
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.cancel
+import nullmusic.composeapp.generated.resources.downvote
+import nullmusic.composeapp.generated.resources.rate_lyrics
+import nullmusic.composeapp.generated.resources.rate_translated_lyrics
+import nullmusic.composeapp.generated.resources.upvote
+import nullmusic.composeapp.generated.resources.vote_for_lyrics
 
 @Composable
 fun VoteLyricsDialog(

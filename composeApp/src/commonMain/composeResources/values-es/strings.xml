@@ -419,8 +419,8 @@
     <string name="other_version">Otras versiones</string>
     <string name="later">Más tarde</string>
     <string name="give_a_star">Dar una estrella</string>
-    <string name="enjoying_echomusic">Disfrutando EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Si te gusta usar EchoMusic, da una estrella a EchoMusic en gituhb o deja una reseña</string>
+    <string name="enjoying_nullmusic">Disfrutando EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Si te gusta usar EchoMusic, da una estrella a EchoMusic en gituhb o deja una reseña</string>
     <string name="if_you_love_my_work_consider">"Si amas mi trabajo, considera "</string>
     <string name="buying_me_a_coffee">comprame un café.</string>
     <string name="fade_audio_effect">Efecto de desvanecimiento de audio</string>
@@ -473,8 +473,8 @@
     <string name="contributor_name">Nombre del contribuidor</string>
     <string name="contributor_email">Correo del contribuidor</string>
     <string name="anonymous">Anónimo</string>
-    <string name="echomusic_lyrics">EchoMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">Letras proporcionadas por EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">EchoMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">Letras proporcionadas por EchoMusic Lyrics</string>
     <string name="backup_in_progress">Copia de seguridad en curso</string>
     <string name="restore_in_progress">Restauración en curso</string>
     <string name="backup_downloaded">Respaldar datos descargados</string>
@@ -564,7 +564,7 @@
     <string name="local_tracking_description">Registra tu historial de escucha en la base de datos local</string>
     <string name="blog_notification_title">Notificaciones de publicaciones del blog</string>
     <string name="blog_notification_description">Recibe una notificación cuando se publique una nueva entrada del blog</string>
-    <string name="echomusic_charts">Gráficos EchoMusic</string>
+    <string name="nullmusic_charts">Gráficos EchoMusic</string>
     <string name="crossfading">Crossfade</string>
     <string name="your_320kbps_url">Su URL de 320kbps</string>
     <string name="your_320kbps_url_description">Dejar en blanco para elegir automáticamente una URL funcional desde la comprobación de tiempo de activación.</string>
@@ -579,11 +579,11 @@
     <string name="playing_on_device">Reproduciendo en %1$s</string>
     <string name="not_available_while_casting">No disponible durante la transmisión</string>
     <string name="import_data">Importar listas de reproducción</string>
-    <string name="import_playlists_from_other_apps">Importa listas de reproducción convertidas de Spotify u otra aplicación cliente de YT Music. Utiliza solamente nuestro formato. Comprueba la herramienta de conversión en: https://www.echomusic.org/tools</string>
+    <string name="import_playlists_from_other_apps">Importa listas de reproducción convertidas de Spotify u otra aplicación cliente de YT Music. Utiliza solamente nuestro formato. Comprueba la herramienta de conversión en: https://www.nullmusic.org/tools</string>
     <string name="import_reading_file">Leyendo archivo…</string>
     <string name="import_progress_songs">%1$d de %2$d canciones</string>
     <string name="import_result">Creadas %1$d listas de reproducción e importadas %2$d canciones.</string>
     <string name="import_result_skipped">Se omitieron %1$d entradas porque su canción no estaba en el archivo.</string>
     <string name="import_failed">Error en la importación</string>
-    <string name="import_invalid_file">Este archivo no es un archivo de importación válido de EchoMusic. Convierte tu biblioteca en echomusic.org primero.</string>
+    <string name="import_invalid_file">Este archivo no es un archivo de importación válido de EchoMusic. Convierte tu biblioteca en nullmusic.org primero.</string>
 </resources>

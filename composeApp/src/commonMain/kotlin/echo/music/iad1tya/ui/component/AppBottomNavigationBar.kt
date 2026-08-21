@@ -29,7 +29,7 @@ import echo.music.iad1tya.ui.navigation.destination.search.SearchDestination
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.*
+import nullmusic.composeapp.generated.resources.*
 import kotlin.reflect.KClass
 
 @Composable

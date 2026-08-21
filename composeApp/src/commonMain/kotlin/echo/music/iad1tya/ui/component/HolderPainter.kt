@@ -5,11 +5,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import echo.music.iad1tya.ui.theme.LocalForceDarkText
 import echo.music.iad1tya.ui.theme.LocalIsDarkTheme
 import org.jetbrains.compose.resources.painterResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.holder
-import echomusic.composeapp.generated.resources.holder_light
-import echomusic.composeapp.generated.resources.holder_video
-import echomusic.composeapp.generated.resources.holder_video_light
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.holder
+import nullmusic.composeapp.generated.resources.holder_light
+import nullmusic.composeapp.generated.resources.holder_video
+import nullmusic.composeapp.generated.resources.holder_video_light
 
 /**
  * Theme-aware artwork placeholder.

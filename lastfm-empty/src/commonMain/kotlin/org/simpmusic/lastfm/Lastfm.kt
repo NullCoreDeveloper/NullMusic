@@ -1,4 +1,4 @@
-package org.echomusic.lastfm
+package org.nullmusic.lastfm
 
 import echo.music.iad1tya.logger.Logger
 

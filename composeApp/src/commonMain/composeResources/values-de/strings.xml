@@ -419,8 +419,8 @@
     <string name="other_version">Andere Version</string>
     <string name="later">später</string>
     <string name="give_a_star">Gebe einen Stern</string>
-    <string name="enjoying_echomusic">Spaß an EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Wenn dir EchoMusic gefällt, gib EchoMusic einen Stern auf Github oder lasse eine Rezension da</string>
+    <string name="enjoying_nullmusic">Spaß an EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Wenn dir EchoMusic gefällt, gib EchoMusic einen Stern auf Github oder lasse eine Rezension da</string>
     <string name="if_you_love_my_work_consider">"Wenn Sie meine Arbeit lieben, denken Sie darüber nach "</string>
     <string name="buying_me_a_coffee">Mir einen Kaffee zu kaufen.</string>
     <string name="fade_audio_effect">Fade Audioeffekt</string>
@@ -473,8 +473,8 @@
     <string name="contributor_name">Name des Mitwirkenden</string>
     <string name="contributor_email">E-Mail des Mitwirkenden</string>
     <string name="anonymous">Anonym</string>
-    <string name="echomusic_lyrics">EchoMusic-Lyrics</string>
-    <string name="lyrics_provider_echomusic">Songtexte von EchoMusic-Lyrics bereitgestellt</string>
+    <string name="nullmusic_lyrics">EchoMusic-Lyrics</string>
+    <string name="lyrics_provider_nullmusic">Songtexte von EchoMusic-Lyrics bereitgestellt</string>
     <string name="backup_in_progress">Backup wird erstellt</string>
     <string name="restore_in_progress">Backup wird wiederhergestellt</string>
     <string name="backup_downloaded">Backup der heruntergeladenen Daten</string>
@@ -564,7 +564,7 @@
     <string name="local_tracking_description">Zeichne die Wiedergabehistorie in der lokalen Datenbank auf</string>
     <string name="blog_notification_title">Benachrichtigungen zu Blogbeiträgen</string>
     <string name="blog_notification_description">Werde benachrichtigt wenn ein neuer Blog-Beitrag veröffentlicht wird</string>
-    <string name="echomusic_charts">EchoMusic Charts</string>
+    <string name="nullmusic_charts">EchoMusic Charts</string>
     <string name="crossfading">Crossfading (überblenden)</string>
     <string name="your_320kbps_url">Deine 320kbps URL</string>
     <string name="your_320kbps_url_description">Lassen Sie das Feld leer, damit automatisch eine funktionierende URL aus dem Verfügbarkeitsprüfer ausgewählt wird.</string>
@@ -584,5 +584,5 @@
     <string name="import_result">%1$d Playlisten erstellt und %2$d Songs importiert.</string>
     <string name="import_result_skipped">%1$d Einträge wurden übersprungen, da der entsprechende Titel in der Datei fehlte.</string>
     <string name="import_failed">Import fehlgeschlagen</string>
-    <string name="import_invalid_file">Diese Datei ist keine gültige EchoMusic Importdatei. Konvertieren Sie zuerst Ihre Bibliothek auf echomusic.org.</string>
+    <string name="import_invalid_file">Diese Datei ist keine gültige EchoMusic Importdatei. Konvertieren Sie zuerst Ihre Bibliothek auf nullmusic.org.</string>
 </resources>

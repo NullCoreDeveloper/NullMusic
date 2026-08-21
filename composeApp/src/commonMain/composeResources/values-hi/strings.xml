@@ -396,8 +396,8 @@
     <string name="other_version">अन्य वर्ज़न</string>
     <string name="later">बाद में</string>
     <string name="give_a_star">एक सितारा दें</string>
-    <string name="enjoying_echomusic">सिम्पम्यूजिक का आनंद ले रहे हैं</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">यदि आपको सिम्पम्यूजिक का उपयोग करना अच्छा लगता है, तो गिटहब पर सिम्पम्यूजिक को स्टार करें या समीक्षा लिखें</string>
+    <string name="enjoying_nullmusic">सिम्पम्यूजिक का आनंद ले रहे हैं</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">यदि आपको सिम्पम्यूजिक का उपयोग करना अच्छा लगता है, तो गिटहब पर सिम्पम्यूजिक को स्टार करें या समीक्षा लिखें</string>
     <string name="if_you_love_my_work_consider">"अगर आपको मेरा काम पसंद आए, तो "</string>
     <string name="buying_me_a_coffee">मुझे एक कॉफ़ी देकर समर्थन करें।</string>
     <string name="fade_audio_effect">ऑडियो प्रभाव फीका करें</string>
@@ -440,8 +440,8 @@
     <string name="use_anonymous">अनाम नाम से योगदान करें</string>
     <string name="contributor_name">योगदानकर्ता नाम</string>
     <string name="anonymous">अनाम</string>
-    <string name="echomusic_lyrics">गीत EchoMusic Lyrics द्वारा प्रदान किए गए</string>
-    <string name="lyrics_provider_echomusic">गीत के बोल सिम्पम्यूज़िक लिरिक्स द्वारा प्रदान किए गए</string>
+    <string name="nullmusic_lyrics">गीत EchoMusic Lyrics द्वारा प्रदान किए गए</string>
+    <string name="lyrics_provider_nullmusic">गीत के बोल सिम्पम्यूज़िक लिरिक्स द्वारा प्रदान किए गए</string>
     <string name="backup_in_progress">बैकप चल रहा है</string>
     <string name="restore_in_progress">पुनर्स्थापना प्रगति पर है</string>
     <string name="backup_downloaded">डाउनलोड किए गए डेटा का बैकअप लें</string>

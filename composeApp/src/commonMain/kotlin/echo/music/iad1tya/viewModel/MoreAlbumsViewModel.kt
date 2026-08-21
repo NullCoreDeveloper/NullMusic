@@ -7,8 +7,8 @@ import echo.music.iad1tya.viewModel.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.error
 
 class MoreAlbumsViewModel(
     private val albumRepository: AlbumRepository,

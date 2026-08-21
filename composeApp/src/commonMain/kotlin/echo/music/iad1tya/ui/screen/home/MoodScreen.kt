@@ -24,7 +24,7 @@ import echo.music.iad1tya.ui.theme.typo
 import echo.music.iad1tya.viewModel.MoodViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.*
+import nullmusic.composeapp.generated.resources.*
 
 @Composable
 fun MoodScreen(

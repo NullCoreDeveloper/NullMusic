@@ -30,9 +30,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.radio
-import echomusic.composeapp.generated.resources.shuffle
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.radio
+import nullmusic.composeapp.generated.resources.shuffle
 
 class ArtistViewModel(
     private val artistRepository: ArtistRepository,

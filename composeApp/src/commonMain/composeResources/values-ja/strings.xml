@@ -393,8 +393,8 @@
     <string name="other_version">他のバージョン</string>
     <string name="later">また今度</string>
     <string name="give_a_star">星マークを押す</string>
-    <string name="enjoying_echomusic">EchoMusicを楽しんでください</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">EchoMusicで楽しんでいたら、GitHubで星マークを押すか、ここにレビューを投稿してください:</string>
+    <string name="enjoying_nullmusic">EchoMusicを楽しんでください</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">EchoMusicで楽しんでいたら、GitHubで星マークを押すか、ここにレビューを投稿してください:</string>
     <string name="if_you_love_my_work_consider">"私のアプリを気に入ったら、"</string>
     <string name="buying_me_a_coffee">コーヒーを一杯ご馳走してください。</string>
     <string name="fade_audio_effect">フェードの音声エフェクト</string>
@@ -443,8 +443,8 @@
     <string name="contributor_name">貢献者名</string>
     <string name="contributor_email">貢献者のメールアドレス</string>
     <string name="anonymous">匿名</string>
-    <string name="echomusic_lyrics">EchoMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">EchoMusic Lyricsが提供する歌詞</string>
+    <string name="nullmusic_lyrics">EchoMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">EchoMusic Lyricsが提供する歌詞</string>
     <string name="backup_in_progress">バックアップ中</string>
     <string name="restore_in_progress">復元中</string>
     <string name="backup_downloaded">ダウンロードしたデータをバックアップする</string>
@@ -478,6 +478,6 @@
     <string name="combine_local_and_youtube_liked_songs_description">YouTubeの高評価のみを使用する (オフライン時はサポートしていません)</string>
     <string name="local_tracking_title">再生履歴をローカルに保存</string>
     <string name="local_tracking_description">再生履歴をローカルデータベースに記録しま す</string>
-    <string name="echomusic_charts">EchoMusic チャート</string>
+    <string name="nullmusic_charts">EchoMusic チャート</string>
     <string name="crossfading">クロスフェード</string>
 </resources>

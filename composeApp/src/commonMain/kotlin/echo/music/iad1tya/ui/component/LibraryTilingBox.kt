@@ -29,11 +29,11 @@ import echo.music.iad1tya.ui.screen.library.LibraryDynamicPlaylistType
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.downloaded
-import echomusic.composeapp.generated.resources.favorite
-import echomusic.composeapp.generated.resources.followed
-import echomusic.composeapp.generated.resources.most_played
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.downloaded
+import nullmusic.composeapp.generated.resources.favorite
+import nullmusic.composeapp.generated.resources.followed
+import nullmusic.composeapp.generated.resources.most_played
 
 @Composable
 fun LibraryTilingBox(navController: NavController) {

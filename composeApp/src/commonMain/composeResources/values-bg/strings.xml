@@ -399,8 +399,8 @@
     <string name="other_version">Друга версия</string>
     <string name="later">По-късно</string>
     <string name="give_a_star">Оцени</string>
-    <string name="enjoying_echomusic">Доволни от EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Оценете EchoMusic в GitHub или оставете ревю ако сте доволни</string>
+    <string name="enjoying_nullmusic">Доволни от EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Оценете EchoMusic в GitHub или оставете ревю ако сте доволни</string>
     <string name="if_you_love_my_work_consider">"Ако сте доволни от работата ми, моля помислете да "</string>
     <string name="buying_me_a_coffee">ме почерпите кафе.</string>
     <string name="fade_audio_effect">Постепенно намаляване на звука</string>

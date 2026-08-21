@@ -38,9 +38,9 @@ import echo.music.iad1tya.ui.theme.typo
 import echo.music.iad1tya.viewModel.LogInViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.log_in_to_discord
-import echomusic.composeapp.generated.resources.login_success
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.log_in_to_discord
+import nullmusic.composeapp.generated.resources.login_success
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

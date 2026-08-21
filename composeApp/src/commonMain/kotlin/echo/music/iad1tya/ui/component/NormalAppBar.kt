@@ -17,7 +17,7 @@ import echo.music.iad1tya.ui.icon.ArrowBackIosNew
 import echo.music.iad1tya.ui.icon.MoreVert
 import echo.music.iad1tya.ui.icon.echoIcons
 import org.jetbrains.compose.resources.painterResource
-import echomusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

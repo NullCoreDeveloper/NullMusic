@@ -33,14 +33,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.contributor_email
-import echomusic.composeapp.generated.resources.contributor_name
-import echomusic.composeapp.generated.resources.help_build_lyrics_database
-import echomusic.composeapp.generated.resources.help_build_lyrics_database_description
-import echomusic.composeapp.generated.resources.later
-import echomusic.composeapp.generated.resources.ok
-import echomusic.composeapp.generated.resources.use_anonymous
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.contributor_email
+import nullmusic.composeapp.generated.resources.contributor_name
+import nullmusic.composeapp.generated.resources.help_build_lyrics_database
+import nullmusic.composeapp.generated.resources.help_build_lyrics_database_description
+import nullmusic.composeapp.generated.resources.later
+import nullmusic.composeapp.generated.resources.ok
+import nullmusic.composeapp.generated.resources.use_anonymous
 
 @Composable
 @ExperimentalMaterial3Api

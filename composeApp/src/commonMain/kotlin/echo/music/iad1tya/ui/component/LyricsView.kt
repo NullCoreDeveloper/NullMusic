@@ -109,9 +109,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.crossfading
-import echomusic.composeapp.generated.resources.unavailable
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.crossfading
+import nullmusic.composeapp.generated.resources.unavailable
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos

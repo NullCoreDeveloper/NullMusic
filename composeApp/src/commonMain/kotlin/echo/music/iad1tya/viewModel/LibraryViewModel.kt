@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.added_local_playlist
-import echomusic.composeapp.generated.resources.youtube_liked_music
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.added_local_playlist
+import nullmusic.composeapp.generated.resources.youtube_liked_music
 
 class LibraryViewModel(
     private val dataStoreManager: DataStoreManager,

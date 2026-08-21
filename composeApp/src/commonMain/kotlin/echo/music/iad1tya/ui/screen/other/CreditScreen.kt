@@ -51,7 +51,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.*
+import nullmusic.composeapp.generated.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
@@ -128,7 +128,7 @@ fun CreditScreen(
             // Website button
             TextButton(
                 onClick = {
-                    openUrl("https://echomusic.org")
+                    openUrl("https://nullmusic.org")
                 },
                 modifier =
                     Modifier

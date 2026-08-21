@@ -122,7 +122,7 @@
     <string name="version">Version</string>
     <string name="github">Github</string>
     <string name="iad1tya_dev">Aditya</string>
-    <string name="support_url">https://support.iad1tya.cyou/</string>
+    <string name="support_url">https://support.NullCoreDeveloper/</string>
     <string name="support_upi_crypto">Support with UPI/Crypto</string>
     <string name="buy_me_a_coffee">Buy me a coffee</string>
     <string name="developer_blog">Developer Blog</string>
@@ -434,8 +434,8 @@
     <string name="other_version">Other version</string>
     <string name="later">Later</string>
     <string name="give_a_star">Give a star</string>
-    <string name="enjoying_echomusic">Enjoying EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">If you enjoy using EchoMusic, star EchoMusic on GitHub or leave a review on</string>
+    <string name="enjoying_nullmusic">Enjoying EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">If you enjoy using EchoMusic, star EchoMusic on GitHub or leave a review on</string>
     <string name="if_you_love_my_work_consider">"If you love my work, consider "</string>
     <string name="buying_me_a_coffee">buying me a coffee.</string>
     <string name="fade_audio_effect">Fade audio effect</string>
@@ -493,8 +493,8 @@
     <string name="contributor_name">Contributor name</string>
     <string name="contributor_email">Contributor email</string>
     <string name="anonymous">Anonymous</string>
-    <string name="echomusic_lyrics">SimpMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">Lyrics provided by SimpMusic Lyrics</string>
+    <string name="nullmusic_lyrics">SimpMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">Lyrics provided by SimpMusic Lyrics</string>
     <string name="backup_in_progress">Backup in progress</string>
     <string name="restore_in_progress">Restore in progress</string>
     <string name="backup_downloaded">Backup downloaded data</string>
@@ -584,7 +584,7 @@
     <string name="local_tracking_description">Log your listening history to local database</string>
     <string name="blog_notification_title">Blog post notifications</string>
     <string name="blog_notification_description">Get notified when a new blog post is published</string>
-    <string name="echomusic_charts">EchoMusic Charts</string>
+    <string name="nullmusic_charts">EchoMusic Charts</string>
     <string name="crossfading">Crossfading</string>
     <string name="your_320kbps_url">Your 320kbps URL</string>
     <string name="your_320kbps_url_description">Leave empty to auto-choose a working URL from the uptime checker.</string>
@@ -600,13 +600,13 @@
     <string name="not_available_while_casting">Not available while casting</string>
     <string name="import_data">Import playlists</string>
     <string name="import_playlists_from_other_apps">Import playlists from another app</string>
-    <string name="import_data_intro">Import brings in playlists converted from Spotify or another YT Music client app.\nConverting tool: https://www.echomusic.org/tools\nIn EchoMusic, only playlist files in our own format can be imported</string>
+    <string name="import_data_intro">Import brings in playlists converted from Spotify or another YT Music client app.\nConverting tool: https://www.nullmusic.org/tools\nIn EchoMusic, only playlist files in our own format can be imported</string>
     <string name="import_reading_file">Reading file…</string>
     <string name="import_progress_songs">%1$d of %2$d songs</string>
     <string name="import_result">Created %1$d playlists and imported %2$d songs.</string>
     <string name="import_result_skipped">%1$d entries were skipped because their song was missing from the file.</string>
     <string name="import_failed">Import failed</string>
-    <string name="import_invalid_file">This file is not a valid EchoMusic import file. Convert your library at echomusic.org first.</string>
+    <string name="import_invalid_file">This file is not a valid EchoMusic import file. Convert your library at nullmusic.org first.</string>
     <string name="analytics">Analytics</string>
     <string name="import_spotify_playlist">Import Spotify Playlist</string>
     <string name="import_spotify_playlist_url">Spotify Playlist URL</string>

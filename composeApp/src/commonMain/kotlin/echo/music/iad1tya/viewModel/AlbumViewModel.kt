@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album
-import echomusic.composeapp.generated.resources.downloaded
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.playlist_is_empty
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album
+import nullmusic.composeapp.generated.resources.downloaded
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.playlist_is_empty
 
 class AlbumViewModel(
     private val songRepository: SongRepository,

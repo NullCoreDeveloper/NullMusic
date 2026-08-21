@@ -15,9 +15,9 @@ import echo.music.iad1tya.domain.extension.now
 import echo.music.iad1tya.ui.theme.typo
 import echo.music.iad1tya.utils.VersionManager
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.app_name
-import echomusic.composeapp.generated.resources.version_format
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.app_name
+import nullmusic.composeapp.generated.resources.version_format
 
 @Composable
 fun EndOfPage(withoutCredit: Boolean = false) {

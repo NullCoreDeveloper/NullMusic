@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.Font
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.poppins_medium
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.poppins_medium
 
 @Composable
 fun fontFamily(): FontFamily =

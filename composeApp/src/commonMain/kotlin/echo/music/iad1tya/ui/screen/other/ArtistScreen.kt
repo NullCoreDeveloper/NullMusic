@@ -129,18 +129,18 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.albums
-import echomusic.composeapp.generated.resources.description
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.featured_inArtist
-import echomusic.composeapp.generated.resources.more
-import echomusic.composeapp.generated.resources.no_description
-import echomusic.composeapp.generated.resources.popular
-import echomusic.composeapp.generated.resources.related_artists
-import echomusic.composeapp.generated.resources.singles
-import echomusic.composeapp.generated.resources.unknown
-import echomusic.composeapp.generated.resources.videos
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.albums
+import nullmusic.composeapp.generated.resources.description
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.featured_inArtist
+import nullmusic.composeapp.generated.resources.more
+import nullmusic.composeapp.generated.resources.no_description
+import nullmusic.composeapp.generated.resources.popular
+import nullmusic.composeapp.generated.resources.related_artists
+import nullmusic.composeapp.generated.resources.singles
+import nullmusic.composeapp.generated.resources.unknown
+import nullmusic.composeapp.generated.resources.videos
 
 @Composable
 @ExperimentalMaterial3Api

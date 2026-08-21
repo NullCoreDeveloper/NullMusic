@@ -418,8 +418,8 @@
     <string name="other_version">Inne wersje</string>
     <string name="later">Później</string>
     <string name="give_a_star">Daj gwiazdkę</string>
-    <string name="enjoying_echomusic">Ciesz się EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Jeśli lubisz używać EchoMusic, zostaw gwiazdkę na GitHub lub zostaw recenzję na</string>
+    <string name="enjoying_nullmusic">Ciesz się EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Jeśli lubisz używać EchoMusic, zostaw gwiazdkę na GitHub lub zostaw recenzję na</string>
     <string name="if_you_love_my_work_consider">"Jeśli kochasz moją pracę, rozważ "</string>
     <string name="buying_me_a_coffee">postawienie mi kawy.</string>
     <string name="fade_audio_effect">Efekt zanikania dźwięku</string>
@@ -464,8 +464,8 @@
     <string name="contributor_name">Nazwa kontrybutora</string>
     <string name="contributor_email">E-mail kontrybutora</string>
     <string name="anonymous">Anonimowy</string>
-    <string name="echomusic_lyrics">Teksty EchoMusic</string>
-    <string name="lyrics_provider_echomusic">Tekst dostarczony przez Teksty EchoMusic</string>
+    <string name="nullmusic_lyrics">Teksty EchoMusic</string>
+    <string name="lyrics_provider_nullmusic">Tekst dostarczony przez Teksty EchoMusic</string>
     <string name="backup_in_progress">Kopia zapasowa w toku</string>
     <string name="restore_in_progress">Przywracanie w toku</string>
     <string name="backup_downloaded">Utwórz kopię zapasową pobranych danych</string>

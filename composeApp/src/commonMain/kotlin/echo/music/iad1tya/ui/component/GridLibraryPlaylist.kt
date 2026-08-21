@@ -61,8 +61,8 @@ import echo.music.iad1tya.ui.theme.seed
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.create
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.create
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

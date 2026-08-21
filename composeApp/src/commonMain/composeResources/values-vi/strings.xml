@@ -418,8 +418,8 @@
     <string name="other_version">Phiên bản khác</string>
     <string name="later">Để sau</string>
     <string name="give_a_star">Tặng một sao</string>
-    <string name="enjoying_echomusic">Yêu thích EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Nếu bạn yêu thích EchoMusic, sao EchoMusic trên GitHub hoặc để lại một đánh giá trên</string>
+    <string name="enjoying_nullmusic">Yêu thích EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Nếu bạn yêu thích EchoMusic, sao EchoMusic trên GitHub hoặc để lại một đánh giá trên</string>
     <string name="if_you_love_my_work_consider">"Nếu bạn cảm thấy yêu thích những gì tôi làm, có thể "</string>
     <string name="buying_me_a_coffee">mua cho tôi một ly cà phê.</string>
     <string name="fade_audio_effect">Hiệu ứng làm mờ âm thanh</string>
@@ -472,8 +472,8 @@
     <string name="contributor_name">Tên người đóng góp</string>
     <string name="contributor_email">Email người đóng góp</string>
     <string name="anonymous">Ẩn danh</string>
-    <string name="echomusic_lyrics">EchoMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">Lời bài hát được cung cấp bởi EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">EchoMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">Lời bài hát được cung cấp bởi EchoMusic Lyrics</string>
     <string name="backup_in_progress">Đang sao lưu</string>
     <string name="restore_in_progress">Đang tiến hành khôi phục</string>
     <string name="backup_downloaded">Sao lưu dữ liệu đã tải xuống</string>
@@ -563,7 +563,7 @@
     <string name="local_tracking_description">Ghi lại lịch sử nghe nhạc vào cơ sở dữ liệu cục bộ</string>
     <string name="blog_notification_title">Thông báo về các bài blog mới</string>
     <string name="blog_notification_description">Nhận thông báo khi có bài blog mới được phát hành</string>
-    <string name="echomusic_charts">EchoMusic Charts</string>
+    <string name="nullmusic_charts">EchoMusic Charts</string>
     <string name="crossfading">Đang chuyển bài mượt mà</string>
     <string name="your_320kbps_url">Đường dẫn link 320kbps của bạn</string>
     <string name="your_320kbps_url_description">Để trống để tự động chọn một URL hoạt động từ hệ thống kiểm tra.</string>
@@ -578,11 +578,11 @@
     <string name="playing_on_device">Phát trên %1$s</string>
     <string name="not_available_while_casting">Không có sẵn khi đang trình chiếu</string>
     <string name="import_data">Nhập danh sách phát</string>
-    <string name="import_playlists_from_other_apps">Để nhập danh sách phát đã chuyển đổi từ Spotify hoặc ứng dụng khách YT Music khác, vui lòng chỉ sử dụng định dạng của chúng tôi. Hãy xem công cụ chuyển đổi tại: https://www.echomusic.org/tools</string>
+    <string name="import_playlists_from_other_apps">Để nhập danh sách phát đã chuyển đổi từ Spotify hoặc ứng dụng khách YT Music khác, vui lòng chỉ sử dụng định dạng của chúng tôi. Hãy xem công cụ chuyển đổi tại: https://www.nullmusic.org/tools</string>
     <string name="import_reading_file">Đang đọc tệp…</string>
     <string name="import_progress_songs">%1$d / %2$d bài hát</string>
     <string name="import_result">Đã tạo %1$d danh sách phát và nhập %2$d bài hát.</string>
     <string name="import_result_skipped">%1$d mục đã bị bỏ qua do thiếu bài hát tương ứng trong tệp.</string>
     <string name="import_failed">Nhập dữ liệu thất bại</string>
-    <string name="import_invalid_file">Tệp này không phải là tệp nhập EchoMusic hợp lệ. Hãy chuyển đổi thư viện của bạn tại echomusic.org trước.</string>
+    <string name="import_invalid_file">Tệp này không phải là tệp nhập EchoMusic hợp lệ. Hãy chuyển đổi thư viện của bạn tại nullmusic.org trước.</string>
 </resources>

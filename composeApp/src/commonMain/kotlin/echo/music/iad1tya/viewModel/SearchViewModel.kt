@@ -28,15 +28,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.albums
-import echomusic.composeapp.generated.resources.all
-import echomusic.composeapp.generated.resources.artists
-import echomusic.composeapp.generated.resources.featured_playlists
-import echomusic.composeapp.generated.resources.playlists
-import echomusic.composeapp.generated.resources.podcasts
-import echomusic.composeapp.generated.resources.songs
-import echomusic.composeapp.generated.resources.videos
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.albums
+import nullmusic.composeapp.generated.resources.all
+import nullmusic.composeapp.generated.resources.artists
+import nullmusic.composeapp.generated.resources.featured_playlists
+import nullmusic.composeapp.generated.resources.playlists
+import nullmusic.composeapp.generated.resources.podcasts
+import nullmusic.composeapp.generated.resources.songs
+import nullmusic.composeapp.generated.resources.videos
 
 // State cho tìm kiếm
 data class SearchScreenState(

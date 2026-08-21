@@ -22,8 +22,8 @@ import echo.music.iad1tya.ui.icon.Explicit
 import echo.music.iad1tya.ui.icon.echoIcons
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.ai
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.ai
 
 @Composable
 fun ExplicitBadge(modifier: Modifier = Modifier) {

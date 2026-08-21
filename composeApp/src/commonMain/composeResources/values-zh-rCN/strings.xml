@@ -418,8 +418,8 @@
     <string name="other_version">其他版本</string>
     <string name="later">稍后询问</string>
     <string name="give_a_star">给颗星星</string>
-    <string name="enjoying_echomusic">享受EchoMusic吧</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">如果你喜欢EchoMusic，别忘了在Github给EchoMusic点星星或留好评</string>
+    <string name="enjoying_nullmusic">享受EchoMusic吧</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">如果你喜欢EchoMusic，别忘了在Github给EchoMusic点星星或留好评</string>
     <string name="if_you_love_my_work_consider">"如果你喜欢我的工作，请考虑： "</string>
     <string name="buying_me_a_coffee">软件称心多雅意，薄酬一杯解劳辛。</string>
     <string name="fade_audio_effect">音频淡入淡出</string>
@@ -472,8 +472,8 @@
     <string name="contributor_name">贡献者名称</string>
     <string name="contributor_email">贡献者邮箱</string>
     <string name="anonymous">匿名</string>
-    <string name="echomusic_lyrics">EchoMusic 歌词</string>
-    <string name="lyrics_provider_echomusic">歌词由 BetterLyrics 提供</string>
+    <string name="nullmusic_lyrics">EchoMusic 歌词</string>
+    <string name="lyrics_provider_nullmusic">歌词由 BetterLyrics 提供</string>
     <string name="backup_in_progress">正在备份</string>
     <string name="restore_in_progress">正在还原</string>
     <string name="backup_downloaded">备份已下载数据</string>
@@ -562,7 +562,7 @@
     <string name="local_tracking_description">将您的收听历史记录到本地数据库</string>
     <string name="blog_notification_title">博客文章通知</string>
     <string name="blog_notification_description">在开发者发布新博文时接收通知</string>
-    <string name="echomusic_charts">EchoMusic 排行榜</string>
+    <string name="nullmusic_charts">EchoMusic 排行榜</string>
     <string name="crossfading">交叉淡入淡出</string>
     <string name="your_320kbps_url">您的 320kbps URL</string>
     <string name="your_320kbps_url_description">留空则由可用性检查程序自动选择一个有效的 URL。</string>
@@ -579,5 +579,5 @@
     <string name="import_result">已创建 %1$d 播放列表并导入了 %2$d 首歌曲。</string>
     <string name="import_result_skipped">已跳过 %1$d 条目，因为文件中缺少相应的歌曲。</string>
     <string name="import_failed">导入失败</string>
-    <string name="import_invalid_file">此文件不是一个有效的 EchoMusic 导入文件。请先在echomusic.org转换您的库。</string>
+    <string name="import_invalid_file">此文件不是一个有效的 EchoMusic 导入文件。请先在nullmusic.org转换您的库。</string>
 </resources>

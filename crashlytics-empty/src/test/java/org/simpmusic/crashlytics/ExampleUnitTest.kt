@@ -1,4 +1,4 @@
-package org.echomusic.crashlytics
+package org.nullmusic.crashlytics
 
 import org.junit.Test
 

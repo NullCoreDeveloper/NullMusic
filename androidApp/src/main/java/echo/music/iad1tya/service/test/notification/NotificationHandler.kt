@@ -33,7 +33,7 @@ object NotificationHandler {
         //  No back-stack when launched
         val action = Intent(context, MainActivity::class.java)
         action.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        action.data = "echomusic://notification".toUri()
+        action.data = "nullmusic://notification".toUri()
         val pendingIntent =
             PendingIntent.getActivity(
                 context,

@@ -1,12 +1,12 @@
 package echo.music.iad1tya.utils
 
 import org.jetbrains.compose.resources.getString
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.explicit_content_blocked
-import echomusic.composeapp.generated.resources.new_albums
-import echomusic.composeapp.generated.resources.new_singles
-import echomusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
-import echomusic.composeapp.generated.resources.time_out_check_internet_connection_or_change_piped_instance_in_settings
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.explicit_content_blocked
+import nullmusic.composeapp.generated.resources.new_albums
+import nullmusic.composeapp.generated.resources.new_singles
+import nullmusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
+import nullmusic.composeapp.generated.resources.time_out_check_internet_connection_or_change_piped_instance_in_settings
 
 object ComposeResUtils {
     suspend fun getResString(

@@ -91,8 +91,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.five_seconds
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.five_seconds
 import kotlin.math.roundToLong
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -410,8 +410,8 @@
     <string name="other_version">نسخه دیگر</string>
     <string name="later">بعدا</string>
     <string name="give_a_star">ستاره بدید</string>
-    <string name="enjoying_echomusic">از EchoMusic لذت می‌بری</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">اگر از استفاده از EchoMusic لذت می‌برید، به EchoMusic در GitHub ستاره دهید یا نظر خود را درباره آن بنویسید</string>
+    <string name="enjoying_nullmusic">از EchoMusic لذت می‌بری</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">اگر از استفاده از EchoMusic لذت می‌برید، به EchoMusic در GitHub ستاره دهید یا نظر خود را درباره آن بنویسید</string>
     <string name="if_you_love_my_work_consider">"اگر از کار من خوشتان می‌آید، لطفاً "</string>
     <string name="buying_me_a_coffee">یک قهوه برایم بخرید.</string>
     <string name="fade_audio_effect">افکت محو صدا</string>
@@ -456,7 +456,7 @@
     <string name="contributor_name">اسم مشارکت کننده</string>
     <string name="contributor_email">ایمیل مشارکت کننده</string>
     <string name="anonymous">ناشناس</string>
-    <string name="echomusic_lyrics">متن ترانه‌های EchoMusic</string>
-    <string name="lyrics_provider_echomusic">متن ترانه‌ها ارائه شده توسط سرویس متن ترانه‌های EchoMusic</string>
+    <string name="nullmusic_lyrics">متن ترانه‌های EchoMusic</string>
+    <string name="lyrics_provider_nullmusic">متن ترانه‌ها ارائه شده توسط سرویس متن ترانه‌های EchoMusic</string>
     <string name="backup_in_progress">پشتیبان گیری در حال انجام است</string>
 </resources>

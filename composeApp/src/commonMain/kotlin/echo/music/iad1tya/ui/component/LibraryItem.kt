@@ -69,12 +69,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.most_played
-import echomusic.composeapp.generated.resources.no_favorite_playlists
-import echomusic.composeapp.generated.resources.no_playlists_downloaded
-import echomusic.composeapp.generated.resources.radio
-import echomusic.composeapp.generated.resources.recently_added
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.most_played
+import nullmusic.composeapp.generated.resources.no_favorite_playlists
+import nullmusic.composeapp.generated.resources.no_playlists_downloaded
+import nullmusic.composeapp.generated.resources.radio
+import nullmusic.composeapp.generated.resources.recently_added
 import echo.music.iad1tya.domain.mediaservice.handler.PlaylistType as DomainPlaylistType
 
 @OptIn(ExperimentalMaterial3Api::class)

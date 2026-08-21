@@ -45,19 +45,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.auto_created_by_youtube_music
-import echomusic.composeapp.generated.resources.downloading
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.playlist
-import echomusic.composeapp.generated.resources.playlist_is_empty
-import echomusic.composeapp.generated.resources.radio
-import echomusic.composeapp.generated.resources.radio_not_available
-import echomusic.composeapp.generated.resources.shuffle
-import echomusic.composeapp.generated.resources.shuffle_not_available
-import echomusic.composeapp.generated.resources.synced
-import echomusic.composeapp.generated.resources.syncing
-import echomusic.composeapp.generated.resources.view_count
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.auto_created_by_youtube_music
+import nullmusic.composeapp.generated.resources.downloading
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.playlist
+import nullmusic.composeapp.generated.resources.playlist_is_empty
+import nullmusic.composeapp.generated.resources.radio
+import nullmusic.composeapp.generated.resources.radio_not_available
+import nullmusic.composeapp.generated.resources.shuffle
+import nullmusic.composeapp.generated.resources.shuffle_not_available
+import nullmusic.composeapp.generated.resources.synced
+import nullmusic.composeapp.generated.resources.syncing
+import nullmusic.composeapp.generated.resources.view_count
 
 class PlaylistViewModel(
     private val songRepository: SongRepository,

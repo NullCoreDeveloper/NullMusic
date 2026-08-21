@@ -50,17 +50,17 @@ import echo.music.iad1tya.viewModel.LogInViewModel
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.lastfm_login_failed
-import echomusic.composeapp.generated.resources.lastfm_login_step_1
-import echomusic.composeapp.generated.resources.lastfm_login_step_2
-import echomusic.composeapp.generated.resources.lastfm_open_authorize_page
-import echomusic.composeapp.generated.resources.lastfm_paste_callback_confirm
-import echomusic.composeapp.generated.resources.lastfm_paste_callback_hint
-import echomusic.composeapp.generated.resources.lastfm_paste_callback_title
-import echomusic.composeapp.generated.resources.log_in_to_lastfm
-import echomusic.composeapp.generated.resources.login_success
-import echomusic.composeapp.generated.resources.scrobbling_info
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.lastfm_login_failed
+import nullmusic.composeapp.generated.resources.lastfm_login_step_1
+import nullmusic.composeapp.generated.resources.lastfm_login_step_2
+import nullmusic.composeapp.generated.resources.lastfm_open_authorize_page
+import nullmusic.composeapp.generated.resources.lastfm_paste_callback_confirm
+import nullmusic.composeapp.generated.resources.lastfm_paste_callback_hint
+import nullmusic.composeapp.generated.resources.lastfm_paste_callback_title
+import nullmusic.composeapp.generated.resources.log_in_to_lastfm
+import nullmusic.composeapp.generated.resources.login_success
+import nullmusic.composeapp.generated.resources.scrobbling_info
 
 /** Desktop is far wider than any reading measure — the column stops here and centres. */
 private val CONTENT_MAX_WIDTH = 420.dp

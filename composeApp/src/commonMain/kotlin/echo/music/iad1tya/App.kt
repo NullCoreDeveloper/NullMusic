@@ -106,20 +106,20 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.cancel
-import echomusic.composeapp.generated.resources.do_not_show_again
-import echomusic.composeapp.generated.resources.download
-import echomusic.composeapp.generated.resources.good_night
-import echomusic.composeapp.generated.resources.notification
-import echomusic.composeapp.generated.resources.sleep_timer_off
-import echomusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
-import echomusic.composeapp.generated.resources.this_link_is_not_supported
-import echomusic.composeapp.generated.resources.unknown
-import echomusic.composeapp.generated.resources.update_available
-import echomusic.composeapp.generated.resources.update_message
-import echomusic.composeapp.generated.resources.version_format
-import echomusic.composeapp.generated.resources.yes
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.cancel
+import nullmusic.composeapp.generated.resources.do_not_show_again
+import nullmusic.composeapp.generated.resources.download
+import nullmusic.composeapp.generated.resources.good_night
+import nullmusic.composeapp.generated.resources.notification
+import nullmusic.composeapp.generated.resources.sleep_timer_off
+import nullmusic.composeapp.generated.resources.this_app_needs_to_access_your_notification
+import nullmusic.composeapp.generated.resources.this_link_is_not_supported
+import nullmusic.composeapp.generated.resources.unknown
+import nullmusic.composeapp.generated.resources.update_available
+import nullmusic.composeapp.generated.resources.update_message
+import nullmusic.composeapp.generated.resources.version_format
+import nullmusic.composeapp.generated.resources.yes
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class, ExperimentalFoundationApi::class)
@@ -183,7 +183,7 @@ fun App(viewModel: SharedViewModel = koinInject()) {
 if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                 // Last.fm sends the user back here after they approve access, carrying the request
                 // token: wordbyword://lastfm-auth?token=xxx. The callback is fixed on the API
-                // account, which is why the scheme is not "echomusic".
+                // account, which is why the scheme is not "nullmusic".
                 val token = data.getQueryParameter("token")
                 Logger.d("MainActivity", "Last.fm callback, token present: ${!token.isNullOrEmpty()}")
                 viewModel.setIntent(null)
@@ -192,23 +192,23 @@ if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                 // of it. The token is handed straight to the shared view model, and the screen
                 // closes itself when it sees a session key appear.
                 token?.let { viewModel.completeLastfmLogin(it) }
-            } else if (data.host == "echomusic.org" || data.scheme == "echomusic") {
-                // https://echomusic.org/app/watch?v=VIDEO_ID
-                // https://echomusic.org/app/playlist?list=PLAYLIST_ID
-                // https://echomusic.org/app/channel/CHANNEL_ID
-                // echomusic://watch?v=VIDEO_ID  (host="watch", no path)
-                // echomusic://playlist?list=PLAYLIST_ID
-                // echomusic://channel/CHANNEL_ID
+            } else if (data.host == "nullmusic.org" || data.scheme == "nullmusic") {
+                // https://nullmusic.org/app/watch?v=VIDEO_ID
+                // https://nullmusic.org/app/playlist?list=PLAYLIST_ID
+                // https://nullmusic.org/app/channel/CHANNEL_ID
+                // nullmusic://watch?v=VIDEO_ID  (host="watch", no path)
+                // nullmusic://playlist?list=PLAYLIST_ID
+                // nullmusic://channel/CHANNEL_ID
                 val segments = data.pathSegments
-                // For echomusic.org: segments = ["app", "watch"] → appPath = segments[1]
-                // For echomusic://: host IS the appPath (e.g. host="watch"), segments = []
+                // For nullmusic.org: segments = ["app", "watch"] → appPath = segments[1]
+                // For nullmusic://: host IS the appPath (e.g. host="watch"), segments = []
                 val appPath =
-                    if (data.scheme == "echomusic") {
+                    if (data.scheme == "nullmusic") {
                         data.host
                     } else {
                         segments.getOrNull(1)
                     }
-                Logger.d("MainActivity", "echomusic.org deep link, appPath: $appPath")
+                Logger.d("MainActivity", "nullmusic.org deep link, appPath: $appPath")
                 viewModel.setIntent(null)
                 when (appPath) {
                     "watch" -> {
@@ -230,10 +230,10 @@ if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                     }
 
                     "channel", "c" -> {
-                        // echomusic://channel/UCxxx → segments = ["UCxxx"]
-                        // echomusic.org/app/channel/UCxxx → segments = ["app", "channel", "UCxxx"]
+                        // nullmusic://channel/UCxxx → segments = ["UCxxx"]
+                        // nullmusic.org/app/channel/UCxxx → segments = ["app", "channel", "UCxxx"]
                         val artistId =
-                            if (data.scheme == "echomusic") {
+                            if (data.scheme == "nullmusic") {
                                 segments.firstOrNull()
                             } else {
                                 segments.getOrNull(2)
@@ -645,7 +645,7 @@ if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                                 onClick = {
                                     shouldShowUpdateDialog = false
                                     viewModel.showedUpdateDialog = false
-                                    openUrl("https://echomusic.org/download")
+                                    openUrl("https://nullmusic.org/download")
                                 },
                             ) {
                                 Text(

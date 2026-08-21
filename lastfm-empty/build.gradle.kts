@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "org.echomusic.lastfm"
+        namespace = "org.nullmusic.lastfm"
         compileSdk = 37
         minSdk = 26
     }

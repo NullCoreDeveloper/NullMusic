@@ -97,13 +97,13 @@ import echo.music.iad1tya.viewModel.HomeViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album
-import echomusic.composeapp.generated.resources.app_name
-import echomusic.composeapp.generated.resources.description
-import echomusic.composeapp.generated.resources.playlist
-import echomusic.composeapp.generated.resources.subscribers
-import echomusic.composeapp.generated.resources.you
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album
+import nullmusic.composeapp.generated.resources.app_name
+import nullmusic.composeapp.generated.resources.description
+import nullmusic.composeapp.generated.resources.playlist
+import nullmusic.composeapp.generated.resources.subscribers
+import nullmusic.composeapp.generated.resources.you
 
 @Composable
 fun HomeItem(

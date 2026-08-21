@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import echo.music.iad1tya.logger.Logger
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.less
-import echomusic.composeapp.generated.resources.more
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.less
+import nullmusic.composeapp.generated.resources.more
 
 @Composable
 fun DescriptionView(

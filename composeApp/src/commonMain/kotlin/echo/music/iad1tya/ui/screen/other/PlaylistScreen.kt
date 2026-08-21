@@ -147,17 +147,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.album_length
-import echomusic.composeapp.generated.resources.baseline_downloaded
-import echomusic.composeapp.generated.resources.downloaded
-import echomusic.composeapp.generated.resources.downloading
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.no_description
-import echomusic.composeapp.generated.resources.playlist
-import echomusic.composeapp.generated.resources.radio
-import echomusic.composeapp.generated.resources.search
-import echomusic.composeapp.generated.resources.unlimited
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.album_length
+import nullmusic.composeapp.generated.resources.baseline_downloaded
+import nullmusic.composeapp.generated.resources.downloaded
+import nullmusic.composeapp.generated.resources.downloading
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.no_description
+import nullmusic.composeapp.generated.resources.playlist
+import nullmusic.composeapp.generated.resources.radio
+import nullmusic.composeapp.generated.resources.search
+import nullmusic.composeapp.generated.resources.unlimited
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable

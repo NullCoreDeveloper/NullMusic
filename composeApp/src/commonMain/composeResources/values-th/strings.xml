@@ -420,8 +420,8 @@
     <string name="other_version">เวอร์ชั่นอื่นๆ</string>
     <string name="later">ไว้ที่หลังนะ</string>
     <string name="give_a_star">ให้ดาว</string>
-    <string name="enjoying_echomusic">กำลังเพลิดเพลินกับ EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">หากสนุกกับการใช้ EchoMusic กรุณากดดาวที่ EchoMusic บน GitHub หรือเขียนรีวิวให้ด้วยนะ</string>
+    <string name="enjoying_nullmusic">กำลังเพลิดเพลินกับ EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">หากสนุกกับการใช้ EchoMusic กรุณากดดาวที่ EchoMusic บน GitHub หรือเขียนรีวิวให้ด้วยนะ</string>
     <string name="if_you_love_my_work_consider">"ถ้าคุณชอบผลงานของฉัน ลองพิจารณา "</string>
     <string name="buying_me_a_coffee">เลี้ยงกาแฟฉัน</string>
     <string name="fade_audio_effect">เอฟเฟกต์การจางเสียง</string>
@@ -474,8 +474,8 @@
     <string name="contributor_name">ชื่อผู้มีส่วนร่วม</string>
     <string name="contributor_email">อีเมลผู้ร่วมสนับสนุน</string>
     <string name="anonymous">ไม่ระบุชื่อ</string>
-    <string name="echomusic_lyrics">EchoMusic Lyrics</string>
-    <string name="lyrics_provider_echomusic">เนื้อเพลงจัดทำโดย EchoMusic Lyrics</string>
+    <string name="nullmusic_lyrics">EchoMusic Lyrics</string>
+    <string name="lyrics_provider_nullmusic">เนื้อเพลงจัดทำโดย EchoMusic Lyrics</string>
     <string name="backup_in_progress">กำลังสำรองข้อมูล</string>
     <string name="restore_in_progress">การกู้คืนกำลังดำเนินการ</string>
     <string name="backup_downloaded">สำรองข้อมูลที่ดาวน์โหลด</string>
@@ -549,7 +549,7 @@
     <string name="local_tracking_description">บันทึกประวัติการฟังไว้ในฐานข้อมูลภายในเครื่อง</string>
     <string name="blog_notification_title">รับการแจ้งเตือนจากบล็อก</string>
     <string name="blog_notification_description">รับการแจ้งเตือนจากบล็อกเมื่อมีบทความใหม่</string>
-    <string name="echomusic_charts">ชาร์ต EchoMusic</string>
+    <string name="nullmusic_charts">ชาร์ต EchoMusic</string>
     <string name="crossfading">Crossfading</string>
     <string name="your_320kbps_url">ลิงก์สตรีม 320 kbps ของคุณ</string>
     <string name="your_320kbps_url_description">เว้นว่างไว้เพื่อให้ระบบเลือก URL ที่ใช้งานได้จากตัวตรวจสอบสถานะให้อัตโนมัติ</string>

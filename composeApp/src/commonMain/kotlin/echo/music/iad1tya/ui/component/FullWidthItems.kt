@@ -91,14 +91,14 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.add_to_queue
-import echomusic.composeapp.generated.resources.album
-import echomusic.composeapp.generated.resources.artists
-import echomusic.composeapp.generated.resources.playlist
-import echomusic.composeapp.generated.resources.podcasts
-import echomusic.composeapp.generated.resources.radio
-import echomusic.composeapp.generated.resources.you
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.add_to_queue
+import nullmusic.composeapp.generated.resources.album
+import nullmusic.composeapp.generated.resources.artists
+import nullmusic.composeapp.generated.resources.playlist
+import nullmusic.composeapp.generated.resources.podcasts
+import nullmusic.composeapp.generated.resources.radio
+import nullmusic.composeapp.generated.resources.you
 import kotlin.math.roundToInt
 
 /**

@@ -54,9 +54,9 @@ import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.error
-import echomusic.composeapp.generated.resources.recently_added
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.error
+import nullmusic.composeapp.generated.resources.recently_added
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable

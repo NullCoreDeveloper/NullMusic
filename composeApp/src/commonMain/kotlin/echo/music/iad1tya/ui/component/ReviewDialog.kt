@@ -19,7 +19,7 @@ import echo.music.iad1tya.ui.theme.seed
 import echo.music.iad1tya.ui.theme.typo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import echomusic.composeapp.generated.resources.*
+import nullmusic.composeapp.generated.resources.*
 
 @Composable
 @ExperimentalMaterial3Api
@@ -63,22 +63,22 @@ fun ReviewDialog(
         },
         title = {
             Text(
-                stringResource(Res.string.enjoying_echomusic),
+                stringResource(Res.string.enjoying_nullmusic),
                 style = typo().labelSmall,
             )
         },
         text = {
             Text(
                 buildAnnotatedString {
-                    append(stringResource(Res.string.if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on))
+                    append(stringResource(Res.string.if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on))
                     withLink(
                         LinkAnnotation.Url(
-                            "https://www.producthunt.com/products/echomusic",
+                            "https://www.producthunt.com/products/nullmusic",
                             TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = seed)),
                         ) {
                             onDoneReview.invoke()
                             onDismissRequest.invoke()
-                            uriHandler.openUri("https://www.producthunt.com/products/echomusic")
+                            uriHandler.openUri("https://www.producthunt.com/products/nullmusic")
                         },
                     ) {
                         append(" ProductHunt")
@@ -87,12 +87,12 @@ fun ReviewDialog(
                     append(stringResource(Res.string.if_you_love_my_work_consider))
                     withLink(
                         LinkAnnotation.Url(
-                            "https://buymeacoffee.com/iad1tya",
+                            "https://github.com/NullCoreDeveloper",
                             TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline, color = seed)),
                         ) {
                             onDoneReview.invoke()
                             onDismissRequest.invoke()
-                            uriHandler.openUri("https://buymeacoffee.com/iad1tya")
+                            uriHandler.openUri("https://github.com/NullCoreDeveloper")
                         },
                     ) {
                         append(stringResource(Res.string.buying_me_a_coffee))

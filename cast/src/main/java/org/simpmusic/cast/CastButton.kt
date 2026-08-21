@@ -1,4 +1,4 @@
-package org.echomusic.cast
+package org.nullmusic.cast
 
 import android.view.ContextThemeWrapper
 import androidx.appcompat.content.res.AppCompatResources

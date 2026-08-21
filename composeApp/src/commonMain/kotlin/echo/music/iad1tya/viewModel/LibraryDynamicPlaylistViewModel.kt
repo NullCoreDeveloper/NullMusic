@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.playlist
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.playlist
 
 class LibraryDynamicPlaylistViewModel(
     private val songRepository: SongRepository,

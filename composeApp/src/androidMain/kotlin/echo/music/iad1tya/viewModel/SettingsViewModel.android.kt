@@ -31,8 +31,8 @@ import multiplatform.network.cmptoast.ToastGravity
 import multiplatform.network.cmptoast.showToast
 import org.jetbrains.compose.resources.getString
 import org.koin.mp.KoinPlatform.getKoin
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.restore_success
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.restore_success
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.music_video
-import echomusic.composeapp.generated.resources.new_release
-import echomusic.composeapp.generated.resources.song
-import echomusic.composeapp.generated.resources.view_count
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.music_video
+import nullmusic.composeapp.generated.resources.new_release
+import nullmusic.composeapp.generated.resources.song
+import nullmusic.composeapp.generated.resources.view_count
 
 class HomeViewModel(
     private val dataStoreManager: DataStoreManager,

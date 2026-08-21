@@ -419,8 +419,8 @@
     <string name="other_version">Autre version</string>
     <string name="later">Plus tard</string>
     <string name="give_a_star">Donner une étoile</string>
-    <string name="enjoying_echomusic">Vous appréciez EchoMusic</string>
-    <string name="if_you_enjoy_using_echomusic_star_echomusic_on_github_or_leave_a_review_on">Si vous aimez utiliser EchoMusic, donnez une étoile à EchoMusic sur GitHub ou laissez un avis sur</string>
+    <string name="enjoying_nullmusic">Vous appréciez EchoMusic</string>
+    <string name="if_you_enjoy_using_nullmusic_star_nullmusic_on_github_or_leave_a_review_on">Si vous aimez utiliser EchoMusic, donnez une étoile à EchoMusic sur GitHub ou laissez un avis sur</string>
     <string name="if_you_love_my_work_consider">"Si vous aimez mon travail, considérez "</string>
     <string name="buying_me_a_coffee">m'offrir un café.</string>
     <string name="fade_audio_effect">Effet de fondu audio</string>
@@ -473,8 +473,8 @@
     <string name="contributor_name">Nom du contributeur</string>
     <string name="contributor_email">Email du contributeur</string>
     <string name="anonymous">Anonyme</string>
-    <string name="echomusic_lyrics">Paroles de EchoMusic</string>
-    <string name="lyrics_provider_echomusic">Paroles fournies par EchoMusic</string>
+    <string name="nullmusic_lyrics">Paroles de EchoMusic</string>
+    <string name="lyrics_provider_nullmusic">Paroles fournies par EchoMusic</string>
     <string name="backup_in_progress">Sauvegarde en cours</string>
     <string name="restore_in_progress">Restauration en cours</string>
     <string name="backup_downloaded">Sauvegarder les données téléchargées</string>
@@ -564,7 +564,7 @@
     <string name="local_tracking_description">Enregistrez votre historique d'écoute dans une base de données locale</string>
     <string name="blog_notification_title">Notifications relatives aux articles de blog</string>
     <string name="blog_notification_description">Recevez une notification dès qu'un nouvel article de blog est publié</string>
-    <string name="echomusic_charts">Classements EchoMusic</string>
+    <string name="nullmusic_charts">Classements EchoMusic</string>
     <string name="crossfading">Fondu enchaîné</string>
     <string name="your_320kbps_url">Votre URL 320 kbps</string>
     <string name="your_320kbps_url_description">Laissez ce champ vide pour que le vérificateur de disponibilité sélectionne automatiquement une URL valide.</string>
@@ -579,11 +579,11 @@
     <string name="playing_on_device">Écouter sur %1$s</string>
     <string name="not_available_while_casting">Indisponible pendant le casting</string>
     <string name="import_data">Importer des playlists</string>
-    <string name="import_playlists_from_other_apps">Pour importer des playlists converties depuis Spotify ou une autre application cliente YouTube Music, veuillez utiliser exclusivement notre format. Découvrez l'outil de conversion sur : https://www.echomusic.org/tools</string>
+    <string name="import_playlists_from_other_apps">Pour importer des playlists converties depuis Spotify ou une autre application cliente YouTube Music, veuillez utiliser exclusivement notre format. Découvrez l'outil de conversion sur : https://www.nullmusic.org/tools</string>
     <string name="import_reading_file">Lecture du fichier…</string>
     <string name="import_progress_songs">%1$d sur %2$d titres</string>
     <string name="import_result">%1$d playlists ont été créées et %2$d titres ont été importés.</string>
     <string name="import_result_skipped">%1$d entrées ont été ignorées car le titre correspondant était absente du fichier.</string>
     <string name="import_failed">Échec de l'importation</string>
-    <string name="import_invalid_file">Ce fichier n'est pas un fichier d'importation EchoMusic valide. Commencez par convertir votre bibliothèque sur echomusic.org.</string>
+    <string name="import_invalid_file">Ce fichier n'est pas un fichier d'importation EchoMusic valide. Commencez par convertir votre bibliothèque sur nullmusic.org.</string>
 </resources>

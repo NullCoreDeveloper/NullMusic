@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import echo.music.iad1tya.logger.Logger
 import org.jetbrains.compose.resources.painterResource
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.holder
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.holder
 import kotlin.math.abs
 
 @Composable

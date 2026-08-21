@@ -46,7 +46,7 @@ fun SupportProjectDialog(
                 )
 
                 Button(
-                    onClick = { uriHandler.openUri("https://buymeacoffee.com/iad1tya") },
+                    onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onBackground,
@@ -57,7 +57,7 @@ fun SupportProjectDialog(
                 }
                 
                 Button(
-                    onClick = { uriHandler.openUri("https://support.iad1tya.cyou/") },
+                    onClick = { uriHandler.openUri("https://support.NullCoreDeveloper/") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onBackground,
@@ -68,14 +68,14 @@ fun SupportProjectDialog(
                 }
 
                 OutlinedButton(
-                    onClick = { uriHandler.openUri("https://github.com/EchoMusicApp/Echo-Music") },
+                    onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper/NullMusic") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Star on GitHub")
                 }
 
                 OutlinedButton(
-                    onClick = { uriHandler.openUri("https://instagram.com/iad1tya") },
+                    onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Follow on Instagram")

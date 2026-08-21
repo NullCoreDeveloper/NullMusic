@@ -151,7 +151,7 @@ class AutoBackupWorker(
 
     private fun saveToDownloads(backupFile: File): Boolean {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val fileName = "echomusic_backup_$timestamp.zip"
+        val fileName = "nullmusic_backup_$timestamp.zip"
 
         return try {
             val contentValues = ContentValues().apply {
@@ -197,9 +197,9 @@ class AutoBackupWorker(
             }
 
             val selectionArgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                arrayOf("Download/echoMusic/", "echomusic_backup_%.zip")
+                arrayOf("Download/echoMusic/", "nullmusic_backup_%.zip")
             } else {
-                arrayOf("echomusic_backup_%.zip")
+                arrayOf("nullmusic_backup_%.zip")
             }
 
             val sortOrder = "${MediaStore.Downloads.DATE_ADDED} DESC"
@@ -219,7 +219,7 @@ class AutoBackupWorker(
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(idColumn)
                     val name = cursor.getString(nameColumn)
-                    if (name.startsWith("echomusic_backup_") && name.endsWith(".zip")) {
+                    if (name.startsWith("nullmusic_backup_") && name.endsWith(".zip")) {
                         backupFiles.add(id to name)
                     }
                 }

@@ -673,7 +673,6 @@ fun SearchScreen(
                                                                     modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(vertical = 12.dp),
                                                                     contentAlignment = androidx.compose.ui.Alignment.Center
                                                                 ) {
-                                                                    echo.music.iad1tya.expect.ui.StartAppBanner(modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(50.dp))
                                                                 }
                                                             }
                                                             when (result) {

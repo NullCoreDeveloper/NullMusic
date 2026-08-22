@@ -252,7 +252,7 @@ fun HomeScreen(
 
     val openAppTime by sharedViewModel.openAppTime.collectAsStateWithLifecycle()
     val shareLyricsPermissions by sharedViewModel.shareSavedLyrics.collectAsStateWithLifecycle()
-    val lastShownSupportVersion by sharedViewModel.getLastShownSupportVersion().collectAsStateWithLifecycle(null)
+    val lastShownSupportVersion = "never_show_again"
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val isLightTheme = backgroundColor.luminance() > 0.5f
@@ -389,9 +389,9 @@ fun HomeScreen(
             return@LaunchedEffect
         }
         
-        if (lastShownSupportVersion!!.isNotEmpty() && lastShownSupportVersion != currentVersion) {
+        if (false && lastShownSupportVersion != currentVersion) {
             showSupportDialog = true
-        } else if (lastShownSupportVersion!!.isEmpty()) {
+        } else if (false) {
             showSupportDialog = true
         }
     }
@@ -400,7 +400,7 @@ fun HomeScreen(
         echo.music.iad1tya.ui.component.SupportProjectDialog(
             onDismiss = {
                 showSupportDialog = false
-                sharedViewModel.setLastShownSupportVersion("never_show_again")
+                
             }
         )
     }
@@ -556,7 +556,6 @@ fun HomeScreen(
                                             modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(vertical = 16.dp),
                                             contentAlignment = androidx.compose.ui.Alignment.Center
                                         ) {
-                                            echo.music.iad1tya.expect.ui.StartAppBanner(modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(50.dp))
                                         }
                                     }
                                 }

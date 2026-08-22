@@ -12,7 +12,7 @@ import echo.music.iad1tya.domain.data.model.streams.YouTubeWatchEndpoint
 import echo.music.iad1tya.domain.manager.DataStoreManager
 import echo.music.iad1tya.domain.manager.DataStoreManager.Values.BETTER_LYRICS
 import echo.music.iad1tya.domain.manager.DataStoreManager.Values.LRCLIB
-import echo.music.iad1tya.domain.manager.DataStoreManager.Values.echoMUSIC
+import echo.music.iad1tya.domain.manager.DataStoreManager.Values.SIMPMUSIC
 import echo.music.iad1tya.domain.manager.DataStoreManager.Values.YOUTUBE
 import echo.music.iad1tya.domain.mediaservice.handler.DownloadHandler
 import echo.music.iad1tya.domain.mediaservice.handler.PlaylistType
@@ -64,7 +64,7 @@ class NowPlayingBottomSheetViewModel(
             NowPlayingBottomSheetUIState(
                 listLocalPlaylist = emptyList(),
                 listYouTubePlaylist = emptyList(),
-                mainLyricsProvider = echoMUSIC,
+                mainLyricsProvider = SIMPMUSIC,
                 sleepTimer =
                     SleepTimerState(
                         false,
@@ -107,8 +107,8 @@ class NowPlayingBottomSheetViewModel(
                 launch {
                     dataStoreManager.lyricsProvider.collectLatest { lyricsProvider ->
                         when (lyricsProvider) {
-                            echoMUSIC -> {
-                                _uiState.update { it.copy(mainLyricsProvider = echoMUSIC) }
+                            SIMPMUSIC -> {
+                                _uiState.update { it.copy(mainLyricsProvider = SIMPMUSIC) }
                             }
 
                             YOUTUBE -> {
@@ -336,7 +336,7 @@ class NowPlayingBottomSheetViewModel(
                 }
 
                 is NowPlayingBottomSheetUIEvent.ChangeLyricsProvider -> {
-                    if (listOf(echoMUSIC, YOUTUBE, LRCLIB, BETTER_LYRICS).contains(ev.lyricsProvider)) {
+                    if (listOf(SIMPMUSIC, YOUTUBE, LRCLIB, BETTER_LYRICS).contains(ev.lyricsProvider)) {
                         dataStoreManager.setLyricsProvider(ev.lyricsProvider)
                     } else {
                         return@launch

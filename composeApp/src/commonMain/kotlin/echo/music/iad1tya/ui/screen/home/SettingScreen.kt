@@ -1293,7 +1293,7 @@ fun SettingScreen(
                                                 runBlocking { getString(Res.string.youtube_transcript) } -> DataStoreManager.YOUTUBE
                                                 runBlocking { getString(Res.string.lrclib) } -> DataStoreManager.LRCLIB
                                                 runBlocking { getString(Res.string.better_lyrics) } -> DataStoreManager.BETTER_LYRICS
-                                                else -> DataStoreManager.echoMUSIC
+                                                else -> DataStoreManager.SIMPMUSIC
                                             },
                                         )
                                     },
@@ -2189,13 +2189,7 @@ fun SettingScreen(
                         uriHandler.openUri("https://support.NullCoreDeveloper/")
                     },
                 )
-                SettingItem(
-                    title = "Support by watching ads",
-                    subtitle = "Play 3 reward-based ads continuously",
-                    onClick = {
-                        sharedViewModel.triggerShowRewardedAds()
-                    },
-                )
+
                 SettingItem(
                     title = stringResource(Res.string.third_party_libraries),
                     subtitle = stringResource(Res.string.description_and_licenses),
@@ -2873,7 +2867,7 @@ private fun ImportProgressDialog(
                                 stringResource(
                                     Res.string.import_result,
                                     progress.result.playlistsCreated,
-                                    progress.result.songechoorted,
+                                    progress.result.songsImported,
                                 ),
                             style = typo().bodyMedium,
                         )

@@ -59,7 +59,6 @@
         android:requestLegacyExternalStorage="true"
         tools:replace="android:name"
         tools:targetApi="tiramisu">
-        <meta-data android:name="com.startapp.sdk.APPLICATION_ID" android:value="207959801" />
 
         <activity
             android:name="echo.music.iad1tya.MainActivity"

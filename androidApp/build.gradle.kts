@@ -143,7 +143,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.startapp.sdk)
     coreLibraryDesugaring(libs.desugaring)
     val debugImplementation = "debugImplementation"
     debugImplementation(libs.ui.tooling)

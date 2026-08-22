@@ -193,52 +193,6 @@ fun HomeItem(
             flingBehavior = snapperFlingBehavior,
         ) {
             itemsIndexed(data.contents) { index, temp ->
-                if (index > 0 && index % 3 == 0) {
-                    androidx.compose.foundation.layout.Column(
-                        modifier = androidx.compose.ui.Modifier
-                            .padding(10.dp)
-                            .heightIn(min = 236.dp)
-                            .width(160.dp)
-                    ) {
-                        androidx.compose.foundation.layout.Box(
-                            modifier = androidx.compose.ui.Modifier
-                                .size(160.dp)
-                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp)),
-                            contentAlignment = androidx.compose.ui.Alignment.Center
-                        ) {
-                            echo.music.iad1tya.expect.ui.StartAppMrec(
-                                modifier = androidx.compose.ui.Modifier
-                                    .requiredSize(300.dp, 250.dp)
-                                    .graphicsLayer {
-                                        scaleX = 160f / 300f
-                                        scaleY = 160f / 300f
-                                    }
-                            )
-                        }
-                        androidx.compose.material3.Text(
-                            text = "Ads",
-                            style = echo.music.iad1tya.ui.theme.typo().titleSmall,
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                            modifier = androidx.compose.ui.Modifier
-                                .width(160.dp)
-                                .wrapContentHeight(align = androidx.compose.ui.Alignment.CenterVertically)
-                                .padding(top = 8.dp)
-                        )
-                        androidx.compose.material3.Text(
-                            text = "helps to fund the project",
-                            style = echo.music.iad1tya.ui.theme.typo().bodySmall,
-                            minLines = 1,
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                            modifier = androidx.compose.ui.Modifier
-                                .width(160.dp)
-                                .wrapContentHeight(align = androidx.compose.ui.Alignment.CenterVertically)
-                                .padding(vertical = 3.dp)
-                        )
-                    }
-                }
                 if (temp != null) {
                     val browseId = temp.browseId
                     val playlistId = temp.playlistId

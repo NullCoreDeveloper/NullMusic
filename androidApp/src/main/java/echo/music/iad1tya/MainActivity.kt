@@ -109,7 +109,6 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        com.startapp.sdk.adsbase.StartAppSDK.init(this, "207959801", false)
 
         // Load Koin modules FIRST before any viewModel access (getString triggers lazy init)
         loadKoinModules(
@@ -235,13 +234,7 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.getLocation()
 
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.showRewardedAds.collect {
-                    playRewardedAds(3)
-                }
-            }
-        }
+
 
 
         setContent {
@@ -312,36 +305,5 @@ class MainActivity : AppCompatActivity() {
         viewModel.activityRecreate()
     }
 
-    private var remainingAds = 0
 
-    private fun playRewardedAds(count: Int) {
-        remainingAds = count
-        android.widget.Toast.makeText(this, "Loading ads to support the project...", android.widget.Toast.LENGTH_SHORT).show()
-        loadAndShowNextAd()
-    }
-
-    private fun loadAndShowNextAd() {
-        if (remainingAds <= 0) {
-            android.widget.Toast.makeText(this, "Thank you for supporting EchoMusic!", android.widget.Toast.LENGTH_LONG).show()
-            return
-        }
-        val rewardedVideo = com.startapp.sdk.adsbase.StartAppAd(this)
-        rewardedVideo.loadAd(
-            com.startapp.sdk.adsbase.StartAppAd.AdMode.AUTOMATIC,
-            object : com.startapp.sdk.adsbase.adlisteners.AdEventListener {
-                override fun onReceiveAd(ad: com.startapp.sdk.adsbase.Ad) {
-                    rewardedVideo.showAd(object : com.startapp.sdk.adsbase.adlisteners.AdDisplayListener {
-                        override fun adHidden(ad: com.startapp.sdk.adsbase.Ad?) { remainingAds--; loadAndShowNextAd() }
-                        override fun adDisplayed(ad: com.startapp.sdk.adsbase.Ad?) {}
-                        override fun adClicked(ad: com.startapp.sdk.adsbase.Ad?) {}
-                        override fun adNotDisplayed(ad: com.startapp.sdk.adsbase.Ad?) { remainingAds--; loadAndShowNextAd() }
-                    })
-                }
-                override fun onFailedToReceiveAd(ad: com.startapp.sdk.adsbase.Ad?) {
-                    remainingAds = 0
-                    android.widget.Toast.makeText(this@MainActivity, "Failed to load ad: ${ad?.errorMessage}", android.widget.Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
-    }
 }

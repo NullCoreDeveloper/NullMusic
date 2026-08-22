@@ -737,16 +737,16 @@ fun NowPlayingScreenContent(
     // Vote Dialog
     if (showVoteDialog) {
         val canVoteLyrics =
-            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.echoMUSIC &&
+            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.SIMPMUSIC &&
                 screenDataState.lyricsData
                     ?.lyrics
-                    ?.echoMusicLyrics != null
+                    ?.simpMusicLyrics != null
         val canVoteTranslatedLyrics =
-            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.echoMUSIC &&
+            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.SIMPMUSIC &&
                 screenDataState.lyricsData
                     ?.translatedLyrics
                     ?.first
-                    ?.echoMusicLyrics != null
+                    ?.simpMusicLyrics != null
 
         VoteLyricsDialog(
             canVoteLyrics = canVoteLyrics,
@@ -2191,16 +2191,16 @@ fun NowPlayingScreenContent(
                                         Spacer(modifier = Modifier.weight(1f))
                                         // Vote button - only show if lyrics or translated lyrics from echoMusic
                                         val canVoteLyrics =
-                                            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.echoMUSIC &&
+                                            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.SIMPMUSIC &&
                                                 screenDataState.lyricsData
                                                     ?.lyrics
-                                                    ?.echoMusicLyrics != null
+                                                    ?.simpMusicLyrics != null
                                         val canVoteTranslatedLyrics =
-                                            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.echoMUSIC &&
+                                            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.SIMPMUSIC &&
                                                 screenDataState.lyricsData
                                                     ?.translatedLyrics
                                                     ?.first
-                                                    ?.echoMusicLyrics != null
+                                                    ?.simpMusicLyrics != null
                                         if (canVoteLyrics || canVoteTranslatedLyrics) {
                                             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                                                 IconButton(

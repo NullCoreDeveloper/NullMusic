@@ -177,6 +177,7 @@ fun LibraryScreen(
             LibraryChipType.FAVORITE_PODCAST -> {
                 viewModel.getFavoritePodcasts()
             }
+            else -> {}
 
 
         }
@@ -244,7 +245,6 @@ fun LibraryScreen(
                             modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(vertical = 12.dp),
                             contentAlignment = androidx.compose.ui.Alignment.Center
                         ) {
-                            echo.music.iad1tya.expect.ui.StartAppBanner(modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(50.dp))
                         }
                     }
                     item {
@@ -315,6 +315,7 @@ fun LibraryScreen(
                     viewModel.getFavoritePodcasts()
                 }
             }
+            else -> {}
 
 
         }
@@ -468,6 +469,7 @@ fun LibraryScreen(
                             LibraryChipType.FAVORITE_PLAYLIST -> stringResource(Res.string.favorite_playlists)
                             LibraryChipType.DOWNLOADED_PLAYLIST -> stringResource(Res.string.downloaded_playlists)
                             LibraryChipType.FAVORITE_PODCAST -> stringResource(Res.string.favorite_podcasts)
+else -> ""
 
                         },
                 ) {

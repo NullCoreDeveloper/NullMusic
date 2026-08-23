@@ -31,8 +31,8 @@ import echo.music.iad1tya.ui.icon.Check
 import echo.music.iad1tya.ui.icon.echoIcons
 import echo.music.iad1tya.ui.theme.typo
 import echo.music.iad1tya.viewModel.ListenTogetherSettingsViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.*
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

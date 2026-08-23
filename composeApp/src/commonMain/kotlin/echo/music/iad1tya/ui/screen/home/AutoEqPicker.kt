@@ -41,13 +41,13 @@ import echo.music.iad1tya.viewModel.AutoEqStatus
 import echo.music.iad1tya.viewModel.AutoEqViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.equalizer_autoeq_choose
-import echomusic.composeapp.generated.resources.equalizer_autoeq_downloading
-import echomusic.composeapp.generated.resources.equalizer_autoeq_empty
-import echomusic.composeapp.generated.resources.equalizer_autoeq_failed
-import echomusic.composeapp.generated.resources.equalizer_autoeq_search
-import echomusic.composeapp.generated.resources.equalizer_autoeq_unavailable
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_choose
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_downloading
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_empty
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_failed
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_search
+import nullmusic.composeapp.generated.resources.equalizer_autoeq_unavailable
 
 private val MENU_LIST_MAX_HEIGHT = 280.dp
 

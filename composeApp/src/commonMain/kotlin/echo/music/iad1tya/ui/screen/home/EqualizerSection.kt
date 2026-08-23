@@ -49,12 +49,12 @@ import echo.music.iad1tya.viewModel.EQUALIZER_BAND_LABELS
 import echo.music.iad1tya.viewModel.SettingsViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import echomusic.composeapp.generated.resources.Res
-import echomusic.composeapp.generated.resources.equalizer_autoeq
-import echomusic.composeapp.generated.resources.equalizer_preamp
-import echomusic.composeapp.generated.resources.equalizer_preset_custom
-import echomusic.composeapp.generated.resources.equalizer_presets
-import echomusic.composeapp.generated.resources.equalizer_reset
+import nullmusic.composeapp.generated.resources.Res
+import nullmusic.composeapp.generated.resources.equalizer_autoeq
+import nullmusic.composeapp.generated.resources.equalizer_preamp
+import nullmusic.composeapp.generated.resources.equalizer_preset_custom
+import nullmusic.composeapp.generated.resources.equalizer_presets
+import nullmusic.composeapp.generated.resources.equalizer_reset
 import kotlin.math.roundToInt
 
 /** Gain limits, in dB. Past this it stops being tone shaping and starts being distortion. */

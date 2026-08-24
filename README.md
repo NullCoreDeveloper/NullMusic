@@ -50,7 +50,7 @@ Echo Music is built utilizing a modern Android and Kotlin Multiplatform (KMP) ar
 ## Infrastructure and Analytics
 
 * **Firebase Integration:** Echo Music utilizes Firebase Crashlytics for real-time crash reporting and Firebase Analytics to monitor application performance and usage metrics. This telemetry data is critical for maintaining app stability and guiding future improvements.
-* **Monetization:** To sustain the infrastructure, development, and maintenance costs associated with this project, minimal advertisements are integrated within the application.
+* **Monetization:** To sustain the infrastructure, development, and maintenance costs associated with this project, minimal advertisements are integrated within the [Website](https://echomusic.fun).
 
 ## Transfer Playlists from Old Echo Music to New Echo Music
 This guide walks you through moving your playlists from the old Echo Music app to the new one, using a backup-and-convert process.
@@ -86,7 +86,7 @@ This guide walks you through moving your playlists from the old Echo Music app t
 
 ## Acknowledgements
 
-Echo Music, developed by Aditya (@iad1tya), is built on top of the SimpMusic project. Huge thanks to the SimpMusic developers for their excellent open-source work, which forms the reliable foundation this project builds upon.
+Echo Music, developed by Aditya ([@iad1tya](https://github.com/iad1tya)), is built on top of the [SimpMusic](https://github.com/maxrave-dev/SimpMusic) project. Huge thanks to the [SimpMusic developer](https://github.com/maxrave-dev) for their excellent open-source work, which forms the reliable foundation this project builds upon.
 
 ## Installation
 

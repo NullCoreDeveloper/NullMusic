@@ -108,14 +108,11 @@ fun NavGraphBuilder.navigationBuilder(
         LibraryScreen(navController)
     }
 
-    composable(Screens.ListenTogether.route) {
-        ListenTogetherScreen(navController, showTopBar = false)
     }
 
     composable(
         route = "listen_together_from_topbar",
     ) {
-        ListenTogetherScreen(navController, showTopBar = true)
     }
 
     composable("listen_together/chat") {
@@ -453,7 +450,6 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable(route = "settings/integrations/listen_together") {
-        ListenTogetherSettings(navController, scrollBehavior)
     }
 
     composable(

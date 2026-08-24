@@ -134,14 +134,14 @@ fun App(viewModel: SharedViewModel = koinInject()) {
     val intent by viewModel.intent.collectAsStateWithLifecycle()
     val showNotificationPermissionDialog by viewModel.showNotificationPermissionDialog.collectAsStateWithLifecycle()
 
-    val isTranslucentBottomBar by viewModel.getTranslucentBottomBar().collectAsStateWithLifecycle(DataStoreManager.FALSE)
+
     val isLiquidGlassEnabled by viewModel.getEnableLiquidGlass().collectAsStateWithLifecycle(DataStoreManager.FALSE)
     // Analytics only makes sense with local tracking on, so its tab follows that setting.
     val isLocalTrackingEnabled by viewModel.getLocalTrackingEnabled().collectAsStateWithLifecycle(DataStoreManager.FALSE)
     val showAnalyticsTab = isLocalTrackingEnabled == TRUE
 
     val themeMode by viewModel.getThemeMode().collectAsStateWithLifecycle(DataStoreManager.THEME_MODE_DARK)
-    val themeColorSource by viewModel.getThemeColorSource().collectAsStateWithLifecycle(DataStoreManager.THEME_COLOR_DEFAULT)
+    val themeColorSource by viewModel.getThemeColorSource().collectAsStateWithLifecycle(DataStoreManager.THEME_COLOR_WALLPAPER)
     val customThemeColorHex by viewModel.getCustomThemeColor().collectAsStateWithLifecycle(DataStoreManager.DEFAULT_THEME_COLOR_HEX)
     // MiniPlayer visibility logic
     var isShowMiniPlayer by rememberSaveable {
@@ -418,12 +418,18 @@ if (data.scheme == "wordbyword" && data.host == "lastfm-auth") {
                                     viewModel.reloadDestination(klass)
                                 }
                             } else {
-                                AppBottomNavigationBar(
-                                    navController = navController,
-                                    isTranslucentBackground = isTranslucentBottomBar == TRUE,
-                                    showAnalyticsTab = showAnalyticsTab,
-                                ) { klass ->
-                                    viewModel.reloadDestination(klass)
+                                Box(
+                                    modifier = Modifier.hazeEffect(hazeState, style = HazeMaterials.ultraThin()) {
+                                        blurEnabled = true
+                                    }
+                                ) {
+                                    AppBottomNavigationBar(
+                                        navController = navController,
+                                        isTranslucentBackground = false,
+                                        showAnalyticsTab = showAnalyticsTab,
+                                    ) { klass ->
+                                        viewModel.reloadDestination(klass)
+                                    }
                                 }
                             }
                         }

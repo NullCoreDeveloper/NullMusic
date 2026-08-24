@@ -292,8 +292,6 @@ highlightKey: String? = null) {
         showRestartDialog = true
     }
 
-    val (listenTogetherInTopBar, onListenTogetherInTopBarChange) = rememberPreference(
-        ListenTogetherInTopBarKey,
         defaultValue = true
     )
 
@@ -1861,12 +1859,9 @@ highlightKey: String? = null) {
                     description = { Text(stringResource(R.string.listen_together_in_top_bar_desc)) },
                     trailingContent = {
                         Switch(
-                            checked = listenTogetherInTopBar,
-                            onCheckedChange = onListenTogetherInTopBarChange,
                             thumbContent = {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (listenTogetherInTopBar) R.drawable.check else R.drawable.close
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier.size(SwitchDefaults.IconSize)
@@ -1874,7 +1869,6 @@ highlightKey: String? = null) {
                             }
                         )
                     },
-                    onClick = { onListenTogetherInTopBarChange(!listenTogetherInTopBar) }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.grid_cell_size)),

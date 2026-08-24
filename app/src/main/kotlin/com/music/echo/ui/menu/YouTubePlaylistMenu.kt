@@ -102,8 +102,6 @@ fun YouTubePlaylistMenu(
     val database = LocalDatabase.current
     val downloadUtil = LocalDownloadUtil.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
     val dbPlaylist by database.playlistByBrowseId(playlist.id).collectAsState(initial = null)
     val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initial = false)
 

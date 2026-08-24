@@ -227,8 +227,6 @@ fun Queue(
     }
 
     
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val isListenTogetherGuest by listenTogetherManager?.guestPlaybackRestricted?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
 
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
@@ -366,7 +364,6 @@ fun Queue(
                             }
                         },
                         isActive = sleepTimerEnabled,
-                        enabled = !isListenTogetherGuest,
                         shape = middleShape,
                         modifier = Modifier.size(buttonSize),
                         textButtonColor = textButtonColor,
@@ -412,7 +409,6 @@ fun Queue(
                             playerConnection.player.shuffleModeEnabled = !shuffleModeEnabledInside
                         },
                         isActive = shuffleModeEnabledInside,
-                        enabled = !isListenTogetherGuest,
                         shape = middleShape,
                         modifier = Modifier.size(buttonSize),
                         textButtonColor = textButtonColor,
@@ -433,7 +429,6 @@ fun Queue(
                             playerConnection.player.toggleRepeatMode()
                         },
                         isActive = repeatMode != Player.REPEAT_MODE_OFF,
-                        enabled = !isListenTogetherGuest,
                         shape = repeatShape,
                         modifier = Modifier.size(buttonSize),
                         textButtonColor = textButtonColor,
@@ -548,7 +543,6 @@ fun Queue(
                         ToggleButton(
                             checked = sleepTimerEnabled,
                             onCheckedChange = {
-                                if (!isListenTogetherGuest) {
                                     if (sleepTimerEnabled) {
                                         playerConnection.service.sleepTimer.clear()
                                     } else {
@@ -898,7 +892,6 @@ fun Queue(
                         onCheckedChange = {
                             playerConnection.player.shuffleModeEnabled = it
                         },
-                        enabled = !isListenTogetherGuest,
                         shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
                         colors = ToggleButtonDefaults.toggleButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -929,7 +922,6 @@ fun Queue(
                         onCheckedChange = {
                             playerConnection.player.toggleRepeatMode()
                         },
-                        enabled = !isListenTogetherGuest,
                         shapes = ButtonGroupDefaults.connectedMiddleButtonShapes(),
                         colors = ToggleButtonDefaults.toggleButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -967,7 +959,6 @@ fun Queue(
                             Toast.makeText(context, context.getString(R.string.starting_radio), Toast.LENGTH_SHORT).show()
                             playerConnection.startRadioSeamlessly()
                         },
-                        enabled = !isListenTogetherGuest,
                         shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
                         colors = ToggleButtonDefaults.toggleButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -1151,7 +1142,6 @@ fun Queue(
                             var processedDismiss by remember { mutableStateOf(false) }
                             LaunchedEffect(dismissBoxState.currentValue) {
                                 val dv = dismissBoxState.currentValue
-                                if (!processedDismiss && !isListenTogetherGuest && (
                                             dv == SwipeToDismissBoxValue.StartToEnd ||
                                                     dv == SwipeToDismissBoxValue.EndToStart
                                             )
@@ -1208,7 +1198,6 @@ fun Queue(
                                                     onCheckedChange = onCheckedChange
                                                 )
                                             } else {
-                                                if (!isListenTogetherGuest) {
                                                     IconButton(
                                                         onClick = {
                                                             menuState.show {
@@ -1234,7 +1223,6 @@ fun Queue(
                                                         )
                                                     }
                                                 }
-                                                if (!locked && !isListenTogetherGuest) {
                                                     IconButton(
                                                         onClick = { },
                                                         modifier = Modifier.draggableHandle()
@@ -1255,7 +1243,6 @@ fun Queue(
                                                     onClick = {
                                                         if (inSelectMode) {
                                                             onCheckedChange(window.mediaItem.mediaId !in selection)
-                                                        } else if (!isListenTogetherGuest) {
                                                             if (index == currentWindowIndex) {
                                                                 if (isCasting) {
                                                                     if (castIsPlaying) {
@@ -1336,7 +1323,6 @@ fun Queue(
                                     mediaMetadata = item.metadata!!,
                                     shape = listItemShape(index, automix.size),
                                     trailingContent = {
-                                        if (!isListenTogetherGuest) {
                                             IconButton(
                                                 onClick = {
                                                     playerConnection.service.playNextAutomix(

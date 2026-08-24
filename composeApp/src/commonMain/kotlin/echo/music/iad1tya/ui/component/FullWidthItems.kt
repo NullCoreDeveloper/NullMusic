@@ -78,7 +78,7 @@ import echo.music.iad1tya.ui.icon.DownloadForOffline
 import echo.music.iad1tya.ui.icon.DragHandle
 import echo.music.iad1tya.ui.icon.MoreVert
 import echo.music.iad1tya.ui.icon.PushPin
-import echo.music.iad1tya.ui.icon.QueueMusic
+import echo.music.iad1tya.ui.icon.PlayArrow
 import echo.music.iad1tya.ui.icon.echoIcons
 import echo.music.iad1tya.ui.theme.LocalForceDarkText
 import echo.music.iad1tya.ui.theme.typo
@@ -155,8 +155,8 @@ fun SongFullWidthItems(
                 ) {
                     Icon(
                         tint = contentColor,
-                        imageVector = echoIcons.QueueMusic,
-                        contentDescription = stringResource(Res.string.add_to_queue),
+                        imageVector = echoIcons.PlayArrow,
+                        contentDescription = stringResource(Res.string.play_next),
                     )
                 }
             }

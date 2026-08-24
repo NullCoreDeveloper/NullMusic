@@ -55,8 +55,6 @@ fun ArtistMenu(
     val context = LocalContext.current
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
     val artistState = database.artist(originalArtist.id).collectAsState(initial = originalArtist)
     val artist = artistState.value ?: originalArtist
     val isPinned by database.speedDialDao.isPinned(artist.id).collectAsState(initial = false)

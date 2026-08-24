@@ -910,7 +910,6 @@ class MusicService :
                     prefs[CrossfadeGaplessKey] ?: true
                 )
             },
-            listenTogetherManager.roomState
         ) { (enabled, duration, gapless), roomState ->
             
             Triple(enabled && roomState == null, duration, gapless)

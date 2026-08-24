@@ -84,9 +84,6 @@ fun FloatingMiniPlayer(
 
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
     val swipeThumbnailPref by rememberPreference(SwipeThumbnailKey, true)
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
-    val swipeEnabled = swipeThumbnailPref && !isListenTogetherGuest
 
     val layoutDirection = LocalLayoutDirection.current
     val coroutineScope = rememberCoroutineScope()

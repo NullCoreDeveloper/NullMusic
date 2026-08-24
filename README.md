@@ -114,6 +114,23 @@ If you find Echo Music valuable, please consider supporting the development infr
 
 </details>
 
+## Legal Disclaimer & Terms of Use
+
+**1. Free & Open-Source**
+Echo Music is a 100% free, open-source (FOSS) application built for educational purposes and personal use. It is not sold or monetized in any way — no ads, no premium features, no subscriptions, and no hidden fees.
+
+**2. How It Works**
+Echo Music functions as a specialized client that parses the publicly available content and APIs of YouTube and YouTube Music, displaying them in a custom interface. This ad-free experience is comparable to using a standard browser with an ad-blocking extension (like uBlock Origin) — it doesn't modify or bypass any content protections beyond that.
+
+**3. Support Creators**
+We respect the work of artists and content creators. Users are encouraged to subscribe to [YouTube Premium](https://www.youtube.com/premium) to directly support the creators they listen to. Echo Music is intended as a developer proof-of-concept, not as a way to reduce creator revenue.
+
+**4. No Hosted Content**
+Echo Music does not host, upload, or store any audio, video, or copyrighted media on its own servers. All content remains hosted on Google/YouTube's servers and is the property of its respective owners. The app simply streams publicly accessible links.
+
+**5. User Responsibility & Contact**
+This software is provided "AS IS," without warranty of any kind. Users are solely responsible for ensuring their use of the app complies with local copyright laws and the platform's Terms of Service. Since no media is hosted by us, we cannot process DMCA takedowns for audio/video content — but for legal concerns regarding the open-source code itself, contact: [hello@echomusic.fun](mailto:hello@echomusic.fun)
+
 ## License
 
 Echo Music is licensed under the GPL-3.0 License. See the LICENSE file for details.

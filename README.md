@@ -1,0 +1,136 @@
+<div align="center">
+  <img src="assets/Echo-new.png" alt="Echo Music Logo" width="120"/>
+
+  <h1>Echo Music</h1>
+
+  <p><b>A modern Android music app with streaming, synced lyrics, offline playback, and an intuitive user experience.</b></p>
+  <p>
+    <a href="https://buymeacoffee.com/iad1tya">Buy me a Coffee</a> •
+    <a href="https://support.iad1tya.cyou">Support</a> •
+    <a href="https://instagram.com/iad1tya">Instagram</a> •
+    <a href="https://x.com/xad1tya">X</a>
+  </p>
+</div>
+
+## Screenshots
+
+<div align="center">
+  <img src="Screenshots/HomeScreen.png" alt="Home Screen" width="18%" style="border-radius: 10px; margin: 5px;" />
+  <img src="Screenshots/SearchPage.png" alt="Search Page" width="18%" style="border-radius: 10px; margin: 5px;" />
+  <img src="Screenshots/MusicPage.png" alt="Music Player" width="18%" style="border-radius: 10px; margin: 5px;" />
+  <img src="Screenshots/LyricsPage.png" alt="Lyrics Page" width="18%" style="border-radius: 10px; margin: 5px;" />
+  <img src="Screenshots/LibraryPage.png" alt="Library Page" width="18%" style="border-radius: 10px; margin: 5px;" />
+</div>
+
+## Features
+
+* High-quality audio streaming (up to 256kbps for supported accounts).
+* Browse charts, podcasts, moods, and genres.
+* Comprehensive search functionality across the music catalog.
+* Playback data analytics and automated custom playlists.
+* Video playback support (1080p with subtitles).
+* Artificial Intelligence based song suggestions.
+* Crossfade and gapless playback capabilities.
+* Customizable application themes (Light, Dark, and dynamic colors).
+* Sleep timer functionality.
+* Android Auto integration for in-car listening.
+* Support for Spotify Canvas visualizations.
+
+## Architecture
+
+Echo Music is built utilizing a modern Android and Kotlin Multiplatform (KMP) architecture to ensure scalability, maintainability, and high performance.
+
+* **Kotlin Multiplatform (KMP):** The core business logic, domain models, and data access layers are encapsulated within a dedicated `core` Git submodule. This enables logic sharing across platforms and isolates critical services.
+* **UI Layer:** The application interface is built entirely with Jetpack Compose, offering a reactive and declarative UI paradigm.
+* **Media Playback:** Playback is handled by AndroidX Media3 (ExoPlayer), providing robust handling of audio streams, local caching, and gapless transitions.
+* **Dependency Injection:** Koin is utilized for dependency injection, decoupling module lifecycles and simplifying testing.
+* **Local Storage:** Room Database manages structured local data (playlists, favorites, cache metadata) while DataStore manages user preferences.
+* **Modularization:** The project is strictly modularized by feature and layer (e.g., `:core:data`, `:core:domain`, `:core:media3`, `:core:service:spotify`, `:core:service:lyricsService`). This structure reduces build times and enforces clear boundary separations.
+
+## Infrastructure and Analytics
+
+* **Firebase Integration:** Echo Music utilizes Firebase Crashlytics for real-time crash reporting and Firebase Analytics to monitor application performance and usage metrics. This telemetry data is critical for maintaining app stability and guiding future improvements.
+* **Monetization:** To sustain the infrastructure, development, and maintenance costs associated with this project, minimal advertisements are integrated within the [Website](https://echomusic.fun).
+
+## Transfer Playlists from Old Echo Music to New Echo Music
+This guide walks you through moving your playlists from the old Echo Music app to the new one, using a backup-and-convert process.
+
+## Steps
+
+**1. Back up your playlists (old app)**
+- Open the old Echo Music app
+- Go to **Settings**
+- Select **Backup and Restore**
+- Tap **Backup** → **Local Backup**
+- This creates a `.backup` file saved on your device
+
+**2. Visit the migration site**
+- Open **https://echomusic.fun/migrate** in your browser
+
+**3. Upload and convert the file**
+- Upload the `.backup` file from Step 1
+- The site processes it and generates a new `.json` file
+- Download this file to your device
+
+**4. Open the new Echo Music app**
+- Install it (if not already) and launch it
+
+**5. Import your playlists**
+- Go to **Settings**
+- Select **Backup and Restore**
+- Tap **Import Playlists**
+
+**6. Select the converted file**
+- Choose the `.json` file from Step 3
+- Your playlists will now appear in the new app
+
+## Acknowledgements
+
+Echo Music, developed by Aditya ([@iad1tya](https://github.com/iad1tya)), is built on top of the [SimpMusic](https://github.com/maxrave-dev/SimpMusic) project. Huge thanks to the [SimpMusic developer](https://github.com/maxrave-dev) for their excellent open-source work, which forms the reliable foundation this project builds upon.
+
+## Installation
+
+Download the latest pre-compiled APK from the [Releases Page](https://github.com/iad1tya/Echo-Music/releases/latest).
+
+## Support
+
+If you find Echo Music valuable, please consider supporting the development infrastructure:
+
+<div align="center">
+  <a href="https://buymeacoffee.com/iad1tya"><img src="assets/bmac.png" width="140" style="margin: 10px; border-radius: 8px;"/></a>
+  <a href="https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav"><img src="assets/upi.svg" width="100" style="margin: 10px; border-radius: 8px;"/></a>
+  <a href="https://www.patreon.com/cw/iad1tya"><img src="assets/patreon3.png" width="100" style="margin: 10px; border-radius: 8px;"/></a>
+</div>
+
+<details>
+<summary><b>Cryptocurrency Options</b></summary>
+<br>
+
+| Network | Address |
+| :--- | :--- |
+| **Bitcoin** | `bc1qcvyr7eekha8uytmffcvgzf4h7xy7shqzke35fy` |
+| **Ethereum** | `0x51bc91022E2dCef9974D5db2A0e22d57B360e700` |
+| **Solana** | `9wjca3EQnEiqzqgy7N5iqS1JGXJiknMQv6zHgL96t94S` |
+
+</details>
+
+## Legal Disclaimer & Terms of Use
+
+**1. Free & Open-Source**
+Echo Music is a 100% free, open-source (FOSS) application built for educational purposes and personal use. It is not sold or monetized in any way — no ads, no premium features, no subscriptions, and no hidden fees.
+
+**2. How It Works**
+Echo Music functions as a specialized client that parses the publicly available content and APIs of YouTube and YouTube Music, displaying them in a custom interface. This ad-free experience is comparable to using a standard browser with an ad-blocking extension (like uBlock Origin) — it doesn't modify or bypass any content protections beyond that.
+
+**3. Support Creators**
+We respect the work of artists and content creators. Users are encouraged to subscribe to [YouTube Premium](https://www.youtube.com/premium) to directly support the creators they listen to. Echo Music is intended as a developer proof-of-concept, not as a way to reduce creator revenue.
+
+**4. No Hosted Content**
+Echo Music does not host, upload, or store any audio, video, or copyrighted media on its own servers. All content remains hosted on Google/YouTube's servers and is the property of its respective owners. The app simply streams publicly accessible links.
+
+**5. User Responsibility & Contact**
+This software is provided "AS IS," without warranty of any kind. Users are solely responsible for ensuring their use of the app complies with local copyright laws and the platform's Terms of Service. Since no media is hosted by us, we cannot process DMCA takedowns for audio/video content — but for legal concerns regarding the open-source code itself, contact: [hello@echomusic.fun](mailto:hello@echomusic.fun)
+
+## License
+
+Echo Music is licensed under the GPL-3.0 License. See the LICENSE file for details.

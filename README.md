@@ -31,10 +31,7 @@ Echo Music delivers a seamless, premium listening experience by leveraging YouTu
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Installation & Setup](#installation--setup)
-- [Translations](#translations)
-- [Community & Support](#community--support)
 - [Support the Project](#support-the-project)
-- [Contributors](#contributors)
 - [Special Thanks](#special-thanks)
 
 ---

@@ -29,7 +29,7 @@ import echo.music.iad1tya.di.ApplicationScope
 import echo.music.iad1tya.extensions.toEnum
 import echo.music.iad1tya.extensions.toInetSocketAddress
 import echo.music.iad1tya.utils.CrashHandler
-import echo.music.iad1tya.utils.cipher.CipherDeobfuscator
+import echo.music.iad1tya.utils.AppContextHolder
 import echo.music.iad1tya.utils.dataStore
 import echo.music.iad1tya.utils.reportException
 import dagger.hilt.android.HiltAndroidApp
@@ -99,7 +99,8 @@ class App : Application(), SingletonImageLoader.Factory {
         CrashHandler.install(this)
 
         
-        CipherDeobfuscator.initialize(this)
+        AppContextHolder.initialize(this)
+        echo.music.iad1tya.utils.cipher.CipherDeobfuscator.initialize(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -111,13 +112,6 @@ class App : Application(), SingletonImageLoader.Factory {
 
         applicationScope.launch {
             initializeSettings()
-            
-            // Warm the cipher WebView off the first-play critical path
-            launch(Dispatchers.IO) {
-                delay(1500)
-                CipherDeobfuscator.prewarm()
-            }
-            
             observeSettingsChanges()
         }
     }
@@ -172,6 +166,13 @@ class App : Application(), SingletonImageLoader.Factory {
 
         YouTube.useLoginForBrowse = settings[UseLoginForBrowse] ?: true
         YouTube.ipVersion = settings[IpVersionKey]?.toEnum(defaultValue = IpVersion.AUTO) ?: IpVersion.AUTO
+
+        // Set playback engine preference
+        val engineName = settings[echo.music.iad1tya.constants.PlaybackEngineKey]
+        echo.music.iad1tya.utils.YTPlayerUtils.playbackEngine = try {
+            if (engineName != null) echo.music.iad1tya.constants.PlaybackEngine.valueOf(engineName)
+            else echo.music.iad1tya.constants.PlaybackEngine.AUTO
+        } catch (_: Exception) { echo.music.iad1tya.constants.PlaybackEngine.AUTO }
 
         val channel = NotificationChannel(
             "updates",

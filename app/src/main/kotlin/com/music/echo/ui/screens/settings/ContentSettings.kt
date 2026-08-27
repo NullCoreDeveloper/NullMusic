@@ -610,6 +610,9 @@ highlightKey: String? = null) {
             .padding(horizontal = 16.dp),
     ) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.general),
             items = listOf(
@@ -738,7 +741,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.artist_page_settings),
@@ -855,6 +860,8 @@ highlightKey: String? = null) {
             )
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.album_text),
             items = listOf(
@@ -883,7 +890,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.app_language),
@@ -919,7 +928,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.proxy),
@@ -977,7 +988,9 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.lyrics),
@@ -1158,7 +1171,9 @@ highlightKey: String? = null) {
 
 
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.misc),
@@ -1226,7 +1241,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.logs_heading),

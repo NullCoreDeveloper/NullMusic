@@ -6,6 +6,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -66,6 +68,8 @@ import androidx.compose.animation.Crossfade
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.padding
 
 enum class BackupSubScreen { MAIN, IMPORT }
@@ -165,7 +169,10 @@ fun BackupAndRestore(
 
             when (screen) {
                 BackupSubScreen.MAIN -> {
-                    Material3SettingsGroup(
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(
                         items = listOf(
                             Material3SettingsItem(
                                 title = { Text("Local Backup") },
@@ -196,7 +203,10 @@ fun BackupAndRestore(
                     )
                 }
                 BackupSubScreen.IMPORT -> {
-                    Material3SettingsGroup(
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(
                         title = "Import Data",
                         items = listOf(
                             Material3SettingsItem(

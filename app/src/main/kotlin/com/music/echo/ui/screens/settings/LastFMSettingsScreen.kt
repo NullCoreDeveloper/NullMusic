@@ -290,6 +290,9 @@ fun LastFMSettingsScreen(
         )
 
         // Options section (card-based)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.account),
             items = listOf(
@@ -320,6 +323,8 @@ fun LastFMSettingsScreen(
         )
 
         Spacer(Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.options),
@@ -589,6 +594,8 @@ fun LastFMSettingsScreen(
         }
 
         Spacer(Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.scrobbling_configuration),

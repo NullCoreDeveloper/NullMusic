@@ -73,6 +73,7 @@ import echo.music.iad1tya.constants.GridItemSize
 import echo.music.iad1tya.constants.GridItemsSizeKey
 import echo.music.iad1tya.constants.HidePlayerThumbnailKey
 import echo.music.iad1tya.constants.LibraryFilter
+import echo.music.iad1tya.constants.ListenTogetherInTopBarKey
 import echo.music.iad1tya.constants.LyricsAnimationStyle
 import echo.music.iad1tya.constants.LyricsAnimationStyleKey
 import echo.music.iad1tya.constants.LyricsStandardBlurKey
@@ -245,7 +246,7 @@ highlightKey: String? = null) {
 
     val (sliderStyle, onSliderStyleChange) = rememberEnumPreference(
         SliderStyleKey,
-        defaultValue = SliderStyle.DEFAULT
+        defaultValue = SliderStyle.SLIM
     )
     val (squigglySlider, onSquigglySliderChange) = rememberPreference(
         SquigglySliderKey,
@@ -291,6 +292,8 @@ highlightKey: String? = null) {
         showRestartDialog = true
     }
 
+    val (listenTogetherInTopBar, onListenTogetherInTopBarChange) = rememberPreference(
+        ListenTogetherInTopBarKey,
         defaultValue = true
     )
 
@@ -827,7 +830,7 @@ highlightKey: String? = null) {
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = stringResource(R.string.default_),
+                            text = "Bar",
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -977,6 +980,9 @@ highlightKey: String? = null) {
                 )
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.theme),
             items = buildList {
@@ -1005,8 +1011,7 @@ highlightKey: String? = null) {
                 add(
                     Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.legacy_icon)),
-                        icon = painterResource(R.drawable.legacy_icon_raster),
-                        tintIcon = false,
+                        customIcon = { Icon(painterResource(R.mipmap.legacy_icon_monochrome), contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary) },
                         title = { Text(stringResource(R.string.legacy_icon)) },
                         description = { Text(stringResource(R.string.legacy_icon_desc)) },
                         trailingContent = {
@@ -1038,7 +1043,7 @@ highlightKey: String? = null) {
                 )
                 add(
                     Material3SettingsItem(
-                        icon = painterResource(R.drawable.palette),
+                        icon = painterResource(R.drawable.water_drop),
                         title = { Text(stringResource(R.string.liquid_glass)) },
                         description = { Text(stringResource(R.string.liquid_glass_settings)) },
                         onClick = { navController.navigate("settings/appearance/liquidglass") }
@@ -1099,7 +1104,9 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(id = R.string.mini_player),
@@ -1107,7 +1114,7 @@ highlightKey: String? = null) {
                 add(
                     Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.miniplayer_background_style)),
-                        icon = painterResource(R.drawable.palette),
+                        icon = painterResource(R.drawable.dock_to_top),
                         title = { Text(stringResource(R.string.miniplayer_background_style)) },
                         description = {
                             Text(
@@ -1128,7 +1135,7 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         val (thumbnailCornerRadius, onThumbnailCornerRadiusChange) = rememberPreference(
             ThumbnailCornerRadiusKey,
@@ -1138,12 +1145,14 @@ highlightKey: String? = null) {
         var showSensitivityDialog by rememberSaveable { mutableStateOf(false) }
         var showThumbnailCornerRadiusDialog by rememberSaveable { mutableStateOf(false) }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.player),
             items = listOfNotNull(
                 Material3SettingsItem(
     isHighlighted = (highlightKey == "Apple Music Inspired"),
-                    icon = painterResource(R.drawable.palette),
+                    icon = painterResource(R.drawable.apple_music_me),
                     title = { Text("Apple Music Inspired") },
                     trailingContent = {
                         Switch(
@@ -1296,7 +1305,7 @@ highlightKey: String? = null) {
                     description = {
                         Text(
                             when (sliderStyle) {
-                                SliderStyle.DEFAULT -> stringResource(R.string.default_)
+                                SliderStyle.DEFAULT -> "Bar"
                                 SliderStyle.WAVY -> if (squigglySlider) stringResource(R.string.squiggly) else stringResource(
                                     R.string.wavy
                                 )
@@ -1330,7 +1339,7 @@ highlightKey: String? = null) {
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.echomusic_canvas)),
-                    icon = painterResource(R.drawable.palette),
+                    icon = painterResource(R.drawable.ic_canvas),
                     title = { Text(stringResource(R.string.echomusic_canvas)) },
                     description = { Text(stringResource(R.string.echomusic_canvas_desc)) },
                     trailingContent = {
@@ -1372,7 +1381,8 @@ highlightKey: String? = null) {
                     },
                     onClick = { onRotatingThumbnailChange(!rotatingThumbnail) }
                 ),
-                Material3SettingsItem(
+                // Show comment button hidden
+                /* Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.show_comment_button)),
                     icon = painterResource(R.drawable.chat_msg),
                     title = { Text(stringResource(R.string.show_comment_button)) },
@@ -1393,7 +1403,7 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onShowCommentButtonChange(!showCommentButton) }
-                ),
+                ), */
                 Material3SettingsItem(
     isHighlighted = (highlightKey == "Show codec on player"),
                     icon = painterResource(R.drawable.info),
@@ -1510,7 +1520,9 @@ highlightKey: String? = null) {
             )
         }
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.lyrics),
@@ -1747,7 +1759,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.misc),
@@ -1858,9 +1872,12 @@ highlightKey: String? = null) {
                     description = { Text(stringResource(R.string.listen_together_in_top_bar_desc)) },
                     trailingContent = {
                         Switch(
+                            checked = listenTogetherInTopBar,
+                            onCheckedChange = onListenTogetherInTopBarChange,
                             thumbContent = {
                                 Icon(
                                     painter = painterResource(
+                                        id = if (listenTogetherInTopBar) R.drawable.check else R.drawable.close
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier.size(SwitchDefaults.IconSize)
@@ -1868,6 +1885,7 @@ highlightKey: String? = null) {
                             }
                         )
                     },
+                    onClick = { onListenTogetherInTopBarChange(!listenTogetherInTopBar) }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.grid_cell_size)),
@@ -1895,7 +1913,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.auto_playlists),

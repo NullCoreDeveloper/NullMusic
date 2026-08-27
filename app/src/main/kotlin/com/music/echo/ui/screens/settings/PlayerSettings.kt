@@ -236,6 +236,12 @@ highlightKey: String? = null) {
 
     var showAudioQualityDialog by remember { mutableStateOf(false) }
     var showDownloadQualityDialog by remember { mutableStateOf(false) }
+    var showPlaybackEngineDialog by remember { mutableStateOf(false) }
+
+    val (playbackEngine, onPlaybackEngineChange) = rememberEnumPreference(
+        echo.music.iad1tya.constants.PlaybackEngineKey,
+        defaultValue = echo.music.iad1tya.constants.PlaybackEngine.AUTO
+    )
 
     val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
         echo.music.iad1tya.constants.DownloadQualityKey,
@@ -278,6 +284,38 @@ highlightKey: String? = null) {
                 when (it) {
                     echo.music.iad1tya.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
                     else -> ""
+                }
+            }
+        )
+    }
+
+    if (showPlaybackEngineDialog) {
+        EnumDialog(
+            onDismiss = { showPlaybackEngineDialog = false },
+            onSelect = {
+                onPlaybackEngineChange(it)
+                echo.music.iad1tya.utils.YTPlayerUtils.playbackEngine = it
+                showPlaybackEngineDialog = false
+            },
+            title = "Playback Engine",
+            current = playbackEngine,
+            values = listOf(
+                echo.music.iad1tya.constants.PlaybackEngine.POTOKEN,
+                echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE,
+                echo.music.iad1tya.constants.PlaybackEngine.AUTO,
+            ),
+            valueText = {
+                when (it) {
+                    echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
+                    echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
+                    echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
+                }
+            },
+            valueDescription = {
+                when (it) {
+                    echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "Uses WebView PoToken + CipherDeobfuscator. Most reliable and future-proof."
+                    echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "Uses NewPipe extractor for stream resolution. Lightweight but may break with YouTube updates."
+                    echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Tries PoToken first, falls back to BravePipe if it fails."
                 }
             }
         )
@@ -327,7 +365,7 @@ highlightKey: String? = null) {
             )
         )
 
-
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             scrollState = scrollState,
@@ -358,6 +396,8 @@ highlightKey: String? = null) {
             }
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.player),
             items = buildList {
@@ -373,7 +413,7 @@ highlightKey: String? = null) {
                             }
                         )
                     },
-                    onClick = { showAudioQualityDialog = true }
+                    onClick = null
                 ))
                 
                 add(Material3SettingsItem(
@@ -389,6 +429,22 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { showDownloadQualityDialog = true }
+                ))
+
+                add(Material3SettingsItem(
+    isHighlighted = false,
+                    icon = painterResource(R.drawable.tune),
+                    title = { Text("Playback Engine") },
+                    description = {
+                        Text(
+                            when (playbackEngine) {
+                                echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
+                                echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
+                                echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
+                            }
+                        )
+                    },
+                    onClick = { showPlaybackEngineDialog = true }
                 ))
 
 
@@ -749,7 +805,9 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.queue),
@@ -977,7 +1035,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.misc),
@@ -1092,13 +1152,6 @@ highlightKey: String? = null) {
                     },
                     onClick = { onEnableExportAsMp3Change(!enableExportAsMp3) }
                 ),
-                Material3SettingsItem(
-                    isHighlighted = (highlightKey == stringResource(R.string.youtube_decryption_settings)),
-                    icon = painterResource(R.drawable.settings),
-                    title = { Text(stringResource(R.string.youtube_decryption_settings)) },
-                    description = { Text(stringResource(R.string.youtube_decryption_desc)) },
-                    onClick = { navController.navigate("settings/echo_extractor") }
-                )
             )
         )
         Spacer(modifier = Modifier.height(16.dp))

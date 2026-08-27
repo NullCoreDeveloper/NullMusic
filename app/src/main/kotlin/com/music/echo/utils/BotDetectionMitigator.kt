@@ -5,7 +5,6 @@ package echo.music.iad1tya.utils
 import androidx.datastore.preferences.core.edit
 import com.music.innertube.YouTube
 import echo.music.iad1tya.constants.VisitorDataKey
-import echo.music.iad1tya.utils.cipher.CipherDeobfuscator
 import echo.music.iad1tya.utils.PlaybackLogManager
 import echo.music.iad1tya.utils.PlaybackLogLevel
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +77,7 @@ object BotDetectionMitigator {
                 Timber.tag(TAG).i("New visitorData obtained successfully for region ${currentLocale.gl}.")
                 
                 
-                CipherDeobfuscator.appContext?.dataStore?.edit { settings ->
+                AppContextHolder.appContext.dataStore.edit { settings ->
                     settings[VisitorDataKey] = newData
                 }
             }.onFailure { e ->

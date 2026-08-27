@@ -67,6 +67,8 @@ fun YouTubeSelectionSongMenu(
         mutableStateOf(false)
     }
 
+    val listenTogetherManager = echo.music.iad1tya.LocalListenTogetherManager.current
+    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
 
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)

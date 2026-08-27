@@ -47,12 +47,12 @@ import echo.music.iad1tya.ui.screens.settings.PlayerSettings
 import echo.music.iad1tya.ui.screens.settings.PrivacySettings
 import echo.music.iad1tya.ui.screens.settings.RomanizationSettings
 import echo.music.iad1tya.ui.screens.settings.SettingsScreen
-import echo.music.iad1tya.ui.screens.settings.EchoExtractorSettings
 import echo.music.iad1tya.ui.screens.settings.AccountSettingsScreen
 import echo.music.iad1tya.ui.screens.settings.StorageSettings
 import echo.music.iad1tya.ui.screens.settings.ThemeScreen
 import echo.music.iad1tya.ui.screens.settings.AiSettings
 
+import echo.music.iad1tya.ui.screens.settings.integrations.ListenTogetherSettings
 import echo.music.iad1tya.ui.screens.recognition.RecognitionScreen
 import echo.music.iad1tya.ui.screens.recognition.RecognitionHistoryScreen
 import echo.music.iad1tya.ui.screens.settings.UpdateSettings
@@ -75,18 +75,6 @@ fun NavGraphBuilder.navigationBuilder(
         HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
     }
 
-    composable("settings/echo_extractor") {
-        EchoExtractorSettings(navController, scrollBehavior)
-    }
-
-    composable("settings/echo_extractor") {
-        EchoExtractorSettings(navController, scrollBehavior)
-    }
-
-    composable("settings/echo_extractor") {
-        EchoExtractorSettings(navController, scrollBehavior)
-    }
-
     composable(Screens.Search.route) {
         val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
         val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
@@ -107,11 +95,14 @@ fun NavGraphBuilder.navigationBuilder(
         LibraryScreen(navController)
     }
 
+    composable(Screens.ListenTogether.route) {
+        ListenTogetherScreen(navController, showTopBar = false)
     }
 
     composable(
         route = "listen_together_from_topbar",
     ) {
+        ListenTogetherScreen(navController, showTopBar = true)
     }
 
     composable("listen_together/chat") {
@@ -449,6 +440,7 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable(route = "settings/integrations/listen_together") {
+        ListenTogetherSettings(navController, scrollBehavior)
     }
 
     composable(

@@ -93,6 +93,9 @@ fun UpdateSettings(
             .padding(horizontal = 16.dp),
     ) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.app_updates_title),
             items = listOf(
@@ -111,13 +114,8 @@ fun UpdateSettings(
                         }
                     },
                     onClick = {
-                        val isFoss = !BuildConfig.CAST_AVAILABLE
-                        if (isFoss) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/EchoMusicApp/Echo-Music"))
-                            context.startActivity(intent)
-                        } else {
-                            navController.navigate("update")
-                        }
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun"))
+                        context.startActivity(intent)
                     }
                 ),
                 Material3SettingsItem(
@@ -125,11 +123,6 @@ fun UpdateSettings(
                     icon = painterResource(R.drawable.info),
                     title = {
                         Text(stringResource(R.string.version, BuildConfig.VERSION_NAME))
-                    },
-                    description = {
-                        val arch = BuildConfig.ARCHITECTURE
-                        val variant = if (BuildConfig.CAST_AVAILABLE) "GMS" else "FOSS"
-                        Text("$arch - $variant")
                     }
                 ),
                 
@@ -196,48 +189,6 @@ fun UpdateSettings(
                         saveUpdateNotificationsSetting(context, updateNotificationsEnabled)
                     }
                 ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_downloaded_updates)),
-                    icon = painterResource(R.drawable.delete),
-                    title = { Text(stringResource(R.string.clear_downloaded_updates)) },
-                    description = {
-                        if (apkCount == 0) {
-                            Text(
-                                text = stringResource(R.string.clear_downloaded_updates_desc),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            Text(
-                                text = pluralStringResource(R.plurals.n_apk_found, apkCount, apkCount),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    },
-                    trailingContent = {
-                        IconButton(
-                            onClick = { showInfoDialog = true },
-                            onLongClick = {}
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.info),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    },
-                    onClick = {
-                        if (apkCount > 0) {
-                            if (clearDownloadedApks(context)) {
-                                apkCount = 0
-                                Toast.makeText(context, "Deleted successfully", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(context, "Failed to delete some files", Toast.LENGTH_SHORT).show()
-                                apkCount = getDownloadedApkCount(context)
-                            }
-                        }
-                    }
-                )
-
 
 
 
@@ -247,7 +198,10 @@ fun UpdateSettings(
             )
         )
         
+        
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.commits),
             items = listOf(

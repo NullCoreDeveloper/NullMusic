@@ -108,8 +108,10 @@ fun AccountSettingsScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp)
         ) {
-            
-            Material3SettingsGroup(scrollState = scrollState, 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(scrollState = scrollState, 
                 title = stringResource(R.string.settings),
                 items = listOf(
                     Material3SettingsItem(
@@ -159,10 +161,11 @@ fun AccountSettingsScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             
-            Material3SettingsGroup(scrollState = scrollState, 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(scrollState = scrollState, 
                 title = stringResource(R.string.advanced_login),
                 items = listOf(
                     Material3SettingsItem(
@@ -190,7 +193,10 @@ fun AccountSettingsScreen(
 
             
             if (isLoggedIn) {
-                Material3SettingsGroup(scrollState = scrollState, 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(scrollState = scrollState, 
                     title = stringResource(R.string.settings_section_player_content),
                     items = listOf(
                         Material3SettingsItem(
@@ -250,64 +256,12 @@ fun AccountSettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Material3SettingsGroup(scrollState = scrollState, 
-                title = stringResource(R.string.integrations),
-                items = listOf(
-                    Material3SettingsItem(
-                        isHighlighted = (highlightKey == stringResource(R.string.discord_integration)),
-                        icon = painterResource(R.drawable.discord),
-                        title = { Text(stringResource(R.string.discord_integration)) },
-                        description = { Text(stringResource(R.string.discord_integration_desc)) },
-                        onClick = { navController.navigate("settings/discord") }
-                    ),
-                    Material3SettingsItem(
-                        isHighlighted = (highlightKey == stringResource(R.string.lastfm_integration)),
-                        icon = painterResource(R.drawable.ic_lastfm),
-                        title = { Text(stringResource(R.string.lastfm_integration)) },
-                        description = { Text(stringResource(R.string.lastfm_integration_desc)) },
-                        onClick = { navController.navigate("settings/lastfm") }
-                    ),
-                    Material3SettingsItem(
-                        isHighlighted = (highlightKey == stringResource(R.string.listenbrainz_scrobbling)),
-                        icon = painterResource(R.drawable.ic_listenbrainz),
-                        title = { Text(stringResource(R.string.listenbrainz_scrobbling)) },
-                        description = { Text(stringResource(R.string.listenbrainz_scrobbling_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = listenBrainzEnabled,
-                                onCheckedChange = onListenBrainzEnabledChange,
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (listenBrainzEnabled) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            )
-                        },
-                        onClick = { onListenBrainzEnabledChange(!listenBrainzEnabled) }
-                    ),
-                    Material3SettingsItem(
-                        isHighlighted = (highlightKey == stringResource(R.string.set_listenbrainz_token)),
-                        icon = painterResource(R.drawable.edit),
-                        title = {
-                            Text(
-                                if (listenBrainzToken.isBlank()) {
-                                    stringResource(R.string.set_listenbrainz_token)
-                                } else {
-                                    "ListenBrainz token set"
-                                }
-                            )
-                        },
-                        onClick = { showListenBrainzTokenEditor = true }
-                    )
-                )
-            )
-
-
-            Spacer(modifier = Modifier.height(16.dp))
+            // Integrations section hidden
+            //
+            // Material3SettingsGroup(
+            //     title = stringResource(R.string.integrations),
+            //     ...
+            // )
         }
 
         if (showTokenEditor) {

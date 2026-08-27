@@ -426,7 +426,7 @@ fun PaletteItem(
                 contentDescription = contentDesc
             }
     ) {
-        if (palette.seedColor == Color.Transparent) {
+        /* if (palette.seedColor == Color.Transparent) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -440,7 +440,7 @@ fun PaletteItem(
                     modifier = Modifier.size(26.dp)
                 )
             }
-        }
+        } */
         
         if (isSelected) {
             Box(

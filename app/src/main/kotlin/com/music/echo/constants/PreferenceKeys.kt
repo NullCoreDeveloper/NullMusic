@@ -116,6 +116,13 @@ enum class DownloadQuality {
 
 val AudioOffload = booleanPreferencesKey("enableOffload")
 
+enum class PlaybackEngine {
+    POTOKEN,
+    BRAVEPIPE,
+    AUTO,
+}
+
+val PlaybackEngineKey = stringPreferencesKey("playbackEngine")
 val PersistentQueueKey = booleanPreferencesKey("persistentQueue")
 val PersistentShuffleAcrossQueuesKey = booleanPreferencesKey("persistentShuffleAcrossQueues")
 val RememberShuffleAndRepeatKey = booleanPreferencesKey("rememberShuffleAndRepeat")
@@ -155,7 +162,20 @@ val DisableScreenshotKey = booleanPreferencesKey("disableScreenshot")
 val EnableGoogleCastKey = booleanPreferencesKey("enableGoogleCast")
 
 
+val ListenTogetherServerUrlKey = stringPreferencesKey("listenTogetherServerUrl")
+val ListenTogetherUsernameKey = stringPreferencesKey("listenTogetherUsername")
+val EnableListenTogetherKey = booleanPreferencesKey("enableListenTogether")
+val ListenTogetherAutoApprovalKey = booleanPreferencesKey("listenTogetherAutoApproval")
+val ListenTogetherSyncVolumeKey = booleanPreferencesKey("listenTogetherSyncVolume")
+val ListenTogetherSmartResyncKey = booleanPreferencesKey("listenTogetherSmartResync")
+val ListenTogetherBlockedUsersKey = stringPreferencesKey("listenTogetherBlockedUsers")
+val ListenTogetherInTopBarKey = booleanPreferencesKey("listenTogetherInTopBar")
 
+val ListenTogetherSessionTokenKey = stringPreferencesKey("listenTogetherSessionToken")
+val ListenTogetherRoomCodeKey = stringPreferencesKey("listenTogetherRoomCode")
+val ListenTogetherUserIdKey = stringPreferencesKey("listenTogetherUserId")
+val ListenTogetherIsHostKey = booleanPreferencesKey("listenTogetherIsHost")
+val ListenTogetherSessionTimestampKey = longPreferencesKey("listenTogetherSessionTimestamp")
 
 val LastFMSessionKey = stringPreferencesKey("lastfmSession")
 val LastFMUsernameKey = stringPreferencesKey("lastfmUsername")
@@ -767,10 +787,6 @@ val PreloadNextSongEnabledKey = booleanPreferencesKey("preload_next_song_enabled
 val PreloadNextSongLimitKey = intPreferencesKey("preload_next_song_limit")
 val PreloadLyricsEnabledKey = booleanPreferencesKey("preload_lyrics_enabled")
 
-val CipherLastUpdatedKey = longPreferencesKey("CipherLastUpdatedKey")
-val CipherManualUpdate1Key = longPreferencesKey("CipherManualUpdate1Key")
-val CipherManualUpdate2Key = longPreferencesKey("CipherManualUpdate2Key")
-val CipherManualUpdate3Key = longPreferencesKey("CipherManualUpdate3Key")
 val LiquidGlassGlobalEnabledKey = booleanPreferencesKey("liquidGlassGlobalEnabled")
 val LiquidGlassTextColorKey = intPreferencesKey("liquidGlassTextColor")
 val LiquidGlassSurfaceTintColorKey = intPreferencesKey("liquidGlassSurfaceTintColor")

@@ -3,104 +3,227 @@
 
   <h1>Echo Music</h1>
 
-  <p><b>A modern Android music app with streaming, synced lyrics, offline playback, and an intuitive user experience.</b></p>
-  <p>
-    <a href="https://buymeacoffee.com/iad1tya">Buy me a Coffee</a> •
-    <a href="https://support.iad1tya.cyou">Support</a> •
-    <a href="https://instagram.com/iad1tya">Instagram</a> •
-    <a href="https://x.com/xad1tya">X</a>
-  </p>
+  <p><b>A modern Android music app with ad-free streaming, synced lyrics, offline playback, and an intuitive user experience.</b></p>
+  
+  <table style="margin: 0 auto; border-collapse: collapse; border: none;">
+    <tr>
+      <td align="center" style="padding: 15px; border: none;">
+        <a href="https://echomusic.fun/download" style="text-decoration:none;"><img src="assets/download.png" alt="Download" width="150" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <a href="https://echomusic.fun/obtainium" style="text-decoration:none;"><img src="assets/obtainium.png" alt="Get it on Obtainium" width="150" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
+      </td>
+    </tr>
+  </table>
 </div>
+
+---
+
+## Overview
+
+Echo Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, and environment-aware music recognition.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Installation & Setup](#installation--setup)
+- [Translations](#translations)
+- [Community & Support](#community--support)
+- [Support the Project](#support-the-project)
+- [Contributors](#contributors)
+- [Special Thanks](#special-thanks)
+
+---
 
 ## Screenshots
 
 <div align="center">
-  <img src="Screenshots/HomeScreen.png" alt="Home Screen" width="18%" style="border-radius: 10px; margin: 5px;" />
-  <img src="Screenshots/SearchPage.png" alt="Search Page" width="18%" style="border-radius: 10px; margin: 5px;" />
-  <img src="Screenshots/MusicPage.png" alt="Music Player" width="18%" style="border-radius: 10px; margin: 5px;" />
-  <img src="Screenshots/LyricsPage.png" alt="Lyrics Page" width="18%" style="border-radius: 10px; margin: 5px;" />
-  <img src="Screenshots/LibraryPage.png" alt="Library Page" width="18%" style="border-radius: 10px; margin: 5px;" />
+  <table style="margin: 0 auto; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Home Screen</b><br><br>
+        <img src="Screenshots/sc_1.png" alt="Home Screen" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Music Player</b><br><br>
+        <img src="Screenshots/sc_2.png" alt="Music Player" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Synchronized Lyrics</b><br><br>
+        <img src="Screenshots/sc_3.png" alt="Synchronized Lyrics" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Search & Explore</b><br><br>
+        <img src="Screenshots/sc_4.png" alt="Search & Explore" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Music Library</b><br><br>
+        <img src="Screenshots/sc_5.png" alt="Music Library" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <b>Echo Find (Recognition)</b><br><br>
+        <img src="Screenshots/sc_6.png" alt="Echo Find" width="220" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/>
+      </td>
+    </tr>
+  </table>
 </div>
+
+---
 
 ## Features
 
-* High-quality audio streaming (up to 256kbps for supported accounts).
-* Browse charts, podcasts, moods, and genres.
-* Comprehensive search functionality across the music catalog.
-* Playback data analytics and automated custom playlists.
-* Video playback support (1080p with subtitles).
-* Artificial Intelligence based song suggestions.
-* Crossfade and gapless playback capabilities.
-* Customizable application themes (Light, Dark, and dynamic colors).
-* Sleep timer functionality.
-* Android Auto integration for in-car listening.
-* Support for Spotify Canvas visualizations.
+### What's New
 
-## Architecture
+> - **Data Saver Mode (Beta)** — Automatically reduces data usage during playback for limited connections.
+> - **Settings Search Index** — Quickly find and navigate to any settings option instantly.
+> - **Redesigned UI** — Cleaner, faster, and more intuitive interface from the ground up.
+> - **Import from Spotify** — Bring your playlists and tracks over with ease.
+> - **Listen Together** — Sync music in real time, similar to Spotify Jam.
+> - **Podcast Support** — Listen to podcasts alongside your music library.
+> - **Local Media Support** — Play music files stored directly on your device.
+> - **Dynamic Island Support** — Enhanced playback notifications on supported Android devices.
 
-Echo Music is built utilizing a modern Android and Kotlin Multiplatform (KMP) architecture to ensure scalability, maintainability, and high performance.
+<br>
 
-* **Kotlin Multiplatform (KMP):** The core business logic, domain models, and data access layers are encapsulated within a dedicated `core` Git submodule. This enables logic sharing across platforms and isolates critical services.
-* **UI Layer:** The application interface is built entirely with Jetpack Compose, offering a reactive and declarative UI paradigm.
-* **Media Playback:** Playback is handled by AndroidX Media3 (ExoPlayer), providing robust handling of audio streams, local caching, and gapless transitions.
-* **Dependency Injection:** Koin is utilized for dependency injection, decoupling module lifecycles and simplifying testing.
-* **Local Storage:** Room Database manages structured local data (playlists, favorites, cache metadata) while DataStore manages user preferences.
-* **Modularization:** The project is strictly modularized by feature and layer (e.g., `:core:data`, `:core:domain`, `:core:media3`, `:core:service:spotify`, `:core:service:lyricsService`). This structure reduces build times and enforces clear boundary separations.
+<details>
+<summary><b>Streaming & Playback</b></summary>
+<br>
 
-## Infrastructure and Analytics
+- **Ad-Free** — Stream without any interruptions.
+- **Data Saver Mode** — Reduce data consumption when streaming on cellular networks.
+- **Seamless Playback** — Switch effortlessly between audio-only and video modes.
+- **Background Playback** — Listen while using other apps or with the screen off.
+- **Offline Mode** — Download tracks, albums, and playlists via a dedicated download manager.
+- **Crossfade** — Smooth transitions between tracks.
+- **Canvas Animations** — Visual animations while playing music.
 
-* **Firebase Integration:** Echo Music utilizes Firebase Crashlytics for real-time crash reporting and Firebase Analytics to monitor application performance and usage metrics. This telemetry data is critical for maintaining app stability and guiding future improvements.
-* **Monetization:** To sustain the infrastructure, development, and maintenance costs associated with this project, minimal advertisements are integrated within the [Website](https://echomusic.fun).
+</details>
 
-## Transfer Playlists from Old Echo Music to New Echo Music
-This guide walks you through moving your playlists from the old Echo Music app to the new one, using a backup-and-convert process.
+<details>
+<summary><b>Discovery & Echo Find</b></summary>
+<br>
 
-## Steps
+- **Echo Find** — Identify songs playing around you using advanced audio recognition.
+- **Echo Brain** — An intelligent, on-device engine that analyzes your listening momentum and auto-injects perfectly aligned tracks into your queue. Read more in the [Echo Brain Documentation](ECHO_BRAIN_DOCS.md).
+- **Smart Recommendations** — Personalized suggestions based on your listening history.
+- **Comprehensive Browsing** — Explore Charts, Podcasts, Moods, and Genres.
 
-**1. Back up your playlists (old app)**
-- Open the old Echo Music app
-- Go to **Settings**
-- Select **Backup and Restore**
-- Tap **Backup** → **Local Backup**
-- This creates a `.backup` file saved on your device
+</details>
 
-**2. Visit the migration site**
-- Open **https://echomusic.fun/migrate** in your browser
+<details>
+<summary><b>Lyrics</b></summary>
+<br>
 
-**3. Upload and convert the file**
-- Upload the `.backup` file from Step 1
-- The site processes it and generates a new `.json` file
-- Download this file to your device
+- **Multiple Lyric Animations** — Choose from various lyric display styles.
+- **Word-by-Word Lyrics** — Precise per-word synchronization.
+- **Lyrics+** — New lyrics provider for improved accuracy and coverage.
+- **AI Translation** — Built-in Google Translate integration for lyrics in any language.
 
-**4. Open the new Echo Music app**
-- Install it (if not already) and launch it
+</details>
 
-**5. Import your playlists**
-- Go to **Settings**
-- Select **Backup and Restore**
-- Tap **Import Playlists**
+<details>
+<summary><b>Integrations</b></summary>
+<br>
 
-**6. Select the converted file**
-- Choose the `.json` file from Step 3
-- Your playlists will now appear in the new app
+- **Music Sharing via Odesli** — Share songs as Song.link for cross-platform listening.
+- **Set as Ringtone** — Directly set any song as your device ringtone.
 
-## Acknowledgements
+</details>
 
-Echo Music, developed by Aditya ([@iad1tya](https://github.com/iad1tya)), is built on top of the [SimpMusic](https://github.com/maxrave-dev/SimpMusic) project. Huge thanks to the [SimpMusic developer](https://github.com/maxrave-dev) for their excellent open-source work, which forms the reliable foundation this project builds upon.
+<details>
+<summary><b>Smart Playback</b></summary>
+<br>
 
-## Installation
+- **Pause on Mute** — Auto-pause when your device is muted.
+- **Resume on Bluetooth** — Playback resumes when headphones or earbuds reconnect.
+
+</details>
+
+<details>
+<summary><b>Customization</b></summary>
+<br>
+
+- **UI Density Scale** — Adjust interface spacing to your preference.
+- **High Refresh Rate Support** — Smoother UI and animations on supported displays.
+- **Hide Player Thumbnail** — Keep the player minimal without album art.
+- **Crop Album Art** — Adjust album art display to fit your style.
+- **Hide Video Songs** — Filter out video content from your feed.
+- **Hide YouTube Shorts** — Keep Shorts out of your music browsing.
+
+</details>
+
+---
+
+## Installation & Setup
+
+### Android Installation
 
 Download the latest pre-compiled APK from the [Releases Page](https://github.com/iad1tya/Echo-Music/releases/latest).
 
-## Support
+<details>
+<summary><b>Building from Source</b></summary>
+<br>
 
-If you find Echo Music valuable, please consider supporting the development infrastructure:
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/iad1tya/Echo-Music.git
+   cd Echo-Music
+   ```
+
+2. **Configure Android SDK**
+   Create a `local.properties` file:
+   ```bash
+   echo "sdk.dir=/path/to/your/android/sdk" > local.properties
+   ```
+   *(For detailed paths on Windows/macOS/Linux, refer to [SETUP.md](SETUP.md))*
+
+3. **Firebase Configuration (Optional)**
+   Firebase is required for analytics and crash reporting. See the instructions in [SETUP.md](SETUP.md#3-configure-firebase-optional) for adding your `google-services.json`.
+
+4. **Build the Application**
+   Echo Music has two build variants: **FOSS** (without Google Play Services / Cast) and **GMS** (with Cast support).
+   
+   - To build the **FOSS** Universal Debug variant:
+     ```bash
+     ./gradlew assembleUniversalFossDebug
+     ```
+   - To build the **GMS** Universal Debug variant:
+     ```bash
+     ./gradlew assembleUniversalGmsDebug
+     ```
+   *(For optimized ARM64 builds, release builds, or other options, refer to [SETUP.md](SETUP.md))*
+
+</details>
+
+---
+
+## Support the Project
+
+If Echo Music has been useful to you, consider supporting its development.
 
 <div align="center">
-  <a href="https://buymeacoffee.com/iad1tya"><img src="assets/bmac.png" width="140" style="margin: 10px; border-radius: 8px;"/></a>
-  <a href="https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav"><img src="assets/upi.svg" width="100" style="margin: 10px; border-radius: 8px;"/></a>
-  <a href="https://www.patreon.com/cw/iad1tya"><img src="assets/patreon3.png" width="100" style="margin: 10px; border-radius: 8px;"/></a>
+  <table style="margin: 0 auto; border-collapse: collapse; border: none;">
+    <tr>
+      <td align="center" style="padding: 15px; border: none;">
+        <a href="https://buymeacoffee.com/iad1tya" style="text-decoration:none;"><img src="assets/bmac.png" alt="Buy Me A Coffee Logo" width="140" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <a href="https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You" style="text-decoration:none;"><img src="assets/upi.svg" alt="UPI Logo" width="100" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
+      </td>
+      <td align="center" style="padding: 15px; border: none;">
+        <a href="https://www.patreon.com/cw/iad1tya" style="text-decoration:none;"><img src="assets/patreon3.png" alt="Patreon Logo" width="100" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
+      </td>
+    </tr>
+  </table>
 </div>
+
+<br>
 
 <details>
 <summary><b>Cryptocurrency Options</b></summary>
@@ -114,23 +237,24 @@ If you find Echo Music valuable, please consider supporting the development infr
 
 </details>
 
-## Legal Disclaimer & Terms of Use
+---
 
-**1. Free & Open-Source**
-Echo Music is a 100% free, open-source (FOSS) application built for educational purposes and personal use. It is not sold or monetized in any way — no ads, no premium features, no subscriptions, and no hidden fees.
+## Special Thanks
 
-**2. How It Works**
-Echo Music functions as a specialized client that parses the publicly available content and APIs of YouTube and YouTube Music, displaying them in a custom interface. This ad-free experience is comparable to using a standard browser with an ad-blocking extension (like uBlock Origin) — it doesn't modify or bypass any content protections beyond that.
+Echo Music stands on the shoulders of several excellent open-source projects. Sincere thanks to:
 
-**3. Support Creators**
-We respect the work of artists and content creators. Users are encouraged to subscribe to [YouTube Premium](https://www.youtube.com/premium) to directly support the creators they listen to. Echo Music is intended as a developer proof-of-concept, not as a way to reduce creator revenue.
+| Project | Description |
+| :--- | :--- |
+| **[Metrolist](https://github.com/MetrolistGroup/Metrolist)** & **[Vivi Music](https://github.com/vivizzz007/vivi-music)** | Foundational inspiration and architecture reference |
+| **[ArchiveTune](https://github.com/koiverse/ArchiveTune)** | Material You UI inspiration |
+| **[Better Lyrics](https://better-lyrics.boidu.dev/)** | Lyrics enhancement and synchronization |
+| **[SimpMusic](https://github.com/maxrave-dev/SimpMusic)** | Lyrics implementation reference |
+| **[Music Recognizer](https://github.com/aleksey-saenko/MusicRecognizer)** | Audio recognition (Echo Find) |
+| **[Flow](https://github.com/a-edev/Flow)** | AI queue generation engine (Echo Brain) |
+| **[zemer-cipher](https://github.com/ZemerTeam/zemer-cipher)** | YouTube cipher deobfuscation and PoToken generation |
 
-**4. No Hosted Content**
-Echo Music does not host, upload, or store any audio, video, or copyrighted media on its own servers. All content remains hosted on Google/YouTube's servers and is the property of its respective owners. The app simply streams publicly accessible links.
+---
 
-**5. User Responsibility & Contact**
-This software is provided "AS IS," without warranty of any kind. Users are solely responsible for ensuring their use of the app complies with local copyright laws and the platform's Terms of Service. Since no media is hosted by us, we cannot process DMCA takedowns for audio/video content — but for legal concerns regarding the open-source code itself, contact: [hello@echomusic.fun](mailto:hello@echomusic.fun)
-
-## License
-
-Echo Music is licensed under the GPL-3.0 License. See the LICENSE file for details.
+<div align="center">
+  <p>Licensed under <a href="LICENSE">GPL-3.0</a></p>
+</div>

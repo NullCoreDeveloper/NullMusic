@@ -1,5 +1,5 @@
 {
-  "name": "Echo Music Server",
-  "region": "Global - Echo Music",
-  "serverUrl": "wss://iad1tya-echomusic.hf.space/ws"
+  "name": "Metrolist Server",
+  "region": "Poland",
+  "serverUrl": "wss://metroserverx.meowery.eu/ws"
 }

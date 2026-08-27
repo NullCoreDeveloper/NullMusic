@@ -73,6 +73,7 @@ highlightKey: String? = null) {
     val accountText = stringResource(R.string.account)
     val appearanceText = stringResource(R.string.appearance)
     val playerText = stringResource(R.string.player_and_audio)
+    val listenTogetherText = stringResource(R.string.listen_together)
     val contentText = stringResource(R.string.content)
     val aiLyricsText = stringResource(R.string.ai_lyrics_translation)
     val privacyText = stringResource(R.string.privacy)
@@ -84,6 +85,7 @@ highlightKey: String? = null) {
     val accountDesc = stringResource(R.string.setting_desc_account)
     val appearanceDesc = stringResource(R.string.setting_desc_appearance)
     val playerDesc = stringResource(R.string.setting_desc_player)
+    val listenTogetherDesc = stringResource(R.string.setting_desc_listen_together)
     val contentDesc = stringResource(R.string.setting_desc_content)
     val aiLyricsDesc = stringResource(R.string.setting_desc_ai)
     val privacyDesc = stringResource(R.string.setting_desc_privacy)
@@ -199,9 +201,14 @@ highlightKey: String? = null) {
                     )
                 )
             }
+            if (listenTogetherText.lowercase().contains(searchLower) || listenTogetherDesc.lowercase().contains(searchLower)) {
                 add(
                     Material3SettingsItem(
+                        isHighlighted = (highlightKey == listenTogetherText),
                         icon = painterResource(R.drawable.group),
+                        title = { Text(listenTogetherText) },
+                        description = { Text(listenTogetherDesc) },
+                        onClick = { navController.navigate(Screens.ListenTogether.route) }
                     )
                 )
             }
@@ -356,7 +363,10 @@ highlightKey: String? = null) {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
         } else {
-            Material3SettingsGroup(scrollState = scrollState, items = finalItemsList)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(scrollState = scrollState, items = finalItemsList)
         }
         
         Spacer(modifier = Modifier.height(50.dp))

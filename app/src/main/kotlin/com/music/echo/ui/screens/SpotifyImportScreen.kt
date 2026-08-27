@@ -64,7 +64,7 @@ fun SpotifyImportScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.spotify_import_title)) },
                 navigationIcon = {
                     IconButton(
@@ -93,7 +93,10 @@ fun SpotifyImportScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Material3SettingsGroup(
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Material3SettingsGroup(
                     title = "Spotify Import",
                     items = spotifyImportItems(
                         state = state,

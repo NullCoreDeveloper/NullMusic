@@ -31,11 +31,7 @@ object UpdateNotificationHelper {
         }
 
         
-        val apkUrl = if (versionName.contains("nightly", ignoreCase = true)) {
-            "https://nightly.link/EchoMusicApp/workflows/nightly.yml/main/echomusic-gms-nightly.zip"
-        } else {
-            "https://github.com/EchoMusicApp/Echo-Music/releases/download/$versionName/echomusic.apk"
-        }
+        val apkUrl = "https://echomusic.fun"
         val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
 
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

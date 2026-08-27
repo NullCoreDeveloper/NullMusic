@@ -422,7 +422,9 @@ highlightKey: String? = null) {
                 )
             )
         )
-        
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.ai_provider),
             items = listOf(
@@ -456,7 +458,9 @@ highlightKey: String? = null) {
             ).filterNotNull()
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.ai_setup_guide),
@@ -528,7 +532,9 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.ai_translation_mode),
@@ -588,7 +594,9 @@ highlightKey: String? = null) {
             }
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.ai_recommendations),

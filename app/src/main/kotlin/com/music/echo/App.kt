@@ -100,7 +100,7 @@ class App : Application(), SingletonImageLoader.Factory {
 
         
         AppContextHolder.initialize(this)
-        echo.music.iad1tya.utils.cipher.CipherDeobfuscator.initialize(this)
+        iad1tya.echo.music.utils.cipher.CipherDeobfuscator.initialize(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -168,11 +168,11 @@ class App : Application(), SingletonImageLoader.Factory {
         YouTube.ipVersion = settings[IpVersionKey]?.toEnum(defaultValue = IpVersion.AUTO) ?: IpVersion.AUTO
 
         // Set playback engine preference
-        val engineName = settings[echo.music.iad1tya.constants.PlaybackEngineKey]
-        echo.music.iad1tya.utils.YTPlayerUtils.playbackEngine = try {
-            if (engineName != null) echo.music.iad1tya.constants.PlaybackEngine.valueOf(engineName)
-            else echo.music.iad1tya.constants.PlaybackEngine.AUTO
-        } catch (_: Exception) { echo.music.iad1tya.constants.PlaybackEngine.AUTO }
+        val engineName = settings[iad1tya.echo.music.constants.PlaybackEngineKey]
+        iad1tya.echo.music.utils.YTPlayerUtils.playbackEngine = try {
+            if (engineName != null) iad1tya.echo.music.constants.PlaybackEngine.valueOf(engineName)
+            else iad1tya.echo.music.constants.PlaybackEngine.AUTO
+        } catch (_: Exception) { iad1tya.echo.music.constants.PlaybackEngine.AUTO }
 
         val channel = NotificationChannel(
             "updates",

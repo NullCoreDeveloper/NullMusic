@@ -1,4 +1,4 @@
-package echo.music.iad1tya.utils.cipher
+package iad1tya.echo.music.utils.cipher
 
 import android.content.Context
 import android.util.Base64

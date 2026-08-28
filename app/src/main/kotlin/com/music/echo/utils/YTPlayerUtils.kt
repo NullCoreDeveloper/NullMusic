@@ -50,7 +50,7 @@ object YTPlayerUtils {
      * - AUTO: Try PoToken first, fall back to BravePipe automatically
      */
     @Volatile
-    var playbackEngine: echo.music.iad1tya.constants.PlaybackEngine = echo.music.iad1tya.constants.PlaybackEngine.AUTO
+    var playbackEngine: iad1tya.echo.music.constants.PlaybackEngine = iad1tya.echo.music.constants.PlaybackEngine.AUTO
 
     private val httpClient = OkHttpClient.Builder()
         .proxy(YouTube.proxy)
@@ -926,7 +926,7 @@ object YTPlayerUtils {
         }
 
         // --- PoToken / CipherDeobfuscator path ---
-        val useCipher = engine == echo.music.iad1tya.constants.PlaybackEngine.POTOKEN || engine == echo.music.iad1tya.constants.PlaybackEngine.AUTO
+        val useCipher = engine == iad1tya.echo.music.constants.PlaybackEngine.POTOKEN || engine == iad1tya.echo.music.constants.PlaybackEngine.AUTO
         if (useCipher) {
             val signatureCipher = format.signatureCipher ?: format.cipher
             if (!signatureCipher.isNullOrEmpty()) {
@@ -945,7 +945,7 @@ object YTPlayerUtils {
         }
 
         // --- BravePipe / NewPipeExtractor path ---
-        val useBravePipe = engine == echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE || engine == echo.music.iad1tya.constants.PlaybackEngine.AUTO
+        val useBravePipe = engine == iad1tya.echo.music.constants.PlaybackEngine.BRAVEPIPE || engine == iad1tya.echo.music.constants.PlaybackEngine.AUTO
         if (useBravePipe) {
             if (skipNewPipe) {
                 Timber.tag(logTag).d("Skipping NewPipe methods for age-restricted content")

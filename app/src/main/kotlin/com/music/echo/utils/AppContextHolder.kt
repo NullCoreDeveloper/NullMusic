@@ -1,4 +1,4 @@
-package echo.music.iad1tya.utils
+package iad1tya.echo.music.utils
 
 import android.content.Context
 

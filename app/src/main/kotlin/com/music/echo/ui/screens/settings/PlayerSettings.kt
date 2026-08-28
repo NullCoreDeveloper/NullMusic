@@ -238,12 +238,12 @@ highlightKey: String? = null) {
     var showDownloadQualityDialog by remember { mutableStateOf(false) }
     var showPlaybackEngineDialog by remember { mutableStateOf(false) }
 
-    val (playbackEngine, onPlaybackEngineChange) = rememberEnumPreference(
-        echo.music.iad1tya.constants.PlaybackEngineKey,
-        defaultValue = echo.music.iad1tya.constants.PlaybackEngine.AUTO
+    val (playbackEngine, onPlaybackEngineChange) = rememberEnumPreference<iad1tya.echo.music.constants.PlaybackEngine>(
+        iad1tya.echo.music.constants.PlaybackEngineKey,
+        defaultValue = iad1tya.echo.music.constants.PlaybackEngine.AUTO
     )
 
-    val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference(
+    val (downloadQuality, onDownloadQualityChange) = rememberEnumPreference<iad1tya.echo.music.constants.DownloadQuality>(
         iad1tya.echo.music.constants.DownloadQualityKey,
         defaultValue = iad1tya.echo.music.constants.DownloadQuality.YOUTUBE
     )
@@ -300,28 +300,28 @@ highlightKey: String? = null) {
             onDismiss = { showPlaybackEngineDialog = false },
             onSelect = {
                 onPlaybackEngineChange(it)
-                echo.music.iad1tya.utils.YTPlayerUtils.playbackEngine = it
+                iad1tya.echo.music.utils.YTPlayerUtils.playbackEngine = it
                 showPlaybackEngineDialog = false
             },
             title = "Playback Engine",
             current = playbackEngine,
             values = listOf(
-                echo.music.iad1tya.constants.PlaybackEngine.POTOKEN,
-                echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE,
-                echo.music.iad1tya.constants.PlaybackEngine.AUTO,
+                iad1tya.echo.music.constants.PlaybackEngine.POTOKEN,
+                iad1tya.echo.music.constants.PlaybackEngine.BRAVEPIPE,
+                iad1tya.echo.music.constants.PlaybackEngine.AUTO,
             ),
             valueText = {
                 when (it) {
-                    echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
-                    echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
-                    echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
+                    iad1tya.echo.music.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
+                    iad1tya.echo.music.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
+                    iad1tya.echo.music.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
                 }
             },
             valueDescription = {
                 when (it) {
-                    echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "Uses WebView PoToken + CipherDeobfuscator. Most reliable and future-proof."
-                    echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "Uses NewPipe extractor for stream resolution. Lightweight but may break with YouTube updates."
-                    echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Tries PoToken first, falls back to BravePipe if it fails."
+                    iad1tya.echo.music.constants.PlaybackEngine.POTOKEN -> "Uses WebView PoToken + CipherDeobfuscator. Most reliable and future-proof."
+                    iad1tya.echo.music.constants.PlaybackEngine.BRAVEPIPE -> "Uses NewPipe extractor for stream resolution. Lightweight but may break with YouTube updates."
+                    iad1tya.echo.music.constants.PlaybackEngine.AUTO -> "Tries PoToken first, falls back to BravePipe if it fails."
                 }
             }
         )
@@ -473,9 +473,9 @@ highlightKey: String? = null) {
                     description = {
                         Text(
                             when (playbackEngine) {
-                                echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
-                                echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
-                                echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
+                                iad1tya.echo.music.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
+                                iad1tya.echo.music.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
+                                iad1tya.echo.music.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
                             }
                         )
                     },

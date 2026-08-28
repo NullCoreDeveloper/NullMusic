@@ -151,6 +151,9 @@ fun GlassEffectSettings(
                 LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(
             title = stringResource(R.string.nav_bar_style),
             items = listOf(
@@ -178,7 +181,9 @@ fun GlassEffectSettings(
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.liquid_glass),
@@ -220,7 +225,9 @@ fun GlassEffectSettings(
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.liquid_glass_effects),
@@ -294,7 +301,9 @@ fun GlassEffectSettings(
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.liquid_glass_appearance),
@@ -320,7 +329,9 @@ fun GlassEffectSettings(
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.liquid_glass_per_component),

@@ -910,6 +910,7 @@ class MusicService :
                     prefs[CrossfadeGaplessKey] ?: true
                 )
             },
+            listenTogetherManager.roomState
         ) { (enabled, duration, gapless), roomState ->
             
             Triple(enabled && roomState == null, duration, gapless)
@@ -1415,7 +1416,7 @@ class MusicService :
         } ?: return
         val duration = song?.song?.duration?.takeIf { it != -1 }
             ?: mediaMetadata.duration.takeIf { it != -1 }
-            ?: if (isOfflinePlayback) -1 else (playbackData?.videoDetails ?: YTPlayerUtils.playerResponseForMetadata(mediaId)
+            ?: if (isOfflinePlayback) -1 else (playbackData?.videoDetails ?: YTPlayerUtils.playerResponseForMetadata(mediaId, null)
                 .getOrNull()?.videoDetails)?.lengthSeconds?.toInt()
             ?: -1
         database.query {
@@ -3037,13 +3038,9 @@ class MusicService :
                 val knownDuration = dbSong?.song?.duration?.let { if (it > 0) it * 1000L else null }
 
                 YTPlayerUtils.playerResponseForPlayback(
-                    mediaId,
+                    videoId = mediaId,
                     audioQuality = lockedQuality,
-                    connectivityManager = connectivityManager,
-                    context = this@MusicService,
-                    knownArtist = knownArtist,
-                    knownTitle = knownTitle,
-                    knownDurationMs = knownDuration
+                    connectivityManager = connectivityManager
                 )
             }.getOrElse { throwable ->
                 when (throwable) {
@@ -4205,11 +4202,7 @@ class MusicService :
                         val playbackData = iad1tya.echo.music.utils.YTPlayerUtils.playerResponseForPlayback(
                             videoId = mediaId,
                             audioQuality = audioQuality,
-                            connectivityManager = connectivityManager,
-                            context = this@MusicService,
-                            knownArtist = knownArtist,
-                            knownTitle = dbSong?.song?.title,
-                            knownDurationMs = dbSong?.song?.duration?.let { if (it > 0) it * 1000L else null }
+                            connectivityManager = connectivityManager
                         )
 
                         playbackData.getOrNull()?.streamUrl?.let { streamUrl ->

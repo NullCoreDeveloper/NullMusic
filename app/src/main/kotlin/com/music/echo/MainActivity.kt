@@ -69,6 +69,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -266,6 +269,7 @@ class MainActivity : ComponentActivity() {
                     playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
                     Timber.tag("MainActivity").d("PlayerConnection created successfully")
                     
+                    listenTogetherManager.setPlayerConnection(playerConnection)
                 } catch (e: Exception) {
                     Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
                     
@@ -273,6 +277,7 @@ class MainActivity : ComponentActivity() {
                         delay(500)
                         try {
                             playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                            listenTogetherManager.setPlayerConnection(playerConnection)
                         } catch (e2: Exception) {
                             Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
                         }
@@ -283,6 +288,7 @@ class MainActivity : ComponentActivity() {
 
         override fun onServiceDisconnected(name: ComponentName?) {
             
+            listenTogetherManager.setPlayerConnection(null)
             playerConnection?.dispose()
             playerConnection = null
         }
@@ -359,6 +365,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         
+        listenTogetherManager.initialize()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale = dataStore[AppLanguageKey]
@@ -427,6 +434,8 @@ class MainActivity : ComponentActivity() {
         val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
         val enableHighRefreshRate by rememberPreference(EnableHighRefreshRateKey, defaultValue = true)
         val context = LocalContext.current
+        var showUpdateDialog by remember { androidx.compose.runtime.mutableStateOf(false) }
+        var availableUpdateVersion by remember { androidx.compose.runtime.mutableStateOf("") }
 
         LaunchedEffect(Unit) {
             val prefs = context.dataStore.data.first()
@@ -441,6 +450,11 @@ class MainActivity : ComponentActivity() {
                         Log.d("UpdateCheck", "Startup check success. Latest: $latestVersion, Current: $currentVersion, isAvailable: $isAvailable")
                         saveUpdateAvailableState(context, isAvailable)
                         
+                        if (isAvailable) {
+                            availableUpdateVersion = latestVersion
+                            showUpdateDialog = true
+                        }
+
                         if (isAvailable && getUpdateNotificationsSetting(context)) {
                             Log.d("UpdateCheck", "Posting update notification for $latestVersion")
                             UpdateNotificationHelper.showUpdateNotification(context, latestVersion)
@@ -452,6 +466,28 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
+        }
+
+        if (showUpdateDialog) {
+            AlertDialog(
+                onDismissRequest = { showUpdateDialog = false },
+                title = { Text(stringResource(R.string.update_available_title)) },
+                text = { Text("Version $availableUpdateVersion is available. Update now?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showUpdateDialog = false
+                        val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://nullmusic.fun"))
+                        context.startActivity(intent)
+                    }) {
+                        Text("Update")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showUpdateDialog = false }) {
+                        Text("Next time")
+                    }
+                }
+            )
         }
 
         LaunchedEffect(enableHighRefreshRate) {
@@ -590,6 +626,10 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val (previousTab, setPreviousTab) = rememberSaveable { mutableStateOf("home") }
 
+                val (listenTogetherInTopBar) = rememberPreference(ListenTogetherInTopBarKey, defaultValue = true)
+                val navigationItems = remember(listenTogetherInTopBar) { 
+                    if (listenTogetherInTopBar) {
+                        Screens.MainScreens.filter { it != Screens.ListenTogether }
                     } else {
                         Screens.MainScreens
                     }
@@ -610,6 +650,7 @@ class MainActivity : ComponentActivity() {
                     listOf(
                         Screens.Home.route,
                         Screens.Library.route,
+                        Screens.ListenTogether.route,
                         "settings",
                     )
                 }
@@ -815,10 +856,13 @@ class MainActivity : ComponentActivity() {
 
                 var shouldShowTopBar by rememberSaveable { mutableStateOf(false) }
 
+                LaunchedEffect(navBackStackEntry, listenTogetherInTopBar) {
                     val currentRoute = navBackStackEntry?.destination?.route
+                    val isListenTogetherScreen = currentRoute == Screens.ListenTogether.route || 
                         currentRoute == "listen_together_from_topbar"
                     shouldShowTopBar = currentRoute in topLevelScreens &&
                         currentRoute != "settings" &&
+                        !(isListenTogetherScreen && listenTogetherInTopBar)
                 }
 
                 val coroutineScope = rememberCoroutineScope()
@@ -871,6 +915,7 @@ class MainActivity : ComponentActivity() {
                     Screens.Home.route -> "NullMusic"
                     Screens.Search.route -> stringResource(R.string.search)
                     Screens.Library.route -> stringResource(R.string.filter_library)
+                    Screens.ListenTogether.route -> stringResource(R.string.together)
                     else -> ""
                 }
 
@@ -937,6 +982,7 @@ class MainActivity : ComponentActivity() {
                     LocalDownloadUtil provides downloadUtil,
                     LocalShimmerTheme provides getShimmerTheme(),
                     LocalSyncUtils provides syncUtils,
+                    LocalListenTogetherManager provides listenTogetherManager,
                     LocalGlassEffectConfig provides glassEffectConfig,
                     LocalAppBackdrop provides appBackdrop,
                 ) {
@@ -975,6 +1021,7 @@ class MainActivity : ComponentActivity() {
                                                     contentDescription = stringResource(R.string.stats)
                                                 )
                                             }
+                                            if (listenTogetherInTopBar) {
                                                 IconButton(onClick = { navController.navigate("listen_together_from_topbar") }) {
                                                     Icon(
                                                         painter = painterResource(R.drawable.group_outlined),
@@ -1409,6 +1456,8 @@ class MainActivity : ComponentActivity() {
             ?: uri.pathSegments.getOrNull(1)
         val isListenLink = uri.pathSegments.firstOrNull() == "listen" || uri.host?.equals("listen", ignoreCase = true) == true
         if (!listenCode.isNullOrBlank() && isListenLink) {
+            val username = dataStore.get(ListenTogetherUsernameKey, "").ifBlank { "Guest" }
+            listenTogetherManager.joinRoom(listenCode, username)
             return
         }
 

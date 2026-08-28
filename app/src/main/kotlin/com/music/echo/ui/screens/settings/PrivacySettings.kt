@@ -153,6 +153,8 @@ highlightKey: String? = null) {
             )
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.listen_history),
             items = listOf(
@@ -188,7 +190,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.search_history),
@@ -225,7 +229,9 @@ highlightKey: String? = null) {
             )
         )
 
-        Spacer(modifier = Modifier.height(27.dp))
+        
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.misc),

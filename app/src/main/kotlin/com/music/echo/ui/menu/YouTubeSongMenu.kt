@@ -259,6 +259,7 @@ fun YouTubeSongMenu(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
+    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
 
     LazyColumn(
         contentPadding = PaddingValues(
@@ -331,6 +332,7 @@ fun YouTubeSongMenu(
         item {
             Material3MenuGroup(
                 items = listOfNotNull(
+                    if (listenTogetherManager != null && listenTogetherManager.isGuestPlaybackRestricted) {
                         Material3MenuItemData(
                             title = { Text(text = stringResource(R.string.suggest_to_host)) },
                             icon = {
@@ -349,6 +351,7 @@ fun YouTubeSongMenu(
                                     duration = durationMs,
                                     thumbnail = song.thumbnail
                                 )
+                                listenTogetherManager.suggestTrack(trackInfo)
                                 onDismiss()
                             }
                         )

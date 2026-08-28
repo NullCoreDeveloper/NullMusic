@@ -108,11 +108,9 @@ constructor(
 
             val playbackData = runBlocking(Dispatchers.IO) {
                 YTPlayerUtils.playerResponseForPlayback(
-                    mediaId,
-                    audioQuality = AudioQuality.OPUS,
-                    connectivityManager = connectivityManager,
-                    context = context,
-                    isDownload = true
+                    videoId = mediaId,
+                    audioQuality = echo.music.iad1tya.constants.AudioQuality.OPUS,
+                    connectivityManager = connectivityManager
                 )
             }.getOrThrow()
             val format = playbackData.format

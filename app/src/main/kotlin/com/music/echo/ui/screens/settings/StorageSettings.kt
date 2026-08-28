@@ -5,6 +5,8 @@ package iad1tya.echo.music.ui.screens.settings
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -378,6 +380,9 @@ fun StorageSettings(
                 )
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.storage),
             items = listOf(
@@ -415,6 +420,8 @@ fun StorageSettings(
                 )
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.song_cache),
@@ -488,6 +495,8 @@ fun StorageSettings(
                 )
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.image_cache),

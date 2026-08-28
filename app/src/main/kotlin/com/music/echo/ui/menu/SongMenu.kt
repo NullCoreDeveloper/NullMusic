@@ -119,6 +119,7 @@ fun SongMenu(
         .collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
+    val listenTogetherManager = LocalListenTogetherManager.current
     val scope = rememberCoroutineScope()
     
     val (enableExportAsMp3) = rememberPreference(key = EnableExportAsMp3Key, defaultValue = false)
@@ -341,6 +342,7 @@ fun SongMenu(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
+    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
 
     LazyColumn(
         contentPadding = PaddingValues(
@@ -410,6 +412,7 @@ fun SongMenu(
         item {
             Material3MenuGroup(
                 items = listOfNotNull(
+                    if (listenTogetherManager != null && listenTogetherManager.isGuestPlaybackRestricted) {
                         Material3MenuItemData(
                             title = { Text(text = stringResource(R.string.suggest_to_host)) },
                             icon = {
@@ -428,6 +431,7 @@ fun SongMenu(
                                     duration = durationMs,
                                     thumbnail = song.thumbnailUrl
                                 )
+                                listenTogetherManager.suggestTrack(trackInfo)
                                 onDismiss()
                             }
                         )

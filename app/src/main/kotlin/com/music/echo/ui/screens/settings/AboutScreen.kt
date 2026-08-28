@@ -65,7 +65,7 @@ highlightKey: String? = null) {
         containerColor = MaterialTheme.colorScheme.surface,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         text = stringResource(R.string.about),
@@ -83,7 +83,7 @@ highlightKey: String? = null) {
                     }
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 ),
@@ -159,7 +159,7 @@ highlightKey: String? = null) {
                 }
             }
 
-            item {
+            /* item {
                 AboutSectionCard(title = "App") {
                     AboutActionRow(
                         icon = painterResource(R.drawable.github),
@@ -182,7 +182,7 @@ highlightKey: String? = null) {
                         onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") },
                     )
                 }
-            }
+            } */
 
             item {
                 AboutSectionCard(title = "Our Services") {

@@ -99,7 +99,7 @@ class App : Application(), SingletonImageLoader.Factory {
         CrashHandler.install(this)
 
         
-        AppContextHolder.initialize(this)
+        iad1tya.echo.music.utils.AppContextHolder.initialize(this)
         iad1tya.echo.music.utils.cipher.CipherDeobfuscator.initialize(this)
 
         if (BuildConfig.DEBUG) {

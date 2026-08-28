@@ -15,7 +15,7 @@ import com.music.innertube.models.YouTubeClient
 import com.music.innertube.models.YouTubeClient.Companion.ANDROID_CREATOR
 import iad1tya.echo.music.utils.BotDetectionMitigator
 import com.music.innertube.models.YouTubeClient.Companion.ANDROID_VR_1_43_32
-import com.music.innertube.models.YouTubeClient.Companion.ANDROID_VR_1_65_10
+import com.music.innertube.models.YouTubeClient.Companion.ANDROID_VR_1_61_48
 import com.music.innertube.models.YouTubeClient.Companion.IOS
 import com.music.innertube.models.YouTubeClient.Companion.IPADOS
 import com.music.innertube.models.YouTubeClient.Companion.TVHTML5
@@ -172,7 +172,7 @@ object YTPlayerUtils {
      */
     private val STREAM_FALLBACK_CLIENTS: Array<YouTubeClient> = arrayOf(
         VISIONOS,                        // only client measured to serve a complete file
-        ANDROID_VR_1_65_10,              // current yt-dlp/YouTube.js pin; whole-file capable
+        ANDROID_VR_1_61_48,              // current yt-dlp/YouTube.js pin; whole-file capable
         TVHTML5,
         ANDROID_VR_1_43_32,              // version-gated; kept as the control against 1.65.10
         IPADOS,                          // ~1 MiB preview only — last resort
@@ -205,7 +205,7 @@ object YTPlayerUtils {
     /**
      * Privately-owned (uploaded) tracks need TVHTML5. Resolved by identity rather than by a
      * hardcoded index, which under the previous ordering happened to be 1 and would now point at
-     * [ANDROID_VR_1_65_10].
+     * [ANDROID_VR_1_61_48].
      */
     private val PRIVATE_TRACK_STREAM_START_INDEX: Int =
         STREAM_FALLBACK_CLIENTS.indexOf(TVHTML5).takeIf { it >= 0 } ?: 0

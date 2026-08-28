@@ -47,8 +47,8 @@ class YandexImportRepository @Inject constructor(
     suspend fun fetchYandexPlaylist(url: String): YandexPlaylist? =
         withContext(Dispatchers.IO) {
             try {
-                // Ensure it is a full URL
-                val targetUrl = if (url.contains("music.yandex.ru")) url else "https://music.yandex.ru/playlists/$url"
+                // Ensure it is a full URL, support all regional domains
+                val targetUrl = if (url.startsWith("http")) url else "https://music.yandex.ru/playlists/$url"
                 
                 val pageRequest = Request.Builder()
                     .url(targetUrl)
@@ -128,7 +128,7 @@ class YandexImportRepository @Inject constructor(
 
     suspend fun importFromUrl(url: String, onProgress: (Int, Int) -> Unit): Boolean {
         // Now handles any URL format natively by delegating entirely to HTML parsing
-        if (!url.contains("music.yandex.ru")) return false
+        if (!url.contains("music.yandex.")) return false
         return importPlaylist(url, onProgress)
     }
 

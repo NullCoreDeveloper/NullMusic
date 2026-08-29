@@ -1,4 +1,4 @@
-# AGENT.md - Echo Music
+# AGENT.md - NullMusic
 
 Context file for AI agents (Antigravity, Claude Code, etc.) working in this repo.
 Keep this file up to date as the project evolves — it's the fastest way to give
@@ -67,7 +67,7 @@ based on the direction already established in `ui/theme/Theme.kt` and
 
 - **Dynamic color first.** Colors must come from `MaterialTheme.colorScheme`
   (seeded via `rememberDynamicColorScheme` / system dynamic color in
-  `echomusicTheme`), never hardcoded hex values in screen/component code.
+  `nullmusicTheme`), never hardcoded hex values in screen/component code.
   `DefaultThemeColor` and the dynamic-color path in `Theme.kt` are the only
   places a raw color constant belongs.
 - **Pill/fully-rounded shapes are the standard, not the exception.** Inputs
@@ -121,11 +121,11 @@ the new pattern in this file so it becomes the standard going forward.
 
 ### Things to double check before assuming
 
-- Exact current contents of `com/music/echo/echomusic/` (contains core app-level initializers/application class) and `:unison` (cross-cutting/shared utilities and common base classes) — check source before editing.
+- Exact current contents of `com/music/echo/nullmusic/` (contains core app-level initializers/application class) and `:unison` (cross-cutting/shared utilities and common base classes) — check source before editing.
 
 ## What this app is
 
-Echo Music is a native **Android** music streaming client (Kotlin + Jetpack
+NullMusic is a native **Android** music streaming client (Kotlin + Jetpack
 Compose) that streams from YouTube Music's catalog ad-free, and layers on
 offline downloads, real-time synced lyrics, music recognition ("Echo Find"),
 podcasts, local media playback, Spotify import, "Listen Together" (synced
@@ -178,7 +178,7 @@ mostly-independent feature/integration:
 | `:innertube` | YouTube Music InnerTube API client (the core music source) |
 | `:kugou`, `:lrclib`, `:betterlyrics`, `:youlyplus`, `:paxsenixlyrics`, `:simpmusic` | Individual lyrics source providers (each consumed by `:lyrics`) |
 | `:shazamkit` | Music recognition ("Echo Find") |
-| `:canvas`, `:echomusiccanvas`, `:applecanvas` | Canvas-style looping video backgrounds for tracks (different providers) |
+| `:canvas`, `:nullmusiccanvas`, `:applecanvas` | Canvas-style looping video backgrounds for tracks (different providers) |
 | `:artistvideo` | Artist video features |
 | `:unison` | Cross-cutting shared utility module (check source before editing) |
 
@@ -202,7 +202,7 @@ db/
   daos/         Room DAOs
 di/             Hilt modules (AppModule, NetworkModule, Qualifiers, entry points)
 discord/        Discord Rich Presence integration
-echomusic/      Core app-level classes (Application class, core initializers)
+nullmusic/      Core app-level classes (Application class, core initializers)
 eq/             Equalizer
 extensions/     Kotlin extension functions
 listentogether/ "Listen Together" synced group listening feature

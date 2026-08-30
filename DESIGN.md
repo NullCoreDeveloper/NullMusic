@@ -1,8 +1,8 @@
-# Echo Music Design Guidelines (Material Design 3)
+# NullMusic Design Guidelines (Material Design 3)
 
-Echo Music strictly adheres to the **Material Design 3 (Material You)** guidelines. For the official specifications, always refer to [m3.material.io](https://m3.material.io/).
+NullMusic strictly adheres to the **Material Design 3 (Material You)** guidelines. For the official specifications, always refer to [m3.material.io](https://m3.material.io/).
 
-This document is the definitive guide for designing and implementing UI in the Echo Music codebase. All new UI work and refactors must follow these principles.
+This document is the definitive guide for designing and implementing UI in the NullMusic codebase. All new UI work and refactors must follow these principles.
 
 ---
 
@@ -57,7 +57,7 @@ All components must be sourced from `androidx.compose.material3.*`. **Do not** u
 
 ### Input & Selection Controls
 *   **Text Fields:** Use `OutlinedTextField` or `TextField` (Filled).
-    *   *Shape:* In Echo Music, prominent text fields (like Search) are overridden to be fully rounded (`CircleShape`) or `RoundedCornerShape(24.dp)`, rather than the M3 default small radius.
+    *   *Shape:* In NullMusic, prominent text fields (like Search) are overridden to be fully rounded (`CircleShape`) or `RoundedCornerShape(24.dp)`, rather than the M3 default small radius.
     *   *Colors:* `focusedBorderColor = primary`, `unfocusedBorderColor = outline`.
 *   **Switches, Checkboxes, Radio Buttons:** 
     *   *Active state:* `primary` or `primaryContainer`.

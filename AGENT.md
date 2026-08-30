@@ -60,10 +60,8 @@ the agent full context without re-scanning the whole codebase every session.
 ### Strict UI rule: Material You (latest spec) — non-negotiable
 
 All UI work — new screens, new components, and edits to existing ones —
-**must** follow current Material You / Material 3 conventions. This is not
-a style preference, it's a hard requirement for this codebase. Concretely,
-based on the direction already established in `ui/theme/Theme.kt` and
-`ui/component/Dialog.kt`:
+**must** follow current Material Design 3 (Material You) conventions. This is not
+a style preference; it's a hard requirement for this codebase.
 
 - **Dynamic color first.** Colors must come from `MaterialTheme.colorScheme`
   (seeded via `rememberDynamicColorScheme` / system dynamic color in
@@ -98,10 +96,15 @@ based on the direction already established in `ui/theme/Theme.kt` and
   `ActionPromptDialog` / `TextFieldDialog`) — extend/reuse rather than
   hand-rolling a new dialog or input that might drift from the pattern.
 
-If a new feature needs a UI pattern not covered above, default to what the
-official Material 3 guidelines recommend for that pattern, apply it
-consistently across the whole feature (not just one screen), and document
-the new pattern in this file so it becomes the standard going forward.
+**Key Requirements:**
+- **Always refer to the official Material Design 3 specifications at [m3.material.io](https://m3.material.io/).**
+- **Dynamic color first:** Colors must come from `MaterialTheme.colorScheme`.
+- **Use Material 3 components exclusively** (`androidx.compose.material3.*`).
+- **Consult `DESIGN.md`** for detailed guidance on shapes, typography, elevation, and specific component behaviors (like dialog buttons and navigation).
+
+If a new feature needs a UI pattern not covered in `DESIGN.md`, default to what the
+official Material 3 guidelines recommend for that pattern, apply it consistently
+across the whole feature, and update `DESIGN.md` so it becomes the standard going forward.
 
 ### Conventions worth following
 

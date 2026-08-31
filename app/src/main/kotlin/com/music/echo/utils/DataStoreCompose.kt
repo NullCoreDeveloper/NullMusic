@@ -26,9 +26,25 @@ fun <T> rememberPreference(
     val state =
         remember {
             context.dataStore.data
-                .map { (try { it[key] } catch(e: Exception) { null }) ?: defaultValue }
+                .map { prefs -> 
+                    val value = try { prefs[key] } catch(e: Exception) { null }
+                    if (value != null && defaultValue != null && value::class != defaultValue::class) {
+                        defaultValue
+                    } else {
+                        (value ?: defaultValue) as T
+                    }
+                }
                 .distinctUntilChanged()
-        }.collectAsState((try { context.dataStore.get(key) } catch(e: Exception) { null }) ?: defaultValue)
+        }.collectAsState(
+            run {
+                val value = try { context.dataStore.get(key) } catch(e: Exception) { null }
+                if (value != null && defaultValue != null && value::class != defaultValue::class) {
+                    defaultValue
+                } else {
+                    (value ?: defaultValue) as T
+                }
+            }
+        )
 
     return remember {
         object : MutableState<T> {
@@ -57,11 +73,18 @@ inline fun <reified T : Enum<T>> rememberEnumPreference(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val initialValue = (try { context.dataStore.get(key) } catch(e: Exception) { null }).toEnum(defaultValue = defaultValue)
+    val initialValue = run {
+        val value = try { context.dataStore.get(key) } catch (e: Exception) { null }
+        (if (value != null && value !is String) null else value as String?).toEnum(defaultValue = defaultValue)
+    }
+    
     val state =
         remember {
             context.dataStore.data
-                .map { (try { it[key] } catch(e: Exception) { null }).toEnum(defaultValue = defaultValue) }
+                .map { prefs ->
+                    val value = try { prefs[key] } catch (e: Exception) { null }
+                    (if (value != null && value !is String) null else value as String?).toEnum(defaultValue = defaultValue)
+                }
                 .distinctUntilChanged()
         }.collectAsState(initialValue)
 

@@ -1382,7 +1382,7 @@ highlightKey: String? = null) {
                     onClick = { onRotatingThumbnailChange(!rotatingThumbnail) }
                 ),
                 // Show comment button hidden
-                /* Material3SettingsItem(
+                Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.show_comment_button)),
                     icon = painterResource(R.drawable.chat_msg),
                     title = { Text(stringResource(R.string.show_comment_button)) },
@@ -1403,7 +1403,7 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onShowCommentButtonChange(!showCommentButton) }
-                ), */
+                ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == "Show codec on player"),
                     icon = painterResource(R.drawable.info),

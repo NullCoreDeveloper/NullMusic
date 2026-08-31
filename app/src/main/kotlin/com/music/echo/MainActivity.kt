@@ -14,6 +14,10 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -436,6 +440,8 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         var showUpdateDialog by remember { androidx.compose.runtime.mutableStateOf(false) }
         var availableUpdateVersion by remember { androidx.compose.runtime.mutableStateOf("") }
+        var availableUpdateChangelog by remember { androidx.compose.runtime.mutableStateOf<List<echo.music.iad1tya.echomusic.updater.ChangelogSection>>(emptyList()) }
+        var availableUpdateDescription by remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
 
         LaunchedEffect(Unit) {
             val prefs = context.dataStore.data.first()
@@ -445,13 +451,15 @@ class MainActivity : ComponentActivity() {
                 delay(2000L)
                 checkForUpdate(
                     context = context,
-                    onSuccess = { latestVersion, isAvailable, _, _, _, _, _, _ ->
+                    onSuccess = { latestVersion, isAvailable, changelog, _, _, description, _, _ ->
                         val currentVersion = BuildConfig.VERSION_NAME
                         Log.d("UpdateCheck", "Startup check success. Latest: $latestVersion, Current: $currentVersion, isAvailable: $isAvailable")
                         saveUpdateAvailableState(context, isAvailable)
                         
                         if (isAvailable) {
                             availableUpdateVersion = latestVersion
+                            availableUpdateChangelog = changelog
+                            availableUpdateDescription = description
                             showUpdateDialog = true
                         }
 
@@ -739,6 +747,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+                val shuffleEnabled by playerConnection?.shuffleModeEnabled?.collectAsState() ?: remember { mutableStateOf(false) }
 
                 val onMusicRecognitionClick: (() -> Unit) = remember(navController, playerBottomSheetState) {
                     {
@@ -1153,6 +1162,7 @@ class MainActivity : ComponentActivity() {
                                                 items = navigationItems,
                                                 pureBlack = pureBlack,
                                                 onShuffleClick = onShuffleClick,
+                                                shuffleEnabled = shuffleEnabled,
                                                 shuffleIconRes = R.drawable.shuffle,
                                                 shuffleContentDescription = stringResource(R.string.shuffle),
                                                 onMusicRecognitionClick = onMusicRecognitionClick,

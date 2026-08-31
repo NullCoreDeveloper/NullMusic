@@ -440,7 +440,7 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         var showUpdateDialog by remember { androidx.compose.runtime.mutableStateOf(false) }
         var availableUpdateVersion by remember { androidx.compose.runtime.mutableStateOf("") }
-        var availableUpdateChangelog by remember { androidx.compose.runtime.mutableStateOf<List<echo.music.iad1tya.echomusic.updater.ChangelogSection>>(emptyList()) }
+        var availableUpdateChangelog by remember { androidx.compose.runtime.mutableStateOf<List<echo.music.iad1tya.nullmusic.updater.ChangelogSection>>(emptyList()) }
         var availableUpdateDescription by remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
 
         LaunchedEffect(Unit) {

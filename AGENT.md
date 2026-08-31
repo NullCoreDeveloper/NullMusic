@@ -57,10 +57,10 @@ the agent full context without re-scanning the whole codebase every session.
 > 4. **Update `AGENT.md` and docs** if module structure, conventions, or
 >    architecture changed — stale context is a bug.
 
-### UI rule: Custom Echo Music Aesthetic (over Material You)
+### UI rule: Custom NullMusic Aesthetic (over Material You)
 
 All UI work — new screens, new components, and edits to existing ones —
-**must** match the established custom visual style of Echo Music rather than blindly
+**must** match the established custom visual style of NullMusic rather than blindly
 applying standard Material Design 3 guidelines.
 
 - **Dynamic color first.** Colors must come from `MaterialTheme.colorScheme`

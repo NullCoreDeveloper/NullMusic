@@ -1,4 +1,4 @@
-# Echo Music v5.2.89
+# NullMusic v5.2.89
 
 ### New Features & Improvements
 - **Settings Overhaul**: Redesigned the Account and Settings overflow menu into a modern Material You 3 bottom sheet for a more expressive look.
@@ -11,11 +11,11 @@
 - **Lyrics Rendering**: Fixed a bug where the Apple Music V2 (Letter by Letter) lyrics animation would break apart combining characters in non-English languages (like Hindi and Punjabi) into dotted circles. The engine now properly groups grapheme clusters.
 
 ### Community Contributions
-- `chore(l10n): update translations` ([#999](https://github.com/EchoMusicApp/Echo-Music/pull/999)) by @weblate
-- `fix: guard lyrics blur RenderEffect behind API 31 check` ([#992](https://github.com/EchoMusicApp/Echo-Music/pull/992)) by @berruetaa
-- `fix: Happens when refetching a song's lyrics` ([#1014](https://github.com/EchoMusicApp/Echo-Music/pull/1014)) by @Chetan786
-- `fix(cast): throttle volume slider, add thumbnail, remove dead code` ([#1024](https://github.com/EchoMusicApp/Echo-Music/pull/1024)) by @Hitomatito
-- `fix(cast): fix queue lifecycle — looping, race condition, and bidirectional extension` ([#1031](https://github.com/EchoMusicApp/Echo-Music/pull/1031)) by @Hitomatito
+- `chore(l10n): update translations` ([#999](https://github.com/NullCoreDeveloper/NullMusic/pull/999)) by @weblate
+- `fix: guard lyrics blur RenderEffect behind API 31 check` ([#992](https://github.com/NullCoreDeveloper/NullMusic/pull/992)) by @berruetaa
+- `fix: Happens when refetching a song's lyrics` ([#1014](https://github.com/NullCoreDeveloper/NullMusic/pull/1014)) by @Chetan786
+- `fix(cast): throttle volume slider, add thumbnail, remove dead code` ([#1024](https://github.com/NullCoreDeveloper/NullMusic/pull/1024)) by @Hitomatito
+- `fix(cast): fix queue lifecycle — looping, race condition, and bidirectional extension` ([#1031](https://github.com/NullCoreDeveloper/NullMusic/pull/1031)) by @Hitomatito
 
 ---
 

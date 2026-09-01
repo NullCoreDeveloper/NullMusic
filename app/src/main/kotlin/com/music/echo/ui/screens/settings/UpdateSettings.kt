@@ -90,7 +90,7 @@ fun UpdateSettings(
         isLoadingUpcoming = true
         try {
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                val text = java.net.URL("https://raw.githubusercontent.com/EchoMusicApp/Echo-Music/main/upcomingupdate.json?t=${System.currentTimeMillis()}").readText()
+                val text = java.net.URL("https://raw.githubusercontent.com/NullCoreDeveloper/NullMusic/main/upcomingupdate.json?t=${System.currentTimeMillis()}").readText()
                 val parsed = org.json.JSONObject(text).getJSONObject("upcoming_update")
                 val features = mutableListOf<String>()
                 val fArray = parsed.optJSONArray("features")

@@ -231,13 +231,17 @@ Fixes #123"
 git push origin feature/your-feature-name
 ```
 
-Then create a Pull Request on GitHub with:
-- Clear title and description
-- Reference to related issues
-- Screenshots for UI changes
-- Testing instructions
+**STRICT PULL REQUEST FORMATTING RULES:**
+When creating a Pull Request on GitHub, you **must** adhere to the following formatting rules. Failure to do so will result in your PR being rejected or closed.
 
-## Issue Guidelines
+1. **Title Format:** Must follow Conventional Commits (e.g., `feat(ui): add new player screen` or `fix(playback): resolve crash on skip`).
+2. **Detailed Description:** The PR body must clearly explain *what* changed and *why*. Vague descriptions like "fixed bug" or "UI improvements" are unacceptable.
+3. **Reference Issues:** Always link related issues using keywords (e.g., `Fixes #123` or `Closes #456`).
+4. **Screenshots/Videos:** **Mandatory** for any UI/UX changes.
+5. **Testing Instructions:** Provide clear, step-by-step instructions on how the reviewer can test your changes.
+6. **Release Notes:** Be aware that your PR title and description may be used directly in `RELEASE_INFO.md`. Ensure it is grammatically correct and professional.
+
+If your PR does not meet these criteria, you will be asked to update it before review begins.
 
 ### Bug Reports
 

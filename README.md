@@ -30,5 +30,7 @@
 
 Этот проект является модифицированным форком оригинального клиента [NullMusic](https://github.com/NullCoreDeveloper/NullMusic), созданного разработчиком [Aditya](https://github.com/iad1tya). Огромная благодарность оригинальному автору за фундамент и проделанную работу над изначальным приложением!
 
+> **Update Schedule (Effective Sept 1, 2026):** Echo Music receives weekly updates! New releases roll out every Monday or Tuesday (IST), featuring the previous week's improvements. This new schedule helps us push crucial updates faster and keep a proper track of development. You can also track upcoming changes directly in the app by going to **Settings > System Update > Upcoming Update**.
+
 ---
 *Разработано: NullCoreDeveloper*

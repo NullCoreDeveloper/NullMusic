@@ -27,6 +27,11 @@ the agent full context without re-scanning the whole codebase every session.
 > compatible before merging. Never port/adapt code without adding this
 > credit — this applies even for small snippets, not just whole features.
 
+> **Upcoming Update rule:** whenever you add a new feature, fix a bug, or merge
+> a PR, you **must** update the `upcomingupdate.json` file in the root
+> directory. Add your changes to the appropriate array (`features`, `bug_fixes`,
+> or `contributors`) so that they are tracked for the next weekly release.
+
 > **Do not push without explicit instruction.** Making code changes
 > (editing files, committing locally) is fine whenever asked, but **never
 > run `git push` — or otherwise publish changes to GitHub — unless I

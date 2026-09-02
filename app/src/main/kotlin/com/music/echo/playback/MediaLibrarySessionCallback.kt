@@ -70,12 +70,28 @@ constructor(
     var toggleStartRadio: () -> Unit = {}
     var toggleLibrary: () -> Unit = {}
 
+    /**
+     * Negotiates connection capabilities for an incoming controller.
+     *
+     * Exposes toggle custom commands ([SessionCommand]s for like, start-radio, library,
+     * shuffle and repeat) only to automotive controllers (Android Auto / Automotive OS:
+     * `com.google.android.projection.gearhead`, `com.google.android.gms.car`,
+     * `com.android.systemui`). Non-automotive controllers receive the default
+     * [MediaSession.ConnectionResult.availableSessionCommands] unchanged.
+     *
+     * @param session the media session receiving the connection
+     * @param controller the connecting controller, inspected via [MediaSession.ControllerInfo.packageName]
+     * @return accepted [MediaSession.ConnectionResult] with filtered [MediaSession.ConnectionResult.availableSessionCommands]
+     */
     override fun onConnect(
         session: MediaSession,
         controller: MediaSession.ControllerInfo,
     ): MediaSession.ConnectionResult {
         val connectionResult = super.onConnect(session, controller)
-        return MediaSession.ConnectionResult.accept(
+        val isAutomotive = controller.packageName == "com.google.android.projection.gearhead" ||
+                           controller.packageName == "com.google.android.gms.car" ||
+                           controller.packageName == "com.android.systemui"
+        val availableSessionCommands = if (isAutomotive) {
             connectionResult.availableSessionCommands
                 .buildUpon()
                 .add(MediaSessionConstants.CommandToggleLike)
@@ -83,17 +99,48 @@ constructor(
                 .add(MediaSessionConstants.CommandToggleLibrary)
                 .add(MediaSessionConstants.CommandToggleShuffle)
                 .add(MediaSessionConstants.CommandToggleRepeatMode)
-                .build(),
+                .build()
+        } else {
+            connectionResult.availableSessionCommands
+        }
+
+        return MediaSession.ConnectionResult.accept(
+            availableSessionCommands,
             connectionResult.availablePlayerCommands,
         )
     }
 
+    /**
+     * Handles custom session commands such as toggle-like, toggle-shuffle and toggle-repeat.
+     *
+     * Guarded for automotive use: toggle commands are accepted only when the caller is an
+     * automotive controller (gearhead / gms.car / systemui). Non-automotive callers receive
+     * [SessionResult.RESULT_ERROR_PERMISSION_DENIED]. Other custom actions return
+     * [SessionResult.RESULT_SUCCESS] after invoking the corresponding lambda or player mutation.
+     *
+     * @param session the host [MediaSession]
+     * @param controller the controller that sent the command
+     * @param customCommand the [SessionCommand] with `customAction` to dispatch
+     * @param args optional arguments (unused)
+     * @return immediate [ListenableFuture] with [SessionResult]
+     */
     override fun onCustomCommand(
         session: MediaSession,
         controller: MediaSession.ControllerInfo,
         customCommand: SessionCommand,
         args: Bundle,
     ): ListenableFuture<SessionResult> {
+        val isAutomotive = controller.packageName == "com.google.android.projection.gearhead" ||
+                           controller.packageName == "com.google.android.gms.car" ||
+                           controller.packageName == "com.android.systemui"
+        val isToggleCommand = customCommand.customAction == MediaSessionConstants.ACTION_TOGGLE_LIKE ||
+                customCommand.customAction == MediaSessionConstants.ACTION_TOGGLE_START_RADIO ||
+                customCommand.customAction == MediaSessionConstants.ACTION_TOGGLE_LIBRARY ||
+                customCommand.customAction == MediaSessionConstants.ACTION_TOGGLE_SHUFFLE ||
+                customCommand.customAction == MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE
+        if (isToggleCommand && !isAutomotive) {
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_PERMISSION_DENIED))
+        }
         when (customCommand.customAction) {
             MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike()
             MediaSessionConstants.ACTION_TOGGLE_START_RADIO -> toggleStartRadio()
@@ -106,6 +153,15 @@ constructor(
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
     }
 
+    /**
+     * Handles playback resumption requests. Currently returns an empty pending result
+     * to disable automatic resumption and avoid uncontrolled playback on controller reconnect;
+     * callers should initiate playback explicitly via [onSetMediaItems] or [onGetChildren].
+     *
+     * @param mediaSession the session receiving the request
+     * @param controller the controller requesting resumption
+     * @return pending [MediaItemsWithStartPosition] future (empty)
+     */
     @Deprecated("Deprecated in MediaLibrarySession.Callback")
     override fun onPlaybackResumption(
         mediaSession: MediaSession,
@@ -114,18 +170,71 @@ constructor(
         return SettableFuture.create<MediaItemsWithStartPosition>()
     }
 
+    /**
+     * Provides the library root and browsing hints for Automotive and other browsers.
+     *
+     * Always advertises `CONTENT_STYLE_SUPPORTED` and `SEARCH_SUPPORTED`. For automotive
+     * browsers, forwards the caller-requested artwork size hint
+     * ([MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS]) from
+     * [MediaLibraryService.LibraryParams.extras] into the returned root extras via
+     * `getInt` (integer key, not parcelable). Non-automotive callers receive only the
+     * base browsing flags. Result extras are normalized with [withContentStyleHints].
+     *
+     * @param session the [MediaLibrarySession]
+     * @param browser the browsing controller
+     * @param params incoming [MediaLibraryService.LibraryParams] that may carry the art-size hint
+     * @return [LibraryResult] containing the root [MediaItem] and decorated [MediaLibraryService.LibraryParams]
+     */
     override fun onGetLibraryRoot(
         session: MediaLibrarySession,
         browser: MediaSession.ControllerInfo,
         params: MediaLibraryService.LibraryParams?,
-    ): ListenableFuture<LibraryResult<MediaItem>> =
-        Futures.immediateFuture(
+    ): ListenableFuture<LibraryResult<MediaItem>> {
+        val isAutomotive = browser.packageName == "com.google.android.projection.gearhead" ||
+                           browser.packageName == "com.google.android.gms.car" ||
+                           browser.packageName == "com.android.systemui"
+
+        val rootExtras = Bundle().apply {
+            putBoolean("android.media.browse.CONTENT_STYLE_SUPPORTED", true)
+            putBoolean("android.media.browse.SEARCH_SUPPORTED", true)
+            if (isAutomotive) {
+                params?.extras?.let { extras ->
+                    if (extras.containsKey(MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS)) {
+                        putInt(MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS,
+                            extras.getInt(MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS))
+                    }
+                }
+            }
+        }
+        
+        val rootParams = MediaLibraryService.LibraryParams.Builder()
+            .setOffline(params?.isOffline ?: false)
+            .setRecent(params?.isRecent ?: false)
+            .setSuggested(params?.isSuggested ?: false)
+            .setExtras(rootExtras)
+            .build()
+            
+        return Futures.immediateFuture(
             LibraryResult.ofItem(
                 rootMediaItem(),
-                params.withContentStyleHints(),
+                rootParams.withContentStyleHints(isAutomotive),
             ),
         )
+    }
 
+    /**
+     * Returns children for a given browsable parent. Supports root and standard parents
+     * (song/artist/album/playlist) with pagination via [paginate]; always applies
+     * [withContentStyleHints] so Automotive OS renders lists with correct styles.
+     *
+     * @param session the [MediaLibrarySession]
+     * @param browser the browsing controller
+     * @param parentId the browsable parent id
+     * @param page zero-based page index
+     * @param pageSize requested page size
+     * @param params optional browsing params
+     * @return [LibraryResult] with paginated [MediaItem] children
+     */
     override fun onGetChildren(
         session: MediaLibrarySession,
         browser: MediaSession.ControllerInfo,
@@ -133,8 +242,11 @@ constructor(
         page: Int,
         pageSize: Int,
         params: MediaLibraryService.LibraryParams?,
-    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> =
-        scope.future(Dispatchers.IO) {
+    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+        val isAutomotive = browser.packageName == "com.google.android.projection.gearhead" ||
+                           browser.packageName == "com.google.android.gms.car" ||
+                           browser.packageName == "com.android.systemui"
+        return scope.future(Dispatchers.IO) {
             val children =
                 when (parentId) {
                     MusicService.ROOT -> rootChildren()
@@ -283,6 +395,17 @@ constructor(
             } ?: LibraryResult.ofError(SessionError.ERROR_UNKNOWN)
         }
 
+    /**
+     * Handles media search requests by notifying the controller that results changed.
+     * Actual results are provided via [onGetSearchResult]; this keeps search lightweight
+     * and avoids blocking the caller thread.
+     *
+     * @param session the [MediaLibrarySession]
+     * @param browser the controller initiating the search
+     * @param query the user search query
+     * @param params optional library params
+     * @return void [LibraryResult]
+     */
     override fun onSearch(
         session: MediaLibrarySession,
         browser: MediaSession.ControllerInfo,
@@ -293,6 +416,19 @@ constructor(
         return Futures.immediateFuture(LibraryResult.ofVoid())
     }
 
+    /**
+     * Returns search results matching [query] from local DB and YouTube, merged and deduped,
+     * with pagination and content-style hints. Filters explicit/video songs per data-store
+     * settings and paginates via [paginate].
+     *
+     * @param session the [MediaLibrarySession]
+     * @param browser the controller requesting results
+     * @param query the search query
+     * @param page zero-based page index
+     * @param pageSize page size
+     * @param params optional browsing params
+     * @return [LibraryResult] with paginated [MediaItem] results
+     */
     override fun onGetSearchResult(
         session: MediaLibrarySession,
         browser: MediaSession.ControllerInfo,
@@ -301,9 +437,12 @@ constructor(
         pageSize: Int,
         params: MediaLibraryService.LibraryParams?
     ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+        val isAutomotive = browser.packageName == "com.google.android.projection.gearhead" ||
+                           browser.packageName == "com.google.android.gms.car" ||
+                           browser.packageName == "com.android.systemui"
         return scope.future(Dispatchers.IO) {
             if (query.isEmpty()) {
-                return@future LibraryResult.ofItemList(emptyList(), params.withContentStyleHints())
+                return@future LibraryResult.ofItemList(emptyList(), params.withContentStyleHints(isAutomotive))
             }
 
             try {
@@ -369,11 +508,11 @@ constructor(
                     reportException(e)
                 }
                 
-                LibraryResult.ofItemList(searchResults.paginate(page, pageSize), params.withContentStyleHints())
+                LibraryResult.ofItemList(searchResults.paginate(page, pageSize), params.withContentStyleHints(isAutomotive))
                 
             } catch (e: Exception) {
                 reportException(e)
-                LibraryResult.ofItemList(emptyList(), params.withContentStyleHints())
+                LibraryResult.ofItemList(emptyList(), params.withContentStyleHints(isAutomotive))
             }
         }
     }
@@ -898,16 +1037,32 @@ constructor(
         )
         .build()
 
-    private fun MediaLibraryService.LibraryParams?.withContentStyleHints(): MediaLibraryService.LibraryParams {
+    /**
+     * Ensures consistent content-style hints for automotive browsing responses.
+     *
+     * Copies any incoming [MediaLibraryService.LibraryParams] and, when
+     * [isAutomotive] is true, injects
+     * [MediaConstants.EXTRAS_KEY_CONTENT_STYLE_BROWSABLE] and
+     * [MediaConstants.EXTRAS_KEY_CONTENT_STYLE_PLAYABLE] as
+     * `EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM`. Used by [onGetLibraryRoot],
+     * [onGetChildren] and [onGetSearchResult] so Automotive OS renders lists correctly.
+     *
+     * @param isAutomotive when true, automotive content-style extras are applied
+     * @receiver nullable library params to decorate; `null` yields defaults plus style hints when automotive
+     * @return new [MediaLibraryService.LibraryParams] with style extras applied
+     */
+    private fun MediaLibraryService.LibraryParams?.withContentStyleHints(isAutomotive: Boolean): MediaLibraryService.LibraryParams {
         val extras = Bundle(this?.extras ?: Bundle()).apply {
-            putInt(
-                MediaConstants.EXTRAS_KEY_CONTENT_STYLE_BROWSABLE,
-                MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM
-            )
-            putInt(
-                MediaConstants.EXTRAS_KEY_CONTENT_STYLE_PLAYABLE,
-                MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM
-            )
+            if (isAutomotive) {
+                putInt(
+                    MediaConstants.EXTRAS_KEY_CONTENT_STYLE_BROWSABLE,
+                    MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM
+                )
+                putInt(
+                    MediaConstants.EXTRAS_KEY_CONTENT_STYLE_PLAYABLE,
+                    MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM
+                )
+            }
         }
 
         return MediaLibraryService.LibraryParams.Builder()

@@ -154,6 +154,8 @@ highlightKey: String? = null) {
     val (enableSimpMusic, onEnableSimpMusicChange) = rememberPreference(key = EnableSimpMusicKey, defaultValue = true)
     val (enableYouLyPlus, onEnableYouLyPlusChange) = rememberPreference(key = EnableYouLyPlusKey, defaultValue = true)
     val (enablePaxsenix, onEnablePaxsenixChange) = rememberPreference(key = EnablePaxsenixKey, defaultValue = true)
+    val (fetchFasterLyrics, onFetchFasterLyricsChange) = rememberPreference(key = FetchFasterLyricsKey, defaultValue = false)
+
     val (lyricsProviderOrder, onLyricsProviderOrderChange) = rememberPreference(
         key = LyricsProviderOrderKey,
         defaultValue = "",
@@ -1126,6 +1128,28 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onEnablePaxsenixChange(!enablePaxsenix) }
+                ),
+                Material3SettingsItem(
+                    isHighlighted = (highlightKey == "Fetch Faster Lyrics"),
+                    icon = painterResource(R.drawable.speed),
+                    title = { Text("Fetch faster lyrics") },
+                    description = { Text("Search for lyrics in parallel and choose the provider that responds first, ignoring priority") },
+                    trailingContent = {
+                        Switch(
+                            checked = fetchFasterLyrics,
+                            onCheckedChange = onFetchFasterLyricsChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (fetchFasterLyrics) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onFetchFasterLyricsChange(!fetchFasterLyrics) }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.lyrics_provider_priority)),

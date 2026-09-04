@@ -105,7 +105,15 @@ fun YouTubePlaylistMenu(
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
     val dbPlaylist by database.playlistByBrowseId(playlist.id).collectAsState(initial = null)
-    val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initial = false)
+val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initial = false)
+
+    val (enableExportAsMp3) = rememberPreference(key = EnableExportAsMp3Key, defaultValue = false)
+    val (exportDirectoryUri) = rememberPreference(key = ExportDirectoryUriKey, defaultValue = "")
+    val (exportingSongIds) = rememberPreference(key = ExportingSongIdsKey, defaultValue = "")
+    val (exportedSongIds) = rememberPreference(key = ExportedSongIdsKey, defaultValue = "")
+
+    val isExporting = remember(exportingSongIds, songs) { songs.any { exportingSongIds.split(",").contains(it.id) } }
+    val isExported = remember(exportedSongIds, songs) { songs.isNotEmpty() && songs.all { exportedSongIds.split(",").contains(it.id) } }
 
     var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showImportPlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -574,6 +582,65 @@ fun YouTubePlaylistMenu(
                                                     downloadRequest,
                                                     false
                                                 )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    if (enableExportAsMp3) {
+                        add(
+                            when {
+                                isExporting -> {
+                                    Material3MenuItemData(
+                                        title = { Text(text = stringResource(R.string.exporting)) },
+                                        icon = {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(24.dp),
+                                                strokeWidth = 2.dp
+                                            )
+                                        },
+                                        onClick = {}
+                                    )
+                                }
+                                isExported -> {
+                                    Material3MenuItemData(
+                                        title = { Text(text = stringResource(R.string.action_exported)) },
+                                        icon = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.folder_managed),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        onClick = {}
+                                    )
+                                }
+                                else -> {
+                                    Material3MenuItemData(
+                                        title = { Text(text = stringResource(R.string.action_export)) },
+                                        description = { Text(text = stringResource(R.string.export_desc)) },
+                                        icon = {
+                                            Icon(
+                                                painter = painterResource(R.drawable.file_export),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        onClick = {
+                                            if (exportDirectoryUri.isBlank()) {
+                                                android.widget.Toast.makeText(context, R.string.export_directory_not_set, android.widget.Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                songs.forEach { song ->
+                                                    AudioExportService.start(
+                                                        context = context,
+                                                        songId = song.id,
+                                                        songTitle = song.title,
+                                                        songArtist = song.artists.joinToString { it.name },
+                                                        songAlbum = song.album?.name ?: "",
+                                                        artworkUrl = song.thumbnail ?: "",
+                                                        targetDirectoryUri = exportDirectoryUri,
+                                                    )
+                                                }
                                             }
                                         }
                                     )

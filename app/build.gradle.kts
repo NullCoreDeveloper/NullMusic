@@ -35,8 +35,8 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         // LastFM API keys from GitHub Secrets
-        val lastFmKey = localProperties.getProperty("LASTFM_API_KEY") ?: System.getenv("LASTFM_API_KEY") ?: ""
-        val lastFmSecret = localProperties.getProperty("LASTFM_SECRET") ?: System.getenv("LASTFM_SECRET") ?: ""
+        val lastFmKey = "266d77b5790e413ada7e41ef100d017a"
+        val lastFmSecret = "41d3ae3b039ddac06c37fb30055bf93b"
 
         buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
         buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")

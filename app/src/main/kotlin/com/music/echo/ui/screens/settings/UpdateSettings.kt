@@ -55,15 +55,6 @@ import iad1tya.echo.music.nullmusic.updater.autoClearOldApks
 import androidx.compose.material3.MaterialTheme
 import iad1tya.echo.music.BuildConfig
 
-data class UpcomingUpdateData(
-    val version: String,
-    val releaseDate: String,
-    val features: List<String>,
-    val bugFixes: List<String>,
-    val contributors: List<String>
-)
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateSettings(
@@ -79,9 +70,6 @@ fun UpdateSettings(
     var apkCount by remember { mutableStateOf(getDownloadedApkCount(context)) }
     var showInfoDialog by remember { mutableStateOf(false) }
 
-    var upcomingUpdate by remember { mutableStateOf<UpcomingUpdateData?>(null) }
-    var isLoadingUpcoming by remember { mutableStateOf(false) }
-    var showUpcomingDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         autoClearOldApks(context)
@@ -259,65 +247,7 @@ fun UpdateSettings(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = "Upcoming Update",
-            items = listOf(
-                Material3SettingsItem(
-                    isHighlighted = false,
-                    icon = painterResource(R.drawable.update),
-                    title = { Text(upcomingUpdate?.version ?: "Next Release") },
-                    description = {
-                        if (isLoadingUpcoming) {
-                            Text("Fetching upcoming update info...")
-                        } else if (upcomingUpdate != null) {
-                            Text("Release Date: ${upcomingUpdate!!.releaseDate}\nTap to view details")
-                        } else {
-                            Text("Failed to load upcoming update.")
-                        }
-                    },
-                    onClick = {
-                        if (upcomingUpdate != null) {
-                            showUpcomingDialog = true
-                        }
-                    }
-                )
-            )
-        )
 
-        if (showUpcomingDialog && upcomingUpdate != null) {
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { showUpcomingDialog = false },
-                title = { Text(upcomingUpdate!!.version) },
-                text = {
-                    Column(modifier = Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState())) {
-                        Text("Release Date: ${upcomingUpdate!!.releaseDate}", style = MaterialTheme.typography.bodyLarge)
-                        Spacer(Modifier.height(8.dp))
-                        
-                        if (upcomingUpdate!!.features.isNotEmpty()) {
-                            Text("Features:", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-                            upcomingUpdate!!.features.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
-                            Spacer(Modifier.height(8.dp))
-                        }
-                        
-                        if (upcomingUpdate!!.bugFixes.isNotEmpty()) {
-                            Text("Bug Fixes:", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-                            upcomingUpdate!!.bugFixes.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
-                            Spacer(Modifier.height(8.dp))
-                        }
-                        
-                        if (upcomingUpdate!!.contributors.isNotEmpty()) {
-                            Text("Contributors:", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
-                            upcomingUpdate!!.contributors.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
-                        }
-                    }
-                },
-                confirmButton = {
-                    androidx.compose.material3.TextButton(onClick = { showUpcomingDialog = false }) {
-                        Text(stringResource(android.R.string.ok))
-                    }
-                }
-            )
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
     

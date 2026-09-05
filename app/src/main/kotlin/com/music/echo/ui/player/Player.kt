@@ -309,6 +309,7 @@ fun BottomSheetPlayer(
     val hidePlayerSlider by rememberPreference(iad1tya.echo.music.constants.HidePlayerSliderKey, false)
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(HidePlayerThumbnailKey, false)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
+    val showLyricsOnPlayer by rememberPreference(ShowLyricsOnPlayerKey, true)
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
 
@@ -2796,6 +2797,16 @@ fun BottomSheetPlayer(
                     ) {
                         Spacer(Modifier.weight(1f))
 
+                        if (showLyricsOnPlayer && !showInlineLyrics) {
+                            PlayerSyncedLyricsView(
+                                mediaMetadata = mediaMetadata,
+                                positionProvider = { effectivePosition },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp)
+                            )
+                        }
+
                         mediaMetadata?.let {
                             controlsContent(it)
                         }
@@ -2846,6 +2857,16 @@ fun BottomSheetPlayer(
                                 )
                             }
                         }
+                    }
+
+                    if (showLyricsOnPlayer && !showInlineLyrics) {
+                        PlayerSyncedLyricsView(
+                            mediaMetadata = mediaMetadata,
+                            positionProvider = { effectivePosition },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
+                        )
                     }
 
                     mediaMetadata?.let {

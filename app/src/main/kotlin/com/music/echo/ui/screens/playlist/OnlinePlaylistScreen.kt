@@ -479,6 +479,7 @@ fun OnlinePlaylistScreen(
             },
             navigationIcon = {
                 IconButton(
+                    modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape),
                     onClick = {
                         if (isSearching) {
                             isSearching = false
@@ -536,7 +537,8 @@ fun OnlinePlaylistScreen(
                     }
                 } else if (!isSearching) {
                     IconButton(
-                        onClick = { isSearching = true }
+                        onClick = { isSearching = true },
+                        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.search),

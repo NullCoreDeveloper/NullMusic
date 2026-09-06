@@ -866,16 +866,7 @@ fun AlbumScreen(
                 IconButton(
                     onClick = { navController.navigateUp() },
                     onLongClick = { navController.backToMain() },
-                    colors = IconButtonDefaults.outlinedIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
-                    ),
-                    modifier = Modifier.border(
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
-                        ),
-                        shape = CircleShape
-                    )
+                    modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.arrow_back_ios),
@@ -921,15 +912,8 @@ fun AlbumScreen(
                     Row(
                         modifier = Modifier
                             .height(48.dp)
-                            .border(
-                                border = BorderStroke(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
-                                ),
-                                shape = CircleShape
-                            )
                             .background(
-                                color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
                                 shape = CircleShape
                             )
                             .padding(horizontal = 8.dp),

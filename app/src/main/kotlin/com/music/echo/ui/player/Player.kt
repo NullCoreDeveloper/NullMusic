@@ -1410,6 +1410,7 @@ fun BottomSheetPlayer(
             playerConnection.service.clearAutomix()
             playerConnection.player.stop()
             playerConnection.player.clearMediaItems()
+            playerConnection.service.clearPersistedQueueFiles()
         },
         collapsedContent = {
             MiniPlayer(

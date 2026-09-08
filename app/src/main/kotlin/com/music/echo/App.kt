@@ -110,8 +110,20 @@ class App : Application(), SingletonImageLoader.Factory {
             cachedCoilCacheSize = dataStore.data.map { it[MaxImageCacheSizeKey] ?: 512 }.first()
         }
 
+
+        applicationScope.launch(Dispatchers.IO) {
+            try {
+                java.net.InetAddress.getByName("music.youtube.com")
+                java.net.InetAddress.getByName("youtubei.googleapis.com")
+                java.net.InetAddress.getByName("googlevideo.com")
+            } catch (e: Exception) {
+                // Ignore
+            }
+        }
+        
         applicationScope.launch {
             initializeSettings()
+
             observeSettingsChanges()
         }
     }

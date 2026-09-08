@@ -460,20 +460,20 @@ class MainActivity : ComponentActivity() {
         var availableUpdateVersion by remember { androidx.compose.runtime.mutableStateOf("") }
         var availableUpdateChangelog by remember { androidx.compose.runtime.mutableStateOf<List<echo.music.iad1tya.nullmusic.updater.ChangelogSection>>(emptyList()) }
         var availableUpdateDescription by remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
-        var whatsNewInfo by remember { androidx.compose.runtime.mutableStateOf<echo.music.iad1tya.echomusic.updater.WhatsNewInfo?>(null) }
+        var whatsNewInfo by remember { androidx.compose.runtime.mutableStateOf<echo.music.iad1tya.nullmusic.updater.WhatsNewInfo?>(null) }
 
         LaunchedEffect(Unit) {
             val currentVersion = BuildConfig.VERSION_NAME
-            val lastSeenVersion = echo.music.iad1tya.echomusic.updater.getLastSeenChangelogVersion(context)
+            val lastSeenVersion = echo.music.iad1tya.nullmusic.updater.getLastSeenChangelogVersion(context)
             if (lastSeenVersion.isEmpty()) {
                 // Fresh install, not an update — nothing "new" to show, so mark this
                 // version seen right away rather than waiting on a dialog dismissal.
-                echo.music.iad1tya.echomusic.updater.saveLastSeenChangelogVersion(context, currentVersion)
+                echo.music.iad1tya.nullmusic.updater.saveLastSeenChangelogVersion(context, currentVersion)
             } else if (lastSeenVersion != currentVersion) {
                 // Only mark the version seen once its changelog is actually shown (see
                 // onDismiss below) — if the fetch fails here, retry on the next launch
                 // instead of losing that version's release notes forever.
-                whatsNewInfo = echo.music.iad1tya.echomusic.updater.fetchChangelogForVersion(currentVersion)
+                whatsNewInfo = echo.music.iad1tya.nullmusic.updater.fetchChangelogForVersion(currentVersion)
             }
         }
 

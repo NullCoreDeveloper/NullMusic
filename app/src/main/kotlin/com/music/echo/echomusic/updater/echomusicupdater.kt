@@ -786,7 +786,7 @@ private fun openTimedStream(url: String): java.io.InputStream =
 suspend fun fetchChangelogForVersion(currentVersion: String): WhatsNewInfo? = withContext(Dispatchers.IO) {
     try {
         val cleanCurrent = currentVersion.removePrefix("b").removePrefix("v").trim()
-        val releasesJson = openTimedStream("https://api.github.com/repos/EchoMusicApp/Echo-Music/releases")
+        val releasesJson = openTimedStream("https://api.github.com/repos/NullCoreDeveloper/NullMusic/releases")
             .bufferedReader().use { it.readText() }
         val releases = JSONArray(releasesJson)
 
@@ -805,7 +805,7 @@ suspend fun fetchChangelogForVersion(currentVersion: String): WhatsNewInfo? = wi
         val changelogList = mutableListOf<ChangelogSection>()
         var description: String? = null
         try {
-            val changelogJson = openTimedStream("https://github.com/EchoMusicApp/Echo-Music/releases/download/$tag/changelog.json")
+            val changelogJson = openTimedStream("https://github.com/NullCoreDeveloper/NullMusic/releases/download/$tag/changelog.json")
                 .bufferedReader().use { it.readText() }
             val changelogData = JSONObject(changelogJson)
             description = changelogData.optString("description").takeIf { it.isNotEmpty() }

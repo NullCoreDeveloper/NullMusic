@@ -248,10 +248,10 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.background
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.background
-
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.background
 
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -499,6 +499,7 @@ fun LocalPlaylistScreen(
         selection.clear()
     }
 
+    val exportSuccessMsg = stringResource(R.string.export_successful)
     val exportCsvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
         if (uri != null) {
             coroutineScope.launch(Dispatchers.IO) {
@@ -518,7 +519,7 @@ fun LocalPlaylistScreen(
                         }
                     }
                     withContext(Dispatchers.Main) {
-                        snackbarHostState.showSnackbar(context.getString(R.string.export_successful))
+                        snackbarHostState.showSnackbar(exportSuccessMsg)
                     }
                 } catch (e: Exception) {
                     reportException(e)
@@ -945,15 +946,13 @@ fun LocalPlaylistScreen(
                                     }
 
                                     if (sortType == PlaylistSongSortType.CUSTOM && !locked && !inSelectMode && !isSearching && editable) {
-                                        IconButton(
-                                            onClick = { },
-                                            modifier = Modifier.draggableHandle(),
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(R.drawable.drag_handle),
-                                                contentDescription = null,
-                                            )
-                                        }
+                                        Icon(
+                                            painter = painterResource(R.drawable.drag_handle),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .draggableHandle()
+                                                .padding(12.dp)
+                                        )
                                     }
                                 }
                             },
@@ -1121,6 +1120,36 @@ fun LocalPlaylistScreen(
                     }
                 } else if (!isSearching) {
                     
+                    if (playlist?.playlist?.id?.startsWith("SPOTIFY_PLAYLIST_") == true || playlist?.playlist?.id == "SPOTIFY_LIKED_SONGS") {
+                        var isSyncing by rememberSaveable { mutableStateOf(false) }
+                        IconButton(
+                            onClick = { 
+                                isSyncing = true
+                                coroutineScope.launch {
+                                    val success = viewModel.syncWithSpotify()
+                                    isSyncing = false
+                                    if (success) {
+                                        android.widget.Toast.makeText(context, "Synced with Spotify successfully!", android.widget.Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        android.widget.Toast.makeText(context, "Failed to sync with Spotify.", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape)
+                        ) {
+                            if (isSyncing) {
+                                androidx.compose.material3.CircularProgressIndicator(
+                                    modifier = Modifier.padding(12.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.sync),
+                                    contentDescription = "Sync with Spotify"
+                                )
+                            }
+                        }
+                    }
                     IconButton(
                         onClick = { isSearching = true },
                         modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape)
@@ -1202,6 +1231,8 @@ fun LocalPlaylistHeader(
     val cropColor = MaterialTheme.colorScheme
     val darkTheme = darkMode == DarkMode.ON || (darkMode == DarkMode.AUTO && isSystemInDarkTheme())
 
+    val editCoverTitle = stringResource(R.string.edit_playlist_cover)
+    val playlistSyncedMsg = stringResource(R.string.playlist_synced)
     val pickLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -1214,7 +1245,7 @@ fun LocalPlaylistHeader(
                 setCompressionFormat(Bitmap.CompressFormat.JPEG)
                 setCompressionQuality(90)
                 setHideBottomControls(true)
-                setToolbarTitle(context.getString(R.string.edit_playlist_cover))
+                setToolbarTitle(editCoverTitle)
                 
                 setStatusBarLight(!darkTheme)
 
@@ -1631,7 +1662,7 @@ fun LocalPlaylistHeader(
                                     }
                                 }
                                 scope.launch(Dispatchers.Main) {
-                                    snackbarHostState.showSnackbar(context.getString(R.string.playlist_synced))
+                                    snackbarHostState.showSnackbar(playlistSyncedMsg)
                                 }
                             },
                             onDelete = onshowDeletePlaylistDialog,

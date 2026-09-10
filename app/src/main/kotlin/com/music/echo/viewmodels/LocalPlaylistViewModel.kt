@@ -5,6 +5,7 @@ package iad1tya.echo.music.viewmodels
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import timber.log.Timber
 import androidx.lifecycle.viewModelScope
 import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
@@ -44,6 +45,7 @@ constructor(
     @ApplicationContext context: Context,
     private val database: MusicDatabase,
     private val syncUtils: SyncUtils,
+    val spotifyImportRepository: SpotifyImportRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val playlistId = savedStateHandle.get<String>("playlistId")!!
@@ -151,6 +153,17 @@ constructor(
                 }
                 _suggestions.value = _suggestions.value.filter { it.id != song.id }
             }
+        }
+    }
+
+    suspend fun syncWithSpotify(): Boolean {
+        return try {
+            spotifyImportRepository.syncPlaylistFast(playlistId)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Timber.e(e, "Spotify sync error")
+            false
         }
     }
 }

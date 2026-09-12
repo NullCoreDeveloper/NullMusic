@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import echo.music.iad1tya.echomusic.updater.ChangelogSection
+import echo.music.iad1tya.nullmusic.updater.ChangelogSection
 
 /**
  * Parses markdown formatted text into an [AnnotatedString] supporting:

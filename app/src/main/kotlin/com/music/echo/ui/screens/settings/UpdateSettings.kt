@@ -69,6 +69,7 @@ fun UpdateSettings(
     val isUpdateAvailable = getUpdateAvailableState(context) && autoUpdateEnabled
     var apkCount by remember { mutableStateOf(getDownloadedApkCount(context)) }
     var showInfoDialog by remember { mutableStateOf(false) }
+    var releaseNotes by remember { mutableStateOf<String?>(null) }
 
 
     LaunchedEffect(Unit) {
@@ -246,6 +247,31 @@ fun UpdateSettings(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        releaseNotes?.let { notes ->
+            Text(
+                text = "What's New",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
+            )
+            androidx.compose.material3.Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+                colors = androidx.compose.material3.CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                ),
+                elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Text(
+                    text = echo.music.iad1tya.ui.utils.parseSimpleMarkdown(notes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(20.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
 
 

@@ -106,6 +106,16 @@ constructor(
         }
 
         viewModelScope.launch {
+            val pl = playlist.first { it != null }
+            if (pl != null) {
+                val pId = pl.playlist.id
+                if (pId.startsWith("SPOTIFY_PLAYLIST_") || pId == "SPOTIFY_LIKED_SONGS") {
+                    syncWithSpotify()
+                }
+            }
+        }
+
+        viewModelScope.launch {
             val sortedSongs =
                 playlistSongs.first().sortedWith(compareBy({ it.map.position }, { it.map.id }))
             database.transaction {
@@ -156,13 +166,18 @@ constructor(
         }
     }
 
+    val isSpotifySyncing = MutableStateFlow(false)
+
     suspend fun syncWithSpotify(): Boolean {
+        isSpotifySyncing.value = true
         return try {
             spotifyImportRepository.syncPlaylistFast(playlistId)
+            isSpotifySyncing.value = false
             true
         } catch (e: Exception) {
             e.printStackTrace()
             Timber.e(e, "Spotify sync error")
+            isSpotifySyncing.value = false
             false
         }
     }

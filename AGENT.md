@@ -12,6 +12,8 @@ the agent full context without re-scanning the whole codebase every session.
 > stale context is worse than no context, because the agent will act on it
 > confidently and be wrong. Treat an out-of-date `AGENT.md` as a bug.
 
+> **Dynamic Design Pattern rule:** Whenever you make ANY changes or updates to the UI, layout, or components, you **must automatically document** the new or updated design patterns directly in this `AGENT.md` file (and `DESIGN.md` if applicable) during the same session. This ensures that the AI's context regarding the project's visual aesthetic is dynamically kept up-to-date, so future tasks follow the newly introduced patterns accurately.
+
 > **Attribution rule:** if a feature is ported from, adapted from, or
 > inspired by another open-source project (even partially — a UI pattern,
 > an algorithm, a parsing approach, a whole file), you **must** add or
@@ -102,11 +104,11 @@ applying standard Material Design 3 guidelines.
   hand-rolling a new dialog or input that might drift from the pattern.
 
 **Key Requirements:**
-- **Match existing patterns:** Look at the existing UI (like the custom original Settings or Listen Together styles) and replicate their translucent cards, rounded corners, and spacing.
-- **Dynamic color with translucency:** Colors come from `MaterialTheme.colorScheme`, but are often modified (e.g. `surfaceVariant.copy(alpha = 0.3f)`) rather than using solid M3 containers.
-- **Do not refactor to strict M3:** Do not replace custom top bars with `LargeTopAppBar` or custom grouped cards with standard M3 cards unless explicitly requested by the user.
+- **Clean and Minimal:** Emphasize the Nothing OS 5.0 aesthetic. Focus on high-contrast, typography-driven layouts, monochrome or minimal color palettes, and distinct geometry.
+- **Avoid standard M3 containers:** Do not use standard M3 containers or generic Material You bouncy/rounded components. Replace them with stark, clean Nothing-style UI.
+- **Do not refactor to strict M3:** Do not replace existing minimal components with `LargeTopAppBar` or standard M3 cards.
 
-If a new feature needs a UI pattern not covered in `DESIGN.md`, copy an existing custom pattern from the app rather than pulling from the official Material 3 guidelines.
+If a new feature needs a UI pattern not covered in `DESIGN.md`, create a minimal, Nothing-OS-inspired pattern rather than pulling from the official Material 3 guidelines.
 
 ### Conventions worth following
 

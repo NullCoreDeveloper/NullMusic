@@ -145,71 +145,11 @@ fun LibrarySongsScreen(
         songs
     }
 
-    Scaffold(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            AnimatedContent(
-                targetState = inSelectMode,
-                transitionSpec = {
-                    fadeIn(spring(stiffness = Spring.StiffnessMediumLow)) togetherWith
-                        fadeOut(spring(stiffness = Spring.StiffnessMediumLow))
-                },
-                label = "librarySongTopBar",
-            ) { selectMode ->
-                if (selectMode) {
-                    TopAppBar(
-                        title = { Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size)) },
-                        navigationIcon = {
-                            IconButton(onClick = onExitSelectionMode) {
-                                Icon(
-                                    painter = painterResource(R.drawable.close),
-                                    contentDescription = null,
-                                )
-                            }
-                        },
-                        actions = {
-                            Checkbox(
-                                checked = selection.size == filteredSongs.size && selection.isNotEmpty(),
-                                onCheckedChange = {
-                                    if (selection.size == filteredSongs.size) {
-                                        selection.clear()
-                                    } else {
-                                        selection.clear()
-                                        selection.addAll(filteredSongs.map { it.song.id })
-                                    }
-                                }
-                            )
-                            IconButton(
-                                enabled = selection.isNotEmpty(),
-                                onClick = {
-                                    menuState.show {
-                                        SelectionSongMenu(
-                                            songSelection = selection.mapNotNull { id ->
-                                                songs.find { it.song.id == id }
-                                            },
-                                            onDismiss = menuState::dismiss,
-                                            clearAction = onExitSelectionMode
-                                        )
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.more_vert),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
-                        ),
-                        windowInsets = WindowInsets(0.dp)
-                    )
-                }
-            }
-        }
-    ) { paddingValues ->
+    ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier.fillMaxSize(),
         ) {
             LazyColumn(
                 state = lazyListState,
@@ -373,6 +313,51 @@ fun LibrarySongsScreen(
                         .animateItem(),
                 )
             }
+        }
+        
+        androidx.compose.animation.AnimatedVisibility(
+            visible = inSelectMode,
+            enter = androidx.compose.animation.fadeIn(),
+            exit = androidx.compose.animation.fadeOut(),
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            androidx.compose.material3.TopAppBar(
+                title = { Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size)) },
+                navigationIcon = {
+                    IconButton(onClick = onExitSelectionMode) {
+                        Icon(painter = painterResource(R.drawable.close), contentDescription = null)
+                    }
+                },
+                actions = {
+                    Checkbox(
+                        checked = selection.size == filteredSongs.size && selection.isNotEmpty(),
+                        onCheckedChange = {
+                            if (selection.size == filteredSongs.size) {
+                                selection.clear()
+                            } else {
+                                selection.clear()
+                                selection.addAll(filteredSongs.map { it.song.id })
+                            }
+                        }
+                    )
+                    IconButton(
+                        enabled = selection.isNotEmpty(),
+                        onClick = {
+                            menuState.show {
+                                SelectionSongMenu(
+                                    songSelection = selection.mapNotNull { id -> songs.find { it.song.id == id } },
+                                    onDismiss = menuState::dismiss,
+                                    clearAction = onExitSelectionMode
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)),
+                windowInsets = WindowInsets(0.dp)
+            )
         }
 
         HideOnScrollFAB(

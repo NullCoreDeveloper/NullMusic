@@ -235,6 +235,11 @@ widget/         Home-screen widget
 
 ## UI / design system notes
 
+- **Nothing OS 5.0 / Glassmorphism Aesthetic:**
+  - When designing components that require a translucent or frosted glass effect (like bottom navbars or mini-players), use the custom `Modifier.liquidGlass(config = ...)` rather than standard alpha background colors.
+  - To achieve a **dense, clean blur** (without a muddy grey tint), use a high `blurRadius` (e.g., `64f`) and explicitly set the `surfaceTintColor` to `MaterialTheme.colorScheme.surface` or `Color.Black` (if pureBlack), while keeping the `surfaceOpacity` moderate (e.g., `0.5f`).
+  - **Flat Integration:** In floating toolbars or navbars, integrate action buttons (like FABs or overflow menus) directly as flat `FloatingNavigationToolbarActionItem`s or `StandardFloatingActionButton`s with `elevation = 0.dp`. Do NOT use `VibrantFloatingActionButton` or elements with default drop shadows, as they render a detached, ugly shadow beneath the translucent glass.
+
 - Material 3 with **dynamic color**: on Android 12+, uses system dynamic
   color by default; otherwise generates a scheme from `DefaultThemeColor`
   (`0xFFED5564`) via `materialKolor`'s `rememberDynamicColorScheme`

@@ -216,13 +216,7 @@ fun RecognitionScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
-                                Brush.radialGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                                        MaterialTheme.colorScheme.background
-                                    ),
-                                    radius = 1500f
-                                )
+                                Color.Transparent
                             )
                     )
 
@@ -324,9 +318,9 @@ private fun ReadyState(
             modifier = Modifier
                 .size(120.dp)
                 .scale(scale)
-                .shadow(elevation = 16.dp, shape = CircleShape)
+                
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.onSurface)
                 .clickable { onStartRecognition() },
             contentAlignment = Alignment.Center
         ) {
@@ -334,7 +328,7 @@ private fun ReadyState(
                 painter = painterResource(R.drawable.music_note),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = MaterialTheme.colorScheme.surface
             )
         }
         
@@ -379,8 +373,8 @@ private fun ListeningState(
                 }
             }
 
-            val colorPrimary = MaterialTheme.colorScheme.primary
-            val colorTertiary = MaterialTheme.colorScheme.tertiary
+            val colorPrimary = MaterialTheme.colorScheme.onSurface
+            val colorTertiary = MaterialTheme.colorScheme.onSurface
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -403,7 +397,7 @@ private fun ListeningState(
         Text(
             text = stringResource(R.string.listening),
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onSurface
         )
         
         OutlinedButton(onClick = onCancel) {
@@ -424,7 +418,7 @@ private fun ProcessingState() {
         ) {
             androidx.compose.material3.CircularProgressIndicator(
                 modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onSurface,
                 strokeWidth = 6.dp
             )
             
@@ -432,14 +426,14 @@ private fun ProcessingState() {
                 modifier = Modifier
                     .size(96.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.onSurface),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(R.drawable.music_note),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.surface
                 )
             }
         }
@@ -591,8 +585,8 @@ private fun SuccessState(
             Spacer(modifier = Modifier.width(16.dp))
             androidx.compose.material3.FloatingActionButton(
                 onClick = { onPlayOnApp(result) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.onSurface,
+                contentColor = MaterialTheme.colorScheme.surface,
                 shape = CircleShape,
                 modifier = Modifier.size(72.dp)
             ) {
@@ -626,7 +620,7 @@ private fun NoMatchState(
                 painter = painterResource(R.drawable.close),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         
@@ -681,7 +675,7 @@ private fun ErrorState(
                 painter = painterResource(R.drawable.error),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         

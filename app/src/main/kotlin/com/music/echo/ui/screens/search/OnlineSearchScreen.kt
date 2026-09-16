@@ -116,13 +116,11 @@ fun OnlineSearchScreen(
     }
 
     LaunchedEffect(query) {
-        snapshotFlow { query }.collectLatest {
-            if (YouTubeUrlParser.isYouTubeUrl(it)) {
-                viewModel.query.value = it
-            } else {
-                kotlinx.coroutines.delay(300L)
-                viewModel.query.value = it
-            }
+        if (YouTubeUrlParser.isYouTubeUrl(query)) {
+            viewModel.query.value = query
+        } else {
+            kotlinx.coroutines.delay(300L)
+            viewModel.query.value = query
         }
     }
 

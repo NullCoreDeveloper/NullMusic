@@ -117,7 +117,7 @@ fun AnimatedBottomSheet(
 fun BottomSheetMenu(
     modifier: Modifier = Modifier,
     state: MenuState,
-    background: Color = BottomSheetDefaults.ContainerColor,
+    background: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     val focusManager = LocalFocusManager.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)

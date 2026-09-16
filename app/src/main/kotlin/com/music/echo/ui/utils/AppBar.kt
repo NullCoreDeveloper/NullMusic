@@ -43,13 +43,7 @@ class AppBarScrollBehavior(
     override var nestedScrollConnection =
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (!canScroll()) return Offset.Zero
-                // Hide the top app bar when scrolling down the page (swiping up, available.y < 0f)
-                if (available.y < 0f) {
-                    val prevHeightOffset = state.heightOffset
-                    state.heightOffset += available.y
-                    return Offset(0f, state.heightOffset - prevHeightOffset)
-                }
+                // Return Offset.Zero so the AppBar remains pinned and never hides
                 return Offset.Zero
             }
 
@@ -58,22 +52,7 @@ class AppBarScrollBehavior(
                 available: Offset,
                 source: NestedScrollSource,
             ): Offset {
-                if (!canScroll()) return Offset.Zero
-                state.contentOffset += consumed.y
-                
-                // Reset content offset if we hit the top of the list
-                if (state.heightOffset == 0f || state.heightOffset == state.heightOffsetLimit) {
-                    if (consumed.y == 0f && available.y > 0f) {
-                        state.contentOffset = 0f
-                    }
-                }
-                
-                // Show the top app bar ONLY when scrolling up reveals overscroll (i.e. we are at the top of the list)
-                if (available.y > 0f) {
-                    val prevHeightOffset = state.heightOffset
-                    state.heightOffset += available.y
-                    return Offset(0f, state.heightOffset - prevHeightOffset)
-                }
+                // Return Offset.Zero so the AppBar remains pinned and never hides
                 return Offset.Zero
             }
         }

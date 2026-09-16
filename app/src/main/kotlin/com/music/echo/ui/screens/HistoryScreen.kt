@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -246,7 +247,7 @@ fun HistoryScreen(
                             item = song,
                             isActive = song.id == mediaMetadata?.id,
                             isPlaying = isPlaying,
-                            color = Color.Transparent,
+                            shape = listItemShape(index, section.songs.size),
                             trailingContent = {
                                 IconButton(
                                     onClick = {
@@ -325,7 +326,7 @@ fun HistoryScreen(
                             isActive = event.song.id == mediaMetadata?.id,
                             isPlaying = isPlaying,
                             showInLibraryIcon = true,
-                            color = Color.Transparent,
+                            shape = listItemShape(index, dateEvents.size),
                             trailingContent = {
                                 if (inSelectMode) {
                                     Checkbox(
@@ -421,6 +422,9 @@ fun HistoryScreen(
     }
 
     TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+        ),
         title = {
             if (inSelectMode) {
                 Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))

@@ -74,7 +74,7 @@ fun SettingDialoge(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
         val primaryColor = MaterialTheme.colorScheme.onSurface
         val onSecondaryColor = MaterialTheme.colorScheme.onSurfaceVariant

@@ -352,9 +352,6 @@ fun NavGraphBuilder.navigationBuilder(
         ThemeScreen(navController)
     }
 
-    composable("settings/appearance/liquidglass") {
-        GlassEffectSettings(navController, scrollBehavior)
-    }
 
     composable(
         route = "settings/content?highlightKey={highlightKey}",

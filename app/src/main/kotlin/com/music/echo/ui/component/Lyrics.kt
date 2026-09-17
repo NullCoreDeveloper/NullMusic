@@ -945,7 +945,18 @@ fun Lyrics(
                             distanceFromCurrent = kotlin.math.abs(index - displayedCurrentLineIndex),
                             lyricsTextPosition = lyricsTextPosition,
                             textColor = textColor,
-                            showRomanized = false,
+                            showRomanized = romanizeJapaneseLyrics ||
+                                            romanizeKoreanLyrics ||
+                                            romanizeRussianLyrics ||
+                                            romanizeUkrainianLyrics ||
+                                            romanizeSerbianLyrics ||
+                                            romanizeBulgarianLyrics ||
+                                            romanizeBelarusianLyrics ||
+                                            romanizeKyrgyzLyrics ||
+                                            romanizeMacedonianLyrics ||
+                                            romanizeChineseLyrics ||
+                                            romanizeHindiLyrics ||
+                                            romanizePunjabiLyrics,
                             textSize = lyricsTextSize,
                             lineSpacing = lyricsLineSpacing,
                             showTranslated = hasActiveTranslations,
@@ -1014,7 +1025,18 @@ fun Lyrics(
                             distanceFromCurrent = kotlin.math.abs(index - displayedCurrentLineIndex),
                             lyricsTextPosition = lyricsTextPosition,
                             textColor = textColor,
-                            showRomanized = false,
+                            showRomanized = romanizeJapaneseLyrics ||
+                                            romanizeKoreanLyrics ||
+                                            romanizeRussianLyrics ||
+                                            romanizeUkrainianLyrics ||
+                                            romanizeSerbianLyrics ||
+                                            romanizeBulgarianLyrics ||
+                                            romanizeBelarusianLyrics ||
+                                            romanizeKyrgyzLyrics ||
+                                            romanizeMacedonianLyrics ||
+                                            romanizeChineseLyrics ||
+                                            romanizeHindiLyrics ||
+                                            romanizePunjabiLyrics,
                             showTranslated = hasActiveTranslations,
                             isAutoScrollActive = isAutoScrollEnabled,
                             isSelectionModeActive = isSelectionModeActive,

@@ -427,68 +427,10 @@ fun StorageSettings(
             title = stringResource(R.string.song_cache),
             items = listOf(
                 Material3SettingsItem(
-                    isHighlighted = (highlightKey == stringResource(R.string.max_song_cache_size)),
-                    icon = painterResource(R.drawable.cached),
-                    title = { Text(stringResource(R.string.max_song_cache_size)) },
-                    description = {
-                        val songCacheValues =
-                            remember { listOf(0, 128, 256, 512, 1024, 2048, 4096, 8192, -1) }
-                        Column {
-                            Text(
-                                text = when (maxSongCacheSize) {
-                                    0 -> stringResource(R.string.disable)
-                                    -1 -> stringResource(R.string.unlimited)
-                                    else -> formatFileSize(maxSongCacheSize * 1024 * 1024L)
-                                }
-                            )
-                            Slider(
-                                value = songCacheValues.indexOf(maxSongCacheSize).toFloat(),
-                                onValueChange = {
-                                    val newValue = songCacheValues[it.roundToInt()]
-                                    val newLimitInBytes = if (newValue == -1) {
-                                        Long.MAX_VALUE
-                                    } else {
-                                        newValue * 1024 * 1024L
-                                    }
-
-                                    if (newLimitInBytes < playerCacheSize) {
-                                        cacheUsage = playerCacheSize
-                                        cacheType = songCacheString
-                                        onConfirmAction = { onMaxSongCacheSizeChange(newValue) }
-                                        showCacheWarningDialog = true
-                                    } else {
-                                        onMaxSongCacheSizeChange(newValue)
-                                    }
-                                },
-                                steps = songCacheValues.size - 2,
-                                valueRange = 0f..(songCacheValues.size - 1).toFloat()
-                            )
-                            LinearProgressIndicator(
-                                progress = { playerCacheProgress },
-                                modifier = Modifier.fillMaxWidth(),
-                                strokeCap = StrokeCap.Round
-                            )
-                            Spacer(modifier = Modifier.padding(2.dp))
-                            Text(
-                                text = if (maxSongCacheSize == -1) {
-                                    formatFileSize(playerCacheSize)
-                                } else {
-                                    "${formatFileSize(playerCacheSize)} / ${
-                                        formatFileSize(
-                                            maxSongCacheSize * 1024 * 1024L
-                                        )
-                                    }"
-                                },
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
-                ),
-                Material3SettingsItem(
                     isHighlighted = (highlightKey == stringResource(R.string.clear_song_cache)),
-                    icon = painterResource(R.drawable.clear_all),
+                    icon = painterResource(R.drawable.cached),
                     title = { Text(stringResource(R.string.clear_song_cache)) },
-                    description = { Text(stringResource(R.string.clear_song_cache_desc)) },
+                    description = { Text("${formatFileSize(playerCacheSize)} used") },
                     onClick = {
                         clearCacheDialog = true
                     }
@@ -502,59 +444,10 @@ fun StorageSettings(
             title = stringResource(R.string.image_cache),
             items = listOf(
                 Material3SettingsItem(
-                    isHighlighted = (highlightKey == stringResource(R.string.max_image_cache_size)),
-                    icon = painterResource(R.drawable.manage_search),
-                    title = { Text(stringResource(R.string.max_image_cache_size)) },
-                    description = {
-                        val imageCacheValues =
-                            remember { listOf(0, 128, 256, 512, 1024, 2048, 4096, 8192) }
-                        Column {
-                            Text(
-                                text = when (maxImageCacheSize) {
-                                    0 -> stringResource(R.string.disable)
-                                    else -> formatFileSize(maxImageCacheSize * 1024 * 1024L)
-                                }
-                            )
-                            Slider(
-                                value = imageCacheValues.indexOf(maxImageCacheSize).toFloat(),
-                                onValueChange = {
-                                    val newValue = imageCacheValues[it.roundToInt()]
-                                    val newLimitInBytes = newValue * 1024 * 1024L
-
-                                    if (newLimitInBytes < imageCacheSize) {
-                                        cacheUsage = imageCacheSize
-                                        cacheType = imageCacheString
-                                        onConfirmAction = { onMaxImageCacheSizeChange(newValue) }
-                                        showCacheWarningDialog = true
-                                    } else {
-                                        onMaxImageCacheSizeChange(newValue)
-                                    }
-                                },
-                                steps = imageCacheValues.size - 2,
-                                valueRange = 0f..(imageCacheValues.size - 1).toFloat()
-                            )
-                            LinearProgressIndicator(
-                                progress = { imageCacheProgress },
-                                modifier = Modifier.fillMaxWidth(),
-                                strokeCap = StrokeCap.Round
-                            )
-                            Spacer(modifier = Modifier.padding(2.dp))
-                            Text(
-                                text = "${formatFileSize(imageCacheSize)} / ${
-                                    formatFileSize(
-                                        maxImageCacheSize * 1024 * 1024L
-                                    )
-                                }",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
-                ),
-                Material3SettingsItem(
                     isHighlighted = (highlightKey == stringResource(R.string.clear_image_cache)),
-                    icon = painterResource(R.drawable.clear_all),
+                    icon = painterResource(R.drawable.image),
                     title = { Text(stringResource(R.string.clear_image_cache)) },
-                    description = { Text(stringResource(R.string.clear_image_cache_desc)) },
+                    description = { Text("${formatFileSize(imageCacheSize)} used") },
                     onClick = {
                         clearImageCacheDialog = true
                     }

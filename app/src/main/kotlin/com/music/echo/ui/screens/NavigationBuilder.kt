@@ -364,10 +364,7 @@ fun NavGraphBuilder.navigationBuilder(
         UptimeScreen(navController, scrollBehavior)
     }
 
-    composable("settings/content/romanization") {
-        RomanizationSettings(navController, scrollBehavior)
-    }
-
+    
     composable(
         route = "settings/ai?highlightKey={highlightKey}",
         arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })

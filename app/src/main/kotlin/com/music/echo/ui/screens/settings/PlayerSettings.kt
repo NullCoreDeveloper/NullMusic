@@ -322,7 +322,7 @@ highlightKey: String? = null) {
                 echo.music.iad1tya.constants.AudioLoudnessPreset.QUIET,
                 echo.music.iad1tya.constants.AudioLoudnessPreset.NORMAL,
                 echo.music.iad1tya.constants.AudioLoudnessPreset.LOUD,
-                echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE,
+                echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE
             ),
             valueText = {
                 when (it) {
@@ -331,8 +331,8 @@ highlightKey: String? = null) {
                     echo.music.iad1tya.constants.AudioLoudnessPreset.LOUD -> stringResource(R.string.loudness_preset_loud)
                     echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE -> stringResource(R.string.loudness_preset_aggressive)
                 }
-            },
-        )
+            }
+            )
     }
 
     if (showPlaybackEngineDialog) {
@@ -1012,28 +1012,6 @@ highlightKey: String? = null) {
                     onClick = { onAutoLoadMoreChange(!autoLoadMore) }
                 ),
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.disable_load_more_when_repeat_all)),
-                    icon = painterResource(R.drawable.repeat),
-                    title = { Text(stringResource(R.string.disable_load_more_when_repeat_all)) },
-                    description = { Text(stringResource(R.string.disable_load_more_when_repeat_all_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = disableLoadMoreWhenRepeatAll,
-                            onCheckedChange = onDisableLoadMoreWhenRepeatAllChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (disableLoadMoreWhenRepeatAll) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onDisableLoadMoreWhenRepeatAllChange(!disableLoadMoreWhenRepeatAll) }
-                ),
-                Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.auto_download_on_like)),
                     icon = painterResource(R.drawable.download),
                     title = { Text(stringResource(R.string.auto_download_on_like)) },
@@ -1306,7 +1284,7 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { onEnableExportAsMp3Change(!enableExportAsMp3) }
-                ),
+                )
             )
         )
         Spacer(modifier = Modifier.height(16.dp))

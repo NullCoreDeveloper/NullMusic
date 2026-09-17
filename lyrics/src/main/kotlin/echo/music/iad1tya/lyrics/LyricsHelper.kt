@@ -36,20 +36,8 @@ constructor(
 ) {
     
     private suspend fun resolveLyricsProviders(): List<LyricsProvider> {
-        val preferences = context.dataStore.data.first()
-        val orderString = preferences[LyricsProviderOrderKey].orEmpty()
-
-        if (orderString.isNotBlank()) {
-            return LyricsProviderRegistry.getOrderedProviders(orderString)
-        }
-
-        
-        val preferredEnum = preferences[PreferredLyricsProviderKey]
-            .toEnum(PreferredLyricsProvider.YOULYPLUS)
-        val preferredName = LyricsProviderRegistry.getProviderNameForEnum(preferredEnum)
         val defaultOrder = LyricsProviderRegistry.getDefaultProviderOrder()
-        val migratedOrder = listOf(preferredName) + defaultOrder.filter { it != preferredName }
-        return migratedOrder.mapNotNull { LyricsProviderRegistry.getProviderByName(it) }
+        return defaultOrder.mapNotNull { LyricsProviderRegistry.getProviderByName(it) }
     }
 
 
@@ -75,7 +63,7 @@ constructor(
             return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
         }
 
-        val providers = resolveLyricsProviders().filter { it.isEnabled(context) }
+        val providers = resolveLyricsProviders()
         if (providers.isEmpty()) return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
 
         val fetchFaster = context.dataStore.data.first()[FetchFasterLyricsKey] ?: false

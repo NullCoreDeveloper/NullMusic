@@ -93,6 +93,7 @@ fun ListenTogetherSettings(
 highlightKey: String? = null) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
     
     val connectionState by viewModel.connectionState.collectAsState()
     val roomState by viewModel.roomState.collectAsState()
@@ -327,7 +328,7 @@ highlightKey: String? = null) {
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
     ) {
         Spacer(
             Modifier.windowInsetsPadding(
@@ -339,10 +340,10 @@ highlightKey: String? = null) {
         val selectedServer = remember(serverUrl) { ListenTogetherServers.findByUrl(serverUrl) }
         
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            IntegrationCard(
+            Material3SettingsGroup(scrollState = scrollState, 
                 title = stringResource(R.string.settings),
                 items = listOf(
-                    IntegrationCardItem(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.person),
                         title = { Text(stringResource(R.string.listen_together_blocked_users)) },
                         description = {
@@ -357,21 +358,7 @@ highlightKey: String? = null) {
                             { showBlockedUsersDialog = true }
                         } else null
                     ),
-                    IntegrationCardItem(
-                        icon = painterResource(R.drawable.cloud),
-                        title = { Text(stringResource(R.string.listen_together_server_url)) },
-                        description = {
-                            Text(
-                                selectedServer?.let { server ->
-                                    "${server.name} - ${server.location}"
-                                } ?: serverUrl,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        onClick = { showServerUrlDialog = true }
-                    ),
-                    IntegrationCardItem(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.person),
                         title = { Text(stringResource(R.string.listen_together_username)) },
                         description = {
@@ -383,7 +370,7 @@ highlightKey: String? = null) {
                             { Toast.makeText(context, context.getString(R.string.listen_together_cannot_edit_username_in_room), Toast.LENGTH_SHORT).show() }
                         }
                     ),
-                    IntegrationCardItem(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.done),
                         title = { Text(stringResource(R.string.listen_together_auto_approval)) },
                         description = {
@@ -393,7 +380,6 @@ highlightKey: String? = null) {
                             Switch(
                                 checked = autoApproval,
                                 onCheckedChange = { autoApproval = it },
-                                
                                 enabled = roomState == null || role != RoomRole.GUEST,
                                 thumbContent = {
                                     Icon(
@@ -406,62 +392,7 @@ highlightKey: String? = null) {
                                 }
                             )
                         },
-                        
                         onClick = { if (roomState == null || role != RoomRole.GUEST) autoApproval = !autoApproval }
-                    ),
-                    IntegrationCardItem(
-                        icon = painterResource(R.drawable.volume_up),
-                        title = { Text(stringResource(R.string.listen_together_sync_volume)) },
-                        description = {
-                            Text(stringResource(R.string.listen_together_sync_volume_desc))
-                        },
-                        trailingContent = {
-                            Switch(
-                                checked = syncHostVolume,
-                                onCheckedChange = { syncHostVolume = it },
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (syncHostVolume) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            )
-                        },
-                        onClick = { syncHostVolume = !syncHostVolume }
-                    ),
-                    IntegrationCardItem(
-                        icon = painterResource(R.drawable.automation_slow_connecttion),
-                        title = { Text(stringResource(R.string.listen_together_smart_resync)) },
-                        description = {
-                            Text(stringResource(R.string.listen_together_smart_resync_desc))
-                        },
-                        trailingContent = {
-                            Switch(
-                                checked = smartResync,
-                                onCheckedChange = { smartResync = it },
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (smartResync) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            )
-                        },
-                        onClick = { smartResync = !smartResync }
-                    ),
-                    IntegrationCardItem(
-                        icon = painterResource(R.drawable.bug_report),
-                        title = { Text(stringResource(R.string.listen_together_view_logs)) },
-                        description = {
-                            Text(stringResource(R.string.listen_together_view_logs_desc))
-                        },
-                        onClick = { showLogsDialog = true }
                     )
                 )
             )

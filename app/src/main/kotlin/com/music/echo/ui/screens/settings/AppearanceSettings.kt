@@ -209,13 +209,13 @@ highlightKey: String? = null) {
     val (playerBackground, onPlayerBackgroundChange) =
         rememberEnumPreference(
             PlayerBackgroundStyleKey,
-            defaultValue = PlayerBackgroundStyle.GRADIENT,
-        )
+            defaultValue = PlayerBackgroundStyle.GRADIENT
+            )
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
         rememberEnumPreference(
             MiniPlayerBackgroundStyleKey,
-            defaultValue = PlayerBackgroundStyle.DEFAULT,
-        )
+            defaultValue = PlayerBackgroundStyle.DEFAULT
+            )
 
     val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(
         DefaultOpenTabKey,
@@ -940,8 +940,8 @@ highlightKey: String? = null) {
                         modifier = Modifier.weight(1f),
                         enabled = false,
                         colors = sliderPreviewColors,
-                        isPlaying = true,
-                    )
+                        isPlaying = true
+            )
                     Text(
                         text = stringResource(R.string.squiggly),
                         style = MaterialTheme.typography.labelSmall,
@@ -993,8 +993,8 @@ highlightKey: String? = null) {
                 )
             )
             .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp),
-    ) {
+            .padding(horizontal = 16.dp)
+            ) {
         Spacer(
             Modifier.windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
@@ -1435,8 +1435,8 @@ highlightKey: String? = null) {
                                 )
                             }
                         )
-                    },
-                ),
+                    }
+            ),
                 if (swipeThumbnail) Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.swipe_sensitivity)),
                     icon = painterResource(R.drawable.tune),
@@ -2054,12 +2054,12 @@ highlightKey: String? = null) {
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
+                onLongClick = navController::backToMain
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
+                    contentDescription = null
+            )
             }
         }
     )

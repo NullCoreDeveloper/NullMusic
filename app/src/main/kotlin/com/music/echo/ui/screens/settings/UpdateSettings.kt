@@ -134,18 +134,11 @@ fun UpdateSettings(
             title = stringResource(R.string.app_updates_title),
             items = listOf(
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.system_update)),
+                    isHighlighted = (highlightKey == stringResource(R.string.system_update)),
                     icon = painterResource(R.drawable.update),
                     title = { Text(stringResource(R.string.system_update)) },
                     description = {
-                        if (isUpdateAvailable) {
-                            Text(
-                                text = stringResource(R.string.update_available),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        } else {
-                            Text(stringResource(R.string.app_update_uptodate))
-                        }
+                        Text(stringResource(R.string.version, BuildConfig.VERSION_NAME))
                     },
                     onClick = {
                         val isFoss = !BuildConfig.CAST_AVAILABLE
@@ -156,103 +149,11 @@ fun UpdateSettings(
                             navController.navigate("update")
                         }
                     }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.version, BuildConfig.VERSION_NAME)),
-                    icon = painterResource(R.drawable.info),
-                    title = {
-                        Text(stringResource(R.string.version, BuildConfig.VERSION_NAME))
-                    }
-                ),
-                
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.auto_update_check)),
-                    icon = painterResource(R.drawable.update),
-                    title = { Text(stringResource(R.string.auto_update_check)) },
-                    description = { Text(stringResource(R.string.auto_update_check_subtitle)) },
-                    trailingContent = {
-                        Switch(
-                            checked = autoUpdateEnabled,
-                            onCheckedChange = { enabled ->
-                                autoUpdateEnabled = enabled
-                                saveAutoUpdateCheckSetting(context, enabled)
-                                if (!enabled) {
-                                    saveUpdateAvailableState(context, false)
-                                }
-                            },
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (autoUpdateEnabled) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = {
-                        autoUpdateEnabled = !autoUpdateEnabled
-                        saveAutoUpdateCheckSetting(context, autoUpdateEnabled)
-                        if (!autoUpdateEnabled) {
-                            saveUpdateAvailableState(context, false)
-                        }
-                    }
-                ),
-
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.update_notifications)),
-                    icon = painterResource(R.drawable.notification),
-                    title = { Text(stringResource(R.string.update_notifications)) },
-                    description = { Text(stringResource(R.string.update_notifications_subtitle)) },
-                    trailingContent = {
-                        Switch(
-                            checked = updateNotificationsEnabled,
-                            onCheckedChange = { enabled ->
-                                updateNotificationsEnabled = enabled
-                                saveUpdateNotificationsSetting(context, enabled)
-                            },
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (updateNotificationsEnabled) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = {
-                        updateNotificationsEnabled = !updateNotificationsEnabled
-                        saveUpdateNotificationsSetting(context, updateNotificationsEnabled)
-                    }
-                ),
-
-
-
-
-
-
-            )
-        )
-        
-        
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.commits),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.commits)),
-                    icon = painterResource(R.drawable.commit),
-                    title = { Text(stringResource(R.string.commits)) },
-                    description = { Text(stringResource(R.string.view_commit_history)) },
-                    onClick = { navController.navigate("settings/commits") }
                 )
             )
         )
+        
+        
 
         Spacer(modifier = Modifier.height(16.dp))
 

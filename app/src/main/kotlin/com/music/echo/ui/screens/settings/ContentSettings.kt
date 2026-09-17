@@ -3,6 +3,20 @@
 package iad1tya.echo.music.ui.screens.settings
 
 import android.content.Intent
+import echo.music.iad1tya.constants.LyricsRomanizeAsMainKey
+import echo.music.iad1tya.constants.LyricsRomanizeBelarusianKey
+import echo.music.iad1tya.constants.LyricsRomanizeBulgarianKey
+import echo.music.iad1tya.constants.LyricsRomanizeChineseKey
+import echo.music.iad1tya.constants.LyricsRomanizeHindiKey
+import echo.music.iad1tya.constants.LyricsRomanizePunjabiKey
+import echo.music.iad1tya.constants.LyricsRomanizeCyrillicByLineKey
+import echo.music.iad1tya.constants.LyricsRomanizeJapaneseKey
+import echo.music.iad1tya.constants.LyricsRomanizeKoreanKey
+import echo.music.iad1tya.constants.LyricsRomanizeKyrgyzKey
+import echo.music.iad1tya.constants.LyricsRomanizeMacedonianKey
+import echo.music.iad1tya.constants.LyricsRomanizeRussianKey
+import echo.music.iad1tya.constants.LyricsRomanizeSerbianKey
+import echo.music.iad1tya.constants.LyricsRomanizeUkrainianKey
 
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
@@ -129,6 +143,19 @@ highlightKey: String? = null) {
 
     
     val (appLanguage, onAppLanguageChange) = rememberPreference(key = AppLanguageKey, defaultValue = SYSTEM_DEFAULT)
+
+    val (lyricsRomanizeJapanese, onLyricsRomanizeJapaneseChange) = rememberPreference(LyricsRomanizeJapaneseKey, defaultValue = true)
+    val (lyricsRomanizeKorean, onLyricsRomanizeKoreanChange) = rememberPreference(LyricsRomanizeKoreanKey, defaultValue = true)
+    val (lyricsRomanizeChinese, onLyricsRomanizeChineseChange) = rememberPreference(LyricsRomanizeChineseKey, defaultValue = true)
+    val (lyricsRomanizeHindi, onLyricsRomanizeHindiChange) = rememberPreference(LyricsRomanizeHindiKey, defaultValue = true)
+    val (lyricsRomanizePunjabi, onLyricsRomanizePunjabiChange) = rememberPreference(LyricsRomanizePunjabiKey, defaultValue = true)
+    val (lyricsRomanizeRussian, onLyricsRomanizeRussianChange) = rememberPreference(LyricsRomanizeRussianKey, defaultValue = true)
+    val (lyricsRomanizeUkrainian, onLyricsRomanizeUkrainianChange) = rememberPreference(LyricsRomanizeUkrainianKey, defaultValue = true)
+    val (lyricsRomanizeSerbian, onLyricsRomanizeSerbianChange) = rememberPreference(LyricsRomanizeSerbianKey, defaultValue = true)
+    val (lyricsRomanizeBulgarian, onLyricsRomanizeBulgarianChange) = rememberPreference(LyricsRomanizeBulgarianKey, defaultValue = true)
+    val (lyricsRomanizeBelarusian, onLyricsRomanizeBelarusianChange) = rememberPreference(LyricsRomanizeBelarusianKey, defaultValue = true)
+    val (lyricsRomanizeKyrgyz, onLyricsRomanizeKyrgyzChange) = rememberPreference(LyricsRomanizeKyrgyzKey, defaultValue = true)
+    val (lyricsRomanizeMacedonian, onLyricsRomanizeMacedonianChange) = rememberPreference(LyricsRomanizeMacedonianKey, defaultValue = true)
 
     val (contentLanguage, onContentLanguageChange) = rememberPreference(key = ContentLanguageKey, defaultValue = "system")
     val (contentCountry, onContentCountryChange) = rememberPreference(key = ContentCountryKey, defaultValue = "system")
@@ -748,123 +775,6 @@ highlightKey: String? = null) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.artist_page_settings),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.show_artist_description)),
-                    icon = painterResource(R.drawable.info),
-                    title = { Text(stringResource(R.string.show_artist_description)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showArtistDescription,
-                            onCheckedChange = onShowArtistDescriptionChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showArtistDescription) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowArtistDescriptionChange(!showArtistDescription) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.show_artist_subscriber_count)),
-                    icon = painterResource(R.drawable.person),
-                    title = { Text(stringResource(R.string.show_artist_subscriber_count)) },
-                    description = { Text(stringResource(R.string.show_artist_subscriber_count_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showArtistSubscriberCount,
-                            onCheckedChange = onShowArtistSubscriberCountChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showArtistSubscriberCount) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowArtistSubscriberCountChange(!showArtistSubscriberCount) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.show_artist_monthly_listeners)),
-                    icon = painterResource(R.drawable.person),
-                    title = { Text(stringResource(R.string.show_artist_monthly_listeners)) },
-                    description = { Text(stringResource(R.string.show_artist_monthly_listeners_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showMonthlyListeners,
-                            onCheckedChange = onShowMonthlyListenersChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showMonthlyListeners) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowMonthlyListenersChange(!showMonthlyListeners) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.show_artist_video)),
-                    icon = painterResource(R.drawable.slow_motion_video),
-                    title = { Text(stringResource(R.string.show_artist_video)) },
-                    description = { Text(stringResource(R.string.show_artist_video_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showArtistVideo,
-                            onCheckedChange = onShowArtistVideoChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showArtistVideo) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowArtistVideoChange(!showArtistVideo) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.show_artist_background_video)),
-                    icon = painterResource(R.drawable.slow_motion_video),
-                    title = { Text(stringResource(R.string.show_artist_background_video)) },
-                    description = { Text(stringResource(R.string.show_artist_background_video_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = showArtistBackgroundVideo,
-                            onCheckedChange = onShowArtistBackgroundVideoChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (showArtistBackgroundVideo) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onShowArtistBackgroundVideoChange(!showArtistBackgroundVideo) }
-                )
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.album_text),
             items = listOf(
                 Material3SettingsItem(
@@ -998,175 +908,57 @@ highlightKey: String? = null) {
             title = stringResource(R.string.lyrics),
             items = listOf(
                 Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.enable_lrclib)),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text(stringResource(R.string.enable_lrclib)) },
-                    description = { Text(stringResource(R.string.enable_lrclib_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = enableLrclib,
-                            onCheckedChange = onEnableLrclibChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enableLrclib) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnableLrclibChange(!enableLrclib) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.enable_kugou)),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text(stringResource(R.string.enable_kugou)) },
-                    description = { Text(stringResource(R.string.enable_kugou_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = enableKugou,
-                            onCheckedChange = onEnableKugouChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enableKugou) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnableKugouChange(!enableKugou) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.enable_better_lyrics)),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text(stringResource(R.string.enable_better_lyrics)) },
-                    description = { Text(stringResource(R.string.enable_better_lyrics_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = enableBetterLyrics,
-                            onCheckedChange = onEnableBetterLyricsChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enableBetterLyrics) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnableBetterLyricsChange(!enableBetterLyrics) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.enable_simpmusic)),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text(stringResource(R.string.enable_simpmusic)) },
-                    description = { Text(stringResource(R.string.enable_simpmusic_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = enableSimpMusic,
-                            onCheckedChange = onEnableSimpMusicChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enableSimpMusic) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnableSimpMusicChange(!enableSimpMusic) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == "YouLyPlus"),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text("YouLyPlus") },
-                    description = { Text("LyricsPlus multi-server provider (YouLy+ extension backend)") },
-                    trailingContent = {
-                        Switch(
-                            checked = enableYouLyPlus,
-                            onCheckedChange = onEnableYouLyPlusChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enableYouLyPlus) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnableYouLyPlusChange(!enableYouLyPlus) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == "PaxSenix"),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text("PaxSenix") },
-                    description = { Text("Apple Music quality synced lyrics with syllable-level timing") },
-                    trailingContent = {
-                        Switch(
-                            checked = enablePaxsenix,
-                            onCheckedChange = onEnablePaxsenixChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (enablePaxsenix) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onEnablePaxsenixChange(!enablePaxsenix) }
-                ),
-                Material3SettingsItem(
-                    isHighlighted = (highlightKey == "Fetch Faster Lyrics"),
-                    icon = painterResource(R.drawable.speed),
-                    title = { Text("Fetch faster lyrics") },
-                    description = { Text("Search for lyrics in parallel and choose the provider that responds first, ignoring priority") },
-                    trailingContent = {
-                        Switch(
-                            checked = fetchFasterLyrics,
-                            onCheckedChange = onFetchFasterLyricsChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (fetchFasterLyrics) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onFetchFasterLyricsChange(!fetchFasterLyrics) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.lyrics_provider_priority)),
-                    icon = painterResource(R.drawable.lyrics),
-                    title = { Text(stringResource(R.string.lyrics_provider_priority)) },
-                    description = { Text(stringResource(R.string.lyrics_provider_priority_desc)) },
-                    onClick = { showProviderPriorityDialog = true },
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.lyrics_romanization)),
+                    isHighlighted = (highlightKey == stringResource(R.string.lyrics_romanization)),
                     icon = painterResource(R.drawable.language_korean_latin),
                     title = { Text(stringResource(R.string.lyrics_romanization)) },
                     description = { Text(stringResource(R.string.lyrics_romanization_desc)) },
-                    onClick = { navController.navigate("settings/content/romanization") }
+                    trailingContent = {
+                        Switch(
+                            checked = lyricsRomanizeJapanese && lyricsRomanizeKorean && lyricsRomanizeChinese && lyricsRomanizeRussian,
+                            onCheckedChange = { checked ->
+                                onLyricsRomanizeJapaneseChange(checked)
+                                onLyricsRomanizeKoreanChange(checked)
+                                onLyricsRomanizeChineseChange(checked)
+                                onLyricsRomanizeHindiChange(checked)
+                                onLyricsRomanizePunjabiChange(checked)
+                                onLyricsRomanizeRussianChange(checked)
+                                onLyricsRomanizeUkrainianChange(checked)
+                                onLyricsRomanizeSerbianChange(checked)
+                                onLyricsRomanizeBulgarianChange(checked)
+                                onLyricsRomanizeBelarusianChange(checked)
+                                onLyricsRomanizeKyrgyzChange(checked)
+                                onLyricsRomanizeMacedonianChange(checked)
+                            },
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (lyricsRomanizeJapanese && lyricsRomanizeKorean) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = {
+                        val checked = !(lyricsRomanizeJapanese && lyricsRomanizeKorean && lyricsRomanizeChinese && lyricsRomanizeRussian)
+                        onLyricsRomanizeJapaneseChange(checked)
+                        onLyricsRomanizeKoreanChange(checked)
+                        onLyricsRomanizeChineseChange(checked)
+                        onLyricsRomanizeHindiChange(checked)
+                        onLyricsRomanizePunjabiChange(checked)
+                        onLyricsRomanizeRussianChange(checked)
+                        onLyricsRomanizeUkrainianChange(checked)
+                        onLyricsRomanizeSerbianChange(checked)
+                        onLyricsRomanizeBulgarianChange(checked)
+                        onLyricsRomanizeBelarusianChange(checked)
+                        onLyricsRomanizeKyrgyzChange(checked)
+                        onLyricsRomanizeMacedonianChange(checked)
+                    }
                 )
             )
         )
+
 
 
 
@@ -1269,27 +1061,6 @@ highlightKey: String? = null) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.logs_heading),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.playback_logs)),
-                    icon = painterResource(R.drawable.bug_report),
-                    title = { Text(stringResource(R.string.playback_logs)) },
-                    description = { Text(stringResource(R.string.playback_logs_desc)) },
-                    onClick = { showPlaybackLogsDialog = true }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.service_uptime)),
-                    icon = painterResource(R.drawable.sync),
-                    title = { Text(stringResource(R.string.service_uptime)) },
-                    description = { Text(stringResource(R.string.service_uptime_desc)) },
-                    onClick = { navController.navigate("uptime") }
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-    
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 

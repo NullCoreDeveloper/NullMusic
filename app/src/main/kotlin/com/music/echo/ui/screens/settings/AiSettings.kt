@@ -547,56 +547,13 @@ highlightKey: String? = null) {
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.ai_translation_mode),
             items = buildList {
-                if (aiProvider != "DeepL") {
-                    add(
-                        Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.ai_translation_mode)),
-                            icon = painterResource(R.drawable.translate),
-                            title = { Text(stringResource(R.string.ai_translation_mode)) },
-                            description = {
-                                Text(
-                                    when (translateMode) {
-                                        "Literal" -> stringResource(R.string.ai_translation_literal)
-                                        "Transcribed" -> stringResource(R.string.ai_translation_transcribed)
-                                        else -> translateMode
-                                    }
-                                )
-                            },
-                            onClick = { showTranslateModeDialog = true },
-                            trailingContent = {
-                                IconButton(onClick = { showTranslateModeHelpDialog = true }) {
-                                    Icon(
-                                        painterResource(R.drawable.info),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        )
-                    )
-                }
                 add(
                     Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.ai_target_language)),
+                        isHighlighted = (highlightKey == stringResource(R.string.ai_target_language)),
                         icon = painterResource(R.drawable.language),
                         title = { Text(stringResource(R.string.ai_target_language)) },
                         description = { Text(LanguageCodeToName[translateLanguage] ?: translateLanguage) },
                         onClick = { showLanguageDialog = true }
-                    )
-                )
-                add(
-                    Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.ai_auto_translate)),
-                        icon = painterResource(R.drawable.translate),
-                        title = { Text(stringResource(R.string.ai_auto_translate)) },
-                        description = { Text(stringResource(R.string.ai_auto_translate_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = autoTranslate,
-                                onCheckedChange = { autoTranslate = it }
-                            )
-                        },
-                        onClick = { autoTranslate = !autoTranslate }
                     )
                 )
             }
@@ -624,19 +581,6 @@ highlightKey: String? = null) {
                         onClick = { aiRecommendations = !aiRecommendations }
                     )
                 )
-                if (aiRecommendations) {
-                    add(
-                        Material3SettingsItem(
-                            isHighlighted = false,
-                            icon = painterResource(R.drawable.sync),
-                            title = { Text(stringResource(R.string.ai_recommendations_refresh)) },
-                            description = { Text(stringResource(R.string.ai_recommendations_refresh_desc)) },
-                            onClick = {
-                                showRefreshDialog = true
-                            }
-                        )
-                    )
-                }
             }
         )
 

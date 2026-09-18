@@ -351,6 +351,10 @@ fun NavGraphBuilder.navigationBuilder(
     composable("settings/appearance/theme") {
         ThemeScreen(navController)
     }
+    
+    composable("settings/appearance/app_icon") {
+        AppIconSettingsScreen(navController, activity, snackbarHostState)
+    }
 
 
     composable(

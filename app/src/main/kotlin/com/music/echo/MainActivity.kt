@@ -969,7 +969,7 @@ class MainActivity : ComponentActivity() {
 
 
                 val pauseListenHistory by rememberPreference(PauseListenHistoryKey, defaultValue = false)
-                val eventCount by database.eventCount().collectAsState(initial = 0)
+                                                val eventCount by database.eventCount().collectAsState(initial = 0)
                 val showHistoryButton = remember(pauseListenHistory, eventCount) {
                     !(pauseListenHistory && eventCount == 0)
                 }
@@ -989,7 +989,7 @@ class MainActivity : ComponentActivity() {
                     LocalShimmerTheme provides getShimmerTheme(),
                     LocalSyncUtils provides syncUtils,
                     LocalListenTogetherManager provides listenTogetherManager,
-                ) {
+                                    ) {
 
                     Scaffold(
                         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -1055,15 +1055,15 @@ class MainActivity : ComponentActivity() {
                                         },
                                         scrollBehavior = topAppBarScrollBehavior,
                                         colors = TopAppBarDefaults.topAppBarColors(
-                                            containerColor = Color.Transparent,
-                                            scrolledContainerColor = Color.Transparent,
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                                             titleContentColor = MaterialTheme.colorScheme.onSurface,
                                             actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                             navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
                                         windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
                                         modifier = Modifier
-                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.65f))
+                                            
                                             .windowInsetsPadding(
                                             if (showRail) {
                                                 WindowInsets(left = NavigationBarHeight)

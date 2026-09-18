@@ -448,7 +448,7 @@ private fun SpotifyAddByLinkDialog(
     onDismiss: () -> Unit,
     onAdd: (String) -> Unit,
 ) {
-    var link by remember { mutableStateOf("") }
+    var link by remember { mutableStateOf(androidx.compose.ui.text.input.TextFieldValue("")) }
 
     DefaultDialog(
         onDismiss = onDismiss,
@@ -479,7 +479,7 @@ private fun SpotifyAddByLinkDialog(
                 placeholder = { Text(stringResource(R.string.spotify_import_by_link_hint)) },
             )
         }
-    }
+    )
 }
 
 @Composable

@@ -126,6 +126,42 @@ fun YouTubeSongMenu(
     val isExporting = remember(exportingSongIds, song.id) { exportingSongIds.split(",").contains(song.id) }
     val isExported = remember(exportedSongIds, song.id) { exportedSongIds.split(",").contains(song.id) }
 
+    var showReExportDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    if (showReExportDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showReExportDialog = false },
+            title = { androidx.compose.material3.Text("Re-export") },
+            text = { androidx.compose.material3.Text("Wanna re-export it again?") },
+            confirmButton = {
+                androidx.compose.material3.Button(onClick = {
+                    showReExportDialog = false
+                    if (exportDirectoryUri.isBlank()) {
+                                        android.widget.Toast.makeText(context, context.getString(R.string.export_directory_not_set), android.widget.Toast.LENGTH_SHORT).show()
+                                        onDismiss()
+                                    } else {
+                                        onDismiss()
+                                        echo.music.iad1tya.playback.AudioExportService.start(
+                                            context = context,
+                                            songId = song.id,
+                                            songTitle = song.title,
+                                            songArtist = artists.joinToString(", ") { it.name },
+                                            songAlbum = song.album?.name ?: "",
+                                            artworkUrl = song.thumbnail,
+                                            targetDirectoryUri = exportDirectoryUri
+                                        )
+                                    }
+                }) {
+                    androidx.compose.material3.Text("Yes")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.OutlinedButton(onClick = { showReExportDialog = false }) {
+                    androidx.compose.material3.Text("No")
+                }
+            }
+        )
+    }
+
     var showChoosePlaylistDialog by rememberSaveable {  
         mutableStateOf(false)  
     }  
@@ -590,7 +626,7 @@ fun YouTubeSongMenu(
                                         contentDescription = null
                                     )
                                 },
-                                onClick = {}
+                                onClick = { showReExportDialog = true }
                             )
                             else -> Material3MenuItemData(
                                 title = { Text(text = stringResource(R.string.action_export)) },

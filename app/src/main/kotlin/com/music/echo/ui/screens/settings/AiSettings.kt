@@ -64,7 +64,7 @@ highlightKey: String? = null) {
     var aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
     var openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
     var openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
-    var openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
+    var openRouterModel by rememberPreference(OpenRouterModelKey, "openrouter/free")
     var translateLanguage by rememberPreference(TranslateLanguageKey, "en")
     var translateMode by rememberPreference(TranslateModeKey, "Literal")
     var autoTranslate by rememberPreference(AutoTranslateKey, false)
@@ -106,7 +106,7 @@ highlightKey: String? = null) {
 
     val modelsByProvider = mapOf(
         "OpenRouter" to listOf(
-            "google/gemini-2.5-flash-lite",
+            "openrouter/free",
             "google/gemini-2.5-flash",
             "x-ai/grok-4.1-fast",
             "deepseek/deepseek-v3.1-terminus:exacto",
@@ -123,7 +123,7 @@ highlightKey: String? = null) {
             "claude-3-5-sonnet-latest",
             "claude-3-opus-latest"
         ),
-        
+
         "Gemini" to listOf(
             "gemini-2.5-flash-lite",
             "gemini-2.5-flash",
@@ -207,7 +207,7 @@ highlightKey: String? = null) {
             },
             icon = { Icon(painterResource(R.drawable.info), null) },
             title = { Text(stringResource(R.string.ai_provider_help)) },
-            text = { 
+            text = {
                 Column {
                     providerHelpText.forEach { (provider, help) ->
                         if (help.isNotEmpty()) {
@@ -233,7 +233,7 @@ highlightKey: String? = null) {
             },
             icon = { Icon(painterResource(R.drawable.info), null) },
             title = { Text(stringResource(R.string.ai_translation_mode)) },
-            text = { 
+            text = {
                 Column {
                     Text(
                         text = "${stringResource(R.string.ai_translation_literal)}:",
@@ -245,7 +245,7 @@ highlightKey: String? = null) {
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    
+
                     Text(
                         text = "${stringResource(R.string.ai_translation_transcribed)}:",
                         style = MaterialTheme.typography.titleSmall
@@ -269,7 +269,7 @@ highlightKey: String? = null) {
                 } else {
                     openRouterBaseUrl = ""
                 }
-                
+
                 val modelsForProvider = modelsByProvider[it] ?: listOf()
                 openRouterModel = if (modelsForProvider.isNotEmpty()) {
                     modelsForProvider[0]
@@ -394,7 +394,7 @@ highlightKey: String? = null) {
             title = stringResource(R.string.ai_model),
             current = if (openRouterModel in commonModels) openRouterModel else "custom_input",
             values = commonModels + "custom_input",
-            valueText = { 
+            valueText = {
                 if (it == "custom_input") "Custom" else it
             }
         )
@@ -433,7 +433,7 @@ highlightKey: String? = null) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.ai_provider),
             items = listOf(
                 Material3SettingsItem(
@@ -466,11 +466,11 @@ highlightKey: String? = null) {
             ).filterNotNull()
         )
 
-        
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.ai_setup_guide),
             items = buildList {
                 if (aiProvider == "DeepL") {
@@ -479,11 +479,11 @@ highlightKey: String? = null) {
     isHighlighted = (highlightKey == "DeepL ${stringResource(R.string.ai_api_key)}"),
                             icon = painterResource(R.drawable.key),
                             title = { Text("DeepL ${stringResource(R.string.ai_api_key)}") },
-                            description = { 
+                            description = {
                                 Text(
-                                    if (deeplApiKey.isNotEmpty()) 
+                                    if (deeplApiKey.isNotEmpty())
                                         "•".repeat(minOf(deeplApiKey.length, 8))
-                                    else 
+                                    else
                                         stringResource(R.string.not_set)
                                 )
                             },
@@ -495,7 +495,7 @@ highlightKey: String? = null) {
     isHighlighted = (highlightKey == stringResource(R.string.ai_deepl_formality)),
                             icon = painterResource(R.drawable.tune),
                             title = { Text(stringResource(R.string.ai_deepl_formality)) },
-                            description = { 
+                            description = {
                                 Text(
                                     when (deeplFormality) {
                                         "default" -> stringResource(R.string.ai_deepl_formality_default)
@@ -514,11 +514,11 @@ highlightKey: String? = null) {
     isHighlighted = (highlightKey == stringResource(R.string.ai_api_key)),
                             icon = painterResource(R.drawable.key),
                             title = { Text(stringResource(R.string.ai_api_key)) },
-                            description = { 
+                            description = {
                                 Text(
-                                    if (openRouterApiKey.isNotEmpty()) 
+                                    if (openRouterApiKey.isNotEmpty())
                                         "•".repeat(minOf(openRouterApiKey.length, 8))
-                                    else 
+                                    else
                                         stringResource(R.string.not_set)
                                 )
                             },
@@ -540,11 +540,11 @@ highlightKey: String? = null) {
             }
         )
 
-        
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Material3SettingsGroup(scrollState = scrollState, 
+        Material3SettingsGroup(scrollState = scrollState,
             title = stringResource(R.string.ai_translation_mode),
             items = buildList {
                 add(
@@ -559,7 +559,7 @@ highlightKey: String? = null) {
             }
         )
 
-        
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -591,7 +591,7 @@ highlightKey: String? = null) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-    
+
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 

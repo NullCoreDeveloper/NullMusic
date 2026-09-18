@@ -244,86 +244,39 @@ fun LibraryScreen(navController: NavController) {
             onDismiss = { showCreatePlaylistOptionsDialog = false },
             title = { Text(stringResource(R.string.create_playlist)) },
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Normally
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = RoundedCornerShape(28.dp)
-                        )
-                        .clip(RoundedCornerShape(28.dp))
-                        .clickable {
+                androidx.compose.material3.Surface(
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    echo.music.iad1tya.ui.component.PreferenceEntry(
+                        icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = null) },
+                        title = { Text(stringResource(R.string.create_playlist_normally)) },
+                        description = "Standard playlist creation",
+                        onClick = {
                             showCreatePlaylistOptionsDialog = false
                             showCreatePlaylistDialog = true
                         }
-                        .padding(vertical = 20.dp, horizontal = 8.dp)
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                painter = painterResource(R.drawable.add),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.create_playlist_normally),
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.Center
                     )
                 }
-
-                // Create with AI
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(28.dp)
-                        )
-                        .clip(RoundedCornerShape(28.dp))
-                        .clickable {
+                
+                androidx.compose.material3.Surface(
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    echo.music.iad1tya.ui.component.PreferenceEntry(
+                        icon = { Icon(painter = painterResource(R.drawable.sparks), contentDescription = null) },
+                        title = { Text(stringResource(R.string.create_playlist_with_ai)) },
+                        description = "AI-powered playlist generation",
+                        onClick = {
                             showCreatePlaylistOptionsDialog = false
                             showAiPlaylistDialog = true
                         }
-                        .padding(vertical = 20.dp, horizontal = 8.dp)
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                painter = painterResource(R.drawable.sparks),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.create_playlist_with_ai),
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.Center
                     )
                 }
             }

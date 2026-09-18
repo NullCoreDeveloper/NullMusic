@@ -23,6 +23,8 @@ val SpotifyAccessTokenKey = stringPreferencesKey("spotify_access_token")
 val SpotifyAccessTokenExpiresAtKey = longPreferencesKey("spotify_access_token_expires_at")
 val EnableDynamicIconKey = booleanPreferencesKey("enableDynamicIcon")
 val EnableLegacyIconKey = booleanPreferencesKey("enableLegacyIcon")
+val AppIconTypeKey = stringPreferencesKey("app_icon_type")
+
 val EnableHighRefreshRateKey = booleanPreferencesKey("enableHighRefreshRate")
 val EnableHapticsKey = booleanPreferencesKey("enableHaptics")
 val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")
@@ -806,3 +808,4 @@ val PreloadLyricsEnabledKey = booleanPreferencesKey("preload_lyrics_enabled")
 
 val UseFloatingNavBarKey = booleanPreferencesKey("useFloatingNavBar")
 val SavedAccountsKey = stringPreferencesKey("savedAccounts")
+val LiveBlurDensityKey = floatPreferencesKey("live_blur_density")

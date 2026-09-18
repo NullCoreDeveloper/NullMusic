@@ -115,6 +115,42 @@ val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initi
     val isExporting = remember(exportingSongIds, songs) { songs.any { exportingSongIds.split(",").contains(it.id) } }
     val isExported = remember(exportedSongIds, songs) { songs.isNotEmpty() && songs.all { exportedSongIds.split(",").contains(it.id) } }
 
+    var showReExportDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    if (showReExportDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showReExportDialog = false },
+            title = { androidx.compose.material3.Text("Re-export") },
+            text = { androidx.compose.material3.Text("Wanna re-export it again?") },
+            confirmButton = {
+                androidx.compose.material3.Button(onClick = {
+                    showReExportDialog = false
+                    if (exportDirectoryUri.isBlank()) {
+                                                android.widget.Toast.makeText(context, R.string.export_directory_not_set, android.widget.Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                songs.forEach { song ->
+                                                    AudioExportService.start(
+                                                        context = context,
+                                                        songId = song.id,
+                                                        songTitle = song.title,
+                                                        songArtist = song.artists.joinToString { it.name },
+                                                        songAlbum = song.album?.name ?: "",
+                                                        artworkUrl = song.thumbnail ?: "",
+                                                        targetDirectoryUri = exportDirectoryUri,
+                                                    )
+                                                }
+                                            }
+                }) {
+                    androidx.compose.material3.Text("Yes")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.OutlinedButton(onClick = { showReExportDialog = false }) {
+                    androidx.compose.material3.Text("No")
+                }
+            }
+        )
+    }
+
     var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showImportPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showErrorPlaylistAddDialog by rememberSaveable { mutableStateOf(false) }
@@ -613,7 +649,7 @@ val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initi
                                                 contentDescription = null,
                                             )
                                         },
-                                        onClick = {}
+                                        onClick = { showReExportDialog = true }
                                     )
                                 }
                                 else -> {

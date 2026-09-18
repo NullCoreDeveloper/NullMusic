@@ -175,9 +175,9 @@ highlightKey: String? = null) {
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                 color = if (highlightKey == aiLyricsText)
-                                    MaterialTheme.colorScheme.primary
+                                    MaterialTheme.colorScheme.onSurface
                                 else
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                    MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         title = { Text(aiLyricsText) },

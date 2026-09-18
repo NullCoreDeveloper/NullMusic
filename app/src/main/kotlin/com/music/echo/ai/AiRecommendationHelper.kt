@@ -54,13 +54,13 @@ object AiRecommendationHelper {
         val prompt = """
             Based on the following list of songs the user likes:
             ${tasteList.joinToString("\n")}
-            
+
             Please recommend 20 similar but different songs.
             CRITICAL RULES:
             1. You MUST output ONLY a valid JSON array of objects.
             2. Do NOT include any markdown formatting (like ```json).
             3. Do NOT include any conversational text or explanations. Just the raw JSON array.
-            
+
             Example format:
             [
               {"title": "Song Name", "artist": "Artist Name"}
@@ -76,7 +76,7 @@ object AiRecommendationHelper {
         } else {
             val apiKey = context.dataStore.get(OpenRouterApiKey, "")
             val baseUrl = context.dataStore.get(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
-            val model = context.dataStore.get(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
+            val model = context.dataStore.get(OpenRouterModelKey, "openrouter/free")
 
             if (apiKey.isEmpty()) {
                 onLog?.invoke("API Key is missing.")
@@ -127,7 +127,7 @@ object AiRecommendationHelper {
         val resolvedSongs = mutableListOf<SongItem>()
         val totalSongs = jsonArray.length()
         onLog?.invoke("Found $totalSongs songs. Searching InnerTube...")
-        
+
         for (i in 0 until totalSongs) {
             val item = jsonArray.optJSONObject(i) ?: continue
             val title = item.optString("title")
@@ -174,7 +174,7 @@ object AiRecommendationHelper {
             database.insert(songEntity)
             database.insert(PlaylistSongMap(playlistId = playlist.id, songId = songItem.id, position = index))
         }
-        
+
         onLog?.invoke("Done!")
     }
 }

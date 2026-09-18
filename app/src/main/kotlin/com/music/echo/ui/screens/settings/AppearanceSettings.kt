@@ -27,11 +27,14 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
@@ -150,6 +153,13 @@ highlightKey: String? = null) {
         iad1tya.echo.music.constants.EnableLegacyIconKey,
         defaultValue = false
     )
+    
+    val (appIconType, onAppIconTypeChange) = rememberEnumPreference(
+        echo.music.iad1tya.constants.AppIconTypeKey,
+        defaultValue = echo.music.iad1tya.utils.AppIconType.DEFAULT
+    )
+    
+    var showAppIconDialog by rememberSaveable { mutableStateOf(false) }
     val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableHighRefreshRateKey,
         defaultValue = true
@@ -157,6 +167,10 @@ highlightKey: String? = null) {
     val (enableHaptics, onEnableHapticsChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableHapticsKey,
         defaultValue = false
+    )
+    val (liveBlurDensity, onLiveBlurDensityChange) = rememberPreference(
+        echo.music.iad1tya.constants.LiveBlurDensityKey,
+        defaultValue = 50f
     )
     val (selectedThemeColorInt) = rememberPreference(
         SelectedThemeColorKey,
@@ -166,9 +180,9 @@ highlightKey: String? = null) {
     val isUsingCustomColor = selectedThemeColorInt != DefaultThemeColor.toArgb()
     val coroutineScope = rememberCoroutineScope()
 
-    fun handleIconChange(legacyEnabled: Boolean) {
-        onEnableLegacyIconChange(legacyEnabled)
-        IconUtils.setIcon(activity, false, legacyEnabled)
+    fun handleIconChange(iconType: echo.music.iad1tya.utils.AppIconType) {
+        onAppIconTypeChange(iconType)
+        IconUtils.setIcon(activity, iconType)
         coroutineScope.launch {
             val result = snackbarHostState.showSnackbar(
                 message = "Icon updated, restart to apply",
@@ -1032,26 +1046,11 @@ highlightKey: String? = null) {
 
                 add(
                     Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.legacy_icon)),
-                        customIcon = { Icon(painterResource(R.mipmap.legacy_icon_monochrome), contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary) },
-                        title = { Text(stringResource(R.string.legacy_icon)) },
-                        description = { Text(stringResource(R.string.legacy_icon_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = enableLegacyIcon,
-                                onCheckedChange = { handleIconChange(it) },
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (enableLegacyIcon) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize)
-                                    )
-                                }
-                            )
-                        },
-                        onClick = { handleIconChange(!enableLegacyIcon) }
+                        isHighlighted = (highlightKey == stringResource(R.string.legacy_icon)),
+                        icon = painterResource(R.drawable.ic_app_settings),
+                        title = { Text("App Icon") },
+                        description = { Text("Choose your launcher icon") },
+                        onClick = { navController.navigate("settings/appearance/app_icon") }
                     )
                 )
                 add(
@@ -1063,6 +1062,7 @@ highlightKey: String? = null) {
                         onClick = { navController.navigate("settings/appearance/theme") }
                     )
                 )
+                
                 add(
                     Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.enable_high_refresh_rate)),

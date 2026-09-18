@@ -135,7 +135,6 @@ fun SearchScreen(
         mutableStateOf(TextFieldValue())
     }
     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
-    var isFirstLaunch by rememberSaveable { mutableStateOf(true) }
     
     var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
     var searchActive by rememberSaveable { mutableStateOf(false) }
@@ -234,6 +233,7 @@ fun SearchScreen(
             Column(
                 modifier = Modifier
                     .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             ) {
                 SearchBar(
                     inputField = {
@@ -373,7 +373,8 @@ fun SearchScreen(
                         SecondaryTabRow(
                             selectedTabIndex = selectedTabIndex,
                             containerColor = Color.Transparent,
-                            indicator = {
+                            divider = {},
+                            indicator = { 
                                 Box(
                                     modifier = Modifier
                                         .tabIndicatorOffset(selectedTabIndex)
@@ -393,6 +394,7 @@ fun SearchScreen(
                             Tab(
                                 selected = selectedTabIndex == 0,
                                 onClick = { selectedTabIndex = 0 },
+                                modifier = Modifier.padding(vertical = 12.dp),
                                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 text = { Text(stringResource(R.string.tab_explore)) }
@@ -400,6 +402,7 @@ fun SearchScreen(
                             Tab(
                                 selected = selectedTabIndex == 1,
                                 onClick = { selectedTabIndex = 1 },
+                                modifier = Modifier.padding(vertical = 12.dp),
                                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 text = { Text("Echo Chart") }
@@ -407,6 +410,7 @@ fun SearchScreen(
                             Tab(
                                 selected = selectedTabIndex == 2,
                                 onClick = { selectedTabIndex = 2 },
+                                modifier = Modifier.padding(vertical = 12.dp),
                                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 text = { Text(stringResource(R.string.tab_album)) }
@@ -446,14 +450,6 @@ fun SearchScreen(
                     if (isPlayerExpanded) {
                         keyboardController?.hide()
                         focusManager.clearFocus()
-                    } else if (isFirstLaunch) {
-                        
-                        try {
-                            focusRequester.requestFocus()
-                        } catch (e: Exception) {
-                            
-                        }
-                        isFirstLaunch = false
                     }
                 }
                 Lifecycle.Event.ON_PAUSE -> {

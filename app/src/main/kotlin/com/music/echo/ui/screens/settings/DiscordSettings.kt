@@ -417,7 +417,6 @@ fun DiscordSettings(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                PreferenceGroupTitle(title = stringResource(R.string.account))
                 DiscordAccountGroupCard(
                     displayName = accountDisplayName,
                     username = activeDiscordUsername,
@@ -478,7 +477,7 @@ fun DiscordSettings(
                                                 )
                                             }
                                         },
-                                        shapes = ButtonDefaults.shapes(),
+                                        shape = androidx.compose.foundation.shape.CircleShape,
                                     ) {
                                         Text(stringResource(R.string.refresh))
                                     }
@@ -663,7 +662,7 @@ fun DiscordSettings(
                             authorizationSession = DiscordOAuthRepository.createAuthorizationSession()
                             showLogoutConfirm = false
                         },
-                        shapes = ButtonDefaults.shapes(),
+                        shape = androidx.compose.foundation.shape.CircleShape,
                     ) {
                         Text(stringResource(R.string.logout_confirm_yes))
                     }
@@ -671,7 +670,7 @@ fun DiscordSettings(
                 dismissButton = {
                     TextButton(
                         onClick = { showLogoutConfirm = false },
-                        shapes = ButtonDefaults.shapes(),
+                        shape = androidx.compose.foundation.shape.CircleShape,
                     ) {
                         Text(stringResource(R.string.logout_confirm_no))
                     }
@@ -818,14 +817,7 @@ private fun DiscordAccountGroupCard(
                 Box(
                     modifier =
                         Modifier
-                            .size(88.dp)
-                            .shadow(
-                                elevation = 30.dp,
-                                shape = CircleShape,
-                                clip = false,
-                                ambientColor = avatarGlowColor.copy(alpha = 0.56f),
-                                spotColor = avatarGlowColor.copy(alpha = 0.74f),
-                            ),
+                            .size(88.dp),
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -925,7 +917,7 @@ private fun DiscordAccountGroupCard(
             ) {
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.large,
+                    shape = androidx.compose.foundation.shape.CircleShape,
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ) {
                     Row(
@@ -985,7 +977,7 @@ private fun DiscordAccountGroupCard(
                         onClick = onPrimaryAction,
                         enabled = primaryActionEnabled,
                         modifier = Modifier.weight(1f).heightIn(min = 56.dp),
-                        shapes = ButtonDefaults.shapes(),
+                        shape = androidx.compose.foundation.shape.CircleShape,
                     ) {
                         Text(stringResource(R.string.action_logout))
                     }
@@ -994,7 +986,7 @@ private fun DiscordAccountGroupCard(
                         onClick = onPrimaryAction,
                         enabled = primaryActionEnabled,
                         modifier = Modifier.weight(1f).heightIn(min = 56.dp),
-                        shapes = ButtonDefaults.shapes(),
+                        shape = androidx.compose.foundation.shape.CircleShape,
                     ) {
                         Text(stringResource(R.string.discord_open_authorization))
                     }
@@ -1048,7 +1040,7 @@ private fun DiscordReauthorizeWarningRow(
                         ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.onErrorContainer,
                         ),
-                    shapes = ButtonDefaults.shapes(),
+                    shape = androidx.compose.foundation.shape.CircleShape,
                 ) {
                     Text(stringResource(R.string.discord_reauthorize_action))
                 }
@@ -1399,7 +1391,7 @@ fun RichPresence(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shapes = ButtonDefaults.shapes(),
+                            shape = androidx.compose.foundation.shape.CircleShape,
                         ) {
                             Text(button1Label)
                         }
@@ -1414,7 +1406,7 @@ fun RichPresence(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shapes = ButtonDefaults.shapes(),
+                            shape = androidx.compose.foundation.shape.CircleShape,
                         ) {
                             Text(button2Label)
                         }

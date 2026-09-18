@@ -249,6 +249,62 @@
             </intent-filter>
         </activity-alias>
 
+        <activity-alias
+            android:name=".MainActivityCat"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/cat_icon"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/cat_icon_round"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".MainActivityCrazyBlue"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/crazy_blue_icon"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/crazy_blue_icon_round"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".MainActivityPookie"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/pookie_icon"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/pookie_icon_round"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".MainActivitySky"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/sky_icon"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/sky_icon_round"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"

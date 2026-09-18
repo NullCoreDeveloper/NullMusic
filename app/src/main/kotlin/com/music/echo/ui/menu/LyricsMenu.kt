@@ -94,7 +94,7 @@ fun LyricsMenu(
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
-    
+
     val openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
     val deeplApiKey by rememberPreference(DeeplApiKey, "")
     val aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
@@ -102,13 +102,13 @@ fun LyricsMenu(
     val translateMode by rememberPreference(TranslateModeKey, "Literal")
     var autoTranslate by rememberPreference(AutoTranslateKey, false)
     val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
-    val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
+    val openRouterModel by rememberPreference(OpenRouterModelKey, "openrouter/free")
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
 
     val hasApiKey = if (aiProvider == "DeepL") deeplApiKey.isNotBlank() else openRouterApiKey.isNotBlank()
 
-    
-    
+
+
     val hasTranslations by LyricsTranslationHelper.hasActiveTranslations.collectAsState()
 
     var showEditDialog by rememberSaveable {
@@ -210,8 +210,8 @@ fun LyricsMenu(
 
                 TextButton(
                     onClick = {
-                        
-                        
+
+
                         viewModel.search(
                             searchMediaMetadata.id,
                             titleField.text,
@@ -220,8 +220,8 @@ fun LyricsMenu(
                             searchMediaMetadata.album?.title
                         )
                         showSearchResultDialog = true
-                        
-                        
+
+
                         if (!isNetworkAvailable) {
                             Toast.makeText(context, context.getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show()
                         }
@@ -368,7 +368,7 @@ fun LyricsMenu(
 
     var lyricsOffset by rememberSaveable { mutableIntStateOf(songProvider()?.lyricsOffset ?: 0) }
 
-    
+
     LaunchedEffect(songProvider()) {
         isChecked = songProvider()?.romanizeLyrics ?: true
     }
@@ -442,7 +442,7 @@ fun LyricsMenu(
         item {
             Material3MenuGroup(
                 items = buildList {
-                    
+
                     if (hasApiKey) {
                         add(
                             Material3MenuItemData(
@@ -485,7 +485,7 @@ fun LyricsMenu(
                             )
                         )
                     }
-                    
+
                     add(
                         Material3MenuItemData(
                             title = { Text(stringResource(R.string.lyrics_offset)) },
@@ -508,7 +508,7 @@ fun LyricsMenu(
                             }
                         )
                     )
-                    
+
                     add(
                         Material3MenuItemData(
                             title = { Text(text = stringResource(R.string.romanize_current_track)) },
@@ -545,6 +545,6 @@ fun LyricsMenu(
             )
         }
     }
-    
-    
+
+
 }

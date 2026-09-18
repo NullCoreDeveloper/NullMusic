@@ -138,11 +138,8 @@ highlightKey: String? = null) {
             if (contributors.isNotEmpty()) {
                 item {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Contributors",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
+                        echo.music.iad1tya.ui.component.PreferenceGroupTitle(
+                            title = "Contributors"
                         )
                         Row(
                             modifier = Modifier

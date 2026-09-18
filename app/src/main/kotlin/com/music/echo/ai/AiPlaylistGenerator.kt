@@ -33,11 +33,11 @@ object AiPlaylistGenerator {
         onLog: suspend (String) -> Unit
     ): String? = withContext(Dispatchers.IO) {
         val database = InternalDatabase.newInstance(context)
-        
+
         onLog("Connecting to AI Provider...")
 
         val aiProvider = context.dataStore.get(AiProviderKey, "OpenRouter")
-        
+
         val weatherDirective = if (weatherInfo != null) {
             """
             METEOROLOGICAL ATMOSPHERIC DIRECTIVE:
@@ -59,14 +59,14 @@ object AiPlaylistGenerator {
         val systemPrompt = """
             You are a highly accurate music curator and historian. The user will ask for an AI playlist.
             You must output ONLY a valid JSON object with a creative playlist name and a list of exactly $numberOfSongs songs.
-            
+
             $weatherDirective
-            
+
             CRITICAL RULES:
             1. YOU MUST VERIFY THE RELEASE YEAR, MOVIE, AND ARTIST for EVERY SINGLE TRACK.
             2. Include songs that EXACTLY match the user's prompt and atmospheric weather directive.
             3. You MUST output ONLY raw JSON. Do NOT include markdown formatting (like ```json), explanations, or conversational text.
-            
+
             Example format:
             {
               "name": "Creative Playlist Name",
@@ -93,7 +93,7 @@ object AiPlaylistGenerator {
         } else {
             val apiKey = context.dataStore.get(OpenRouterApiKey, "")
             val baseUrl = context.dataStore.get(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
-            val model = context.dataStore.get(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
+            val model = context.dataStore.get(OpenRouterModelKey, "openrouter/free")
 
             if (apiKey.isEmpty()) {
                 onLog("API Key is missing. Please set it in Settings.")
@@ -139,7 +139,7 @@ object AiPlaylistGenerator {
 
         onLog("Parsing AI response...")
         val cleanJsonStr = jsonOutput.replace("```json", "").replace("```", "").trim()
-        
+
         val parsedJson = try {
             JSONObject(cleanJsonStr)
         } catch (e: Exception) {

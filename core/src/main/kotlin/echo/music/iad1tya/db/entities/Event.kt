@@ -1,5 +1,3 @@
-
-
 package echo.music.iad1tya.db.entities
 
 import androidx.compose.runtime.Immutable
@@ -11,19 +9,20 @@ import java.time.LocalDateTime
 
 @Immutable
 @Entity(
-    tableName = "event",
-    foreignKeys = [
-        ForeignKey(
-            entity = SongEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["songId"],
-            onDelete = ForeignKey.CASCADE,
-        ),
+  tableName = "event",
+  foreignKeys =
+    [
+      ForeignKey(
+        entity = SongEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["songId"],
+        onDelete = ForeignKey.CASCADE,
+      ),
     ],
 )
 data class Event(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(index = true) val songId: String,
-    val timestamp: LocalDateTime,
-    val playTime: Long,
+  @PrimaryKey(autoGenerate = true) val id: Long = 0,
+  @ColumnInfo(index = true) val songId: String,
+  val timestamp: LocalDateTime,
+  val playTime: Long,
 )

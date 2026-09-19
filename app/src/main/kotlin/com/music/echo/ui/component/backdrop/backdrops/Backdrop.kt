@@ -20,27 +20,25 @@ import iad1tya.echo.music.ui.component.backdrop.Backdrop
 
 @Composable
 fun rememberBackdrop(
-    backdrop: Backdrop,
-    onDraw: DrawScope.(drawBackdrop: DrawScope.() -> Unit) -> Unit
+  backdrop: Backdrop,
+  onDraw: DrawScope.(drawBackdrop: DrawScope.() -> Unit) -> Unit
 ): Backdrop {
-    return remember(backdrop, onDraw) {
-        Backdrop(backdrop, onDraw)
-    }
+  return remember(backdrop, onDraw) { Backdrop(backdrop, onDraw) }
 }
 
 @Immutable
 private class Backdrop(
-    val backdrop: Backdrop,
-    val onDraw: DrawScope.(drawBackdrop: DrawScope.() -> Unit) -> Unit
+  val backdrop: Backdrop,
+  val onDraw: DrawScope.(drawBackdrop: DrawScope.() -> Unit) -> Unit
 ) : Backdrop {
 
-    override val isCoordinatesDependent: Boolean = backdrop.isCoordinatesDependent
+  override val isCoordinatesDependent: Boolean = backdrop.isCoordinatesDependent
 
-    override fun DrawScope.drawBackdrop(
-        density: Density,
-        coordinates: LayoutCoordinates?,
-        layerBlock: (GraphicsLayerScope.() -> Unit)?
-    ) {
-        onDraw { with(backdrop) { drawBackdrop(density, coordinates, layerBlock) } }
-    }
+  override fun DrawScope.drawBackdrop(
+    density: Density,
+    coordinates: LayoutCoordinates?,
+    layerBlock: (GraphicsLayerScope.() -> Unit)?
+  ) {
+    onDraw { with(backdrop) { drawBackdrop(density, coordinates, layerBlock) } }
+  }
 }

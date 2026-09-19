@@ -22,11 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -102,201 +100,72 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun SongMenu(
-    originalSong: Song,
-    event: Event? = null,
-    navController: NavController,
-    playlistSong: PlaylistSong? = null,
-    playlistBrowseId: String? = null,
-    onDismiss: () -> Unit,
-    isFromCache: Boolean = false,
+  originalSong: Song,
+  event: Event? = null,
+  navController: NavController,
+  playlistSong: PlaylistSong? = null,
+  playlistBrowseId: String? = null,
+  onDismiss: () -> Unit,
+  isFromCache: Boolean = false,
 ) {
-    val context = LocalContext.current
-    val database = LocalDatabase.current
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val songState = database.song(originalSong.id).collectAsState(initial = originalSong)
-    val song = songState.value ?: originalSong
-    val download by LocalDownloadUtil.current.getDownload(originalSong.id)
-        .collectAsState(initial = null)
-    val coroutineScope = rememberCoroutineScope()
-    val syncUtils = LocalSyncUtils.current
-    val listenTogetherManager = LocalListenTogetherManager.current
-    val scope = rememberCoroutineScope()
-    
-    val (enableExportAsMp3) = rememberPreference(key = EnableExportAsMp3Key, defaultValue = false)
-    val (exportDirectoryUri) = rememberPreference(key = ExportDirectoryUriKey, defaultValue = "")
-    val (exportingSongIds) = rememberPreference(key = ExportingSongIdsKey, defaultValue = "")
-    val (exportedSongIds) = rememberPreference(key = ExportedSongIdsKey, defaultValue = "")
-    val (exportProgressRaw) = rememberPreference(key = echo.music.iad1tya.constants.ExportProgressKey, defaultValue = "")
+  val context = LocalContext.current
+  val database = LocalDatabase.current
+  val playerConnection = LocalPlayerConnection.current ?: return
+  val songState = database.song(originalSong.id).collectAsState(initial = originalSong)
+  val song = songState.value ?: originalSong
+  val download by
+    LocalDownloadUtil.current.getDownload(originalSong.id).collectAsState(initial = null)
+  val coroutineScope = rememberCoroutineScope()
+  val syncUtils = LocalSyncUtils.current
+  val listenTogetherManager = LocalListenTogetherManager.current
+  val scope = rememberCoroutineScope()
 
-    val isExporting = remember(exportingSongIds, song.id) { exportingSongIds.split(",").contains(song.id) }
-    val isExported = remember(exportedSongIds, song.id) { exportedSongIds.split(",").contains(song.id) }
+  val (enableExportAsMp3) = rememberPreference(key = EnableExportAsMp3Key, defaultValue = false)
+  val (exportDirectoryUri) = rememberPreference(key = ExportDirectoryUriKey, defaultValue = "")
+  val (exportingSongIds) = rememberPreference(key = ExportingSongIdsKey, defaultValue = "")
+  val (exportedSongIds) = rememberPreference(key = ExportedSongIdsKey, defaultValue = "")
+  val (exportProgressRaw) =
+    rememberPreference(key = echo.music.iad1tya.constants.ExportProgressKey, defaultValue = "")
 
-    var showReExportDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-    if (showReExportDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showReExportDialog = false },
-            title = { androidx.compose.material3.Text("Re-export") },
-            text = { androidx.compose.material3.Text("Wanna re-export it again?") },
-            confirmButton = {
-                androidx.compose.material3.Button(onClick = {
-                    showReExportDialog = false
-                    if (exportDirectoryUri.isBlank()) {
-                                        android.widget.Toast.makeText(context, context.getString(R.string.export_directory_not_set), android.widget.Toast.LENGTH_SHORT).show()
-                                        onDismiss()
-                                    } else {
-                                        onDismiss()
-                                        echo.music.iad1tya.playback.AudioExportService.start(
-                                            context = context,
-                                            songId = song.id,
-                                            songTitle = song.song.title,
-                                            songArtist = song.artists.joinToString(", ") { it.name },
-                                            songAlbum = song.song.albumName ?: "",
-                                            artworkUrl = song.thumbnailUrl ?: "",
-                                            targetDirectoryUri = exportDirectoryUri
-                                        )
-                                    }
-                }) {
-                    androidx.compose.material3.Text("Yes")
-                }
-            },
-            dismissButton = {
-                androidx.compose.material3.OutlinedButton(onClick = { showReExportDialog = false }) {
-                    androidx.compose.material3.Text("No")
-                }
-            }
-        )
-    }
-    val exportProgress = remember(exportProgressRaw, song.id) {
-        exportProgressRaw.split(",").find { it.startsWith("${song.id}:") }?.substringAfter(":")?.toIntOrNull()
-    }
+  val isExporting =
+    remember(exportingSongIds, song.id) { exportingSongIds.split(",").contains(song.id) }
+  val isExported =
+    remember(exportedSongIds, song.id) { exportedSongIds.split(",").contains(song.id) }
 
-    var refetchIconDegree by remember { mutableFloatStateOf(0f) }
-
-    val cacheViewModel = hiltViewModel<CachePlaylistViewModel>()
-
-    val rotationAnimation by animateFloatAsState(
-        targetValue = refetchIconDegree,
-        animationSpec = tween(durationMillis = 800),
-        label = "",
-    )
-
-    val isPinned by database.speedDialDao.isPinned(song.id).collectAsState(initial = false)
-
-    val orderedArtists by produceState(initialValue = emptyList<ArtistEntity>(), song) {
-        withContext(Dispatchers.IO) {
-            val artistMaps = database.songArtistMap(song.id).sortedBy { it.position }
-            val sorted = artistMaps.mapNotNull { map ->
-                song.artists.firstOrNull { it.id == map.artistId }
-            }
-            value = sorted
-        }
-    }
-
-    var showEditDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    val TextFieldValueSaver: Saver<TextFieldValue, *> = Saver(
-        save = { it.text },
-        restore = { text -> TextFieldValue(text, TextRange(text.length)) }
-    )
-
-    var titleField by rememberSaveable(stateSaver = TextFieldValueSaver) {
-        mutableStateOf(TextFieldValue(song.song.title))
-    }
-
-    var artistField by rememberSaveable(stateSaver = TextFieldValueSaver) {
-        mutableStateOf(TextFieldValue(song.artists.firstOrNull()?.name.orEmpty()))
-    }
-
-    if (showEditDialog) {
-        TextFieldDialog(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.edit),
-                    contentDescription = null
+  var showReExportDialog by
+    androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+  if (showReExportDialog) {
+    androidx.compose.material3.AlertDialog(
+      onDismissRequest = { showReExportDialog = false },
+      title = { androidx.compose.material3.Text("Re-export") },
+      text = { androidx.compose.material3.Text("Wanna re-export it again?") },
+      confirmButton = {
+        androidx.compose.material3.Button(
+          onClick = {
+            showReExportDialog = false
+            if (exportDirectoryUri.isBlank()) {
+              android.widget.Toast.makeText(
+                  context,
+                  context.getString(R.string.export_directory_not_set),
+                  android.widget.Toast.LENGTH_SHORT
                 )
-            },
-            title = {
-                Text(text = stringResource(R.string.edit_song))
-            },
-            textFields = listOf(
-                stringResource(R.string.song_title) to titleField,
-                stringResource(R.string.artist_name) to artistField
-            ),
-            onTextFieldsChange = { index, newValue ->
-                if (index == 0) titleField = newValue
-                else artistField = newValue
-            },
-            onDoneMultiple = { values ->
-                val newTitle = values[0]
-                val newArtist = values[1]
-
-                coroutineScope.launch {
-                    database.query {
-                        update(song.song.copy(title = newTitle))
-                        val artist = song.artists.firstOrNull()
-                        if (artist != null) {
-                            update(artist.copy(name = newArtist))
-                        }
-                    }
-
-                    showEditDialog = false
-                    onDismiss()
-                }
-            },
-            onDismiss = { showEditDialog = false }
-        )
-    }
-
-    var showChoosePlaylistDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    var showErrorPlaylistAddDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    AddToPlaylistDialog(
-        isVisible = showChoosePlaylistDialog,
-        onGetSong = { playlist ->
-            coroutineScope.launch(Dispatchers.IO) {
-                playlist.playlist.browseId?.let { browseId ->
-                    YouTube.addToPlaylist(browseId, song.id)
-                }
+                .show()
+              onDismiss()
+            } else {
+              onDismiss()
+              echo.music.iad1tya.playback.AudioExportService.start(
+                context = context,
+                songId = song.id,
+                songTitle = song.song.title,
+                songArtist = song.artists.joinToString(", ") { it.name },
+                songAlbum = song.song.albumName ?: "",
+                artworkUrl = song.thumbnailUrl ?: "",
+                targetDirectoryUri = exportDirectoryUri
+              )
             }
-            listOf(song.id)
-        },
-        onDismiss = {
-            showChoosePlaylistDialog = false
-        },
-    )
-
-    if (showErrorPlaylistAddDialog) {
-        ListDialog(
-            onDismiss = {
-                showErrorPlaylistAddDialog = false
-                onDismiss()
-            },
+          }
         ) {
-            item {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.already_in_playlist)) },
-                    leadingContent = {
-                        Image(
-                            painter = painterResource(R.drawable.close),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-                            modifier = Modifier.size(ListThumbnailSize),
-                        )
-                    },
-                    modifier = Modifier.clickable { showErrorPlaylistAddDialog = false },
-                )
-            }
-
-            items(listOf(song)) { song ->
-                SongListItem(song = song)
-            }
+          androidx.compose.material3.Text("Yes")
         }
     }
 
@@ -350,6 +219,16 @@ fun SongMenu(
                 }
             }
         }
+      }
+    )
+  }
+  val exportProgress =
+    remember(exportProgressRaw, song.id) {
+      exportProgressRaw
+        .split(",")
+        .find { it.startsWith("${song.id}:") }
+        ?.substringAfter(":")
+        ?.toIntOrNull()
     }
 
     SongListItem(
@@ -376,20 +255,41 @@ fun SongMenu(
         },
     )
 
-    Spacer(modifier = Modifier.height(12.dp))
+  val isPinned by database.speedDialDao.isPinned(song.id).collectAsState(initial = false)
 
-    val bottomSheetPageState = LocalBottomSheetPageState.current
-    val configuration = LocalConfiguration.current
-    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+  val orderedArtists by
+    produceState(initialValue = emptyList<ArtistEntity>(), song) {
+      withContext(Dispatchers.IO) {
+        val artistMaps = database.songArtistMap(song.id).sortedBy { it.position }
+        val sorted =
+          artistMaps.mapNotNull { map -> song.artists.firstOrNull { it.id == map.artistId } }
+        value = sorted
+      }
+    }
 
-    val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
+  var showEditDialog by rememberSaveable { mutableStateOf(false) }
 
-    LazyColumn(
-        contentPadding = PaddingValues(
-            start = 0.dp,
-            top = 0.dp,
-            end = 0.dp,
-            bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+  val TextFieldValueSaver: Saver<TextFieldValue, *> =
+    Saver(save = { it.text }, restore = { text -> TextFieldValue(text, TextRange(text.length)) })
+
+  var titleField by
+    rememberSaveable(stateSaver = TextFieldValueSaver) {
+      mutableStateOf(TextFieldValue(song.song.title))
+    }
+
+  var artistField by
+    rememberSaveable(stateSaver = TextFieldValueSaver) {
+      mutableStateOf(TextFieldValue(song.artists.firstOrNull()?.name.orEmpty()))
+    }
+
+  if (showEditDialog) {
+    TextFieldDialog(
+      icon = { Icon(painter = painterResource(R.drawable.edit), contentDescription = null) },
+      title = { Text(text = stringResource(R.string.edit_song)) },
+      textFields =
+        listOf(
+          stringResource(R.string.song_title) to titleField,
+          stringResource(R.string.artist_name) to artistField
         ),
     ) {
         item {
@@ -846,34 +746,52 @@ fun SongMenu(
                     )
                 )
             }
+          }
+
+          showEditDialog = false
+          onDismiss()
         }
+      },
+      onDismiss = { showEditDialog = false }
+    )
+  }
 
-        item { Spacer(modifier = Modifier.height(12.dp)) }
+  var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
-        item {
-            Material3MenuGroup(
-                items = listOf(
-                    Material3MenuItemData(
-                        title = { Text(text = "Set as Ringtone") },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.notification),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        onClick = {
-                            if (ringtoneViewModel.hasSettingsPermission(context)) {
-                                ringtoneViewModel.showTrimmer(song.id, song.song.title, song.artists.joinToString { it.name }, song.song.duration)
-                            } else {
-                                ringtoneViewModel.requestSettingsPermission(context)
-                            }
-                            onDismiss()
-                        }
-                    )
-                )
+  var showErrorPlaylistAddDialog by rememberSaveable { mutableStateOf(false) }
+
+  AddToPlaylistDialog(
+    isVisible = showChoosePlaylistDialog,
+    onGetSong = { playlist ->
+      coroutineScope.launch(Dispatchers.IO) {
+        playlist.playlist.browseId?.let { browseId -> YouTube.addToPlaylist(browseId, song.id) }
+      }
+      listOf(song.id)
+    },
+    onDismiss = { showChoosePlaylistDialog = false },
+  )
+
+  if (showErrorPlaylistAddDialog) {
+    ListDialog(
+      onDismiss = {
+        showErrorPlaylistAddDialog = false
+        onDismiss()
+      },
+    ) {
+      item {
+        ListItem(
+          headlineContent = { Text(text = stringResource(R.string.already_in_playlist)) },
+          leadingContent = {
+            Image(
+              painter = painterResource(R.drawable.close),
+              contentDescription = null,
+              colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+              modifier = Modifier.size(ListThumbnailSize),
             )
-        }
+          },
+          modifier = Modifier.clickable { showErrorPlaylistAddDialog = false },
+        )
+      }
 
         item { Spacer(modifier = Modifier.height(12.dp)) }
 
@@ -978,4 +896,673 @@ fun SongMenu(
             )
         }
     }
+  }
+
+  var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
+
+  val ringtoneViewModel = echo.music.iad1tya.LocalRingtoneViewModel.current
+
+  if (showSelectArtistDialog) {
+    ListDialog(
+      onDismiss = { showSelectArtistDialog = false },
+    ) {
+      items(
+        items = song.artists.distinctBy { it.id },
+        key = { it.id },
+      ) { artist ->
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier =
+            Modifier.height(ListItemHeight)
+              .clickable {
+                navController.navigate("artist/${artist.id}")
+                showSelectArtistDialog = false
+                onDismiss()
+              }
+              .padding(horizontal = 12.dp),
+        ) {
+          Box(
+            modifier = Modifier.padding(8.dp),
+            contentAlignment = Alignment.Center,
+          ) {
+            AsyncImage(
+              model = artist.thumbnailUrl,
+              contentDescription = null,
+              modifier = Modifier.size(ListThumbnailSize).clip(CircleShape),
+            )
+          }
+          Text(
+            text = artist.name,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+          )
+        }
+      }
+    }
+  }
+
+  SongListItem(
+    song = song,
+    badges = {},
+    shape = MaterialTheme.shapes.large,
+    color = androidx.compose.ui.graphics.Color.Transparent,
+    trailingContent = {
+      IconButton(
+        onClick = {
+          val s = song.song.toggleLike()
+          database.query { update(s) }
+          syncUtils.likeSong(s)
+        },
+      ) {
+        HeartBurstIcon(isLiked = song.song.liked, iconSize = 24.dp)
+      }
+    },
+  )
+
+  Spacer(modifier = Modifier.height(12.dp))
+
+  val bottomSheetPageState = LocalBottomSheetPageState.current
+  val configuration = LocalConfiguration.current
+  val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+  val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
+
+  LazyColumn(
+    contentPadding =
+      PaddingValues(
+        start = 0.dp,
+        top = 0.dp,
+        end = 0.dp,
+        bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+      ),
+  ) {
+    item {
+      NewActionGrid(
+        actions =
+          listOfNotNull(
+            if (!isGuest) {
+              NewAction(
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.radio),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  )
+                },
+                text = stringResource(R.string.start_radio),
+                onClick = {
+                  onDismiss()
+                  playerConnection.playQueue(YouTubeQueue.radio(song.toMediaMetadata()))
+                }
+              )
+            } else null,
+            NewAction(
+              icon = {
+                Icon(
+                  painter = painterResource(R.drawable.playlist_add),
+                  contentDescription = null,
+                  modifier = Modifier.size(28.dp),
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+              },
+              text = stringResource(R.string.add_to_an_playlist),
+              onClick = { showChoosePlaylistDialog = true }
+            ),
+            NewAction(
+              icon = {
+                Icon(
+                  painter = painterResource(R.drawable.share),
+                  contentDescription = null,
+                  modifier = Modifier.size(22.dp),
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+              },
+              text = stringResource(R.string.share),
+              onClick = {
+                onDismiss()
+                val intent =
+                  Intent().apply {
+                    action = Intent.ACTION_SEND
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "https://share.echomusic.fun/watch?v=${song.id}")
+                  }
+                context.startActivity(Intent.createChooser(intent, null))
+              }
+            )
+          ),
+        columns = 3,
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+      )
+    }
+    item {
+      Material3MenuGroup(
+        items =
+          listOfNotNull(
+            if (listenTogetherManager != null && listenTogetherManager.isGuestPlaybackRestricted) {
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.suggest_to_host)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.queue_music),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  val durationMs =
+                    if (song.song.duration > 0) song.song.duration.toLong() * 1000 else 180000L
+                  val trackInfo =
+                    echo.music.iad1tya.listentogether.TrackInfo(
+                      id = song.id,
+                      title = song.song.title,
+                      artist = orderedArtists.joinToString(", ") { it.name },
+                      album = song.song.albumName,
+                      duration = durationMs,
+                      thumbnail = song.thumbnailUrl
+                    )
+                  listenTogetherManager.suggestTrack(trackInfo)
+                  onDismiss()
+                }
+              )
+            } else null,
+            Material3MenuItemData(
+              title = { Text(text = stringResource(R.string.edit)) },
+              description = { Text(text = stringResource(R.string.edit_song)) },
+              icon = {
+                Icon(
+                  painter = painterResource(R.drawable.edit),
+                  contentDescription = null,
+                )
+              },
+              onClick = { showEditDialog = true }
+            ),
+            if (!isGuest) {
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.play_next)) },
+                description = { Text(text = stringResource(R.string.play_next_desc)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.playlist_play),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  onDismiss()
+                  playerConnection.playNext(song.toMediaItem())
+                }
+              )
+            } else null,
+            if (!isGuest) {
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.add_to_queue)) },
+                description = { Text(text = stringResource(R.string.add_to_queue_desc)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.queue_music),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  onDismiss()
+                  playerConnection.addToQueue(song.toMediaItem())
+                }
+              )
+            } else null
+          )
+      )
+    }
+
+    item { Spacer(modifier = Modifier.height(12.dp)) }
+
+    item {
+      Material3MenuGroup(
+        items =
+          buildList {
+            add(
+              Material3MenuItemData(
+                title = {
+                  Text(text = if (isPinned) "Unpin from Speed dial" else "Pin to Speed dial")
+                },
+                icon = {
+                  Icon(
+                    painter = painterResource(if (isPinned) R.drawable.remove else R.drawable.add),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  coroutineScope.launch(Dispatchers.IO) {
+                    if (isPinned) {
+                      database.speedDialDao.delete(song.id)
+                    } else {
+                      database.speedDialDao.insert(
+                        SpeedDialItem(
+                          id = song.id,
+                          title = song.song.title,
+                          subtitle = song.artists.joinToString(", ") { it.name },
+                          thumbnailUrl = song.thumbnailUrl,
+                          type = "SONG",
+                          explicit = song.song.explicit
+                        )
+                      )
+                    }
+                  }
+                  onDismiss()
+                }
+              )
+            )
+
+            add(
+              Material3MenuItemData(
+                title = {
+                  Text(
+                    text =
+                      stringResource(
+                        if (song.song.inLibrary == null) R.string.add_to_library
+                        else R.string.remove_from_library
+                      )
+                  )
+                },
+                description = { Text(text = stringResource(R.string.add_to_library_desc)) },
+                icon = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        if (song.song.inLibrary == null) R.drawable.library_add
+                        else R.drawable.library_add_check
+                      ),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  val currentSong = song.song
+                  val isInLibrary = currentSong.inLibrary != null
+                  val token =
+                    if (isInLibrary) currentSong.libraryRemoveToken else currentSong.libraryAddToken
+
+                  token?.let { coroutineScope.launch { YouTube.feedback(listOf(it)) } }
+
+                  database.query { update(song.song.toggleLibrary()) }
+                }
+              )
+            )
+
+            add(
+              Material3MenuItemData(
+                title = {
+                  Text(
+                    text =
+                      stringResource(
+                        if (song.song.hideFromQuickPicks) R.string.unhide_from_home
+                        else R.string.hide_from_home
+                      )
+                  )
+                },
+                description = { Text(text = stringResource(R.string.hide_from_home_desc)) },
+                icon = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        if (song.song.hideFromQuickPicks) R.drawable.visibility
+                        else R.drawable.visibility_off
+                      ),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  database.query { update(song.song.toggleHideFromQuickPicks()) }
+                  onDismiss()
+                }
+              )
+            )
+            if (event != null) {
+              add(
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.remove_from_history)) },
+                  icon = {
+                    Icon(
+                      painter = painterResource(R.drawable.delete),
+                      contentDescription = null,
+                    )
+                  },
+                  onClick = {
+                    onDismiss()
+                    database.query { delete(event) }
+                  }
+                )
+              )
+            }
+            if (playlistSong != null) {
+              add(
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.remove_from_playlist)) },
+                  icon = {
+                    Icon(
+                      painter = painterResource(R.drawable.delete),
+                      contentDescription = null,
+                    )
+                  },
+                  onClick = {
+                    database.transaction {
+                      coroutineScope.launch {
+                        playlistBrowseId?.let { playlistId ->
+                          if (playlistSong.map.setVideoId != null) {
+                            YouTube.removeFromPlaylist(
+                              playlistId,
+                              playlistSong.map.songId,
+                              playlistSong.map.setVideoId!!
+                            )
+                          }
+                        }
+                      }
+                      move(playlistSong.map.playlistId, playlistSong.map.position, Int.MAX_VALUE)
+                      delete(playlistSong.map.copy(position = Int.MAX_VALUE))
+                    }
+                    onDismiss()
+                  }
+                )
+              )
+            }
+            if (isFromCache) {
+              add(
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.remove_from_cache)) },
+                  icon = {
+                    Icon(
+                      painter = painterResource(R.drawable.delete),
+                      contentDescription = null,
+                    )
+                  },
+                  onClick = {
+                    onDismiss()
+                    cacheViewModel.removeSongFromCache(song.id)
+                  }
+                )
+              )
+            }
+          }
+      )
+    }
+
+    item { Spacer(modifier = Modifier.height(12.dp)) }
+
+    item {
+      Material3MenuGroup(
+        items =
+          listOf(
+            when (download?.state) {
+              Download.STATE_COMPLETED -> {
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.remove_download)) },
+                  icon = {
+                    Icon(painter = painterResource(R.drawable.offline), contentDescription = null)
+                  },
+                  onClick = {
+                    DownloadService.sendRemoveDownload(
+                      context,
+                      ExoDownloadService::class.java,
+                      song.id,
+                      false,
+                    )
+                  }
+                )
+              }
+              Download.STATE_QUEUED,
+              Download.STATE_DOWNLOADING -> {
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.downloading)) },
+                  icon = {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                  },
+                  onClick = {
+                    DownloadService.sendRemoveDownload(
+                      context,
+                      ExoDownloadService::class.java,
+                      song.id,
+                      false,
+                    )
+                  }
+                )
+              }
+              else -> {
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.action_download)) },
+                  description = { Text(text = stringResource(R.string.download_desc)) },
+                  icon = {
+                    Icon(
+                      painter = painterResource(R.drawable.download),
+                      contentDescription = null,
+                    )
+                  },
+                  onClick = {
+                    val downloadRequest =
+                      DownloadRequest.Builder(song.id, song.id.toUri())
+                        .setCustomCacheKey(song.id)
+                        .setData(song.song.title.toByteArray())
+                        .build()
+                    DownloadService.sendAddDownload(
+                      context,
+                      ExoDownloadService::class.java,
+                      downloadRequest,
+                      false,
+                    )
+                  }
+                )
+              }
+            }
+          )
+      )
+    }
+
+    if (enableExportAsMp3) {
+      item { Spacer(modifier = Modifier.height(12.dp)) }
+      item {
+        Material3MenuGroup(
+          items =
+            listOf(
+              when {
+                isExporting ->
+                  Material3MenuItemData(
+                    title = {
+                      val text = stringResource(R.string.exporting)
+                      Text(text = if (exportProgress != null) "$text • $exportProgress%" else text)
+                    },
+                    icon = {
+                      CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                        progress = { if (exportProgress != null) exportProgress / 100f else 0f }
+                      )
+                    },
+                    onClick = {}
+                  )
+                isExported ->
+                  Material3MenuItemData(
+                    title = { Text(text = stringResource(R.string.action_exported)) },
+                    icon = {
+                      Icon(
+                        painter = painterResource(R.drawable.folder_managed),
+                        contentDescription = null
+                      )
+                    },
+                    onClick = { showReExportDialog = true }
+                  )
+                else ->
+                  Material3MenuItemData(
+                    title = { Text(text = stringResource(R.string.action_export)) },
+                    description = { Text(text = stringResource(R.string.export_desc)) },
+                    icon = {
+                      Icon(
+                        painter = painterResource(R.drawable.file_export),
+                        contentDescription = null,
+                      )
+                    },
+                    onClick = {
+                      if (exportDirectoryUri.isBlank()) {
+                        android.widget.Toast.makeText(
+                            context,
+                            context.getString(R.string.export_directory_not_set),
+                            android.widget.Toast.LENGTH_SHORT
+                          )
+                          .show()
+                        onDismiss()
+                      } else {
+                        onDismiss()
+                        echo.music.iad1tya.playback.AudioExportService.start(
+                          context = context,
+                          songId = song.id,
+                          songTitle = song.song.title,
+                          songArtist = song.artists.joinToString(", ") { it.name },
+                          songAlbum = song.song.albumName ?: "",
+                          artworkUrl = song.thumbnailUrl ?: "",
+                          targetDirectoryUri = exportDirectoryUri
+                        )
+                      }
+                    }
+                  )
+              }
+            )
+        )
+      }
+    }
+
+    item { Spacer(modifier = Modifier.height(12.dp)) }
+
+    item {
+      Material3MenuGroup(
+        items =
+          listOf(
+            Material3MenuItemData(
+              title = { Text(text = "Set as Ringtone") },
+              icon = {
+                Icon(
+                  painter = painterResource(R.drawable.notification),
+                  contentDescription = null,
+                  modifier = Modifier.size(24.dp)
+                )
+              },
+              onClick = {
+                if (ringtoneViewModel.hasSettingsPermission(context)) {
+                  ringtoneViewModel.showTrimmer(
+                    song.id,
+                    song.song.title,
+                    song.artists.joinToString { it.name },
+                    song.song.duration
+                  )
+                } else {
+                  ringtoneViewModel.requestSettingsPermission(context)
+                }
+                onDismiss()
+              }
+            )
+          )
+      )
+    }
+
+    item { Spacer(modifier = Modifier.height(12.dp)) }
+
+    item {
+      Material3MenuGroup(
+        items =
+          buildList {
+            add(
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.view_artist)) },
+                description = { Text(text = song.artists.joinToString { it.name }) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.artist),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  if (song.artists.size == 1) {
+                    navController.navigate("artist/${song.artists[0].id}")
+                    onDismiss()
+                  } else {
+                    showSelectArtistDialog = true
+                  }
+                }
+              )
+            )
+            if (song.song.albumId != null) {
+              add(
+                Material3MenuItemData(
+                  title = { Text(text = stringResource(R.string.view_album)) },
+                  description = { song.song.albumName?.let { Text(text = it) } },
+                  icon = {
+                    Icon(
+                      painter = painterResource(R.drawable.album),
+                      contentDescription = null,
+                    )
+                  },
+                  onClick = {
+                    onDismiss()
+                    navController.navigate("album/${song.song.albumId}")
+                  }
+                )
+              )
+            }
+            add(
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.refetch)) },
+                description = { Text(text = stringResource(R.string.refetch_desc)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.sync),
+                    contentDescription = null,
+                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation),
+                  )
+                },
+                onClick = {
+                  refetchIconDegree -= 360
+                  cacheViewModel.removeSongFromCache(song.id)
+                  androidx.media3.exoplayer.offline.DownloadService.sendRemoveDownload(
+                    context,
+                    echo.music.iad1tya.playback.ExoDownloadService::class.java,
+                    song.id,
+                    false
+                  )
+                  val intent =
+                    android.content
+                      .Intent(context, echo.music.iad1tya.playback.MusicService::class.java)
+                      .apply {
+                        action = "echo.music.iad1tya.ACTION_CLEAR_SONG_CACHE"
+                        putExtra("songId", song.id)
+                      }
+                  context.startService(intent)
+                  scope.launch(Dispatchers.IO) {
+                    database.query { deleteFormat(song.id) }
+                    YouTube.queue(listOf(song.id)).onSuccess {
+                      val newSong = it.firstOrNull()
+                      if (newSong != null) {
+                        database.transaction { update(song, newSong.toMediaMetadata()) }
+                      }
+                    }
+                  }
+                }
+              )
+            )
+            add(
+              Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.details)) },
+                description = { Text(text = stringResource(R.string.details_desc)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.info),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  onDismiss()
+                  bottomSheetPageState.show { ShowMediaInfo(song.id) }
+                }
+              )
+            )
+          }
+      )
+    }
+  }
 }

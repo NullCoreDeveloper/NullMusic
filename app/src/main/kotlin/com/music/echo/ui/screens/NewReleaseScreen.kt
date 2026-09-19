@@ -44,76 +44,72 @@ import iad1tya.echo.music.viewmodels.NewReleaseViewModel
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NewReleaseScreen(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
-    viewModel: NewReleaseViewModel = hiltViewModel(),
+  navController: NavController,
+  scrollBehavior: TopAppBarScrollBehavior,
+  viewModel: NewReleaseViewModel = hiltViewModel(),
 ) {
-    val menuState = LocalMenuState.current
-    val haptic = LocalHapticFeedback.current
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val menuState = LocalMenuState.current
+  val haptic = LocalHapticFeedback.current
+  val playerConnection = LocalPlayerConnection.current ?: return
+  val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
+  val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
-    val newReleaseAlbums by viewModel.newReleaseAlbums.collectAsState()
+  val newReleaseAlbums by viewModel.newReleaseAlbums.collectAsState()
 
-    val coroutineScope = rememberCoroutineScope()
-    val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+  val coroutineScope = rememberCoroutineScope()
+  val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
-        contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-    ) {
-        items(
-            items = newReleaseAlbums.distinctBy { it.id },
-            key = { it.id },
-        ) { album ->
-            YouTubeGridItem(
-                item = album,
-                isActive = mediaMetadata?.album?.id == album.id,
-                isPlaying = isPlaying,
-                fillMaxWidth = true,
-                coroutineScope = coroutineScope,
-                modifier =
-                Modifier
-                    .combinedClickable(
-                        onClick = {
-                            navController.navigate("album/${album.id}")
-                        },
-                        onLongClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            menuState.show {
-                                YouTubeAlbumMenu(
-                                    albumItem = album,
-                                    navController = navController,
-                                    onDismiss = menuState::dismiss,
-                                )
-                            }
-                        },
-                    ),
-            )
-        }
-
-        if (newReleaseAlbums.isEmpty()) {
-            items(8) {
-                ShimmerHost {
-                    GridItemPlaceHolder(fillMaxWidth = true)
-                }
-            }
-        }
+  LazyVerticalGrid(
+    columns =
+      GridCells.Adaptive(
+        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp
+      ),
+    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+  ) {
+    items(
+      items = newReleaseAlbums.distinctBy { it.id },
+      key = { it.id },
+    ) { album ->
+      YouTubeGridItem(
+        item = album,
+        isActive = mediaMetadata?.album?.id == album.id,
+        isPlaying = isPlaying,
+        fillMaxWidth = true,
+        coroutineScope = coroutineScope,
+        modifier =
+          Modifier.combinedClickable(
+            onClick = { navController.navigate("album/${album.id}") },
+            onLongClick = {
+              haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+              menuState.show {
+                YouTubeAlbumMenu(
+                  albumItem = album,
+                  navController = navController,
+                  onDismiss = menuState::dismiss,
+                )
+              }
+            },
+          ),
+      )
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.new_release_albums)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
-            }
-        },
-    )
+    if (newReleaseAlbums.isEmpty()) {
+      items(8) { ShimmerHost { GridItemPlaceHolder(fillMaxWidth = true) } }
+    }
+  }
+
+  TopAppBar(
+    title = { Text(stringResource(R.string.new_release_albums)) },
+    navigationIcon = {
+      IconButton(
+        onClick = navController::navigateUp,
+        onLongClick = navController::backToMain,
+      ) {
+        Icon(
+          painterResource(R.drawable.arrow_back),
+          contentDescription = null,
+        )
+      }
+    },
+  )
 }

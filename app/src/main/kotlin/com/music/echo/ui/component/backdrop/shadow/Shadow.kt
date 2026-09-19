@@ -21,16 +21,15 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 data class Shadow(
-    val radius: Dp = 24f.dp,
-    val offset: DpOffset = DpOffset(0f.dp, radius / 6f),
-    val color: Color = Color.Black.copy(alpha = 0.1f),
-    @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1f,
-    val blendMode: BlendMode = DrawScope.DefaultBlendMode
+  val radius: Dp = 24f.dp,
+  val offset: DpOffset = DpOffset(0f.dp, radius / 6f),
+  val color: Color = Color.Black.copy(alpha = 0.1f),
+  @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1f,
+  val blendMode: BlendMode = DrawScope.DefaultBlendMode
 ) {
 
-    companion object {
+  companion object {
 
-        @Stable
-        val Default: Shadow = Shadow()
-    }
+    @Stable val Default: Shadow = Shadow()
+  }
 }

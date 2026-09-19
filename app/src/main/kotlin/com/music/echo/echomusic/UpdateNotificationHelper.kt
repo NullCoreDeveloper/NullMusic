@@ -15,11 +15,11 @@ import androidx.core.net.toUri
 import iad1tya.echo.music.R
 
 object UpdateNotificationHelper {
-    private const val CHANNEL_ID = "updates"
-    private const val NOTIFICATION_ID = 1001
+  private const val CHANNEL_ID = "updates"
+  private const val NOTIFICATION_ID = 1001
 
-    fun showUpdateNotification(context: Context, versionName: String) {
-        val nm = context.getSystemService(NotificationManager::class.java)
+  fun showUpdateNotification(context: Context, versionName: String) {
+    val nm = context.getSystemService(NotificationManager::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -55,4 +55,28 @@ object UpdateNotificationHelper {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notif)
         }
     }
+
+    val apkUrl = "https://echomusic.fun"
+    val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
+
+    val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    val pending = PendingIntent.getActivity(context, NOTIFICATION_ID, intent, flags)
+
+    val notif =
+      NotificationCompat.Builder(context, CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_launcher_nobg)
+        .setContentTitle(context.getString(R.string.update_available_title))
+        .setContentText(versionName)
+        .setContentIntent(pending)
+        .setAutoCancel(true)
+        .build()
+
+    if (
+      Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+          PackageManager.PERMISSION_GRANTED
+    ) {
+      NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notif)
+    }
+  }
 }

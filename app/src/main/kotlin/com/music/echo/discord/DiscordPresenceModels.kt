@@ -6,119 +6,120 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class DiscordPresenceButton(
-    val label: String,
-    val url: String,
+  val label: String,
+  val url: String,
 )
 
 @Immutable
 data class DiscordPresenceAssets(
-    val largeImage: String? = null,
-    val largeText: String? = null,
-    val largeUrl: String? = null,
-    val smallImage: String? = null,
-    val smallText: String? = null,
-    val smallUrl: String? = null,
+  val largeImage: String? = null,
+  val largeText: String? = null,
+  val largeUrl: String? = null,
+  val smallImage: String? = null,
+  val smallText: String? = null,
+  val smallUrl: String? = null,
 )
 
 @Immutable
 data class DiscordPresenceTimestamps(
-    val startMs: Long? = null,
-    val endMs: Long? = null,
+  val startMs: Long? = null,
+  val endMs: Long? = null,
 )
 
 @Immutable
 data class DiscordPresenceActivity(
-    val applicationId: Long,
-    val name: String?,
-    val type: DiscordActivityType,
-    val details: String?,
-    val state: String?,
-    val detailsUrl: String? = null,
-    val stateUrl: String? = null,
-    val assets: DiscordPresenceAssets = DiscordPresenceAssets(),
-    val buttons: List<DiscordPresenceButton> = emptyList(),
-    val timestamps: DiscordPresenceTimestamps = DiscordPresenceTimestamps(),
-    val statusDisplayType: DiscordStatusDisplayType = DiscordStatusDisplayType.State,
-    val supportedPlatforms: Int = DiscordActivityPlatform.Android.bit,
-    val onlineStatus: DiscordOnlineStatus = DiscordOnlineStatus.Online,
+  val applicationId: Long,
+  val name: String?,
+  val type: DiscordActivityType,
+  val details: String?,
+  val state: String?,
+  val detailsUrl: String? = null,
+  val stateUrl: String? = null,
+  val assets: DiscordPresenceAssets = DiscordPresenceAssets(),
+  val buttons: List<DiscordPresenceButton> = emptyList(),
+  val timestamps: DiscordPresenceTimestamps = DiscordPresenceTimestamps(),
+  val statusDisplayType: DiscordStatusDisplayType = DiscordStatusDisplayType.State,
+  val supportedPlatforms: Int = DiscordActivityPlatform.Android.bit,
+  val onlineStatus: DiscordOnlineStatus = DiscordOnlineStatus.Online,
 )
 
 enum class DiscordActivityType(
-    val nativeValue: Int,
+  val nativeValue: Int,
 ) {
-    Playing(0),
-    Streaming(1),
-    Listening(2),
-    Watching(3),
-    Competing(5),
-    ;
+  Playing(0),
+  Streaming(1),
+  Listening(2),
+  Watching(3),
+  Competing(5),
+  ;
 
-    companion object {
-        fun fromPreference(value: String): DiscordActivityType =
-            when (value.uppercase()) {
-                "PLAYING" -> Playing
-                "STREAMING" -> Streaming
-                "WATCHING" -> Watching
-                "COMPETING" -> Competing
-                else -> Listening
-            }
-    }
+  companion object {
+    fun fromPreference(value: String): DiscordActivityType =
+      when (value.uppercase()) {
+        "PLAYING" -> Playing
+        "STREAMING" -> Streaming
+        "WATCHING" -> Watching
+        "COMPETING" -> Competing
+        else -> Listening
+      }
+  }
 }
 
 enum class DiscordStatusDisplayType(
-    val nativeValue: Int,
+  val nativeValue: Int,
 ) {
-    Name(0),
-    State(1),
-    Details(2),
+  Name(0),
+  State(1),
+  Details(2),
 }
 
 enum class DiscordOnlineStatus(
-    val nativeValue: Int,
+  val nativeValue: Int,
 ) {
-    Online(0),
-    Idle(3),
-    Dnd(4),
-    Invisible(5),
-    Streaming(6),
-    ;
+  Online(0),
+  Idle(3),
+  Dnd(4),
+  Invisible(5),
+  Streaming(6),
+  ;
 
-    companion object {
-        fun fromPreference(value: String): DiscordOnlineStatus =
-            when (value.lowercase()) {
-                "idle" -> Idle
-                "dnd" -> Dnd
-                "invisible" -> Invisible
-                "streaming" -> Streaming
-                else -> Online
-            }
-    }
+  companion object {
+    fun fromPreference(value: String): DiscordOnlineStatus =
+      when (value.lowercase()) {
+        "idle" -> Idle
+        "dnd" -> Dnd
+        "invisible" -> Invisible
+        "streaming" -> Streaming
+        else -> Online
+      }
+  }
 }
 
 enum class DiscordActivityPlatform(
-    val bit: Int,
+  val bit: Int,
 ) {
-    Desktop(1),
-    Xbox(2),
-    Samsung(4),
-    Ios(8),
-    Android(16),
-    Embedded(32),
-    Ps4(64),
-    Ps5(128),
-    ;
+  Desktop(1),
+  Xbox(2),
+  Samsung(4),
+  Ios(8),
+  Android(16),
+  Embedded(32),
+  Ps4(64),
+  Ps5(128),
+  ;
 
-    companion object {
-        fun fromPreference(value: String): Int =
-            when (value.lowercase()) {
-                "desktop" -> Desktop.bit
-                "xbox" -> Xbox.bit
-                "samsung" -> Samsung.bit
-                "ios" -> Ios.bit
-                "web", "embedded" -> Embedded.bit
-                "ps4" -> Ps4.bit
-                "ps5" -> Ps5.bit
-                else -> Android.bit
-            }
-    }
+  companion object {
+    fun fromPreference(value: String): Int =
+      when (value.lowercase()) {
+        "desktop" -> Desktop.bit
+        "xbox" -> Xbox.bit
+        "samsung" -> Samsung.bit
+        "ios" -> Ios.bit
+        "web",
+        "embedded" -> Embedded.bit
+        "ps4" -> Ps4.bit
+        "ps5" -> Ps5.bit
+        else -> Android.bit
+      }
+  }
 }

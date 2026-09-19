@@ -14,8 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,33 +35,27 @@ import iad1tya.echo.music.utils.rememberPreference
 /**
  * Cast button that shows a custom [CastDevicePickerSheet] bottom sheet.
  *
- * The picker discovers Cast devices via MediaRouter callbacks and connects
- * using the same internal mechanism the system MediaRouteChooserDialog uses,
- * avoiding the "Ignoring attempt to select removed route" crash on some OEM
- * MediaRouter implementations.
+ * The picker discovers Cast devices via MediaRouter callbacks and connects using the same internal
+ * mechanism the system MediaRouteChooserDialog uses, avoiding the "Ignoring attempt to select
+ * removed route" crash on some OEM MediaRouter implementations.
  */
 @Composable
 fun CastButton(
-    modifier: Modifier = Modifier,
-    tintColor: Color = MaterialTheme.colorScheme.onSurface,
-    asMenuItem: Boolean = false,
+  modifier: Modifier = Modifier,
+  tintColor: Color = MaterialTheme.colorScheme.onSurface,
+  asMenuItem: Boolean = false,
 ) {
-    val context = LocalContext.current
-    val playerConnection = LocalPlayerConnection.current
-    val menuState = LocalMenuState.current
+  val context = LocalContext.current
+  val playerConnection = LocalPlayerConnection.current
+  val menuState = LocalMenuState.current
 
-    val (enableGoogleCast) = rememberPreference(
-        key = EnableGoogleCastKey,
-        defaultValue = true
-    )
+  val (enableGoogleCast) = rememberPreference(key = EnableGoogleCastKey, defaultValue = true)
 
-    if (!enableGoogleCast) return
+  if (!enableGoogleCast) return
 
-    // Check Cast availability once
-    val castAvailable = remember(enableGoogleCast) {
-        CastConnectionHandler.isCastAvailable(context)
-    }
-    if (!castAvailable) return
+  // Check Cast availability once
+  val castAvailable = remember(enableGoogleCast) { CastConnectionHandler.isCastAvailable(context) }
+  if (!castAvailable) return
 
     // Cast state from the service
     val castHandler = playerConnection?.service?.castConnectionHandler
@@ -71,101 +63,85 @@ fun CastButton(
     val castDeviceName by castHandler?.castDeviceName?.collectAsStateWithLifecycle() ?: remember { mutableStateOf(null) }
     val deviceType by castHandler?.deviceType?.collectAsStateWithLifecycle() ?: remember { mutableStateOf(CastDeviceType.UNKNOWN) }
 
-    val showPicker: () -> Unit = {
-        menuState.show {
-            CastDevicePickerSheet(
-                onDismiss = { menuState.dismiss() }
-            )
-        }
-    }
+  val showPicker: () -> Unit = {
+    menuState.show { CastDevicePickerSheet(onDismiss = { menuState.dismiss() }) }
+  }
 
-    val showSession: () -> Unit = {
-        menuState.show {
-            CastSessionSheet(
-                onDismiss = { menuState.dismiss() }
-            )
-        }
-    }
+  val showSession: () -> Unit = {
+    menuState.show { CastSessionSheet(onDismiss = { menuState.dismiss() }) }
+  }
 
-    if (asMenuItem) {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (isCasting) {
-                            showSession()
-                        } else {
-                            showPicker()
-                        }
-                    }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                painter = painterResource(
-                    if (isCasting) deviceType.connectedIcon else R.drawable.cast
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(
-                    if (isCasting) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = if (isCasting) {
-                    "Casting to ${castDeviceName ?: "Device"}"
-                } else {
-                    "Cast to..."
-                },
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    } else {
-        Box(
-            modifier = modifier
-        ) {
-            // Shadow background for cast button
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .align(Alignment.Center)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.4f),
-                                Color.Transparent
-                            )
-                        )
-                    )
-            )
-
-            // Cast button
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable {
-                        if (isCasting) {
-                            showSession()
-                        } else {
-                            showPicker()
-                        }
-                    }
-            ) {
-                Image(
-                    painter = painterResource(
-                        if (isCasting) deviceType.connectedIcon else R.drawable.cast
-                    ),
-                    contentDescription = if (isCasting) "Stop casting" else "Cast",
-                    colorFilter = ColorFilter.tint(
-                        if (isCasting) MaterialTheme.colorScheme.primary else tintColor
-                    ),
-                    modifier = Modifier.size(24.dp)
-                )
+  if (asMenuItem) {
+    Row(
+      modifier =
+        modifier
+          .fillMaxWidth()
+          .clickable {
+            if (isCasting) {
+              showSession()
+            } else {
+              showPicker()
             }
-        }
+          }
+          .padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Image(
+        painter = painterResource(if (isCasting) deviceType.connectedIcon else R.drawable.cast),
+        contentDescription = null,
+        modifier = Modifier.size(24.dp),
+        colorFilter =
+          ColorFilter.tint(
+            if (isCasting) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface
+          )
+      )
+      Spacer(modifier = Modifier.width(16.dp))
+      Text(
+        text =
+          if (isCasting) {
+            "Casting to ${castDeviceName ?: "Device"}"
+          } else {
+            "Cast to..."
+          },
+        style = MaterialTheme.typography.titleMedium
+      )
     }
+  } else {
+    Box(modifier = modifier) {
+      // Shadow background for cast button
+      Box(
+        modifier =
+          Modifier.size(56.dp)
+            .align(Alignment.Center)
+            .background(
+              brush =
+                Brush.radialGradient(
+                  colors = listOf(Color.Black.copy(alpha = 0.4f), Color.Transparent)
+                )
+            )
+      )
+
+      // Cast button
+      Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+          Modifier.size(40.dp).align(Alignment.Center).clip(RoundedCornerShape(20.dp)).clickable {
+            if (isCasting) {
+              showSession()
+            } else {
+              showPicker()
+            }
+          }
+      ) {
+        Image(
+          painter = painterResource(if (isCasting) deviceType.connectedIcon else R.drawable.cast),
+          contentDescription = if (isCasting) "Stop casting" else "Cast",
+          colorFilter =
+            ColorFilter.tint(if (isCasting) MaterialTheme.colorScheme.primary else tintColor),
+          modifier = Modifier.size(24.dp)
+        )
+      }
+    }
+  }
 }

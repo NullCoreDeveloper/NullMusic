@@ -41,113 +41,107 @@ val LocalMenuState = compositionLocalOf { MenuState() }
 
 @Stable
 class MenuState(
-    isVisible: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit = {},
+  isVisible: Boolean = false,
+  content: @Composable ColumnScope.() -> Unit = {},
 ) {
-    var isVisible by mutableStateOf(isVisible)
-    var content by mutableStateOf(content)
+  var isVisible by mutableStateOf(isVisible)
+  var content by mutableStateOf(content)
 
-    fun show(content: @Composable ColumnScope.() -> Unit) {
-        isVisible = true
-        this.content = content
-    }
+  fun show(content: @Composable ColumnScope.() -> Unit) {
+    isVisible = true
+    this.content = content
+  }
 
-    fun dismiss() {
-        isVisible = false
-    }
+  fun dismiss() {
+    isVisible = false
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimatedBottomSheet(
-    isVisible: Boolean,
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
-    sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
-    shape: Shape = BottomSheetDefaults.ExpandedShape,
-    containerColor: Color = BottomSheetDefaults.ContainerColor,
-    contentColor: Color = contentColorFor(containerColor),
-    tonalElevation: Dp = 0.dp,
-    scrimColor: Color = BottomSheetDefaults.ScrimColor,
-    dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
-    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
-    properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
-    content: @Composable ColumnScope.() -> Unit,
+  isVisible: Boolean,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+  sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
+  sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
+  shape: Shape = BottomSheetDefaults.ExpandedShape,
+  containerColor: Color = BottomSheetDefaults.ContainerColor,
+  contentColor: Color = contentColorFor(containerColor),
+  tonalElevation: Dp = 0.dp,
+  scrimColor: Color = BottomSheetDefaults.ScrimColor,
+  dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+  contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
+  properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
+  content: @Composable ColumnScope.() -> Unit,
 ) {
-    var lastContent by remember { mutableStateOf(content) }
+  var lastContent by remember { mutableStateOf(content) }
 
-    LaunchedEffect(content) {
-        if (isVisible) {
-            lastContent = content
-        }
+  LaunchedEffect(content) {
+    if (isVisible) {
+      lastContent = content
     }
+  }
 
-    LaunchedEffect(isVisible) {
-        if (isVisible) {
-            sheetState.show()
-        } else {
-            sheetState.hide()
-        }
+  LaunchedEffect(isVisible) {
+    if (isVisible) {
+      sheetState.show()
+    } else {
+      sheetState.hide()
     }
+  }
 
-    if (!sheetState.isVisible && !isVisible) {
-        return
-    }
+  if (!sheetState.isVisible && !isVisible) {
+    return
+  }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        modifier = modifier,
-        sheetState = sheetState,
-        sheetMaxWidth = sheetMaxWidth,
-        shape = shape,
-        containerColor = containerColor,
-        contentColor = contentColor,
-        tonalElevation = tonalElevation,
-        scrimColor = scrimColor,
-        dragHandle = dragHandle,
-        contentWindowInsets = contentWindowInsets,
-        properties = properties,
-        content = lastContent,
-    )
+  ModalBottomSheet(
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+    sheetState = sheetState,
+    sheetMaxWidth = sheetMaxWidth,
+    shape = shape,
+    containerColor = containerColor,
+    contentColor = contentColor,
+    tonalElevation = tonalElevation,
+    scrimColor = scrimColor,
+    dragHandle = dragHandle,
+    contentWindowInsets = contentWindowInsets,
+    properties = properties,
+    content = lastContent,
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetMenu(
-    modifier: Modifier = Modifier,
-    state: MenuState,
-    background: Color = MaterialTheme.colorScheme.surfaceContainer,
+  modifier: Modifier = Modifier,
+  state: MenuState,
+  background: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
-    val focusManager = LocalFocusManager.current
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+  val focusManager = LocalFocusManager.current
+  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
-    AnimatedBottomSheet(
-        isVisible = state.isVisible,
-        onDismissRequest = {
-            focusManager.clearFocus()
-            state.isVisible = false
-        },
-        sheetState = sheetState,
-        containerColor = background,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .size(width = 40.dp, height = 4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
-            )
-        },
-        modifier = modifier.fillMaxHeight()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
-            state.content(this)
-        }
-    }
+  AnimatedBottomSheet(
+    isVisible = state.isVisible,
+    onDismissRequest = {
+      focusManager.clearFocus()
+      state.isVisible = false
+    },
+    sheetState = sheetState,
+    containerColor = background,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+    dragHandle = {
+      Box(
+        modifier =
+          Modifier.padding(vertical = 12.dp)
+            .size(width = 40.dp, height = 4.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+      )
+    },
+    modifier = modifier.fillMaxHeight()
+  ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) { state.content(this) }
+  }
 }

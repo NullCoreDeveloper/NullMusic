@@ -15,25 +15,21 @@ import iad1tya.echo.music.R
 
 @Composable
 fun LoadingScreen(
-    isVisible: Boolean,
-    value: Int,
+  isVisible: Boolean,
+  value: Int,
 ) {
-    if (isVisible) {
-        Dialog (
-            onDismissRequest = {}
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                Text(
-                    text = stringResource(R.string.progress_percent, value.toString()),
-                    color = Color.White,
-                    fontSize = 26.sp,
-                )
-
-            }
-        }
+  if (isVisible) {
+    Dialog(onDismissRequest = {}) {
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+      ) {
+        Text(
+          text = stringResource(R.string.progress_percent, value.toString()),
+          color = Color.White,
+          fontSize = 26.sp,
+        )
+      }
     }
+  }
 }

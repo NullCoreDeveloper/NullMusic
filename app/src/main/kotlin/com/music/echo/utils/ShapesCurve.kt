@@ -15,29 +15,31 @@ private const val EndCornerRadius = 16
 
 @Composable
 fun listItemColors(): ListItemColors {
-    return ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+  return ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
 }
 
-fun leadingItemShape(): RoundedCornerShape = RoundedCornerShape(
+fun leadingItemShape(): RoundedCornerShape =
+  RoundedCornerShape(
     topStart = EndCornerRadius.dp,
     topEnd = EndCornerRadius.dp,
     bottomStart = ConnectedCornerRadius.dp,
     bottomEnd = ConnectedCornerRadius.dp
-)
+  )
 
 fun middleItemShape(): RoundedCornerShape = RoundedCornerShape(ConnectedCornerRadius.dp)
 
-fun endItemShape(): RoundedCornerShape = RoundedCornerShape(
+fun endItemShape(): RoundedCornerShape =
+  RoundedCornerShape(
     topStart = ConnectedCornerRadius.dp,
     topEnd = ConnectedCornerRadius.dp,
     bottomStart = EndCornerRadius.dp,
     bottomEnd = EndCornerRadius.dp
-)
+  )
 
 fun getGroupedShape(index: Int, count: Int): Shape {
-    return when {
-        index == 0 -> leadingItemShape()
-        index == count - 1 -> endItemShape()
-        else -> middleItemShape()
-    }
+  return when {
+    index == 0 -> leadingItemShape()
+    index == count - 1 -> endItemShape()
+    else -> middleItemShape()
+  }
 }

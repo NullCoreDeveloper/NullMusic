@@ -7,4 +7,4 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.ui.unit.dp
 
 fun CornerBasedShape.top(): CornerBasedShape =
-    copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
+  copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))

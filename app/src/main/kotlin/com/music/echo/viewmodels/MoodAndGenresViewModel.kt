@@ -8,25 +8,20 @@ import com.music.innertube.YouTube
 import com.music.innertube.pages.MoodAndGenres
 import iad1tya.echo.music.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import echo.music.iad1tya.utils.reportException
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class MoodAndGenresViewModel
-@Inject
-constructor() : ViewModel() {
-    val moodAndGenres = MutableStateFlow<List<MoodAndGenres>?>(null)
+class MoodAndGenresViewModel @Inject constructor() : ViewModel() {
+  val moodAndGenres = MutableStateFlow<List<MoodAndGenres>?>(null)
 
-    init {
-        viewModelScope.launch {
-            YouTube
-                .moodAndGenres()
-                .onSuccess {
-                    moodAndGenres.value = it
-                }.onFailure {
-                    reportException(it)
-                }
-        }
+  init {
+    viewModelScope.launch {
+      YouTube.moodAndGenres()
+        .onSuccess { moodAndGenres.value = it }
+        .onFailure { reportException(it) }
     }
+  }
 }

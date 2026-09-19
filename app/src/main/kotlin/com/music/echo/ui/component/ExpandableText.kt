@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
@@ -33,83 +32,83 @@ import androidx.compose.ui.unit.dp
 import iad1tya.echo.music.R
 
 data class LinkSegment(
-    val text: String,
-    val url: String? = null,
+  val text: String,
+  val url: String? = null,
 )
 
 @Composable
 fun ExpandableText(
-    text: String = "",
-    runs: List<LinkSegment>? = null,
-    modifier: Modifier = Modifier,
-    collapsedMaxLines: Int = 3,
+  text: String = "",
+  runs: List<LinkSegment>? = null,
+  modifier: Modifier = Modifier,
+  collapsedMaxLines: Int = 3,
 ) {
-    var isExpanded by rememberSaveable { mutableStateOf(false) }
-    var hasOverflow by rememberSaveable { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
-    val linkColor = MaterialTheme.colorScheme.primary
-    val bodyColor = MaterialTheme.colorScheme.onSurfaceVariant
+  var isExpanded by rememberSaveable { mutableStateOf(false) }
+  var hasOverflow by rememberSaveable { mutableStateOf(false) }
+  val uriHandler = LocalUriHandler.current
+  val linkColor = MaterialTheme.colorScheme.primary
+  val bodyColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    val annotatedText: AnnotatedString = remember(text, runs, linkColor) {
-        if (runs.isNullOrEmpty()) {
-            AnnotatedString(text)
-        } else {
-            buildAnnotatedString {
-                runs.forEach { segment ->
-                    if (segment.url != null) {
-                        pushStringAnnotation(tag = "URL", annotation = segment.url)
-                        withStyle(SpanStyle(color = linkColor)) {
-                            append(segment.text)
-                        }
-                        pop()
-                    } else {
-                        append(segment.text)
-                    }
-                }
+  val annotatedText: AnnotatedString =
+    remember(text, runs, linkColor) {
+      if (runs.isNullOrEmpty()) {
+        AnnotatedString(text)
+      } else {
+        buildAnnotatedString {
+          runs.forEach { segment ->
+            if (segment.url != null) {
+              pushStringAnnotation(tag = "URL", annotation = segment.url)
+              withStyle(SpanStyle(color = linkColor)) { append(segment.text) }
+              pop()
+            } else {
+              append(segment.text)
             }
+          }
         }
+      }
     }
 
-    Column(
-        modifier = modifier.animateContentSize()
-    ) {
-        @Suppress("DEPRECATION")
-        ClickableText(
-            text = annotatedText,
-            style = MaterialTheme.typography.bodyMedium.copy(color = bodyColor),
-            maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLines,
-            overflow = TextOverflow.Ellipsis,
-            onTextLayout = { textLayoutResult ->
-                hasOverflow = textLayoutResult.hasVisualOverflow || textLayoutResult.lineCount > collapsedMaxLines
-            },
-            onClick = { offset ->
-                annotatedText.getStringAnnotations(tag = "URL", start = offset, end = offset)
-                    .firstOrNull()?.let { annotation ->
-                        uriHandler.openUri(annotation.item)
-                        return@ClickableText
-                    }
-                if (hasOverflow) {
-                    isExpanded = !isExpanded
-                }
-            }
-        )
-        
+  Column(modifier = modifier.animateContentSize()) {
+    @Suppress("DEPRECATION")
+    ClickableText(
+      text = annotatedText,
+      style = MaterialTheme.typography.bodyMedium.copy(color = bodyColor),
+      maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLines,
+      overflow = TextOverflow.Ellipsis,
+      onTextLayout = { textLayoutResult ->
+        hasOverflow =
+          textLayoutResult.hasVisualOverflow || textLayoutResult.lineCount > collapsedMaxLines
+      },
+      onClick = { offset ->
+        annotatedText
+          .getStringAnnotations(tag = "URL", start = offset, end = offset)
+          .firstOrNull()
+          ?.let { annotation ->
+            uriHandler.openUri(annotation.item)
+            return@ClickableText
+          }
         if (hasOverflow) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { isExpanded = !isExpanded }
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = stringResource(if (isExpanded) R.string.show_less else R.string.show_more),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+          isExpanded = !isExpanded
         }
+      }
+    )
+
+    if (hasOverflow) {
+      Box(
+        modifier =
+          Modifier.padding(top = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .clickable { isExpanded = !isExpanded }
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+      ) {
+        Text(
+          text = stringResource(if (isExpanded) R.string.show_less else R.string.show_more),
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onSecondaryContainer,
+          fontWeight = FontWeight.Bold
+        )
+      }
     }
+  }
 }

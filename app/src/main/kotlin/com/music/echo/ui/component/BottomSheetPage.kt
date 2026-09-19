@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
@@ -32,59 +30,54 @@ val LocalBottomSheetPageState = compositionLocalOf { BottomSheetPageState() }
 
 @Stable
 class BottomSheetPageState(
-    isVisible: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit = {},
+  isVisible: Boolean = false,
+  content: @Composable ColumnScope.() -> Unit = {},
 ) {
-    var isVisible by mutableStateOf(isVisible)
-    var content by mutableStateOf(content)
+  var isVisible by mutableStateOf(isVisible)
+  var content by mutableStateOf(content)
 
-    fun show(content: @Composable ColumnScope.() -> Unit) {
-        isVisible = true
-        this.content = content
-    }
+  fun show(content: @Composable ColumnScope.() -> Unit) {
+    isVisible = true
+    this.content = content
+  }
 
-    fun dismiss() {
-        isVisible = false
-    }
+  fun dismiss() {
+    isVisible = false
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetPage(
-    modifier: Modifier = Modifier,
-    state: BottomSheetPageState,
-    background: Color = MaterialTheme.colorScheme.surfaceContainer,
+  modifier: Modifier = Modifier,
+  state: BottomSheetPageState,
+  background: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
-    val focusManager = LocalFocusManager.current
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+  val focusManager = LocalFocusManager.current
+  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
-    AnimatedBottomSheet(
-        isVisible = state.isVisible,
-        onDismissRequest = {
-            focusManager.clearFocus()
-            state.isVisible = false
-        },
-        sheetState = sheetState,
-        containerColor = background,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .size(width = 32.dp, height = 4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
-            )
-        },
-        modifier = modifier.fillMaxHeight()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp)
-        ) {
-            state.content(this)
-        }
+  AnimatedBottomSheet(
+    isVisible = state.isVisible,
+    onDismissRequest = {
+      focusManager.clearFocus()
+      state.isVisible = false
+    },
+    sheetState = sheetState,
+    containerColor = background,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+    dragHandle = {
+      Box(
+        modifier =
+          Modifier.padding(vertical = 12.dp)
+            .size(width = 32.dp, height = 4.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+      )
+    },
+    modifier = modifier.fillMaxHeight()
+  ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+      state.content(this)
     }
+  }
 }

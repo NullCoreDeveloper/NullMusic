@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -13,8 +14,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,22 +21,23 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.animation.core.Animatable
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -116,6 +116,7 @@ fun RecognitionScreen(
         onDispose {
             iad1tya.echo.music.recognition.MusicRecognitionService.reset()
         }
+      }
     }
     
     val recognitionStatus by iad1tya.echo.music.recognition.MusicRecognitionService.recognitionStatus.collectAsState()
@@ -125,6 +126,7 @@ fun RecognitionScreen(
             ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) 
                 == PackageManager.PERMISSION_GRANTED
         )
+      }
     }
     
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -290,422 +292,461 @@ fun RecognitionScreen(
                         }
                     }
                 }
+              }
             }
+          },
+          onTryAgain = { startRecognition() },
+          onClose = ::resetToReady,
+          onSaveToHistory = ::saveToHistory
+        )
+      } else {
+        Box(modifier = Modifier.fillMaxSize()) {
+          Box(modifier = Modifier.fillMaxSize().background(Color.Transparent))
+
+          Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+              TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                title = { Text(stringResource(R.string.recognize_music)) },
+                navigationIcon = {
+                  androidx.compose.material3.IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                      painter = painterResource(R.drawable.arrow_back),
+                      contentDescription = null
+                    )
+                  }
+                },
+                actions = {
+                  androidx.compose.material3.IconButton(
+                    onClick = { navController.navigate("recognition_history") }
+                  ) {
+                    Icon(
+                      painter = painterResource(R.drawable.history),
+                      contentDescription = stringResource(R.string.recognition_history)
+                    )
+                  }
+                }
+              )
+            }
+          ) { paddingValues ->
+            Column(
+              modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Center
+            ) {
+              when (status) {
+                is RecognitionStatus.Ready -> {
+                  ReadyState(onStartRecognition = ::startRecognition)
+                }
+                is RecognitionStatus.Listening -> {
+                  ListeningState(
+                    onCancel = { echo.music.iad1tya.recognition.MusicRecognitionService.reset() }
+                  )
+                }
+                is RecognitionStatus.Processing -> {
+                  ProcessingState()
+                }
+                is RecognitionStatus.NoMatch -> {
+                  NoMatchState(message = status.message, onTryAgain = { startRecognition() })
+                }
+                is RecognitionStatus.Error -> {
+                  ErrorState(message = status.message, onTryAgain = { startRecognition() })
+                }
+                else -> Unit
+              }
+            }
+          }
         }
+      }
     }
+  }
 }
 
 @Composable
-private fun ReadyState(
-    onStartRecognition: () -> Unit
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.05f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+private fun ReadyState(onStartRecognition: () -> Unit) {
+  val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+  val scale by
+    infiniteTransition.animateFloat(
+      initialValue = 0.95f,
+      targetValue = 1.05f,
+      animationSpec =
+        infiniteRepeatable(
+          animation = tween(1500, easing = LinearEasing),
+          repeatMode = RepeatMode.Reverse
         ),
-        label = "scale"
+      label = "scale"
     )
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(32.dp)
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(32.dp)
+  ) {
+    Box(
+      modifier =
+        Modifier.size(120.dp)
+          .scale(scale)
+          .clip(CircleShape)
+          .background(MaterialTheme.colorScheme.onSurface)
+          .clickable { onStartRecognition() },
+      contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .scale(scale)
-                
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSurface)
-                .clickable { onStartRecognition() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.music_note),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.surface
-            )
-        }
-        
-        Text(
-            text = stringResource(R.string.tap_to_recognize),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+      Icon(
+        painter = painterResource(R.drawable.music_note),
+        contentDescription = null,
+        modifier = Modifier.size(48.dp),
+        tint = MaterialTheme.colorScheme.surface
+      )
     }
+
+    Text(
+      text = stringResource(R.string.tap_to_recognize),
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+  }
 }
 
 @Composable
-private fun ListeningState(
-    onCancel: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(48.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .height(160.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            val bars = 5
-            val animatables = remember { List(bars) { Animatable(0.2f) } }
+private fun ListeningState(onCancel: () -> Unit) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(48.dp)
+  ) {
+    Box(modifier = Modifier.height(160.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+      val bars = 5
+      val animatables = remember { List(bars) { Animatable(0.2f) } }
 
-            LaunchedEffect(Unit) {
-                animatables.forEach { animatable ->
-                    launch {
-                        while (true) {
-                            animatable.animateTo(
-                                targetValue = kotlin.random.Random.nextFloat() * 0.8f + 0.2f,
-                                animationSpec = tween(
-                                    durationMillis = kotlin.random.Random.nextInt(300, 600),
-                                    easing = LinearEasing
-                                )
-                            )
-                        }
-                    }
-                }
+      LaunchedEffect(Unit) {
+        animatables.forEach { animatable ->
+          launch {
+            while (true) {
+              animatable.animateTo(
+                targetValue = kotlin.random.Random.nextFloat() * 0.8f + 0.2f,
+                animationSpec =
+                  tween(
+                    durationMillis = kotlin.random.Random.nextInt(300, 600),
+                    easing = LinearEasing
+                  )
+              )
             }
-
-            val colorPrimary = MaterialTheme.colorScheme.onSurface
-            val colorTertiary = MaterialTheme.colorScheme.onSurface
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(160.dp)
-            ) {
-                animatables.forEachIndexed { index, animatable ->
-                    val color = if (index % 2 == 0) colorPrimary else colorTertiary
-                    Box(
-                        modifier = Modifier
-                            .width(24.dp)
-                            .fillMaxHeight(animatable.value)
-                            .clip(CircleShape)
-                            .background(color)
-                    )
-                }
-            }
+          }
         }
-        
-        Text(
-            text = stringResource(R.string.listening),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        
-        OutlinedButton(onClick = onCancel) {
-            Text(stringResource(R.string.cancel))
+      }
+
+      val colorPrimary = MaterialTheme.colorScheme.onSurface
+      val colorTertiary = MaterialTheme.colorScheme.onSurface
+
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.height(160.dp)
+      ) {
+        animatables.forEachIndexed { index, animatable ->
+          val color = if (index % 2 == 0) colorPrimary else colorTertiary
+          Box(
+            modifier =
+              Modifier.width(24.dp)
+                .fillMaxHeight(animatable.value)
+                .clip(CircleShape)
+                .background(color)
+          )
         }
+      }
     }
+
+    Text(
+      text = stringResource(R.string.listening),
+      style = MaterialTheme.typography.titleLarge,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+
+    OutlinedButton(onClick = onCancel) { Text(stringResource(R.string.cancel)) }
+  }
 }
 
 @Composable
 private fun ProcessingState() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(32.dp)
-    ) {
-        Box(
-            modifier = Modifier.size(120.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            androidx.compose.material3.CircularProgressIndicator(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.onSurface,
-                strokeWidth = 6.dp
-            )
-            
-            Box(
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.music_note),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.surface
-                )
-            }
-        }
-        
-        Text(
-            text = stringResource(R.string.processing),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(32.dp)
+  ) {
+    Box(modifier = Modifier.size(120.dp), contentAlignment = Alignment.Center) {
+      androidx.compose.material3.CircularProgressIndicator(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.onSurface,
+        strokeWidth = 6.dp
+      )
+
+      Box(
+        modifier =
+          Modifier.size(96.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurface),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          painter = painterResource(R.drawable.music_note),
+          contentDescription = null,
+          modifier = Modifier.size(40.dp),
+          tint = MaterialTheme.colorScheme.surface
         )
+      }
     }
+
+    Text(
+      text = stringResource(R.string.processing),
+      style = MaterialTheme.typography.titleLarge,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+  }
 }
 
 @Composable
 private fun SuccessState(
-    result: RecognitionResult,
-    onPlayOnApp: (RecognitionResult) -> Unit,
-    onTryAgain: () -> Unit,
-    onClose: () -> Unit,
-    onSaveToHistory: (RecognitionResult) -> Unit
+  result: RecognitionResult,
+  onPlayOnApp: (RecognitionResult) -> Unit,
+  onTryAgain: () -> Unit,
+  onClose: () -> Unit,
+  onSaveToHistory: (RecognitionResult) -> Unit
 ) {
-    LaunchedEffect(result) {
-        onSaveToHistory(result)
-    }
+  LaunchedEffect(result) { onSaveToHistory(result) }
 
-    val highResImageUrl = (result.coverArtHqUrl ?: result.coverArtUrl)?.replace("400x400", "1000x1000")
+  val highResImageUrl =
+    (result.coverArtHqUrl ?: result.coverArtUrl)?.replace("400x400", "1000x1000")
 
+  Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    // Blurred Background
+    AsyncImage(
+      model = highResImageUrl,
+      contentDescription = null,
+      modifier = Modifier.fillMaxSize().blur(radius = 48.dp).alpha(0.6f),
+      contentScale = ContentScale.Crop
+    )
+
+    // Gradient Overlay
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+      modifier =
+        Modifier.fillMaxSize()
+          .background(
+            Brush.verticalGradient(
+              colors =
+                listOf(
+                  Color.Transparent,
+                  MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                  MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                  MaterialTheme.colorScheme.background
+                )
+            )
+          )
+    )
+
+    // Floating Album Art
+    Box(
+      modifier =
+        Modifier.fillMaxSize().padding(bottom = 120.dp), // Shift up to clear the bottom text
+      contentAlignment = Alignment.Center
     ) {
-        // Blurred Background
-        AsyncImage(
-            model = highResImageUrl,
+      AsyncImage(
+        model = highResImageUrl,
+        contentDescription = null,
+        modifier =
+          Modifier.fillMaxWidth(0.8f)
+            .aspectRatio(1f)
+            .shadow(elevation = 32.dp, shape = RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(24.dp)),
+        contentScale = ContentScale.Crop
+      )
+    }
+
+    Row(
+      modifier =
+        Modifier.fillMaxWidth()
+          .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+          .padding(16.dp),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      androidx.compose.material3.IconButton(
+        onClick = onClose,
+        colors =
+          androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+            contentColor = MaterialTheme.colorScheme.onSurface
+          )
+      ) {
+        Icon(
+          painter = painterResource(R.drawable.close),
+          contentDescription = stringResource(R.string.close)
+        )
+      }
+
+      androidx.compose.material3.Surface(
+        onClick = onTryAgain,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+        contentColor = MaterialTheme.colorScheme.onSurface
+      ) {
+        Row(
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.mic),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(radius = 48.dp)
-                .alpha(0.6f),
-            contentScale = ContentScale.Crop
-        )
-
-        // Gradient Overlay
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
-                            MaterialTheme.colorScheme.background
-                        )
-                    )
-                )
-        )
-        
-        // Floating Album Art
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 120.dp), // Shift up to clear the bottom text
-            contentAlignment = Alignment.Center
-        ) {
-            AsyncImage(
-                model = highResImageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .aspectRatio(1f)
-                    .shadow(elevation = 32.dp, shape = RoundedCornerShape(24.dp))
-                    .clip(RoundedCornerShape(24.dp)),
-                contentScale = ContentScale.Crop
-            )
+            modifier = Modifier.size(20.dp)
+          )
+          Text(
+            text = stringResource(R.string.re_listen),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+          )
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            androidx.compose.material3.IconButton(
-                onClick = onClose,
-                colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                )
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.close),
-                    contentDescription = stringResource(R.string.close)
-                )
-            }
-            
-            androidx.compose.material3.Surface(
-                onClick = onTryAgain,
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.mic),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.re_listen),
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom))
-                .padding(24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = result.title,
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = result.artist,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            androidx.compose.material3.FloatingActionButton(
-                onClick = { onPlayOnApp(result) },
-                containerColor = MaterialTheme.colorScheme.onSurface,
-                contentColor = MaterialTheme.colorScheme.surface,
-                shape = CircleShape,
-                modifier = Modifier.size(72.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.play),
-                    contentDescription = stringResource(R.string.play_on_app),
-                    modifier = Modifier.size(36.dp)
-                )
-            }
-        }
+      }
     }
+
+    Row(
+      modifier =
+        Modifier.fillMaxWidth()
+          .align(Alignment.BottomCenter)
+          .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom))
+          .padding(24.dp),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.Bottom
+    ) {
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          text = result.title,
+          style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+          color = MaterialTheme.colorScheme.onBackground,
+          maxLines = 2,
+          overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+          text = result.artist,
+          style = MaterialTheme.typography.titleLarge,
+          color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
+      }
+      Spacer(modifier = Modifier.width(16.dp))
+      androidx.compose.material3.FloatingActionButton(
+        onClick = { onPlayOnApp(result) },
+        containerColor = MaterialTheme.colorScheme.onSurface,
+        contentColor = MaterialTheme.colorScheme.surface,
+        shape = CircleShape,
+        modifier = Modifier.size(72.dp)
+      ) {
+        Icon(
+          painter = painterResource(R.drawable.play),
+          contentDescription = stringResource(R.string.play_on_app),
+          modifier = Modifier.size(36.dp)
+        )
+      }
+    }
+  }
 }
 
 @Composable
-private fun NoMatchState(
-    message: String,
-    onTryAgain: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+private fun NoMatchState(message: String, onTryAgain: () -> Unit) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(24.dp)
+  ) {
+    Box(
+      modifier =
+        Modifier.size(120.dp)
+          .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+          .background(Color.Transparent, CircleShape),
+      contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                .background(Color.Transparent, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.close),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-        
-        Text(
-            text = stringResource(R.string.no_match_found),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FilledTonalButton(
-            onClick = onTryAgain,
-            modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.refresh),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
-        }
+      Icon(
+        painter = painterResource(R.drawable.close),
+        contentDescription = null,
+        modifier = Modifier.size(48.dp),
+        tint = MaterialTheme.colorScheme.onSurface
+      )
     }
+
+    Text(
+      text = stringResource(R.string.no_match_found),
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+
+    Text(
+      text = message,
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.padding(horizontal = 32.dp)
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    FilledTonalButton(
+      onClick = onTryAgain,
+      modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
+    ) {
+      Icon(
+        painter = painterResource(R.drawable.refresh),
+        contentDescription = null,
+        modifier = Modifier.size(24.dp)
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
+    }
+  }
 }
 
 @Composable
-private fun ErrorState(
-    message: String,
-    onTryAgain: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+private fun ErrorState(message: String, onTryAgain: () -> Unit) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(24.dp)
+  ) {
+    Box(
+      modifier =
+        Modifier.size(120.dp)
+          .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+          .background(Color.Transparent, CircleShape),
+      contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                .background(Color.Transparent, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.error),
-                contentDescription = null,
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-        
-        Text(
-            text = stringResource(R.string.recognition_error),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        FilledTonalButton(
-            onClick = onTryAgain,
-            modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.refresh),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
-        }
+      Icon(
+        painter = painterResource(R.drawable.error),
+        contentDescription = null,
+        modifier = Modifier.size(48.dp),
+        tint = MaterialTheme.colorScheme.onSurface
+      )
     }
+
+    Text(
+      text = stringResource(R.string.recognition_error),
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+
+    Text(
+      text = message,
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.padding(horizontal = 32.dp)
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    FilledTonalButton(
+      onClick = onTryAgain,
+      modifier = Modifier.height(56.dp).padding(horizontal = 32.dp)
+    ) {
+      Icon(
+        painter = painterResource(R.drawable.refresh),
+        contentDescription = null,
+        modifier = Modifier.size(24.dp)
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      Text(stringResource(R.string.try_again), style = MaterialTheme.typography.titleMedium)
+    }
+  }
 }

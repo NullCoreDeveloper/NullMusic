@@ -12,42 +12,46 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun DiscordTokenWebView(
-    onTokenExtracted: (String) -> Unit
-) {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            WebView(context).apply {
-                layoutParams = android.view.ViewGroup.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.loadWithOverviewMode = true
-                settings.useWideViewPort = true
-                settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                
-                addJavascriptInterface(object : Any() {
-                    @JavascriptInterface
-                    fun onToken(token: String?) {
-                        if (!token.isNullOrBlank() && token != "null") {
-                            val cleanToken = token.replace("\"", "")
-                            if (cleanToken.isNotBlank()) {
-                                post { onTokenExtracted(cleanToken) }
-                            }
-                        }
-                    }
-                }, "DiscordInterface")
+fun DiscordTokenWebView(onTokenExtracted: (String) -> Unit) {
+  AndroidView(
+    modifier = Modifier.fillMaxSize(),
+    factory = { context ->
+      WebView(context).apply {
+        layoutParams =
+          android.view.ViewGroup.LayoutParams(
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT
+          )
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.loadWithOverviewMode = true
+        settings.useWideViewPort = true
+        settings.userAgentString =
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-                webChromeClient = WebChromeClient()
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView, url: String) {
-                        super.onPageFinished(view, url)
-                        if (url.contains("discord.com/channels") || url.contains("discord.com/app")) {
-                            view.evaluateJavascript(
-                                """
+        addJavascriptInterface(
+          object : Any() {
+            @JavascriptInterface
+            fun onToken(token: String?) {
+              if (!token.isNullOrBlank() && token != "null") {
+                val cleanToken = token.replace("\"", "")
+                if (cleanToken.isNotBlank()) {
+                  post { onTokenExtracted(cleanToken) }
+                }
+              }
+            }
+          },
+          "DiscordInterface"
+        )
+
+        webChromeClient = WebChromeClient()
+        webViewClient =
+          object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+              super.onPageFinished(view, url)
+              if (url.contains("discord.com/channels") || url.contains("discord.com/app")) {
+                view.evaluateJavascript(
+                  """
                                 (function() {
                                     try {
                                         var iframe = document.createElement('iframe');
@@ -63,17 +67,18 @@ fun DiscordTokenWebView(
                                         DiscordInterface.onToken(null);
                                     }
                                 })();
-                                """.trimIndent(),
-                                null
-                            )
-                        }
-                    }
-                }
-                loadUrl("https://discord.com/login")
+                                """
+                    .trimIndent(),
+                  null
+                )
+              }
             }
-        },
-        update = { webView ->
-            // Update block if needed
-        }
-    )
+          }
+        loadUrl("https://discord.com/login")
+      }
+    },
+    update = { webView ->
+      // Update block if needed
+    }
+  )
 }

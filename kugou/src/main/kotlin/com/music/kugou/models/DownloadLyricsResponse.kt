@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DownloadLyricsResponse(
-    val content: String,
+  val content: String,
 )

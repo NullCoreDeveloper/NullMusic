@@ -41,156 +41,139 @@ val GridMenuItemHeight = 108.dp
 
 @Composable
 fun GridMenu(
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: LazyGridScope.() -> Unit,
+  modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
+  content: LazyGridScope.() -> Unit,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 120.dp),
-        modifier = modifier,
-        contentPadding = contentPadding,
-        content = content
-    )
+  LazyVerticalGrid(
+    columns = GridCells.Adaptive(minSize = 120.dp),
+    modifier = modifier,
+    contentPadding = contentPadding,
+    content = content
+  )
 }
 
 fun LazyGridScope.GridMenuItem(
-    modifier: Modifier = Modifier,
-    @DrawableRes icon: Int,
-    tint: @Composable () -> Color = { LocalContentColor.current },
-    @StringRes title: Int,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) = GridMenuItem(
+  modifier: Modifier = Modifier,
+  @DrawableRes icon: Int,
+  tint: @Composable () -> Color = { LocalContentColor.current },
+  @StringRes title: Int,
+  enabled: Boolean = true,
+  onClick: () -> Unit,
+) =
+  GridMenuItem(
     modifier = modifier,
-    icon = {
-        Icon(
-            painter = painterResource(icon),
-            tint = tint(),
-            contentDescription = null
-        )
-    },
+    icon = { Icon(painter = painterResource(icon), tint = tint(), contentDescription = null) },
     title = title,
     enabled = enabled,
     onClick = onClick
-)
+  )
 
 fun LazyGridScope.GridMenuItem(
-    modifier: Modifier = Modifier,
-    icon: @Composable BoxScope.() -> Unit,
-    @StringRes title: Int,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  icon: @Composable BoxScope.() -> Unit,
+  @StringRes title: Int,
+  enabled: Boolean = true,
+  onClick: () -> Unit,
 ) {
-    item {
-        Column(
-            modifier = modifier
-                .clip(ShapeDefaults.Large)
-                .height(GridMenuItemHeight)
-                .clickable(
-                    enabled = enabled,
-                    onClick = onClick
-                )
-                .alpha(if (enabled) 1f else 0.5f)
-                .padding(12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center,
-                content = icon
+  item {
+    Column(
+      modifier =
+        modifier
+          .clip(ShapeDefaults.Large)
+          .height(GridMenuItemHeight)
+          .clickable(enabled = enabled, onClick = onClick)
+          .alpha(if (enabled) 1f else 0.5f)
+          .padding(12.dp)
+    ) {
+      Box(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        contentAlignment = Alignment.Center,
+        content = icon
+      )
+      Text(
+        text = stringResource(title),
+        style = MaterialTheme.typography.labelLarge,
+        textAlign = TextAlign.Center,
+        maxLines = 2,
+        modifier =
+          Modifier.fillMaxWidth()
+            .height(
+              with(LocalDensity.current) {
+                MaterialTheme.typography.labelLarge.lineHeight.toDp() * 2
+              }
             )
-            Text(
-                text = stringResource(title),
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(with(LocalDensity.current) {
-                        MaterialTheme.typography.labelLarge.lineHeight.toDp() * 2
-                    })
-            )
-        }
+      )
     }
+  }
 }
 
-
 fun LazyGridScope.DownloadGridMenu(
-    @Download.State state: Int?,
-    onRemoveDownload: () -> Unit,
-    onDownload: () -> Unit,
+  @Download.State state: Int?,
+  onRemoveDownload: () -> Unit,
+  onDownload: () -> Unit,
 ) {
-    when (state) {
-        Download.STATE_COMPLETED -> {
-            GridMenuItem(
-                icon = R.drawable.offline,
-                title = R.string.remove_download,
-                onClick = onRemoveDownload
-            )
-        }
-
-        Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
-            GridMenuItem(
-                icon = {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
-                    )
-                },
-                title = R.string.downloading,
-                onClick = onRemoveDownload
-            )
-        }
-
-        else -> {
-            GridMenuItem(
-                icon = R.drawable.download,
-                title = R.string.action_download,
-                onClick = onDownload
-            )
-        }
+  when (state) {
+    Download.STATE_COMPLETED -> {
+      GridMenuItem(
+        icon = R.drawable.offline,
+        title = R.string.remove_download,
+        onClick = onRemoveDownload
+      )
     }
+    Download.STATE_QUEUED,
+    Download.STATE_DOWNLOADING -> {
+      GridMenuItem(
+        icon = { CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp) },
+        title = R.string.downloading,
+        onClick = onRemoveDownload
+      )
+    }
+    else -> {
+      GridMenuItem(
+        icon = R.drawable.download,
+        title = R.string.action_download,
+        onClick = onDownload
+      )
+    }
+  }
 }
 
 fun LazyGridScope.SleepTimerGridMenu(
-    modifier: Modifier = Modifier,
-    sleepTimerTimeLeft: Long,
-    enabled: Boolean = true,
-    onClick: () -> Unit
+  modifier: Modifier = Modifier,
+  sleepTimerTimeLeft: Long,
+  enabled: Boolean = true,
+  onClick: () -> Unit
 ) {
-    item {
-        Column(
-            modifier = modifier
-                .clip(ShapeDefaults.Large)
-                .height(GridMenuItemHeight)
-                .clickable(
-                    onClick = onClick
-                )
-                .padding(12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Icon(
-                        painterResource(R.drawable.bedtime),
-                        contentDescription = null,
-                        modifier = Modifier.alpha(if (enabled) 1f else 0.5f)
-                    )
-                }
-            )
-            Text(
-                text = if (enabled) makeTimeString(sleepTimerTimeLeft) else stringResource(
-                    id = R.string.sleep_timer
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                modifier = Modifier.fillMaxWidth()
-            )
+  item {
+    Column(
+      modifier =
+        modifier
+          .clip(ShapeDefaults.Large)
+          .height(GridMenuItemHeight)
+          .clickable(onClick = onClick)
+          .padding(12.dp)
+    ) {
+      Box(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        contentAlignment = Alignment.Center,
+        content = {
+          Icon(
+            painterResource(R.drawable.bedtime),
+            contentDescription = null,
+            modifier = Modifier.alpha(if (enabled) 1f else 0.5f)
+          )
         }
+      )
+      Text(
+        text =
+          if (enabled) makeTimeString(sleepTimerTimeLeft)
+          else stringResource(id = R.string.sleep_timer),
+        style = MaterialTheme.typography.labelLarge,
+        textAlign = TextAlign.Center,
+        maxLines = 2,
+        modifier = Modifier.fillMaxWidth()
+      )
     }
+  }
 }

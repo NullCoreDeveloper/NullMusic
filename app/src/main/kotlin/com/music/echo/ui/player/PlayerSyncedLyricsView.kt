@@ -41,88 +41,98 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PlayerSyncedLyricsView(
-    mediaMetadata: MediaMetadata?,
-    positionProvider: () -> Long,
-    modifier: Modifier = Modifier
+  mediaMetadata: MediaMetadata?,
+  positionProvider: () -> Long,
+  modifier: Modifier = Modifier
 ) {
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
-    val context = LocalContext.current
-    val database = LocalDatabase.current
-    val coroutineScope = rememberCoroutineScope()
-    
-    LaunchedEffect(mediaMetadata?.id, currentLyrics) {
-        if (mediaMetadata != null && currentLyrics == null) {
-            delay(500)
-            coroutineScope.launch(Dispatchers.IO) {
-                try {
-                    val existing = database.lyrics(mediaMetadata.id).firstOrNull()
-                    if (existing != null) return@launch
-                    val entryPoint = EntryPointAccessors.fromApplication(
-                        context.applicationContext,
-                        echo.music.iad1tya.di.LyricsHelperEntryPoint::class.java
-                    )
-                    val lyricsHelper = entryPoint.lyricsHelper()
-                    val fetchedLyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
-                    database.query {
-                        upsert(LyricsEntity(mediaMetadata.id, fetchedLyricsWithProvider.lyrics ?: "", fetchedLyricsWithProvider.providerName))
-                    }
-                } catch (e: Exception) {
-                    // Ignore failures
-                }
-            }
+  val playerConnection = LocalPlayerConnection.current ?: return
+  val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
+  val context = LocalContext.current
+  val database = LocalDatabase.current
+  val coroutineScope = rememberCoroutineScope()
+
+  LaunchedEffect(mediaMetadata?.id, currentLyrics) {
+    if (mediaMetadata != null && currentLyrics == null) {
+      delay(500)
+      coroutineScope.launch(Dispatchers.IO) {
+        try {
+          val existing = database.lyrics(mediaMetadata.id).firstOrNull()
+          if (existing != null) return@launch
+          val entryPoint =
+            EntryPointAccessors.fromApplication(
+              context.applicationContext,
+              echo.music.iad1tya.di.LyricsHelperEntryPoint::class.java
+            )
+          val lyricsHelper = entryPoint.lyricsHelper()
+          val fetchedLyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
+          database.query {
+            upsert(
+              LyricsEntity(
+                mediaMetadata.id,
+                fetchedLyricsWithProvider.lyrics ?: "",
+                fetchedLyricsWithProvider.providerName
+              )
+            )
+          }
+        } catch (e: Exception) {
+          // Ignore failures
         }
+      }
     }
-    
-    val lines = remember(currentLyrics) {
-        val lyricsText = currentLyrics?.lyrics?.trim()
-        if (lyricsText.isNullOrEmpty() || !lyricsText.startsWith("[")) return@remember emptyList()
-        parseLyrics(lyricsText).filter { it.text.isNotBlank() }
+  }
+
+  val lines =
+    remember(currentLyrics) {
+      val lyricsText = currentLyrics?.lyrics?.trim()
+      if (lyricsText.isNullOrEmpty() || !lyricsText.startsWith("[")) return@remember emptyList()
+      parseLyrics(lyricsText).filter { it.text.isNotBlank() }
     }
 
-    Box(
-        modifier = modifier.fillMaxWidth().padding(horizontal = echo.music.iad1tya.constants.PlayerHorizontalPadding),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        if (currentLyrics == null) {
-            // Loading skeleton
-            ShimmerHost(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TextPlaceholder(
-                    height = 20.dp,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(0.6f)
-                )
-            }
-        } else if (lines.isEmpty()) {
-            // No synced lyrics found - just empty state, show nothing
-        } else {
-            val effectivePosition = positionProvider()
-            val currentLineIndex = remember(effectivePosition, lines) {
-                val index = lines.indexOfLast { it.time <= effectivePosition }
-                if (index >= 0) index else 0
-            }
-            val currentLine = lines.getOrNull(currentLineIndex)?.text ?: ""
-
-            AnimatedContent(
-                targetState = currentLine,
-                transitionSpec = {
-                    (fadeIn() + slideInVertically { height -> height }).togetherWith(
-                        fadeOut() + slideOutVertically { height -> -height }
-                    ).using(SizeTransform(clip = false))
-                },
-                label = "SyncedLyrics"
-            ) { lineText ->
-                Text(
-                    text = lineText,
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Left,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .padding(horizontal = echo.music.iad1tya.constants.PlayerHorizontalPadding),
+    contentAlignment = Alignment.CenterStart
+  ) {
+    if (currentLyrics == null) {
+      // Loading skeleton
+      ShimmerHost(modifier = Modifier.fillMaxWidth()) {
+        TextPlaceholder(
+          height = 20.dp,
+          shape = RoundedCornerShape(8.dp),
+          modifier = Modifier.fillMaxWidth(0.6f)
+        )
+      }
+    } else if (lines.isEmpty()) {
+      // No synced lyrics found - just empty state, show nothing
+    } else {
+      val effectivePosition = positionProvider()
+      val currentLineIndex =
+        remember(effectivePosition, lines) {
+          val index = lines.indexOfLast { it.time <= effectivePosition }
+          if (index >= 0) index else 0
         }
+      val currentLine = lines.getOrNull(currentLineIndex)?.text ?: ""
+
+      AnimatedContent(
+        targetState = currentLine,
+        transitionSpec = {
+          (fadeIn() + slideInVertically { height -> height })
+            .togetherWith(fadeOut() + slideOutVertically { height -> -height })
+            .using(SizeTransform(clip = false))
+        },
+        label = "SyncedLyrics"
+      ) { lineText ->
+        Text(
+          text = lineText,
+          color = Color.White,
+          fontSize = 18.sp,
+          fontWeight = FontWeight.Bold,
+          textAlign = TextAlign.Left,
+          modifier = Modifier.fillMaxWidth()
+        )
+      }
     }
+  }
 }

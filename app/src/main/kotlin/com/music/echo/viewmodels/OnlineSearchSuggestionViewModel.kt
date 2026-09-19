@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.innertube.YouTube
-import com.music.innertube.models.WatchEndpoint
 import com.music.innertube.models.YTItem
 import com.music.innertube.models.filterExplicit
 import com.music.innertube.models.filterVideoSongs
@@ -25,88 +24,86 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class OnlineSearchSuggestionViewModel
 @Inject
 constructor(
-    @ApplicationContext val context: Context,
-    database: MusicDatabase,
+  @ApplicationContext val context: Context,
+  database: MusicDatabase,
 ) : ViewModel() {
-    val query = MutableStateFlow("")
-    private val _viewState = MutableStateFlow(SearchSuggestionViewState())
-    val viewState = _viewState.asStateFlow()
+  val query = MutableStateFlow("")
+  private val _viewState = MutableStateFlow(SearchSuggestionViewState())
+  val viewState = _viewState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            query
-                .flatMapLatest { query ->
-                    if (query.isEmpty()) {
-                        database.searchHistory().map { history ->
-                            SearchSuggestionViewState(
-                                history = history,
-                            )
-                        }
-                    } else {
-                        val parsedUrl = YouTubeUrlParser.parse(query)
-                        val parsedItem = if (parsedUrl != null) fetchParsedUrlItem(parsedUrl) else null
-                        
-                        val result = if (parsedUrl != null) null else YouTube.searchSuggestions(query).getOrNull()
-                        val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-
-                        database
-                            .searchHistory(query)
-                            .map { it.take(3) }
-                            .map { history ->
-                                SearchSuggestionViewState(
-                                    history = history,
-                                    suggestions =
-                                    result
-                                        ?.queries
-                                        ?.filter { suggestionQuery ->
-                                            history.none { it.query == suggestionQuery }
-                                        }.orEmpty(),
-                                    items = listOfNotNull(parsedItem) +
-                                    result
-                                        ?.recommendedItems
-                                        ?.distinctBy { it.id }
-                                        ?.filter { it.id != parsedItem?.id }
-                                        ?.filterExplicit(hideExplicit)
-                                        ?.filterVideoSongs(hideVideoSongs)
-                                        .orEmpty(),
-                                    isFromLink = parsedUrl != null
-                                )
-                            }
-                    }
-                }.collect {
-                    _viewState.value = it
-                }
-        }
-    }
-
-    private suspend fun fetchParsedUrlItem(parsedUrl: YouTubeUrlParser.ParsedUrl): YTItem? {
-        return try {
-            when (parsedUrl) {
-                is YouTubeUrlParser.ParsedUrl.Video -> {
-                    YouTube.queue(listOf(parsedUrl.id)).getOrNull()?.firstOrNull()
-                }
-
-                is YouTubeUrlParser.ParsedUrl.Artist -> {
-                    YouTube.artist(parsedUrl.id).getOrNull()?.artist
-                }
+  init {
+    viewModelScope.launch {
+      query
+        .flatMapLatest { query ->
+          if (query.isEmpty()) {
+            database.searchHistory().map { history ->
+              SearchSuggestionViewState(
+                history = history,
+              )
             }
-        } catch (e: Exception) {
-            null
+          } else {
+            val parsedUrl = YouTubeUrlParser.parse(query)
+            val parsedItem = if (parsedUrl != null) fetchParsedUrlItem(parsedUrl) else null
+
+            val result =
+              if (parsedUrl != null) null else YouTube.searchSuggestions(query).getOrNull()
+            val hideExplicit = context.dataStore.get(HideExplicitKey, false)
+            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+
+            database
+              .searchHistory(query)
+              .map { it.take(3) }
+              .map { history ->
+                SearchSuggestionViewState(
+                  history = history,
+                  suggestions =
+                    result
+                      ?.queries
+                      ?.filter { suggestionQuery -> history.none { it.query == suggestionQuery } }
+                      .orEmpty(),
+                  items =
+                    listOfNotNull(parsedItem) +
+                      result
+                        ?.recommendedItems
+                        ?.distinctBy { it.id }
+                        ?.filter { it.id != parsedItem?.id }
+                        ?.filterExplicit(hideExplicit)
+                        ?.filterVideoSongs(hideVideoSongs)
+                        .orEmpty(),
+                  isFromLink = parsedUrl != null
+                )
+              }
+          }
         }
+        .collect { _viewState.value = it }
     }
+  }
+
+  private suspend fun fetchParsedUrlItem(parsedUrl: YouTubeUrlParser.ParsedUrl): YTItem? {
+    return try {
+      when (parsedUrl) {
+        is YouTubeUrlParser.ParsedUrl.Video -> {
+          YouTube.queue(listOf(parsedUrl.id)).getOrNull()?.firstOrNull()
+        }
+        is YouTubeUrlParser.ParsedUrl.Artist -> {
+          YouTube.artist(parsedUrl.id).getOrNull()?.artist
+        }
+      }
+    } catch (e: Exception) {
+      null
+    }
+  }
 }
 
 data class SearchSuggestionViewState(
-    val history: List<SearchHistory> = emptyList(),
-    val suggestions: List<String> = emptyList(),
-    val items: List<YTItem> = emptyList(),
-    val isFromLink: Boolean = false,
+  val history: List<SearchHistory> = emptyList(),
+  val suggestions: List<String> = emptyList(),
+  val items: List<YTItem> = emptyList(),
+  val isFromLink: Boolean = false,
 )

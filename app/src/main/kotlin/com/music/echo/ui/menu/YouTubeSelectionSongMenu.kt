@@ -49,22 +49,39 @@ import iad1tya.echo.music.ui.component.Material3MenuGroup
 import iad1tya.echo.music.ui.component.Material3MenuItemData
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import kotlinx.coroutines.launch
 
 @Composable
 fun YouTubeSelectionSongMenu(
-    songSelection: List<SongItem>,
-    onDismiss: () -> Unit,
-    clearAction: () -> Unit,
+  songSelection: List<SongItem>,
+  onDismiss: () -> Unit,
+  clearAction: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val database = LocalDatabase.current
-    val downloadUtil = LocalDownloadUtil.current
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val coroutineScope = rememberCoroutineScope()
-    val syncUtils = LocalSyncUtils.current
+  val context = LocalContext.current
+  val database = LocalDatabase.current
+  val downloadUtil = LocalDownloadUtil.current
+  val playerConnection = LocalPlayerConnection.current ?: return
+  val coroutineScope = rememberCoroutineScope()
+  val syncUtils = LocalSyncUtils.current
 
-    var showChoosePlaylistDialog by rememberSaveable {
-        mutableStateOf(false)
+  var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+
+  val listenTogetherManager = echo.music.iad1tya.LocalListenTogetherManager.current
+  val isGuest = listenTogetherManager?.isGuestPlaybackRestricted == true
+
+  var downloadState by remember { mutableIntStateOf(Download.STATE_STOPPED) }
+
+  var showRemoveDownloadDialog by remember { mutableStateOf(false) }
+
+  val allLiked by
+    remember(songSelection) {
+      mutableStateOf(
+        songSelection.isNotEmpty() &&
+          songSelection.all { song ->
+            val metadata = song.toMediaMetadata()
+            metadata.liked
+          }
+      )
     }
 
     val listenTogetherManager = iad1tya.echo.music.LocalListenTogetherManager.current
@@ -74,49 +91,25 @@ fun YouTubeSelectionSongMenu(
         mutableIntStateOf(Download.STATE_STOPPED)
     }
 
-    var showRemoveDownloadDialog by remember {
-        mutableStateOf(false)
-    }
-
-    
-    val allLiked by remember(songSelection) {
-        mutableStateOf(
-            songSelection.isNotEmpty() && songSelection.all { song ->
-                
-                val metadata = song.toMediaMetadata()
-                metadata.liked
-            }
-        )
-    }
-
-    
-    val allInLibrary by remember(songSelection) {
-        mutableStateOf(
-            songSelection.all { song ->
-                val metadata = song.toMediaMetadata()
-                metadata.inLibrary != null
-            }
-        )
-    }
-
-    LaunchedEffect(songSelection) {
-        if (songSelection.isEmpty()) return@LaunchedEffect
-        downloadUtil.downloads.collect { downloads ->
-            downloadState =
-                if (songSelection.all { downloads[it.id]?.state == Download.STATE_COMPLETED }) {
-                    Download.STATE_COMPLETED
-                } else if (songSelection.all {
-                        downloads[it.id]?.state == Download.STATE_QUEUED ||
-                                downloads[it.id]?.state == Download.STATE_DOWNLOADING ||
-                                downloads[it.id]?.state == Download.STATE_COMPLETED
-                    }
-                ) {
-                    Download.STATE_DOWNLOADING
-                } else {
-                    Download.STATE_STOPPED
-                }
+  LaunchedEffect(songSelection) {
+    if (songSelection.isEmpty()) return@LaunchedEffect
+    downloadUtil.downloads.collect { downloads ->
+      downloadState =
+        if (songSelection.all { downloads[it.id]?.state == Download.STATE_COMPLETED }) {
+          Download.STATE_COMPLETED
+        } else if (
+          songSelection.all {
+            downloads[it.id]?.state == Download.STATE_QUEUED ||
+              downloads[it.id]?.state == Download.STATE_DOWNLOADING ||
+              downloads[it.id]?.state == Download.STATE_COMPLETED
+          }
+        ) {
+          Download.STATE_DOWNLOADING
+        } else {
+          Download.STATE_STOPPED
         }
     }
+  }
 
     AddToPlaylistDialogOnline(
         isVisible = showChoosePlaylistDialog,
@@ -132,7 +125,7 @@ fun YouTubeSelectionSongMenu(
                         thumbnailUrl = metadata.thumbnailUrl,
                         albumId = metadata.album?.id,
                         albumName = metadata.album?.title,
-                        liked = metadata.liked,
+                        liked = !metadata.liked,
                         totalPlayTime = 0,
                         inLibrary = metadata.inLibrary,
                         isLocal = false,
@@ -182,32 +175,11 @@ fun YouTubeSelectionSongMenu(
                 ) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
-
-                TextButton(
-                    onClick = {
-                        showRemoveDownloadDialog = false
-                        songSelection.forEach { song ->
-                            DownloadService.sendRemoveDownload(
-                                context,
-                                ExoDownloadService::class.java,
-                                song.id,
-                                false,
-                            )
-                        }
-                    },
-                ) {
-                    Text(text = stringResource(android.R.string.ok))
-                }
-            },
-        )
-    }
-
-    LazyColumn(
-        contentPadding = PaddingValues(
-            start = 8.dp,
-            top = 8.dp,
-            end = 8.dp,
-            bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+              }
+              clearAction()
+              onDismiss()
+            }
+          )
         ),
     ) {
         item {
@@ -429,4 +401,5 @@ fun YouTubeSelectionSongMenu(
             )
         }
     }
+  }
 }

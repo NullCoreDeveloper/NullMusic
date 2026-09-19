@@ -33,135 +33,131 @@ import iad1tya.echo.music.ui.component.backdrop.internal.clipOutline
 import iad1tya.echo.music.ui.component.backdrop.isRenderEffectSupported
 
 internal class InnerShadowElement(
-    val shapeProvider: ShapeProvider,
-    val shadow: () -> InnerShadow?
+  val shapeProvider: ShapeProvider,
+  val shadow: () -> InnerShadow?
 ) : ModifierNodeElement<InnerShadowNode>() {
 
-    override fun create(): InnerShadowNode {
-        return InnerShadowNode(shapeProvider, shadow)
-    }
+  override fun create(): InnerShadowNode {
+    return InnerShadowNode(shapeProvider, shadow)
+  }
 
-    override fun update(node: InnerShadowNode) {
-        node.shapeProvider = shapeProvider
-        node.shadow = shadow
-        node.invalidateDraw()
-    }
+  override fun update(node: InnerShadowNode) {
+    node.shapeProvider = shapeProvider
+    node.shadow = shadow
+    node.invalidateDraw()
+  }
 
-    override fun InspectorInfo.inspectableProperties() {
-        name = "innerShadow"
-        properties["shapeProvider"] = shapeProvider
-        properties["shadow"] = shadow
-    }
+  override fun InspectorInfo.inspectableProperties() {
+    name = "innerShadow"
+    properties["shapeProvider"] = shapeProvider
+    properties["shadow"] = shadow
+  }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is InnerShadowElement) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is InnerShadowElement) return false
 
-        if (shapeProvider != other.shapeProvider) return false
-        if (shadow != other.shadow) return false
+    if (shapeProvider != other.shapeProvider) return false
+    if (shadow != other.shadow) return false
 
-        return true
-    }
+    return true
+  }
 
-    override fun hashCode(): Int {
-        var result = shapeProvider.hashCode()
-        result = 31 * result + shadow.hashCode()
-        return result
-    }
+  override fun hashCode(): Int {
+    var result = shapeProvider.hashCode()
+    result = 31 * result + shadow.hashCode()
+    return result
+  }
 }
 
-internal class InnerShadowNode(
-    var shapeProvider: ShapeProvider,
-    var shadow: () -> InnerShadow?
-) : DrawModifierNode, Modifier.Node() {
+internal class InnerShadowNode(var shapeProvider: ShapeProvider, var shadow: () -> InnerShadow?) :
+  DrawModifierNode, Modifier.Node() {
 
-    override val shouldAutoInvalidate: Boolean = false
+  override val shouldAutoInvalidate: Boolean = false
 
-    private var shadowLayer: GraphicsLayer? = null
+  private var shadowLayer: GraphicsLayer? = null
 
-    private val paint = Paint()
-    private var clipPath: Path? = null
+  private val paint = Paint()
+  private var clipPath: Path? = null
 
-    private var prevRadius = Float.NaN
+  private var prevRadius = Float.NaN
 
-    override fun ContentDrawScope.draw() {
-        drawContent()
+  override fun ContentDrawScope.draw() {
+    drawContent()
 
-        if (!isRenderEffectSupported()) return
+    if (!isRenderEffectSupported()) return
 
-        val shadow = shadow() ?: return
+    val shadow = shadow() ?: return
 
-        val shadowLayer = shadowLayer
-        if (shadowLayer != null) {
-            val size = size
-            val density: Density = this
-            val layoutDirection = layoutDirection
+    val shadowLayer = shadowLayer
+    if (shadowLayer != null) {
+      val size = size
+      val density: Density = this
+      val layoutDirection = layoutDirection
 
-            val radius = shadow.radius.toPx()
-            val offsetX = shadow.offset.x.toPx()
-            val offsetY = shadow.offset.y.toPx()
+      val radius = shadow.radius.toPx()
+      val offsetX = shadow.offset.x.toPx()
+      val offsetY = shadow.offset.y.toPx()
 
-            val outline = shapeProvider.shape.createOutline(size, layoutDirection, density)
-            val clipPath =
-                if (outline is Outline.Rounded) {
-                    clipPath ?: Path().also { clipPath = it }
-                } else {
-                    null
-                }
-
-            configurePaint(shadow)
-
-            shadowLayer.alpha = shadow.alpha
-            shadowLayer.blendMode = shadow.blendMode
-            if (prevRadius != radius) {
-                shadowLayer.renderEffect =
-                    if (radius > 0f) {
-                        BlurEffect(radius, radius, TileMode.Decal)
-                    } else {
-                        null
-                    }
-                prevRadius = radius
-            }
-            shadowLayer.record {
-                val canvas = drawContext.canvas
-                canvas.save()
-                canvas.clipOutline(outline, clipPath)
-                canvas.drawOutline(outline, paint)
-                canvas.translate(offsetX, offsetY)
-                canvas.drawOutline(outline, ShadowMaskPaint)
-                canvas.translate(-offsetX, -offsetY)
-                canvas.restore()
-            }
-
-            val canvas = drawContext.canvas
-            canvas.save()
-            canvas.clipOutline(outline, clipPath)
-            drawLayer(shadowLayer)
-            canvas.restore()
+      val outline = shapeProvider.shape.createOutline(size, layoutDirection, density)
+      val clipPath =
+        if (outline is Outline.Rounded) {
+          clipPath ?: Path().also { clipPath = it }
+        } else {
+          null
         }
-    }
 
-    override fun onAttach() {
-        val graphicsContext = requireGraphicsContext()
-        shadowLayer =
-            graphicsContext.createGraphicsLayer().apply {
-                compositingStrategy = CompositingStrategy.Offscreen
-            }
-    }
+      configurePaint(shadow)
 
-    override fun onDetach() {
-        val graphicsContext = requireGraphicsContext()
-        shadowLayer?.let { layer ->
-            graphicsContext.releaseGraphicsLayer(layer)
-            shadowLayer = null
-        }
-    }
+      shadowLayer.alpha = shadow.alpha
+      shadowLayer.blendMode = shadow.blendMode
+      if (prevRadius != radius) {
+        shadowLayer.renderEffect =
+          if (radius > 0f) {
+            BlurEffect(radius, radius, TileMode.Decal)
+          } else {
+            null
+          }
+        prevRadius = radius
+      }
+      shadowLayer.record {
+        val canvas = drawContext.canvas
+        canvas.save()
+        canvas.clipOutline(outline, clipPath)
+        canvas.drawOutline(outline, paint)
+        canvas.translate(offsetX, offsetY)
+        canvas.drawOutline(outline, ShadowMaskPaint)
+        canvas.translate(-offsetX, -offsetY)
+        canvas.restore()
+      }
 
-    private fun DrawScope.configurePaint(shadow: InnerShadow) {
-        paint.color = shadow.color
+      val canvas = drawContext.canvas
+      canvas.save()
+      canvas.clipOutline(outline, clipPath)
+      drawLayer(shadowLayer)
+      canvas.restore()
     }
+  }
+
+  override fun onAttach() {
+    val graphicsContext = requireGraphicsContext()
+    shadowLayer =
+      graphicsContext.createGraphicsLayer().apply {
+        compositingStrategy = CompositingStrategy.Offscreen
+      }
+  }
+
+  override fun onDetach() {
+    val graphicsContext = requireGraphicsContext()
+    shadowLayer?.let { layer ->
+      graphicsContext.releaseGraphicsLayer(layer)
+      shadowLayer = null
+    }
+  }
+
+  private fun DrawScope.configurePaint(shadow: InnerShadow) {
+    paint.color = shadow.color
+  }
 }
 
-private val ShadowMaskPaint = Paint().apply {
-    blendMode = BlendMode.Clear
-}
+private val ShadowMaskPaint = Paint().apply { blendMode = BlendMode.Clear }

@@ -10,57 +10,60 @@ import androidx.core.content.ContextCompat
 import iad1tya.echo.music.MainActivity
 
 class RecognitionLaunchActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        handleRecognitionLaunch()
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    handleRecognitionLaunch()
+  }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        handleRecognitionLaunch()
-    }
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    handleRecognitionLaunch()
+  }
 
-    private fun handleRecognitionLaunch() {
-        if (hasRecordPermission()) {
-            startRecognitionService()
+  private fun handleRecognitionLaunch() {
+    if (hasRecordPermission()) {
+      startRecognitionService()
+    } else {
+      openRecognitionPermissionFlow()
+    }
+    finish()
+  }
+
+  private fun hasRecordPermission(): Boolean {
+    return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+      PackageManager.PERMISSION_GRANTED
+  }
+
+  private fun openRecognitionPermissionFlow() {
+    val intent =
+      Intent(this, MainActivity::class.java).apply {
+        action = MainActivity.ACTION_RECOGNITION
+        putExtra(MainActivity.EXTRA_AUTO_START_RECOGNITION, true)
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+      }
+    startActivity(intent)
+  }
+
+  private fun startRecognitionService() {
+    if (!hasRecordPermission()) return
+
+    val serviceIntent = Intent(this, RecognitionForegroundService::class.java)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        startForegroundService(serviceIntent)
+      } catch (e: Exception) {
+        if (
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            e is android.app.ForegroundServiceStartNotAllowedException
+        ) {
+          // Ignored
         } else {
-            openRecognitionPermissionFlow()
+          throw e
         }
-        finish()
+      }
+    } else {
+      startService(serviceIntent)
     }
-
-    private fun hasRecordPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
-            PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun openRecognitionPermissionFlow() {
-        val intent =
-            Intent(this, MainActivity::class.java).apply {
-                action = MainActivity.ACTION_RECOGNITION
-                putExtra(MainActivity.EXTRA_AUTO_START_RECOGNITION, true)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-        startActivity(intent)
-    }
-
-    private fun startRecognitionService() {
-        if (!hasRecordPermission()) return
-
-        val serviceIntent = Intent(this, RecognitionForegroundService::class.java)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                startForegroundService(serviceIntent)
-            } catch (e: Exception) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is android.app.ForegroundServiceStartNotAllowedException) {
-                    // Ignored
-                } else {
-                    throw e
-                }
-            }
-        } else {
-            startService(serviceIntent)
-        }
-    }
+  }
 }

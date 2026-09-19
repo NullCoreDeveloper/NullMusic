@@ -11,60 +11,47 @@ import timber.log.Timber
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.system.exitProcess
+import timber.log.Timber
 
-class CrashHandler private constructor(
-    private val applicationContext: Context
-) : Thread.UncaughtExceptionHandler {
+class CrashHandler private constructor(private val applicationContext: Context) :
+  Thread.UncaughtExceptionHandler {
 
-    private val defaultHandler: Thread.UncaughtExceptionHandler? =
-        Thread.getDefaultUncaughtExceptionHandler()
+  private val defaultHandler: Thread.UncaughtExceptionHandler? =
+    Thread.getDefaultUncaughtExceptionHandler()
 
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && throwable is android.app.ForegroundServiceStartNotAllowedException) {
-            Timber.e(throwable, "Suppressed ForegroundServiceStartNotAllowedException in CrashHandler")
-            if (thread == android.os.Looper.getMainLooper().thread) {
-                while (true) {
-                    try {
-                        android.os.Looper.loop()
-                    } catch (e: Throwable) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is android.app.ForegroundServiceStartNotAllowedException) {
-                            Timber.e(e, "Suppressed another ForegroundServiceStartNotAllowedException in CrashHandler")
-                        } else {
-                            uncaughtException(thread, e)
-                            break
-                        }
-                    }
-                }
-                return
+  override fun uncaughtException(thread: Thread, throwable: Throwable) {
+    if (
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+        throwable is android.app.ForegroundServiceStartNotAllowedException
+    ) {
+      Timber.e(throwable, "Suppressed ForegroundServiceStartNotAllowedException in CrashHandler")
+      if (thread == android.os.Looper.getMainLooper().thread) {
+        while (true) {
+          try {
+            android.os.Looper.loop()
+          } catch (e: Throwable) {
+            if (
+              Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                e is android.app.ForegroundServiceStartNotAllowedException
+            ) {
+              Timber.e(
+                e,
+                "Suppressed another ForegroundServiceStartNotAllowedException in CrashHandler"
+              )
+            } else {
+              uncaughtException(thread, e)
+              break
             }
-            return
+          }
         }
-
-        try {
-            val crashLog = buildCrashLog(throwable)
-            Timber.e(throwable, "App crashed")
-            
-            
-            val intent = Intent(applicationContext, CrashActivity::class.java).apply {
-                putExtra(EXTRA_CRASH_LOG, crashLog)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
-            applicationContext.startActivity(intent)
-            
-            
-            android.os.Process.killProcess(android.os.Process.myPid())
-            exitProcess(1)
-        } catch (e: Exception) {
-            
-            Timber.e(e, "Error handling crash")
-            defaultHandler?.uncaughtException(thread, throwable)
-        }
+        return
+      }
+      return
     }
 
-    private fun buildCrashLog(throwable: Throwable): String {
-        val stackTrace = StringWriter().apply {
-            throwable.printStackTrace(PrintWriter(this))
-        }.toString()
+    try {
+      val crashLog = buildCrashLog(throwable)
+      Timber.e(throwable, "App crashed")
 
         return buildString {
             appendLine("nullmusic Crash Report")
@@ -81,15 +68,45 @@ class CrashHandler private constructor(
             appendLine()
             append(stackTrace)
         }
-    }
+      applicationContext.startActivity(intent)
 
-    companion object {
-        const val EXTRA_CRASH_LOG = "crash_log"
+      android.os.Process.killProcess(android.os.Process.myPid())
+      exitProcess(1)
+    } catch (e: Exception) {
 
-        fun install(context: Context) {
-            val handler = CrashHandler(context.applicationContext)
-            Thread.setDefaultUncaughtExceptionHandler(handler)
-            Timber.d("CrashHandler installed")
-        }
+      Timber.e(e, "Error handling crash")
+      defaultHandler?.uncaughtException(thread, throwable)
     }
+  }
+
+  private fun buildCrashLog(throwable: Throwable): String {
+    val stackTrace =
+      StringWriter().apply { throwable.printStackTrace(PrintWriter(this)) }.toString()
+
+    return buildString {
+      appendLine("echomusic Crash Report")
+      appendLine("=".repeat(50))
+      appendLine()
+      appendLine("Manufacturer: ${Build.MANUFACTURER}")
+      appendLine("Device: ${Build.MODEL}")
+      appendLine("Android version: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})")
+      appendLine("App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+      appendLine()
+      appendLine("=".repeat(50))
+      appendLine("Stacktrace:")
+      appendLine("=".repeat(50))
+      appendLine()
+      append(stackTrace)
+    }
+  }
+
+  companion object {
+    const val EXTRA_CRASH_LOG = "crash_log"
+
+    fun install(context: Context) {
+      val handler = CrashHandler(context.applicationContext)
+      Thread.setDefaultUncaughtExceptionHandler(handler)
+      Timber.d("CrashHandler installed")
+    }
+  }
 }

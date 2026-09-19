@@ -12,72 +12,68 @@ import iad1tya.echo.music.R
 
 @Composable
 fun RingtoneProgressDialog(
-    isVisible: Boolean,
-    progress: Float,
-    statusMessage: String,
-    isComplete: Boolean,
-    isSuccess: Boolean,
-    onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit
+  isVisible: Boolean,
+  progress: Float,
+  statusMessage: String,
+  isComplete: Boolean,
+  isSuccess: Boolean,
+  onDismiss: () -> Unit,
+  onOpenSettings: () -> Unit
 ) {
-    if (!isVisible) return
+  if (!isVisible) return
 
-    AlertDialog(
-        onDismissRequest = {
-            if (isComplete) onDismiss()
+  AlertDialog(
+    onDismissRequest = { if (isComplete) onDismiss() },
+    title = {
+      Text(
+        if (isComplete) {
+          if (isSuccess) "Success!" else "Failed"
+        } else {
+          "Setting Ringtone..."
         },
-        title = {
-            Text(
-                if (isComplete) {
-                    if (isSuccess) "Success!" else "Failed"
-                } else {
-                    "Setting Ringtone..."
-                },
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = if (isComplete && !isSuccess) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-            )
-        },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                if (!isComplete) {
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+        color =
+          if (isComplete && !isSuccess) MaterialTheme.colorScheme.error
+          else MaterialTheme.colorScheme.onSurface
+      )
+    },
+    text = {
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = statusMessage,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        confirmButton = {
-            if (isComplete) {
-                Button(
-                    onClick = {
-                        if (isSuccess) onOpenSettings() else onDismiss()
-                    },
-                ) {
-                    Text(if (isSuccess) "Open Settings" else stringResource(R.string.close))
-                }
-            }
-        },
-        dismissButton = {
-            if (isComplete && isSuccess) {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.close))
-                }
-            }
+        if (!isComplete) {
+          LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-    )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+          text = statusMessage,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+      }
+    },
+    confirmButton = {
+      if (isComplete) {
+        Button(
+          onClick = { if (isSuccess) onOpenSettings() else onDismiss() },
+        ) {
+          Text(if (isSuccess) "Open Settings" else stringResource(R.string.close))
+        }
+      }
+    },
+    dismissButton = {
+      if (isComplete && isSuccess) {
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
+      }
+    }
+  )
 }

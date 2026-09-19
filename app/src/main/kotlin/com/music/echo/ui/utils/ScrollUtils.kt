@@ -14,48 +14,53 @@ import androidx.compose.runtime.setValue
 
 @Composable
 fun LazyListState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
+  var previousIndex by
+    remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemIndex) }
+  var previousScrollOffset by
+    remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemScrollOffset) }
+  return remember(this) {
+      derivedStateOf {
+        if (previousIndex != firstVisibleItemIndex) {
+            previousIndex > firstVisibleItemIndex
+          } else {
+            previousScrollOffset >= firstVisibleItemScrollOffset
+          }
+          .also {
+            previousIndex = firstVisibleItemIndex
+            previousScrollOffset = firstVisibleItemScrollOffset
+          }
+      }
+    }
+    .value
 }
 
 @Composable
 fun LazyGridState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
+  var previousIndex by
+    remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemIndex) }
+  var previousScrollOffset by
+    remember(this) { androidx.compose.runtime.mutableIntStateOf(firstVisibleItemScrollOffset) }
+  return remember(this) {
+      derivedStateOf {
+        if (previousIndex != firstVisibleItemIndex) {
+            previousIndex > firstVisibleItemIndex
+          } else {
+            previousScrollOffset >= firstVisibleItemScrollOffset
+          }
+          .also {
+            previousIndex = firstVisibleItemIndex
+            previousScrollOffset = firstVisibleItemScrollOffset
+          }
+      }
+    }
+    .value
 }
 
 @Composable
 fun ScrollState.isScrollingUp(): Boolean {
-    var previousScrollOffset by remember(this) { mutableIntStateOf(value) }
-    return remember(this) {
-        derivedStateOf {
-            (previousScrollOffset >= value).also {
-                previousScrollOffset = value
-            }
-        }
-    }.value
+  var previousScrollOffset by remember(this) { mutableIntStateOf(value) }
+  return remember(this) {
+      derivedStateOf { (previousScrollOffset >= value).also { previousScrollOffset = value } }
+    }
+    .value
 }

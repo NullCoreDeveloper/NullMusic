@@ -6,10 +6,10 @@ import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.R
 
 data class SearchableSetting(
-    val title: String,
-    val description: String?,
-    val category: String,
-    val route: String
+  val title: String,
+  val description: String?,
+  val category: String,
+  val route: String
 )
 
 @Composable
@@ -137,7 +137,49 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
             Triple(stringResource(R.string.enable_high_refresh_rate_desc), "Appearance", "settings/appearance"),
             Triple(stringResource(R.string.enable_kugou), "Content", "settings/content"),
 
+    // Hardcoded Settings Missed by Generator
+    SearchableSetting(
+      stringResource(R.string.download_on_wifi_only),
+      stringResource(R.string.download_on_wifi_only_desc),
+      "Player and audio",
+      "settings/player"
+    ),
+    SearchableSetting(
+      stringResource(R.string.audio_loudness_preset),
+      null,
+      "Player and audio",
+      "settings/player"
+    ),
+    SearchableSetting(
+      stringResource(R.string.spatial_audio),
+      stringResource(R.string.spatial_audio_desc),
+      "Player and audio",
+      "settings/player"
+    ),
+    SearchableSetting(
+      "Fetch faster lyrics",
+      "Search for lyrics in parallel and choose the provider that responds first, ignoring priority",
+      "Content",
+      "settings/content"
+    ),
+    SearchableSetting(
+      stringResource(R.string.discord),
+      stringResource(R.string.discord_integration_desc),
+      "Account",
+      "settings/account"
+    ),
+    SearchableSetting("Add another account", null, "Account", "settings/account"),
+    SearchableSetting("Edit Discord Profile", null, "Discord", "settings/discord"),
+    SearchableSetting(stringResource(R.string.preview), null, "Discord", "settings/discord"),
+    SearchableSetting(stringResource(R.string.not_logged_in), null, "LastFM", "settings/lastfm"),
 
+    // App Icon Settings
+    SearchableSetting(
+      "App Icon",
+      "Choose your launcher icon",
+      "Appearance",
+      "settings/appearance/app_icon"
+    ),
 
             // Hardcoded Settings Missed by Generator
     ).map { SearchableSetting(it.first, null, it.second, it.third) }

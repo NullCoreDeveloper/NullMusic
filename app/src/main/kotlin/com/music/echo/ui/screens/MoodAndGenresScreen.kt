@@ -45,104 +45,93 @@ import iad1tya.echo.music.viewmodels.MoodAndGenresViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoodAndGenresScreen(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
-    viewModel: MoodAndGenresViewModel = hiltViewModel(),
+  navController: NavController,
+  scrollBehavior: TopAppBarScrollBehavior,
+  viewModel: MoodAndGenresViewModel = hiltViewModel(),
 ) {
-    val localConfiguration = LocalConfiguration.current
-    val itemsPerRow = if (localConfiguration.orientation == ORIENTATION_LANDSCAPE) 3 else 2
+  val localConfiguration = LocalConfiguration.current
+  val itemsPerRow = if (localConfiguration.orientation == ORIENTATION_LANDSCAPE) 3 else 2
 
-    val moodAndGenresList by viewModel.moodAndGenres.collectAsState()
+  val moodAndGenresList by viewModel.moodAndGenres.collectAsState()
 
-    LazyColumn(
-        contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-    ) {
-        if (moodAndGenresList == null) {
-            item(key = "mood_and_genres_shimmer") {
-                ShimmerHost(
-                    modifier = Modifier.animateItem()
-                ) {
-                    repeat(8) {
-                        ListItemPlaceHolder()
-                    }
-                }
-            }
-        }
-
-        moodAndGenresList?.forEachIndexed { index, moodAndGenres ->
-            item(key = "mood_and_genres_section_$index") {
-                Column(
-                    modifier = Modifier
-                        .animateItem()
-                        .padding(horizontal = 6.dp),
-                ) {
-                    NavigationTitle(
-                        title = moodAndGenres.title,
-                    )
-                    moodAndGenres.items.chunked(itemsPerRow).forEach { row ->
-                        Row {
-                            row.forEach {
-                                MoodAndGenresButton(
-                                    title = it.title,
-                                    onClick = {
-                                        navController.navigate("youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}")
-                                    },
-                                    modifier =
-                                    Modifier
-                                        .weight(1f)
-                                        .padding(6.dp),
-                                )
-                            }
-
-                            repeat(itemsPerRow - row.size) {
-                                Spacer(Modifier.weight(1f))
-                            }
-                        }
-                    }
-                }
-            }
-        }
+  LazyColumn(
+    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+  ) {
+    if (moodAndGenresList == null) {
+      item(key = "mood_and_genres_shimmer") {
+        ShimmerHost(modifier = Modifier.animateItem()) { repeat(8) { ListItemPlaceHolder() } }
+      }
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.mood_and_genres)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
+    moodAndGenresList?.forEachIndexed { index, moodAndGenres ->
+      item(key = "mood_and_genres_section_$index") {
+        Column(
+          modifier = Modifier.animateItem().padding(horizontal = 6.dp),
+        ) {
+          NavigationTitle(
+            title = moodAndGenres.title,
+          )
+          moodAndGenres.items.chunked(itemsPerRow).forEach { row ->
+            Row {
+              row.forEach {
+                MoodAndGenresButton(
+                  title = it.title,
+                  onClick = {
+                    navController.navigate(
+                      "youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}"
+                    )
+                  },
+                  modifier = Modifier.weight(1f).padding(6.dp),
                 )
+              }
+
+              repeat(itemsPerRow - row.size) { Spacer(Modifier.weight(1f)) }
             }
-        },
-    )
+          }
+        }
+      }
+    }
+  }
+
+  TopAppBar(
+    title = { Text(stringResource(R.string.mood_and_genres)) },
+    navigationIcon = {
+      IconButton(
+        onClick = navController::navigateUp,
+        onLongClick = navController::backToMain,
+      ) {
+        Icon(
+          painterResource(R.drawable.arrow_back),
+          contentDescription = null,
+        )
+      }
+    },
+  )
 }
 
 @Composable
 fun MoodAndGenresButton(
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+  title: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.CenterStart,
-        modifier =
-        modifier
-            .height(MoodAndGenresButtonHeight)
-            .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
+  Box(
+    contentAlignment = Alignment.CenterStart,
+    modifier =
+      modifier
+        .height(MoodAndGenresButtonHeight)
+        .clip(RoundedCornerShape(6.dp))
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .clickable(onClick = onClick)
+        .padding(horizontal = 12.dp),
+  ) {
+    Text(
+      text = title,
+      style = MaterialTheme.typography.labelLarge,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+  }
 }
 
 val MoodAndGenresButtonHeight = 48.dp

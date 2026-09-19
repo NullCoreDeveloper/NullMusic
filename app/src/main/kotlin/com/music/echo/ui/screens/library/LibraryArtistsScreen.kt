@@ -76,246 +76,246 @@ import iad1tya.echo.music.viewmodels.LibraryArtistsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+  ExperimentalFoundationApi::class,
+  ExperimentalMaterial3Api::class,
+  ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun LibraryArtistsScreen(
-    navController: NavController,
-    onDeselect: () -> Unit,
-    viewModel: LibraryArtistsViewModel = hiltViewModel(),
+  navController: NavController,
+  onDeselect: () -> Unit,
+  viewModel: LibraryArtistsViewModel = hiltViewModel(),
 ) {
-    val menuState = LocalMenuState.current
-    val haptic = LocalHapticFeedback.current
-    val coroutineScope = rememberCoroutineScope()
-    var viewType by rememberEnumPreference(ArtistViewTypeKey, LibraryViewType.GRID)
+  val menuState = LocalMenuState.current
+  val haptic = LocalHapticFeedback.current
+  val coroutineScope = rememberCoroutineScope()
+  var viewType by rememberEnumPreference(ArtistViewTypeKey, LibraryViewType.GRID)
 
-    var filter by rememberEnumPreference(ArtistFilterKey, ArtistFilter.LIKED)
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        ArtistSortTypeKey,
-        ArtistSortType.CREATE_DATE
-    )
-    val (sortDescending, onSortDescendingChange) = rememberPreference(ArtistSortDescendingKey, true)
-    val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
-    val (ytmSync) = rememberPreference(YtmSyncKey, true)
+  var filter by rememberEnumPreference(ArtistFilterKey, ArtistFilter.LIKED)
+  val (sortType, onSortTypeChange) =
+    rememberEnumPreference(ArtistSortTypeKey, ArtistSortType.CREATE_DATE)
+  val (sortDescending, onSortDescendingChange) = rememberPreference(ArtistSortDescendingKey, true)
+  val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+  val (ytmSync) = rememberPreference(YtmSyncKey, true)
 
-    val filterContent = @Composable {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Spacer(Modifier.width(12.dp))
-            FilterChip(
-                label = { Text(stringResource(R.string.artists)) },
-                selected = true,
-                colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surface),
-                onClick = onDeselect,
-                shape = RoundedCornerShape(16.dp),
-                leadingIcon = {
-                    Icon(painter = painterResource(R.drawable.close), contentDescription = "")
-                },
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-            )
-            ChipsRow(
-                chips =
-                listOf(
-                    ArtistFilter.LIKED to stringResource(R.string.filter_liked),
-                    ArtistFilter.LIBRARY to stringResource(R.string.filter_library)
-                ),
-                currentValue = filter,
-                onValueUpdate = {
-                    filter = it
-                },
-                modifier = Modifier.weight(1f),
-            )
-        }
+  val filterContent =
+    @Composable {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Spacer(Modifier.width(12.dp))
+        FilterChip(
+          label = { Text(stringResource(R.string.artists)) },
+          selected = true,
+          colors =
+            FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surface),
+          onClick = onDeselect,
+          shape = RoundedCornerShape(16.dp),
+          leadingIcon = {
+            Icon(painter = painterResource(R.drawable.close), contentDescription = "")
+          },
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+        )
+        ChipsRow(
+          chips =
+            listOf(
+              ArtistFilter.LIKED to stringResource(R.string.filter_liked),
+              ArtistFilter.LIBRARY to stringResource(R.string.filter_library)
+            ),
+          currentValue = filter,
+          onValueUpdate = { filter = it },
+          modifier = Modifier.weight(1f),
+        )
+      }
     }
 
-    LaunchedEffect(Unit) {
-        if (ytmSync) {
-            withContext(Dispatchers.IO) {
-                viewModel.sync()
+  LaunchedEffect(Unit) {
+    if (ytmSync) {
+      withContext(Dispatchers.IO) { viewModel.sync() }
+    }
+  }
+
+  val artists by viewModel.allArtists.collectAsState()
+
+  val lazyListState = rememberLazyListState()
+  val lazyGridState = rememberLazyGridState()
+  val backStackEntry by navController.currentBackStackEntryAsState()
+  val scrollToTop =
+    backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+
+  LaunchedEffect(scrollToTop?.value) {
+    if (scrollToTop?.value == true) {
+      when (viewType) {
+        LibraryViewType.LIST -> lazyListState.animateScrollToItem(0)
+        LibraryViewType.GRID -> lazyGridState.animateScrollToItem(0)
+      }
+      backStackEntry?.savedStateHandle?.set("scrollToTop", false)
+    }
+  }
+
+  val headerContent =
+    @Composable {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 16.dp),
+      ) {
+        SortHeader(
+          sortType = sortType,
+          sortDescending = sortDescending,
+          onSortTypeChange = onSortTypeChange,
+          onSortDescendingChange = onSortDescendingChange,
+          sortTypeText = { sortType ->
+            when (sortType) {
+              ArtistSortType.CREATE_DATE -> R.string.sort_by_create_date
+              ArtistSortType.NAME -> R.string.sort_by_name
+              ArtistSortType.SONG_COUNT -> R.string.sort_by_song_count
+              ArtistSortType.PLAY_TIME -> R.string.sort_by_play_time
             }
-        }
-    }
+          },
+        )
 
-    val artists by viewModel.allArtists.collectAsState()
+        Spacer(Modifier.weight(1f))
 
-    val lazyListState = rememberLazyListState()
-    val lazyGridState = rememberLazyGridState()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        Text(
+          text = pluralStringResource(R.plurals.n_artist, artists.size, artists.size),
+          style = MaterialTheme.typography.titleSmall,
+          color = MaterialTheme.colorScheme.secondary,
+        )
 
-    LaunchedEffect(scrollToTop?.value) {
-        if (scrollToTop?.value == true) {
-            when (viewType) {
-                LibraryViewType.LIST -> lazyListState.animateScrollToItem(0)
-                LibraryViewType.GRID -> lazyGridState.animateScrollToItem(0)
-            }
-            backStackEntry?.savedStateHandle?.set("scrollToTop", false)
-        }
-    }
-
-    val headerContent = @Composable {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 16.dp),
+        FlowRow(
+          modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+          horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+          verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            SortHeader(
-                sortType = sortType,
-                sortDescending = sortDescending,
-                onSortTypeChange = onSortTypeChange,
-                onSortDescendingChange = onSortDescendingChange,
-                sortTypeText = { sortType ->
-                    when (sortType) {
-                        ArtistSortType.CREATE_DATE -> R.string.sort_by_create_date
-                        ArtistSortType.NAME -> R.string.sort_by_name
-                        ArtistSortType.SONG_COUNT -> R.string.sort_by_song_count
-                        ArtistSortType.PLAY_TIME -> R.string.sort_by_play_time
-                    }
+          LibraryViewType.entries.forEachIndexed { index, type ->
+            ToggleButton(
+              checked = viewType == type,
+              onCheckedChange = { viewType = type },
+              shapes =
+                when (index) {
+                  0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                  LibraryViewType.entries.lastIndex ->
+                    ButtonGroupDefaults.connectedTrailingButtonShapes()
+                  else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Text(
-                text = pluralStringResource(
-                    R.plurals.n_artist,
-                    artists.size,
-                    artists.size
-                ),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-
-            FlowRow(
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+              modifier = Modifier.semantics { role = Role.RadioButton },
             ) {
-                LibraryViewType.entries.forEachIndexed { index, type ->
-                    ToggleButton(
-                        checked = viewType == type,
-                        onCheckedChange = { viewType = type },
-                        shapes = when (index) {
-                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                            LibraryViewType.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                        },
-                        modifier = Modifier.semantics { role = Role.RadioButton },
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                when (type) {
-                                    LibraryViewType.LIST -> R.drawable.list
-                                    LibraryViewType.GRID -> R.drawable.grid_view
-                                }
-                            ),
-                            contentDescription = null,
-                        )
+              Icon(
+                painter =
+                  painterResource(
+                    when (type) {
+                      LibraryViewType.LIST -> R.drawable.list
+                      LibraryViewType.GRID -> R.drawable.grid_view
                     }
-                }
+                  ),
+                contentDescription = null,
+              )
             }
+          }
         }
+      }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        when (viewType) {
-            LibraryViewType.LIST ->
-                LazyColumn(
-                    state = lazyListState,
-                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-                ) {
-                    item(
-                        key = "filter",
-                        contentType = CONTENT_TYPE_HEADER,
-                    ) {
-                        filterContent()
-                    }
+  Box(
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    when (viewType) {
+      LibraryViewType.LIST ->
+        LazyColumn(
+          state = lazyListState,
+          contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+        ) {
+          item(
+            key = "filter",
+            contentType = CONTENT_TYPE_HEADER,
+          ) {
+            filterContent()
+          }
 
-                    item(
-                        key = "header",
-                        contentType = CONTENT_TYPE_HEADER,
-                    ) {
-                        headerContent()
-                    }
+          item(
+            key = "header",
+            contentType = CONTENT_TYPE_HEADER,
+          ) {
+            headerContent()
+          }
 
-                    artists.let { artists ->
-                        if (artists.isEmpty()) {
-                            item(key = "empty_placeholder") {
-                                EmptyPlaceholder(
-                                    icon = R.drawable.artist,
-                                    text = stringResource(R.string.library_artist_empty),
-                                    modifier = Modifier.animateItem()
-                                )
-                            }
-                        }
+          artists.let { artists ->
+            if (artists.isEmpty()) {
+              item(key = "empty_placeholder") {
+                EmptyPlaceholder(
+                  icon = R.drawable.artist,
+                  text = stringResource(R.string.library_artist_empty),
+                  modifier = Modifier.animateItem()
+                )
+              }
+            }
 
-                        items(
-                            items = artists.distinctBy { it.id },
-                            key = { it.id },
-                            contentType = { CONTENT_TYPE_ARTIST },
-                        ) { artist ->
-                            LibraryArtistListItem(
-                                navController = navController,
-                                menuState = menuState,
-                                coroutineScope = coroutineScope,
-                                modifier = Modifier.animateItem(),
-                                artist = artist
-                            )
-                        }
-                    }
-                }
+            items(
+              items = artists.distinctBy { it.id },
+              key = { it.id },
+              contentType = { CONTENT_TYPE_ARTIST },
+            ) { artist ->
+              LibraryArtistListItem(
+                navController = navController,
+                menuState = menuState,
+                coroutineScope = coroutineScope,
+                modifier = Modifier.animateItem(),
+                artist = artist
+              )
+            }
+          }
+        }
+      LibraryViewType.GRID ->
+        LazyVerticalGrid(
+          state = lazyGridState,
+          columns =
+            GridCells.Adaptive(
+              minSize =
+                GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+            ),
+          contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+        ) {
+          item(
+            key = "filter",
+            span = { GridItemSpan(maxLineSpan) },
+            contentType = CONTENT_TYPE_HEADER,
+          ) {
+            filterContent()
+          }
 
-            LibraryViewType.GRID ->
-                LazyVerticalGrid(
-                    state = lazyGridState,
-                    columns =
-                    GridCells.Adaptive(
-                        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
-                    ),
-                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-                ) {
-                    item(
-                        key = "filter",
-                        span = { GridItemSpan(maxLineSpan) },
-                        contentType = CONTENT_TYPE_HEADER,
-                    ) {
-                        filterContent()
-                    }
+          item(
+            key = "header",
+            span = { GridItemSpan(maxLineSpan) },
+            contentType = CONTENT_TYPE_HEADER,
+          ) {
+            headerContent()
+          }
 
-                    item(
-                        key = "header",
-                        span = { GridItemSpan(maxLineSpan) },
-                        contentType = CONTENT_TYPE_HEADER,
-                    ) {
-                        headerContent()
-                    }
+          artists.let { artists ->
+            if (artists.isEmpty()) {
+              item(span = { GridItemSpan(maxLineSpan) }) {
+                EmptyPlaceholder(
+                  icon = R.drawable.artist,
+                  text = stringResource(R.string.library_artist_empty),
+                  modifier = Modifier.animateItem()
+                )
+              }
+            }
 
-                    artists.let { artists ->
-                        if (artists.isEmpty()) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                EmptyPlaceholder(
-                                    icon = R.drawable.artist,
-                                    text = stringResource(R.string.library_artist_empty),
-                                    modifier = Modifier.animateItem()
-                                )
-                            }
-                        }
-
-                        items(
-                            items = artists.distinctBy { it.id },
-                            key = { it.id },
-                            contentType = { CONTENT_TYPE_ARTIST },
-                        ) { artist ->
-                            LibraryArtistGridItem(
-                                navController = navController,
-                                menuState = menuState,
-                                coroutineScope = coroutineScope,
-                                modifier = Modifier.animateItem(),
-                                artist = artist
-                            )
-                        }
-                    }
-                }
+            items(
+              items = artists.distinctBy { it.id },
+              key = { it.id },
+              contentType = { CONTENT_TYPE_ARTIST },
+            ) { artist ->
+              LibraryArtistGridItem(
+                navController = navController,
+                menuState = menuState,
+                coroutineScope = coroutineScope,
+                modifier = Modifier.animateItem(),
+                artist = artist
+              )
+            }
+          }
         }
     }
+  }
 }

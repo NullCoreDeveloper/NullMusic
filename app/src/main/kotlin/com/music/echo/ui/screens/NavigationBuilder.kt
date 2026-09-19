@@ -67,265 +67,428 @@ import iad1tya.echo.music.ui.screens.ambient.AmbientModeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.navigationBuilder(
-    navController: NavHostController,
-    scrollBehavior: TopAppBarScrollBehavior,
-    activity: Activity,
-    snackbarHostState: SnackbarHostState
+  navController: NavHostController,
+  scrollBehavior: TopAppBarScrollBehavior,
+  activity: Activity,
+  snackbarHostState: SnackbarHostState
 ) {
-    composable(Screens.Home.route) {
-        HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
-    }
+  composable(Screens.Home.route) {
+    HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+  }
 
-    composable(Screens.Search.route) {
-        val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-        val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
-        val isSystemInDarkTheme = isSystemInDarkTheme()
-        val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
-            if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+  composable(Screens.Search.route) {
+    val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
+    val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val useDarkTheme =
+      remember(darkTheme, isSystemInDarkTheme) {
+        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+      }
+    val pureBlack = remember(pureBlackEnabled, useDarkTheme) { pureBlackEnabled && useDarkTheme }
+    SearchScreen(navController = navController, pureBlack = pureBlack)
+  }
+
+  composable(Screens.Library.route) { LibraryScreen(navController) }
+
+  composable(Screens.ListenTogether.route) {
+    ListenTogetherScreen(navController, showTopBar = false)
+  }
+
+  composable(
+    route = "listen_together_from_topbar",
+  ) {
+    ListenTogetherScreen(navController, showTopBar = true)
+  }
+
+  composable("listen_together/chat") { CommentTogetherScreen(navController) }
+
+  composable("history") { HistoryScreen(navController) }
+
+  composable("ambient_mode") { AmbientModeScreen(navController) }
+
+  composable("local_songs") { LocalSongScreen(navController) }
+
+  composable("stats") { StatsScreen(navController) }
+
+  composable("mood_and_genres") { MoodAndGenresScreen(navController, scrollBehavior) }
+
+  composable("account") { AccountScreen(navController, scrollBehavior) }
+
+  composable("new_release") { NewReleaseScreen(navController, scrollBehavior) }
+
+  composable("charts_screen") { ChartsScreen(navController) }
+
+  composable(
+    route = "browse/{browseId}",
+    arguments = listOf(navArgument("browseId") { type = NavType.StringType })
+  ) {
+    BrowseScreen(navController, scrollBehavior, it.arguments?.getString("browseId"))
+  }
+
+  composable(
+    route = "search/{query}",
+    arguments =
+      listOf(
+        navArgument("query") { type = NavType.StringType },
+      ),
+    enterTransition = { fadeIn(tween(250)) },
+    exitTransition = {
+      if (targetState.destination.route?.startsWith("search/") == true) {
+        fadeOut(tween(200))
+      } else {
+        fadeOut(tween(200)) + slideOutHorizontally { -it / 2 }
+      }
+    },
+    popEnterTransition = {
+      if (initialState.destination.route?.startsWith("search/") == true) {
+        fadeIn(tween(250))
+      } else {
+        fadeIn(tween(250)) + slideInHorizontally { -it / 2 }
+      }
+    },
+    popExitTransition = { fadeOut(tween(200)) },
+  ) {
+    OnlineSearchResult(navController)
+  }
+
+  composable(
+    route = "album/{albumId}",
+    arguments =
+      listOf(
+        navArgument("albumId") { type = NavType.StringType },
+      ),
+  ) {
+    AlbumScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "artist/{artistId}",
+    arguments =
+      listOf(
+        navArgument("artistId") { type = NavType.StringType },
+      ),
+  ) {
+    ArtistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "artist/{artistId}/songs",
+    arguments =
+      listOf(
+        navArgument("artistId") { type = NavType.StringType },
+      ),
+  ) {
+    ArtistSongsScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "artist/{artistId}/albums",
+    arguments = listOf(navArgument("artistId") { type = NavType.StringType })
+  ) {
+    ArtistAlbumsScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "artist/{artistId}/items?browseId={browseId}?params={params}",
+    arguments =
+      listOf(
+        navArgument("artistId") { type = NavType.StringType },
+        navArgument("browseId") {
+          type = NavType.StringType
+          nullable = true
+        },
+        navArgument("params") {
+          type = NavType.StringType
+          nullable = true
+        },
+      ),
+  ) {
+    ArtistItemsScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "online_playlist/{playlistId}",
+    arguments =
+      listOf(
+        navArgument("playlistId") { type = NavType.StringType },
+      ),
+  ) {
+    OnlinePlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "local_playlist/{playlistId}",
+    arguments =
+      listOf(
+        navArgument("playlistId") { type = NavType.StringType },
+      ),
+  ) {
+    LocalPlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "auto_playlist/{playlist}",
+    arguments =
+      listOf(
+        navArgument("playlist") { type = NavType.StringType },
+      ),
+  ) {
+    AutoPlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "cache_playlist/{playlist}",
+    arguments =
+      listOf(
+        navArgument("playlist") { type = NavType.StringType },
+      ),
+  ) {
+    CachePlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "top_playlist/{top}",
+    arguments =
+      listOf(
+        navArgument("top") { type = NavType.StringType },
+      ),
+  ) {
+    TopPlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
+    route = "youtube_browse/{browseId}?params={params}",
+    arguments =
+      listOf(
+        navArgument("browseId") {
+          type = NavType.StringType
+          nullable = true
+        },
+        navArgument("params") {
+          type = NavType.StringType
+          nullable = true
+        },
+      ),
+  ) {
+    YouTubeBrowseScreen(navController)
+  }
+
+  composable("settings") { SettingsScreen(navController, scrollBehavior) }
+
+  composable(
+    route = "settings/update?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
         }
-        val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
-            pureBlackEnabled && useDarkTheme
+      )
+  ) { backStackEntry ->
+    UpdateSettings(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
+
+  composable(
+    route = "settings/account?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
         }
-        SearchScreen(
-            navController = navController,
-            pureBlack = pureBlack
-        )
-    }
+      )
+  ) { backStackEntry ->
+    AccountSettingsScreen(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(Screens.Library.route) {
-        LibraryScreen(navController)
-    }
+  composable(
+    route = "settings/appearance?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    AppearanceSettings(
+      navController,
+      scrollBehavior,
+      activity,
+      snackbarHostState,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(Screens.ListenTogether.route) {
-        ListenTogetherScreen(navController, showTopBar = false)
-    }
+  composable("settings/appearance/theme") { ThemeScreen(navController) }
 
-    composable(
-        route = "listen_together_from_topbar",
-    ) {
-        ListenTogetherScreen(navController, showTopBar = true)
-    }
+  composable("settings/appearance/app_icon") {
+    AppIconSettingsScreen(navController, activity, snackbarHostState)
+  }
 
-    composable("listen_together/chat") {
-        CommentTogetherScreen(navController)
-    }
+  composable(
+    route = "settings/content?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    ContentSettings(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable("history") {
-        HistoryScreen(navController)
-    }
+  composable("uptime") { UptimeScreen(navController, scrollBehavior) }
 
-    composable("ambient_mode") {
-        AmbientModeScreen(navController)
-    }
+  composable(
+    route = "settings/ai?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    AiSettings(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable("local_songs") {
-        LocalSongScreen(navController)
-    }
+  composable(
+    route = "settings/player?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    PlayerSettings(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable("stats") {
-        StatsScreen(navController)
-    }
-
-    composable("mood_and_genres") {
-        MoodAndGenresScreen(navController, scrollBehavior)
-    }
-
-    composable("account") {
-        AccountScreen(navController, scrollBehavior)
-    }
-
-    composable("new_release") {
-        NewReleaseScreen(navController, scrollBehavior)
-    }
-
-    composable("charts_screen") {
-        ChartsScreen(navController)
-    }
-
-    composable(
-        route = "browse/{browseId}",
-        arguments = listOf(
-            navArgument("browseId") {
-                type = NavType.StringType
-            }
-        )
-    ) {
-        BrowseScreen(
-            navController,
-            scrollBehavior,
-            it.arguments?.getString("browseId")
-        )
-    }
-
-    composable(
-        route = "search/{query}",
-        arguments = listOf(
-            navArgument("query") {
-                type = NavType.StringType
-            },
-        ),
-        enterTransition = {
-            fadeIn(tween(250))
+  composable(
+    route =
+      "settings/storage?autoOpenExportPicker={autoOpenExportPicker}&highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("autoOpenExportPicker") {
+          type = NavType.BoolType
+          defaultValue = false
         },
-        exitTransition = {
-            if (targetState.destination.route?.startsWith("search/") == true) {
-                fadeOut(tween(200))
-            } else {
-                fadeOut(tween(200)) + slideOutHorizontally { -it / 2 }
-            }
-        },
-        popEnterTransition = {
-            if (initialState.destination.route?.startsWith("search/") == true) {
-                fadeIn(tween(250))
-            } else {
-                fadeIn(tween(250)) + slideInHorizontally { -it / 2 }
-            }
-        },
-        popExitTransition = {
-            fadeOut(tween(200))
-        },
-    ) {
-        OnlineSearchResult(navController)
-    }
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    val autoOpenExportPicker = backStackEntry.arguments?.getBoolean("autoOpenExportPicker") ?: false
+    StorageSettings(
+      navController = navController,
+      scrollBehavior = scrollBehavior,
+      autoOpenExportPicker = autoOpenExportPicker,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(
-        route = "album/{albumId}",
-        arguments = listOf(
-            navArgument("albumId") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        AlbumScreen(navController, scrollBehavior)
-    }
+  composable("settings/equalizer") { AxionEqScreen(onBackClick = { navController.navigateUp() }) }
 
-    composable(
-        route = "artist/{artistId}",
-        arguments = listOf(
-            navArgument("artistId") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        ArtistScreen(navController, scrollBehavior)
-    }
+  composable(
+    route = "settings/privacy?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    PrivacySettings(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(
-        route = "artist/{artistId}/songs",
-        arguments = listOf(
-            navArgument("artistId") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        ArtistSongsScreen(navController, scrollBehavior)
-    }
+  composable(
+    route = "settings/backup_restore?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    BackupAndRestore(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(
-        route = "artist/{artistId}/albums",
-        arguments = listOf(
-            navArgument("artistId") {
-                type = NavType.StringType
-            }
-        )
-    ) {
-        ArtistAlbumsScreen(navController, scrollBehavior)
-    }
+  composable("settings/discord") {
+    echo.music.iad1tya.ui.screens.settings.DiscordSettings(navController, scrollBehavior)
+  }
 
-    composable(
-        route = "artist/{artistId}/items?browseId={browseId}?params={params}",
-        arguments = listOf(
-            navArgument("artistId") {
-                type = NavType.StringType
-            },
-            navArgument("browseId") {
-                type = NavType.StringType
-                nullable = true
-            },
-            navArgument("params") {
-                type = NavType.StringType
-                nullable = true
-            },
-        ),
-    ) {
-        ArtistItemsScreen(navController, scrollBehavior)
-    }
+  composable("settings/lastfm") {
+    echo.music.iad1tya.ui.screens.settings.LastFMSettingsScreen(navController)
+  }
 
-    composable(
-        route = "online_playlist/{playlistId}",
-        arguments = listOf(
-            navArgument("playlistId") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        OnlinePlaylistScreen(navController, scrollBehavior)
-    }
+  composable("settings/discord/experimental") {
+    echo.music.iad1tya.ui.screens.settings.DiscordExperimental(navController)
+  }
 
-    composable(
-        route = "local_playlist/{playlistId}",
-        arguments = listOf(
-            navArgument("playlistId") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        LocalPlaylistScreen(navController, scrollBehavior)
-    }
+  composable("settings/spotify_import") { SpotifyImportScreen(navController) }
 
-    composable(
-        route = "auto_playlist/{playlist}",
-        arguments = listOf(
-            navArgument("playlist") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        AutoPlaylistScreen(navController, scrollBehavior)
-    }
+  composable(route = "settings/integrations/listen_together") {
+    ListenTogetherSettings(navController, scrollBehavior)
+  }
 
-    composable(
-        route = "cache_playlist/{playlist}",
-        arguments = listOf(
-            navArgument("playlist") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        CachePlaylistScreen(navController, scrollBehavior)
-    }
+  composable(
+    route = "settings/about?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    AboutScreen(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
-    composable(
-        route = "top_playlist/{top}",
-        arguments = listOf(
-            navArgument("top") {
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        TopPlaylistScreen(navController, scrollBehavior)
-    }
+  composable("update") { UpdateScreen(navController) }
 
-    composable(
-        route = "youtube_browse/{browseId}?params={params}",
-        arguments = listOf(
-            navArgument("browseId") {
-                type = NavType.StringType
-                nullable = true
-            },
-            navArgument("params") {
-                type = NavType.StringType
-                nullable = true
-            },
-        ),
-    ) {
-        YouTubeBrowseScreen(navController)
-    }
+  composable("login") { LoginScreen(navController) }
 
-    composable("settings") {
-        SettingsScreen(navController, scrollBehavior)
-    }
+  dialog("equalizer") { EqScreen(navController = navController) }
 
+  composable("recognition") { RecognitionScreen(navController) }
 
     composable(
         route = "settings/update?highlightKey={highlightKey}",

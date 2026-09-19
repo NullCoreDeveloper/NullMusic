@@ -8,27 +8,28 @@
  * merged into this single Android source set. Package renamed accordingly.
  */
 /*
-   Copyright 2025 Kyant
+  Copyright 2025 Kyant
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+      http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
 
 package iad1tya.echo.music.ui.component.backdrop.internal
 
 import org.intellij.lang.annotations.Language
 
 @Language("AGSL")
-private const val RoundedRectSDF = """
+private const val RoundedRectSDF =
+  """
 float radiusAt(float2 coord, float4 radii) {
     if (coord.x >= 0.0) {
         if (coord.y <= 0.0) return radii.y;
@@ -57,7 +58,8 @@ float2 gradSdRoundedRect(float2 coord, float2 halfSize, float radius) {
 }"""
 
 @Language("AGSL")
-internal const val RoundedRectRefractionShaderString = """
+internal const val RoundedRectRefractionShaderString =
+  """
 uniform shader content;
 
 uniform float2 size;
@@ -93,7 +95,8 @@ half4 main(float2 coord) {
 }"""
 
 @Language("AGSL")
-internal val RoundedRectRefractionWithDispersionShaderString = """
+internal val RoundedRectRefractionWithDispersionShaderString =
+  """
 uniform shader content;
 
 uniform float2 size;
@@ -167,7 +170,8 @@ half4 main(float2 coord) {
 }"""
 
 @Language("AGSL")
-internal const val DefaultHighlightShaderString = """
+internal const val DefaultHighlightShaderString =
+  """
 uniform float2 size;
 uniform float4 cornerRadii;
 layout(color) uniform half4 color;
@@ -190,7 +194,8 @@ half4 main(float2 coord) {
 }"""
 
 @Language("AGSL")
-internal const val AmbientHighlightShaderString = """
+internal const val AmbientHighlightShaderString =
+  """
 uniform float2 size;
 uniform float4 cornerRadii;
 uniform float angle;

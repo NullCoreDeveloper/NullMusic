@@ -21,19 +21,19 @@ import androidx.compose.ui.unit.toIntSize
 // -Xcontext-parameters for the whole app module; the node is an explicit
 // parameter instead.
 internal fun DrawScope.recordLayer(
-    node: DelegatableNode,
-    layer: GraphicsLayer,
-    size: IntSize = this.size.toIntSize(),
-    block: DrawScope.() -> Unit
+  node: DelegatableNode,
+  layer: GraphicsLayer,
+  size: IntSize = this.size.toIntSize(),
+  block: DrawScope.() -> Unit
 ) {
-    val density = node.requireDensity()
-    layer.record(size) {
-        val prevDensity = drawContext.density
-        drawContext.density = density
-        try {
-            this.block()
-        } finally {
-            drawContext.density = prevDensity
-        }
+  val density = node.requireDensity()
+  layer.record(size) {
+    val prevDensity = drawContext.density
+    drawContext.density = density
+    try {
+      this.block()
+    } finally {
+      drawContext.density = prevDensity
     }
+  }
 }

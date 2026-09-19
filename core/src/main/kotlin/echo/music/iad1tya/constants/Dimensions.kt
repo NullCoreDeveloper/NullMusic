@@ -1,5 +1,3 @@
-
-
 package echo.music.iad1tya.constants
 
 import androidx.compose.animation.core.Spring
@@ -21,7 +19,7 @@ val NavigationBarHeight = FloatingToolbarHeight
 val SlimNavBarHeight = 64.dp
 val MiniPlayerHeight = 64.dp
 val MinMiniPlayerHeight = 16.dp
-val MiniPlayerBottomSpacing = 8.dp 
+val MiniPlayerBottomSpacing = 8.dp
 val QueuePeekHeight = 64.dp
 val AppBarHeight = 64.dp
 
@@ -33,21 +31,15 @@ val SmallGridThumbnailHeight = 104.dp
 val GridThumbnailHeight = 128.dp
 val AlbumThumbnailSize = 144.dp
 
-val ThumbnailCornerRadius = 6.dp 
+val ThumbnailCornerRadius = 6.dp
 
 val PlayerHorizontalPadding = 32.dp
 
-val NavigationBarAnimationSpec = spring<Dp>(
-    dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = Spring.StiffnessLow
-)
+val NavigationBarAnimationSpec =
+  spring<Dp>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)
 
-val BottomSheetAnimationSpec = spring<Dp>(
-    dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = Spring.StiffnessMediumLow
-)
+val BottomSheetAnimationSpec =
+  spring<Dp>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMediumLow)
 
-val BottomSheetSoftAnimationSpec = spring<Dp>(
-    dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = Spring.StiffnessLow
-)
+val BottomSheetSoftAnimationSpec =
+  spring<Dp>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)

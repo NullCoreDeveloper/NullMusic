@@ -64,180 +64,176 @@ import iad1tya.echo.music.constants.AppBarHeight
 @ExperimentalMaterial3Api
 @Composable
 fun TopSearch(
-    query: TextFieldValue,
-    onQueryChange: (TextFieldValue) -> Unit,
-    onSearch: (String) -> Unit,
-    active: Boolean,
-    onActiveChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    shape: Shape? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+  query: TextFieldValue,
+  onQueryChange: (TextFieldValue) -> Unit,
+  onSearch: (String) -> Unit,
+  active: Boolean,
+  onActiveChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  placeholder: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+  shape: Shape? = null,
+  colors: TopAppBarColors =
+    TopAppBarDefaults.topAppBarColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ),
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    windowInsets: WindowInsets = WindowInsets.systemBars,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    focusRequester: FocusRequester = remember { FocusRequester() },
-    content: @Composable ColumnScope.() -> Unit = {},
+  scrollBehavior: TopAppBarScrollBehavior? = null,
+  windowInsets: WindowInsets = WindowInsets.systemBars,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  focusRequester: FocusRequester = remember { FocusRequester() },
+  content: @Composable ColumnScope.() -> Unit = {},
 ) {
-    Box(modifier = modifier) {
-        TopAppBar(
-            title = {
-                SearchBarInputField(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                    onSearch = onSearch,
-                    active = active,
-                    onActiveChange = onActiveChange,
-                    enabled = enabled,
-                    placeholder = placeholder,
-                    
-                    leadingIcon = null,
-                    trailingIcon = null,
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    interactionSource = interactionSource,
-                    focusRequester = focusRequester,
-                )
-            },
-            navigationIcon = {
-                if (leadingIcon != null) {
-                    leadingIcon()
-                }
-            },
-            actions = {
-                if (trailingIcon != null) {
-                    trailingIcon()
-                }
-            },
-            colors = colors,
-            scrollBehavior = scrollBehavior,
-            windowInsets = windowInsets
+  Box(modifier = modifier) {
+    TopAppBar(
+      title = {
+        SearchBarInputField(
+          query = query,
+          onQueryChange = onQueryChange,
+          onSearch = onSearch,
+          active = active,
+          onActiveChange = onActiveChange,
+          enabled = enabled,
+          placeholder = placeholder,
+          leadingIcon = null,
+          trailingIcon = null,
+          colors =
+            TextFieldDefaults.colors(
+              focusedTextColor = MaterialTheme.colorScheme.onSurface,
+              unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+              focusedContainerColor = Color.Transparent,
+              unfocusedContainerColor = Color.Transparent,
+              disabledContainerColor = Color.Transparent,
+              cursorColor = MaterialTheme.colorScheme.primary,
+              focusedIndicatorColor = Color.Transparent,
+              unfocusedIndicatorColor = Color.Transparent
+            ),
+          interactionSource = interactionSource,
+          focusRequester = focusRequester,
         )
-        
-        if (active) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = AppBarHeight + windowInsets.asPaddingValues().calculateTopPadding())
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                 Column {
-                    content()
-                 }
-            }
-            
-            BackHandler(enabled = active) {
-                onActiveChange(false)
-            }
+      },
+      navigationIcon = {
+        if (leadingIcon != null) {
+          leadingIcon()
         }
+      },
+      actions = {
+        if (trailingIcon != null) {
+          trailingIcon()
+        }
+      },
+      colors = colors,
+      scrollBehavior = scrollBehavior,
+      windowInsets = windowInsets
+    )
+
+    if (active) {
+      Box(
+        modifier =
+          Modifier.fillMaxWidth()
+            .padding(top = AppBarHeight + windowInsets.asPaddingValues().calculateTopPadding())
+            .background(MaterialTheme.colorScheme.surface)
+      ) {
+        Column { content() }
+      }
+
+      BackHandler(enabled = active) { onActiveChange(false) }
     }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchBarInputField(
-    query: TextFieldValue,
-    onQueryChange: (TextFieldValue) -> Unit,
-    onSearch: (String) -> Unit,
-    active: Boolean,
-    onActiveChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    colors: TextFieldColors,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    focusRequester: FocusRequester = remember { FocusRequester() },
+  query: TextFieldValue,
+  onQueryChange: (TextFieldValue) -> Unit,
+  onSearch: (String) -> Unit,
+  active: Boolean,
+  onActiveChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  placeholder: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+  colors: TextFieldColors,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
-    val focused = interactionSource.collectIsFocusedAsState().value
-    val textColor = LocalTextStyle.current.color.takeOrElse {
-        if (focused) colors.focusedTextColor else colors.unfocusedTextColor
+  val focused = interactionSource.collectIsFocusedAsState().value
+  val textColor =
+    LocalTextStyle.current.color.takeOrElse {
+      if (focused) colors.focusedTextColor else colors.unfocusedTextColor
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(InputFieldHeight),
-    ) {
-        if (leadingIcon != null) {
-            Spacer(Modifier.width(SearchBarIconOffsetX))
-            leadingIcon()
-        }
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier.fillMaxWidth().height(InputFieldHeight),
+  ) {
+    if (leadingIcon != null) {
+      Spacer(Modifier.width(SearchBarIconOffsetX))
+      leadingIcon()
+    }
 
-        BasicTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .weight(1f)
-                .focusRequester(focusRequester)
-                .pointerInput(Unit) {
-                    awaitEachGesture {
-                        awaitFirstDown(pass = PointerEventPass.Initial)
-                        val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                        if (upEvent != null) {
-                            onActiveChange(true)
-                        }
-                    }
-                }
-                .semantics {
-                    contentDescription = "Search"
-                    if (active) {
-                        stateDescription = "Suggestions available"
-                    }
-                }
-                .onKeyEvent {
-                    if (it.key == Key.Enter) {
-                        onSearch(query.text)
-                        return@onKeyEvent true
-                    }
-                    false
-                },
+    BasicTextField(
+      value = query,
+      onValueChange = onQueryChange,
+      modifier =
+        Modifier.weight(1f)
+          .focusRequester(focusRequester)
+          .pointerInput(Unit) {
+            awaitEachGesture {
+              awaitFirstDown(pass = PointerEventPass.Initial)
+              val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+              if (upEvent != null) {
+                onActiveChange(true)
+              }
+            }
+          }
+          .semantics {
+            contentDescription = "Search"
+            if (active) {
+              stateDescription = "Suggestions available"
+            }
+          }
+          .onKeyEvent {
+            if (it.key == Key.Enter) {
+              onSearch(query.text)
+              return@onKeyEvent true
+            }
+            false
+          },
+      enabled = enabled,
+      singleLine = true,
+      textStyle = LocalTextStyle.current.merge(TextStyle(color = textColor)),
+      cursorBrush = SolidColor(colors.cursorColor),
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+      keyboardActions = KeyboardActions(onSearch = { onSearch(query.text) }),
+      interactionSource = interactionSource,
+      decorationBox =
+        @Composable { innerTextField ->
+          TextFieldDefaults.DecorationBox(
+            value = query.text,
+            innerTextField = innerTextField,
             enabled = enabled,
             singleLine = true,
-            textStyle = LocalTextStyle.current.merge(TextStyle(color = textColor)),
-            cursorBrush = SolidColor(colors.cursorColor),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { onSearch(query.text) }),
+            visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
-            decorationBox = @Composable { innerTextField ->
-                TextFieldDefaults.DecorationBox(
-                    value = query.text,
-                    innerTextField = innerTextField,
-                    enabled = enabled,
-                    singleLine = true,
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = interactionSource,
-                    placeholder = placeholder,
-                    shape = RoundedCornerShape(0.dp),
-                    colors = colors,
-                    contentPadding = PaddingValues(),
-                    container = {},
-                )
-            },
-        )
+            placeholder = placeholder,
+            shape = RoundedCornerShape(0.dp),
+            colors = colors,
+            contentPadding = PaddingValues(),
+            container = {},
+          )
+        },
+    )
 
-        if (trailingIcon != null) {
-            trailingIcon()
-            Spacer(Modifier.width(SearchBarIconOffsetX))
-        }
+    if (trailingIcon != null) {
+      trailingIcon()
+      Spacer(Modifier.width(SearchBarIconOffsetX))
     }
+  }
 }
-
 
 val InputFieldHeight = 48.dp
 internal val TopAppBarVerticalPadding: Dp = 8.dp

@@ -23,43 +23,39 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ImportPlaylistDialog(
-    isVisible: Boolean,
-    onGetSong: suspend () -> List<String>, 
-    playlistTitle: String,
-    onDismiss: () -> Unit,
+  isVisible: Boolean,
+  onGetSong: suspend () -> List<String>,
+  playlistTitle: String,
+  onDismiss: () -> Unit,
 ) {
-    val database = LocalDatabase.current
-    val coroutineScope = rememberCoroutineScope()
+  val database = LocalDatabase.current
+  val coroutineScope = rememberCoroutineScope()
 
-    val textFieldValue by remember { mutableStateOf(TextFieldValue(text = playlistTitle)) }
-    var songIds by remember {
-        mutableStateOf<List<String>?>(null) 
-    }
+  val textFieldValue by remember { mutableStateOf(TextFieldValue(text = playlistTitle)) }
+  var songIds by remember { mutableStateOf<List<String>?>(null) }
 
-    if (isVisible) {
-        TextFieldDialog(
-            icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = null) },
-            title = { Text(text = stringResource(R.string.import_playlist)) },
-            initialTextFieldValue = textFieldValue,
-            autoFocus = false,
-            onDismiss = onDismiss,
-            onDone = { finalName ->
-                val newPlaylist = PlaylistEntity(
-                    name = finalName
-                )
-                database.query { insert(newPlaylist) }
+  if (isVisible) {
+    TextFieldDialog(
+      icon = { Icon(painter = painterResource(R.drawable.add), contentDescription = null) },
+      title = { Text(text = stringResource(R.string.import_playlist)) },
+      initialTextFieldValue = textFieldValue,
+      autoFocus = false,
+      onDismiss = onDismiss,
+      onDone = { finalName ->
+        val newPlaylist = PlaylistEntity(name = finalName)
+        database.query { insert(newPlaylist) }
 
-                coroutineScope.launch(Dispatchers.IO) {
-                    val playlist = database.playlist(newPlaylist.id).firstOrNull()
+        coroutineScope.launch(Dispatchers.IO) {
+          val playlist = database.playlist(newPlaylist.id).firstOrNull()
 
-                    if (playlist != null) {
-                        songIds = onGetSong()
-                        database.addSongToPlaylist(playlist, songIds!!)
-                    }
+          if (playlist != null) {
+            songIds = onGetSong()
+            database.addSongToPlaylist(playlist, songIds!!)
+          }
 
-                    onDismiss()
-                }
-            }
-        )
-    }
+          onDismiss()
+        }
+      }
+    )
+  }
 }

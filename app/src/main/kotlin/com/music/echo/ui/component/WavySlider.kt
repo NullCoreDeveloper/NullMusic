@@ -35,115 +35,105 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WavySlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
-    onValueChangeFinished: (() -> Unit)? = null,
-    colors: SliderColors = SliderDefaults.colors(),
-    isPlaying: Boolean = true,
-    enabled: Boolean = true,
-    strokeWidth: Dp = 4.dp,
-    thumbRadius: Dp = 8.dp,
-    wavelength: Dp = WavyProgressIndicatorDefaults.LinearDeterminateWavelength,
-    waveSpeed: Dp = wavelength
+  value: Float,
+  onValueChange: (Float) -> Unit,
+  modifier: Modifier = Modifier,
+  valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
+  onValueChangeFinished: (() -> Unit)? = null,
+  colors: SliderColors = SliderDefaults.colors(),
+  isPlaying: Boolean = true,
+  enabled: Boolean = true,
+  strokeWidth: Dp = 4.dp,
+  thumbRadius: Dp = 8.dp,
+  wavelength: Dp = WavyProgressIndicatorDefaults.LinearDeterminateWavelength,
+  waveSpeed: Dp = wavelength
 ) {
-    val density = LocalDensity.current
-    val strokeWidthPx = with(density) { strokeWidth.toPx() }
-    val thumbRadiusPx = with(density) { thumbRadius.toPx() }
-    val stroke = remember(strokeWidthPx) { 
-        Stroke(width = strokeWidthPx, cap = StrokeCap.Round) 
-    }
-    
-    val normalizedValue = ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start))
-        .coerceIn(0f, 1f)
-    
-    var isDragging by remember { mutableStateOf(false) }
-    var dragValue by remember { mutableFloatStateOf(normalizedValue) }
-    
-    val displayValue = if (isDragging) dragValue else normalizedValue
-    
-    val animatedAmplitude by animateFloatAsState(
-        targetValue = if (isPlaying) 1f else 0f,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = "amplitude"
+  val density = LocalDensity.current
+  val strokeWidthPx = with(density) { strokeWidth.toPx() }
+  val thumbRadiusPx = with(density) { thumbRadius.toPx() }
+  val stroke = remember(strokeWidthPx) { Stroke(width = strokeWidthPx, cap = StrokeCap.Round) }
+
+  val normalizedValue =
+    ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start)).coerceIn(0f, 1f)
+
+  var isDragging by remember { mutableStateOf(false) }
+  var dragValue by remember { mutableFloatStateOf(normalizedValue) }
+
+  val displayValue = if (isDragging) dragValue else normalizedValue
+
+  val animatedAmplitude by
+    animateFloatAsState(
+      targetValue = if (isPlaying) 1f else 0f,
+      animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+      label = "amplitude"
     )
-    
-    val activeColor = colors.activeTrackColor
-    val inactiveColor = colors.inactiveTrackColor
-    val thumbColor = colors.thumbColor
-    
-    
-    val containerHeight = maxOf(WavyProgressIndicatorDefaults.LinearContainerHeight, thumbRadius * 2)
-    
-    val baseModifier = modifier
-        .fillMaxWidth()
-        .height(containerHeight)
 
-    val interactiveModifier = if (enabled) {
-        baseModifier
-            .pointerInput(valueRange) {
-                detectTapGestures { offset ->
-                    val newValue = (offset.x / size.width).coerceIn(0f, 1f)
-                    val mappedValue = valueRange.start + newValue * (valueRange.endInclusive - valueRange.start)
-                    onValueChange(mappedValue)
-                    onValueChangeFinished?.invoke()
-                }
-            }
-            .pointerInput(valueRange) {
-                detectHorizontalDragGestures(
-                    onDragStart = { offset ->
-                        isDragging = true
-                        dragValue = (offset.x / size.width).coerceIn(0f, 1f)
-                        val mappedValue = valueRange.start + dragValue * (valueRange.endInclusive - valueRange.start)
-                        onValueChange(mappedValue)
-                    },
-                    onDragEnd = {
-                        isDragging = false
-                        onValueChangeFinished?.invoke()
-                    },
-                    onDragCancel = {
-                        isDragging = false
-                    },
-                    onHorizontalDrag = { _, dragAmount ->
-                        dragValue = (dragValue + dragAmount / size.width).coerceIn(0f, 1f)
-                        val mappedValue = valueRange.start + dragValue * (valueRange.endInclusive - valueRange.start)
-                        onValueChange(mappedValue)
-                    }
-                )
-            }
-    } else {
-        baseModifier
-    }
+  val activeColor = colors.activeTrackColor
+  val inactiveColor = colors.inactiveTrackColor
+  val thumbColor = colors.thumbColor
 
-    Box(
-        modifier = interactiveModifier,
-        contentAlignment = Alignment.Center
-    ) {
-        LinearWavyProgressIndicator(
-            progress = { displayValue },
-            modifier = Modifier.fillMaxWidth(),
-            color = activeColor,
-            trackColor = inactiveColor,
-            stroke = stroke,
-            trackStroke = stroke,
-            gapSize = thumbRadius + 4.dp,
-            stopSize = WavyProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
-            amplitude = { progress -> if (progress > 0f) animatedAmplitude else 0f },
-            wavelength = wavelength,
-            waveSpeed = waveSpeed
-        )
-        
-        
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val thumbX = size.width * displayValue
-            val thumbY = size.height / 2
-            
-            drawCircle(
-                color = thumbColor,
-                radius = thumbRadiusPx,
-                center = Offset(thumbX, thumbY)
-            )
+  val containerHeight = maxOf(WavyProgressIndicatorDefaults.LinearContainerHeight, thumbRadius * 2)
+
+  val baseModifier = modifier.fillMaxWidth().height(containerHeight)
+
+  val interactiveModifier =
+    if (enabled) {
+      baseModifier
+        .pointerInput(valueRange) {
+          detectTapGestures { offset ->
+            val newValue = (offset.x / size.width).coerceIn(0f, 1f)
+            val mappedValue =
+              valueRange.start + newValue * (valueRange.endInclusive - valueRange.start)
+            onValueChange(mappedValue)
+            onValueChangeFinished?.invoke()
+          }
         }
+        .pointerInput(valueRange) {
+          detectHorizontalDragGestures(
+            onDragStart = { offset ->
+              isDragging = true
+              dragValue = (offset.x / size.width).coerceIn(0f, 1f)
+              val mappedValue =
+                valueRange.start + dragValue * (valueRange.endInclusive - valueRange.start)
+              onValueChange(mappedValue)
+            },
+            onDragEnd = {
+              isDragging = false
+              onValueChangeFinished?.invoke()
+            },
+            onDragCancel = { isDragging = false },
+            onHorizontalDrag = { _, dragAmount ->
+              dragValue = (dragValue + dragAmount / size.width).coerceIn(0f, 1f)
+              val mappedValue =
+                valueRange.start + dragValue * (valueRange.endInclusive - valueRange.start)
+              onValueChange(mappedValue)
+            }
+          )
+        }
+    } else {
+      baseModifier
     }
+
+  Box(modifier = interactiveModifier, contentAlignment = Alignment.Center) {
+    LinearWavyProgressIndicator(
+      progress = { displayValue },
+      modifier = Modifier.fillMaxWidth(),
+      color = activeColor,
+      trackColor = inactiveColor,
+      stroke = stroke,
+      trackStroke = stroke,
+      gapSize = thumbRadius + 4.dp,
+      stopSize = WavyProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
+      amplitude = { progress -> if (progress > 0f) animatedAmplitude else 0f },
+      wavelength = wavelength,
+      waveSpeed = waveSpeed
+    )
+
+    Canvas(modifier = Modifier.fillMaxSize()) {
+      val thumbX = size.width * displayValue
+      val thumbY = size.height / 2
+
+      drawCircle(color = thumbColor, radius = thumbRadiusPx, center = Offset(thumbX, thumbY))
+    }
+  }
 }

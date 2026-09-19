@@ -17,18 +17,16 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.Density
 import iad1tya.echo.music.ui.component.backdrop.Backdrop
 
-@Stable
-fun emptyBackdrop(): Backdrop = EmptyBackdrop
+@Stable fun emptyBackdrop(): Backdrop = EmptyBackdrop
 
 @Immutable
 private object EmptyBackdrop : Backdrop {
 
-    override val isCoordinatesDependent: Boolean = false
+  override val isCoordinatesDependent: Boolean = false
 
-    override fun DrawScope.drawBackdrop(
-        density: Density,
-        coordinates: LayoutCoordinates?,
-        layerBlock: (GraphicsLayerScope.() -> Unit)?
-    ) {
-    }
+  override fun DrawScope.drawBackdrop(
+    density: Density,
+    coordinates: LayoutCoordinates?,
+    layerBlock: (GraphicsLayerScope.() -> Unit)?
+  ) {}
 }

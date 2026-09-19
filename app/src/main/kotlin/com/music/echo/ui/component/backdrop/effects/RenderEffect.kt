@@ -18,26 +18,27 @@ import iad1tya.echo.music.ui.component.backdrop.isRenderEffectSupported
 import iad1tya.echo.music.ui.component.backdrop.isRuntimeShaderSupported
 import org.intellij.lang.annotations.Language
 import kotlin.contracts.ExperimentalContracts
+import org.intellij.lang.annotations.Language
 
 fun BackdropEffectScope.effect(effect: RenderEffect) {
-    if (!isRenderEffectSupported()) return
+  if (!isRenderEffectSupported()) return
 
-    renderEffect = renderEffect.chain(effect)
+  renderEffect = renderEffect.chain(effect)
 }
 
 @OptIn(ExperimentalContracts::class)
 fun BackdropEffectScope.runtimeShaderEffect(
-    key: String,
-    @Language("AGSL") shaderString: String,
-    uniformShaderName: String,
-    block: RuntimeShader.() -> Unit
+  key: String,
+  @Language("AGSL") shaderString: String,
+  uniformShaderName: String,
+  block: RuntimeShader.() -> Unit
 ) {
-    if (!isRuntimeShaderSupported()) return
+  if (!isRuntimeShaderSupported()) return
 
-    val effect =
-        RuntimeShaderEffect(
-            runtimeShader = obtainRuntimeShader(key, shaderString).apply(block),
-            uniformShaderName = uniformShaderName
-        )
-    renderEffect = renderEffect.chain(effect)
+  val effect =
+    RuntimeShaderEffect(
+      runtimeShader = obtainRuntimeShader(key, shaderString).apply(block),
+      uniformShaderName = uniformShaderName
+    )
+  renderEffect = renderEffect.chain(effect)
 }

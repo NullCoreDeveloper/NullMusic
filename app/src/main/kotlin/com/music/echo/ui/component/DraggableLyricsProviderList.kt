@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,80 +31,77 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 data class DraggableLyricsProviderItem(
-    val id: String,
-    val name: String,
-    val icon: Painter,
+  val id: String,
+  val name: String,
+  val icon: Painter,
 )
 
 @Composable
 fun DraggableLyricsProviderList(
-    items: MutableList<DraggableLyricsProviderItem>,
-    onItemsReordered: (List<DraggableLyricsProviderItem>) -> Unit,
-    modifier: Modifier = Modifier,
+  items: MutableList<DraggableLyricsProviderItem>,
+  onItemsReordered: (List<DraggableLyricsProviderItem>) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    val lazyListState = rememberLazyListState()
-    var hasDragged by remember { mutableStateOf(false) }
-    val reorderableState = rememberReorderableLazyListState(
-        lazyListState = lazyListState,
+  val lazyListState = rememberLazyListState()
+  var hasDragged by remember { mutableStateOf(false) }
+  val reorderableState =
+    rememberReorderableLazyListState(
+      lazyListState = lazyListState,
     ) { from, to ->
-        val movedItem = items.removeAt(from.index)
-        items.add(to.index, movedItem)
-        hasDragged = true
+      val movedItem = items.removeAt(from.index)
+      items.add(to.index, movedItem)
+      hasDragged = true
     }
 
-    LaunchedEffect(reorderableState.isAnyItemDragging) {
-        if (!reorderableState.isAnyItemDragging && hasDragged) {
-            onItemsReordered(items.toList())
-            hasDragged = false
-        }
+  LaunchedEffect(reorderableState.isAnyItemDragging) {
+    if (!reorderableState.isAnyItemDragging && hasDragged) {
+      onItemsReordered(items.toList())
+      hasDragged = false
     }
+  }
 
-    LazyColumn(
-        state = lazyListState,
-        modifier = modifier,
-    ) {
-        itemsIndexed(
-            items,
-            key = { _, item -> item.id },
-        ) { _, item ->
-            ReorderableItem(
-                state = reorderableState,
-                key = item.id,
+  LazyColumn(
+    state = lazyListState,
+    modifier = modifier,
+  ) {
+    itemsIndexed(
+      items,
+      key = { _, item -> item.id },
+    ) { _, item ->
+      ReorderableItem(
+        state = reorderableState,
+        key = item.id,
+      ) {
+        Surface(
+          modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+          shape = AbsoluteSmoothCornerShape(12.dp, 60),
+          color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            IconButton(
+              onClick = {},
+              modifier = Modifier.draggableHandle(),
             ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    shape = AbsoluteSmoothCornerShape(12.dp, 60),
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        IconButton(
-                            onClick = { },
-                            modifier = Modifier.draggableHandle(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.drag_handle),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-
-                        Text(
-                            text = item.name,
-                            style = MaterialTheme.typography.bodyLarge,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
+              Icon(
+                painter = painterResource(R.drawable.drag_handle),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
             }
+
+            Text(
+              text = item.name,
+              style = MaterialTheme.typography.bodyLarge,
+              overflow = TextOverflow.Ellipsis,
+              modifier = Modifier.weight(1f),
+            )
+          }
         }
+      }
     }
+  }
 }

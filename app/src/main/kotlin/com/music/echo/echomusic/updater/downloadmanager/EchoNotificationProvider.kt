@@ -14,52 +14,55 @@ import com.google.common.collect.ImmutableList
 
 @OptIn(UnstableApi::class)
 class EchoNotificationProvider(
-    context: Context,
-    notificationIdProvider: DefaultMediaNotificationProvider.NotificationIdProvider,
-    channelId: String,
-    channelNameResourceId: Int,
+  context: Context,
+  notificationIdProvider: DefaultMediaNotificationProvider.NotificationIdProvider,
+  channelId: String,
+  channelNameResourceId: Int,
 ) : MediaNotification.Provider {
 
-    private val defaultProvider = DefaultMediaNotificationProvider(
-        context,
-        notificationIdProvider,
-        channelId,
-        channelNameResourceId
+  private val defaultProvider =
+    DefaultMediaNotificationProvider(
+      context,
+      notificationIdProvider,
+      channelId,
+      channelNameResourceId
     )
 
-    fun setSmallIcon(iconResId: Int): EchoNotificationProvider {
-        defaultProvider.setSmallIcon(iconResId)
-        return this
+  fun setSmallIcon(iconResId: Int): EchoNotificationProvider {
+    defaultProvider.setSmallIcon(iconResId)
+    return this
+  }
+
+  override fun createNotification(
+    mediaSession: MediaSession,
+    customLayout: ImmutableList<CommandButton>,
+    actionFactory: MediaNotification.ActionFactory,
+    onNotificationChangedCallback: MediaNotification.Provider.Callback,
+  ): MediaNotification {
+    val mediaNotification =
+      defaultProvider.createNotification(
+        mediaSession,
+        customLayout,
+        actionFactory,
+        onNotificationChangedCallback
+      )
+
+    val player = mediaSession.player
+    val shouldBeOngoing =
+      player.playWhenReady &&
+        player.playbackState != Player.STATE_IDLE &&
+        player.playbackState != Player.STATE_ENDED
+
+    val notification = mediaNotification.notification
+    if (shouldBeOngoing) {
+      notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
+    } else {
+      notification.flags = notification.flags and Notification.FLAG_ONGOING_EVENT.inv()
     }
 
-    override fun createNotification(
-        mediaSession: MediaSession,
-        customLayout: ImmutableList<CommandButton>,
-        actionFactory: MediaNotification.ActionFactory,
-        onNotificationChangedCallback: MediaNotification.Provider.Callback,
-    ): MediaNotification {
-        val mediaNotification = defaultProvider.createNotification(
-            mediaSession,
-            customLayout,
-            actionFactory,
-            onNotificationChangedCallback
-        )
+    return MediaNotification(mediaNotification.notificationId, notification)
+  }
 
-        val player = mediaSession.player
-        val shouldBeOngoing = player.playWhenReady &&
-            player.playbackState != Player.STATE_IDLE &&
-            player.playbackState != Player.STATE_ENDED
-
-        val notification = mediaNotification.notification
-        if (shouldBeOngoing) {
-            notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
-        } else {
-            notification.flags = notification.flags and Notification.FLAG_ONGOING_EVENT.inv()
-        }
-
-        return MediaNotification(mediaNotification.notificationId, notification)
-    }
-
-    override fun handleCustomCommand(session: MediaSession, action: String, extras: Bundle): Boolean =
-        defaultProvider.handleCustomCommand(session, action, extras)
+  override fun handleCustomCommand(session: MediaSession, action: String, extras: Bundle): Boolean =
+    defaultProvider.handleCustomCommand(session, action, extras)
 }

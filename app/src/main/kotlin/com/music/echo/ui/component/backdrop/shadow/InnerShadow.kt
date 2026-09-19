@@ -24,27 +24,26 @@ import androidx.compose.ui.util.lerp
 
 @Immutable
 data class InnerShadow(
-    val radius: Dp = 24f.dp,
-    val offset: DpOffset = DpOffset(0f.dp, radius),
-    val color: Color = Color.Black.copy(alpha = 0.15f),
-    @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1f,
-    val blendMode: BlendMode = DrawScope.DefaultBlendMode
+  val radius: Dp = 24f.dp,
+  val offset: DpOffset = DpOffset(0f.dp, radius),
+  val color: Color = Color.Black.copy(alpha = 0.15f),
+  @param:FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1f,
+  val blendMode: BlendMode = DrawScope.DefaultBlendMode
 ) {
 
-    companion object {
+  companion object {
 
-        @Stable
-        val Default: InnerShadow = InnerShadow()
-    }
+    @Stable val Default: InnerShadow = InnerShadow()
+  }
 }
 
 @Stable
 fun lerp(start: InnerShadow, stop: InnerShadow, fraction: Float): InnerShadow {
-    return InnerShadow(
-        radius = lerp(start.radius, stop.radius, fraction),
-        offset = lerp(start.offset, stop.offset, fraction),
-        color = lerp(start.color, stop.color, fraction),
-        alpha = lerp(start.alpha, stop.alpha, fraction),
-        blendMode = if (fraction < 0.5f) start.blendMode else stop.blendMode
-    )
+  return InnerShadow(
+    radius = lerp(start.radius, stop.radius, fraction),
+    offset = lerp(start.offset, stop.offset, fraction),
+    color = lerp(start.color, stop.color, fraction),
+    alpha = lerp(start.alpha, stop.alpha, fraction),
+    blendMode = if (fraction < 0.5f) start.blendMode else stop.blendMode
+  )
 }

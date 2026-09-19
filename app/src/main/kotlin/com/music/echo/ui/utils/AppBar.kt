@@ -20,52 +20,52 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun appBarScrollBehavior(
-    state: TopAppBarState = rememberTopAppBarState(),
-    canScroll: () -> Boolean = { true },
-    snapAnimationSpec: AnimationSpec<Float>? = spring(stiffness = Spring.StiffnessMediumLow),
-    flingAnimationSpec: DecayAnimationSpec<Float>? = rememberSplineBasedDecay(),
+  state: TopAppBarState = rememberTopAppBarState(),
+  canScroll: () -> Boolean = { true },
+  snapAnimationSpec: AnimationSpec<Float>? = spring(stiffness = Spring.StiffnessMediumLow),
+  flingAnimationSpec: DecayAnimationSpec<Float>? = rememberSplineBasedDecay(),
 ): TopAppBarScrollBehavior =
-    AppBarScrollBehavior(
-        state = state,
-        snapAnimationSpec = snapAnimationSpec,
-        flingAnimationSpec = flingAnimationSpec,
-        canScroll = canScroll,
-    )
+  AppBarScrollBehavior(
+    state = state,
+    snapAnimationSpec = snapAnimationSpec,
+    flingAnimationSpec = flingAnimationSpec,
+    canScroll = canScroll,
+  )
 
 @ExperimentalMaterial3Api
 class AppBarScrollBehavior(
-    override val state: TopAppBarState,
-    override val snapAnimationSpec: AnimationSpec<Float>?,
-    override val flingAnimationSpec: DecayAnimationSpec<Float>?,
-    val canScroll: () -> Boolean = { true },
+  override val state: TopAppBarState,
+  override val snapAnimationSpec: AnimationSpec<Float>?,
+  override val flingAnimationSpec: DecayAnimationSpec<Float>?,
+  val canScroll: () -> Boolean = { true },
 ) : TopAppBarScrollBehavior {
-    override val isPinned: Boolean = true
-    override var nestedScrollConnection =
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // Return Offset.Zero so the AppBar remains pinned and never hides
-                return Offset.Zero
-            }
+  override val isPinned: Boolean = true
+  override var nestedScrollConnection =
+    object : NestedScrollConnection {
+      override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        // Return Offset.Zero so the AppBar remains pinned and never hides
+        return Offset.Zero
+      }
 
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource,
-            ): Offset {
-                // Return Offset.Zero so the AppBar remains pinned and never hides
-                return Offset.Zero
-            }
-        }
+      override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource,
+      ): Offset {
+        // Return Offset.Zero so the AppBar remains pinned and never hides
+        return Offset.Zero
+      }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 suspend fun TopAppBarState.resetHeightOffset() {
-    if (heightOffset != 0f) {
-        animate(
-            initialValue = heightOffset,
-            targetValue = 0f,
-        ) { value, _ ->
-            heightOffset = value
-        }
+  if (heightOffset != 0f) {
+    animate(
+      initialValue = heightOffset,
+      targetValue = 0f,
+    ) { value, _ ->
+      heightOffset = value
     }
+  }
 }

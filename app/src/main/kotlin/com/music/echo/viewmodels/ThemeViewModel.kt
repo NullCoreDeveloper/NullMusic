@@ -10,25 +10,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ThemeViewModel : ViewModel() {
-    
-    private val _darkMode = MutableStateFlow(DarkMode.AUTO)
-    val darkMode: StateFlow<DarkMode> = _darkMode.asStateFlow()
 
-    private val _pureBlack = MutableStateFlow(false)
-    val pureBlack: StateFlow<Boolean> = _pureBlack.asStateFlow()
+  private val _darkMode = MutableStateFlow(DarkMode.AUTO)
+  val darkMode: StateFlow<DarkMode> = _darkMode.asStateFlow()
 
-    private val _selectedThemeColorInt = MutableStateFlow(DefaultThemeColor.hashCode())
-    val selectedThemeColorInt: StateFlow<Int> = _selectedThemeColorInt.asStateFlow()
+  private val _pureBlack = MutableStateFlow(false)
+  val pureBlack: StateFlow<Boolean> = _pureBlack.asStateFlow()
 
-    fun updateDarkMode(mode: DarkMode) {
-        _darkMode.value = mode
-    }
+  private val _selectedThemeColorInt = MutableStateFlow(DefaultThemeColor.hashCode())
+  val selectedThemeColorInt: StateFlow<Int> = _selectedThemeColorInt.asStateFlow()
 
-    fun updatePureBlack(enabled: Boolean) {
-        _pureBlack.value = enabled
-    }
+  fun updateDarkMode(mode: DarkMode) {
+    _darkMode.value = mode
+  }
 
-    fun updateThemeColor(colorInt: Int) {
-        _selectedThemeColorInt.value = colorInt
-    }
+  fun updatePureBlack(enabled: Boolean) {
+    _pureBlack.value = enabled
+  }
+
+  fun updateThemeColor(colorInt: Int) {
+    _selectedThemeColorInt.value = colorInt
+  }
 }

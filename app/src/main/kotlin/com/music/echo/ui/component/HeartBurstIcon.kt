@@ -23,73 +23,75 @@ import kotlin.math.sin
 
 @Composable
 fun HeartBurstIcon(
-    isLiked: Boolean,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = 24.dp,
-    likedColor: Color = Color(0xFFFF4081), // Pink color
-    unlikedColor: Color = LocalContentColor.current
+  isLiked: Boolean,
+  modifier: Modifier = Modifier,
+  iconSize: Dp = 24.dp,
+  likedColor: Color = Color(0xFFFF4081), // Pink color
+  unlikedColor: Color = LocalContentColor.current
 ) {
-    val burstAnim = remember { Animatable(0f) }
-    var wasLiked by remember { mutableStateOf(isLiked) }
-    
-    LaunchedEffect(isLiked) {
-        if (isLiked && !wasLiked) {
-            burstAnim.snapTo(0f)
-            burstAnim.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing)
-            )
-        }
-        wasLiked = isLiked
-    }
+  val burstAnim = remember { Animatable(0f) }
+  var wasLiked by remember { mutableStateOf(isLiked) }
 
-    val actualScale = if (burstAnim.isRunning) {
-        if (burstAnim.value < 0.3f) 1f + burstAnim.value else 1.3f - (burstAnim.value - 0.3f) * 0.4f
+  LaunchedEffect(isLiked) {
+    if (isLiked && !wasLiked) {
+      burstAnim.snapTo(0f)
+      burstAnim.animateTo(
+        targetValue = 1f,
+        animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing)
+      )
+    }
+    wasLiked = isLiked
+  }
+
+  val actualScale =
+    if (burstAnim.isRunning) {
+      if (burstAnim.value < 0.3f) 1f + burstAnim.value else 1.3f - (burstAnim.value - 0.3f) * 0.4f
     } else {
-        1f
+      1f
     }
 
-    Box(contentAlignment = Alignment.Center, modifier = modifier) {
-        // Draw the bursting particles
-        if (burstAnim.value > 0f && burstAnim.value < 1f) {
-            val progress = burstAnim.value
-            val alpha = (1f - progress).coerceIn(0f, 1f)
-            
-            val particleCount = 6
-            val heartPainter = painterResource(id = R.drawable.favorite)
-            
-            Canvas(modifier = Modifier.size(iconSize * 2.5f)) {
-                val center = Offset(size.width / 2, size.height / 2)
-                val maxRadius = size.width / 2.2f
-                
-                for (i in 0 until particleCount) {
-                    val angle = (i * (360f / particleCount)) * (Math.PI / 180f)
-                    // Move outward
-                    val currentRadius = maxRadius * progress
-                    val x = center.x + cos(angle).toFloat() * currentRadius
-                    val y = center.y + sin(angle).toFloat() * currentRadius
-                    
-                    val particleSize = (size.width * 0.25f) * (1f - progress * 0.3f)
-                    
-                    translate(left = x - particleSize/2, top = y - particleSize/2) {
-                        with(heartPainter) {
-                            draw(
-                                size = Size(particleSize, particleSize),
-                                alpha = alpha,
-                                colorFilter = ColorFilter.tint(likedColor)
-                            )
-                        }
-                    }
-                }
+  Box(contentAlignment = Alignment.Center, modifier = modifier) {
+    // Draw the bursting particles
+    if (burstAnim.value > 0f && burstAnim.value < 1f) {
+      val progress = burstAnim.value
+      val alpha = (1f - progress).coerceIn(0f, 1f)
+
+      val particleCount = 6
+      val heartPainter = painterResource(id = R.drawable.favorite)
+
+      Canvas(modifier = Modifier.size(iconSize * 2.5f)) {
+        val center = Offset(size.width / 2, size.height / 2)
+        val maxRadius = size.width / 2.2f
+
+        for (i in 0 until particleCount) {
+          val angle = (i * (360f / particleCount)) * (Math.PI / 180f)
+          // Move outward
+          val currentRadius = maxRadius * progress
+          val x = center.x + cos(angle).toFloat() * currentRadius
+          val y = center.y + sin(angle).toFloat() * currentRadius
+
+          val particleSize = (size.width * 0.25f) * (1f - progress * 0.3f)
+
+          translate(left = x - particleSize / 2, top = y - particleSize / 2) {
+            with(heartPainter) {
+              draw(
+                size = Size(particleSize, particleSize),
+                alpha = alpha,
+                colorFilter = ColorFilter.tint(likedColor)
+              )
             }
+          }
         }
-
-        // Main Icon
-        Icon(
-            painter = painterResource(id = if (isLiked) R.drawable.favorite else R.drawable.favorite_border),
-            contentDescription = null,
-            tint = if (isLiked) likedColor else unlikedColor,
-            modifier = Modifier.size(iconSize * actualScale)
-        )
+      }
     }
+
+    // Main Icon
+    Icon(
+      painter =
+        painterResource(id = if (isLiked) R.drawable.favorite else R.drawable.favorite_border),
+      contentDescription = null,
+      tint = if (isLiked) likedColor else unlikedColor,
+      modifier = Modifier.size(iconSize * actualScale)
+    )
+  }
 }

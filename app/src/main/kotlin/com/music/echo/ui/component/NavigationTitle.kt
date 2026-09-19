@@ -34,73 +34,66 @@ import iad1tya.echo.music.R
 
 @Composable
 fun NavigationTitle(
-    title: String,
-    modifier: Modifier = Modifier,
-    label: String? = null,
-    thumbnail: (@Composable () -> Unit)? = null,
-    onClick: (() -> Unit)? = null,
-    onPlayAllClick: (() -> Unit)? = null,
+  title: String,
+  modifier: Modifier = Modifier,
+  label: String? = null,
+  thumbnail: (@Composable () -> Unit)? = null,
+  onClick: (() -> Unit)? = null,
+  onPlayAllClick: (() -> Unit)? = null,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-            .clickable(enabled = onClick != null) {
-                onClick?.invoke()
-            }
-            .padding(horizontal = 12.dp, vertical = 12.dp)
-    ) {
-        thumbnail?.invoke()
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+        .clickable(enabled = onClick != null) { onClick?.invoke() }
+        .padding(horizontal = 12.dp, vertical = 12.dp)
+  ) {
+    thumbnail?.invoke()
 
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1f)
-        ) {
-            label?.let { label ->
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelLarge,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+    Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+      label?.let { label ->
+        Text(
+          text = label,
+          style = MaterialTheme.typography.labelLarge,
+          overflow = TextOverflow.Ellipsis,
+        )
+      }
 
-            Text(
-                text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-            )
-        }
-
-        onPlayAllClick?.let { playAllClick ->
-            OutlinedButton(
-                onClick = playAllClick,
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
-                modifier = Modifier
-                    .height(24.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.play_all),
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-        }
-
-        if (onClick != null) {
-            Icon(
-                painter = painterResource(R.drawable.arrow_forward),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+      Text(
+        text = title.uppercase(),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+      )
     }
+
+    onPlayAllClick?.let { playAllClick ->
+      OutlinedButton(
+        onClick = playAllClick,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)),
+        colors =
+          ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+          ),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
+        modifier = Modifier.height(24.dp)
+      ) {
+        Text(text = stringResource(R.string.play_all), style = MaterialTheme.typography.labelSmall)
+      }
+    }
+
+    if (onClick != null) {
+      Icon(
+        painter = painterResource(R.drawable.arrow_forward),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant
+      )
+    }
+  }
 }

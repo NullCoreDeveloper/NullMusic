@@ -22,39 +22,31 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BigSeekBar(
-    progressProvider: () -> Float,
-    onProgressChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
-    background: Color = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.13f),
-    color: Color = MaterialTheme.colorScheme.primary,
+  progressProvider: () -> Float,
+  onProgressChange: (Float) -> Unit,
+  modifier: Modifier = Modifier,
+  background: Color = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.13f),
+  color: Color = MaterialTheme.colorScheme.primary,
 ) {
-    var width by remember {
-        mutableFloatStateOf(0f)
-    }
+  var width by remember { mutableFloatStateOf(0f) }
 
-    Canvas(
-        modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .onPlaced {
-                width = it.size.width.toFloat()
-            }.pointerInput(progressProvider) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    onProgressChange(
-                        (progressProvider() + dragAmount * 1.2f / width).coerceIn(
-                            0f,
-                            1f
-                        )
-                    )
-                }
-            },
-    ) {
-        drawRect(color = background)
+  Canvas(
+    modifier
+      .fillMaxWidth()
+      .height(48.dp)
+      .clip(RoundedCornerShape(16.dp))
+      .onPlaced { width = it.size.width.toFloat() }
+      .pointerInput(progressProvider) {
+        detectHorizontalDragGestures { _, dragAmount ->
+          onProgressChange((progressProvider() + dragAmount * 1.2f / width).coerceIn(0f, 1f))
+        }
+      },
+  ) {
+    drawRect(color = background)
 
-        drawRect(
-            color = color,
-            size = size.copy(width = size.width * progressProvider()),
-        )
-    }
+    drawRect(
+      color = color,
+      size = size.copy(width = size.width * progressProvider()),
+    )
+  }
 }

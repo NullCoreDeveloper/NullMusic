@@ -38,143 +38,123 @@ import iad1tya.echo.music.utils.PlaybackLogEntry
 import iad1tya.echo.music.utils.PlaybackLogLevel
 
 @Composable
-fun PlaybackLogsDialog(
-    logs: List<PlaybackLogEntry>,
-    onClear: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    val listState = rememberLazyListState()
-    
-    LaunchedEffect(logs.size) {
-        if (logs.isNotEmpty()) {
-            listState.animateScrollToItem(logs.size - 1)
-        }
-    }
-    
-    val context = LocalContext.current
+fun PlaybackLogsDialog(logs: List<PlaybackLogEntry>, onClear: () -> Unit, onDismiss: () -> Unit) {
+  val listState = rememberLazyListState()
 
-    DefaultDialog(
-        onDismiss = onDismiss,
-        icon = { Icon(painterResource(R.drawable.bug_report), contentDescription = null) },
-        title = { Text(stringResource(R.string.playback_logs_title)) },
-        buttons = {
-            TextButton(
-                onClick = {
-                    val textToCopy = logs.joinToString("\n") { log ->
-                        buildString {
-                            append(log.timestamp)
-                            append(" [")
-                            append(log.level.name)
-                            append("] ")
-                            append(log.message)
-                            log.details?.let { d -> append(" -- $d") }
-                        }
-                    }
-                    val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    val clip = android.content.ClipData.newPlainText("PlaybackLogs", textToCopy)
-                    cm.setPrimaryClip(clip)
-                    Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show()
-                },
-                enabled = logs.isNotEmpty()
-            ) {
-                Text(stringResource(R.string.copy))
-            }
-            TextButton(onClick = onClear) {
-                Text(stringResource(R.string.clear))
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = onDismiss) {
-                Text(stringResource(android.R.string.ok))
-            }
-        }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-        ) {
-            if (logs.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.no_playback_logs),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(logs) { log ->
-                        PlaybackLogEntryItem(log)
-                    }
-                }
-            }
-        }
+  LaunchedEffect(logs.size) {
+    if (logs.isNotEmpty()) {
+      listState.animateScrollToItem(logs.size - 1)
     }
+  }
+
+  val context = LocalContext.current
+
+  DefaultDialog(
+    onDismiss = onDismiss,
+    icon = { Icon(painterResource(R.drawable.bug_report), contentDescription = null) },
+    title = { Text(stringResource(R.string.playback_logs_title)) },
+    buttons = {
+      TextButton(
+        onClick = {
+          val textToCopy =
+            logs.joinToString("\n") { log ->
+              buildString {
+                append(log.timestamp)
+                append(" [")
+                append(log.level.name)
+                append("] ")
+                append(log.message)
+                log.details?.let { d -> append(" -- $d") }
+              }
+            }
+          val cm =
+            context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+              as android.content.ClipboardManager
+          val clip = android.content.ClipData.newPlainText("PlaybackLogs", textToCopy)
+          cm.setPrimaryClip(clip)
+          Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show()
+        },
+        enabled = logs.isNotEmpty()
+      ) {
+        Text(stringResource(R.string.copy))
+      }
+      TextButton(onClick = onClear) { Text(stringResource(R.string.clear)) }
+      Spacer(modifier = Modifier.width(8.dp))
+      Button(onClick = onDismiss) { Text(stringResource(android.R.string.ok)) }
+    }
+  ) {
+    Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+      if (logs.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+            text = stringResource(R.string.no_playback_logs),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+      } else {
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+          items(logs) { log -> PlaybackLogEntryItem(log) }
+        }
+      }
+    }
+  }
 }
 
 @Composable
 private fun PlaybackLogEntryItem(log: PlaybackLogEntry) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = log.timestamp,
-                style = MaterialTheme.typography.labelSmall,
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = when (log.level) {
-                    PlaybackLogLevel.ERROR -> MaterialTheme.colorScheme.errorContainer
-                    PlaybackLogLevel.WARNING -> Color(0xFFFFF3CD)
-                    PlaybackLogLevel.BOT -> MaterialTheme.colorScheme.secondaryContainer
-                    PlaybackLogLevel.INFO -> MaterialTheme.colorScheme.primaryContainer
-                    PlaybackLogLevel.DEBUG -> MaterialTheme.colorScheme.surfaceVariant
-                }
-            ) {
-                Text(
-                    text = log.level.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                    color = when (log.level) {
-                        PlaybackLogLevel.ERROR -> MaterialTheme.colorScheme.onErrorContainer
-                        PlaybackLogLevel.WARNING -> Color(0xFF856404)
-                        PlaybackLogLevel.BOT -> MaterialTheme.colorScheme.onSecondaryContainer
-                        PlaybackLogLevel.INFO -> MaterialTheme.colorScheme.onPrimaryContainer
-                        PlaybackLogLevel.DEBUG -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
-            }
-        }
-
+  Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+      Text(
+        text = log.timestamp,
+        style = MaterialTheme.typography.labelSmall,
+        fontFamily = FontFamily.Monospace,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      Surface(
+        shape = RoundedCornerShape(8.dp),
+        color =
+          when (log.level) {
+            PlaybackLogLevel.ERROR -> MaterialTheme.colorScheme.errorContainer
+            PlaybackLogLevel.WARNING -> Color(0xFFFFF3CD)
+            PlaybackLogLevel.BOT -> MaterialTheme.colorScheme.secondaryContainer
+            PlaybackLogLevel.INFO -> MaterialTheme.colorScheme.primaryContainer
+            PlaybackLogLevel.DEBUG -> MaterialTheme.colorScheme.surfaceVariant
+          }
+      ) {
         Text(
-            text = log.message,
-            style = MaterialTheme.typography.bodySmall,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = if (log.level == PlaybackLogLevel.BOT) androidx.compose.ui.text.font.FontWeight.Bold else null
+          text = log.level.name,
+          style = MaterialTheme.typography.labelSmall,
+          modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+          color =
+            when (log.level) {
+              PlaybackLogLevel.ERROR -> MaterialTheme.colorScheme.onErrorContainer
+              PlaybackLogLevel.WARNING -> Color(0xFF856404)
+              PlaybackLogLevel.BOT -> MaterialTheme.colorScheme.onSecondaryContainer
+              PlaybackLogLevel.INFO -> MaterialTheme.colorScheme.onPrimaryContainer
+              PlaybackLogLevel.DEBUG -> MaterialTheme.colorScheme.onSurfaceVariant
+            }
         )
-        log.details?.let { details ->
-            Text(
-                text = details,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+      }
     }
+
+    Text(
+      text = log.message,
+      style = MaterialTheme.typography.bodySmall,
+      fontFamily = FontFamily.Monospace,
+      fontWeight =
+        if (log.level == PlaybackLogLevel.BOT) androidx.compose.ui.text.font.FontWeight.Bold
+        else null
+    )
+    log.details?.let { details ->
+      Text(
+        text = details,
+        style = MaterialTheme.typography.bodySmall,
+        fontFamily = FontFamily.Monospace,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis
+      )
+    }
+  }
 }

@@ -1,5 +1,3 @@
-
-
 package echo.music.iad1tya.db.entities
 
 import androidx.compose.runtime.Immutable
@@ -11,54 +9,50 @@ import androidx.room.Relation
 data class Song
 @JvmOverloads
 constructor(
-    @Embedded val song: SongEntity,
-
-    @Relation(
-        entity = ArtistEntity::class,
-        entityColumn = "id",
-        parentColumn = "id",
-        associateBy =
-            Junction(
-                value = SortedSongArtistMap::class,
-                parentColumn = "songId",
-                entityColumn = "artistId",
-            ),
-    )
-    val artists: List<ArtistEntity>,
-
-    @Relation(
-        entity = AlbumEntity::class,
-        entityColumn = "id",
-        parentColumn = "id",
-        associateBy =
-            Junction(
-                value = SongAlbumMap::class,
-                parentColumn = "songId",
-                entityColumn = "albumId",
-            ),
-    )
-    val album: AlbumEntity? = null,
-
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id"
-    )
-    val format: FormatEntity? = null,
+  @Embedded val song: SongEntity,
+  @Relation(
+    entity = ArtistEntity::class,
+    entityColumn = "id",
+    parentColumn = "id",
+    associateBy =
+      Junction(
+        value = SortedSongArtistMap::class,
+        parentColumn = "songId",
+        entityColumn = "artistId",
+      ),
+  )
+  val artists: List<ArtistEntity>,
+  @Relation(
+    entity = AlbumEntity::class,
+    entityColumn = "id",
+    parentColumn = "id",
+    associateBy =
+      Junction(
+        value = SongAlbumMap::class,
+        parentColumn = "songId",
+        entityColumn = "albumId",
+      ),
+  )
+  val album: AlbumEntity? = null,
+  @Relation(parentColumn = "id", entityColumn = "id") val format: FormatEntity? = null,
 ) : LocalItem() {
-    override val id: String
-        get() = song.id
-    override val title: String
-        get() = song.title
-    override val thumbnailUrl: String?
-        get() {
-            if (song.isLocal) {
-                val mediaStoreAlbumId = song.albumId?.removePrefix("LOCAL_ALBUM_")?.toLongOrNull()
-                if (mediaStoreAlbumId != null && mediaStoreAlbumId > 0) {
-                    return "content://media/external/audio/albumart/$mediaStoreAlbumId"
-                }
-            }
-            return song.thumbnailUrl
+  override val id: String
+    get() = song.id
+
+  override val title: String
+    get() = song.title
+
+  override val thumbnailUrl: String?
+    get() {
+      if (song.isLocal) {
+        val mediaStoreAlbumId = song.albumId?.removePrefix("LOCAL_ALBUM_")?.toLongOrNull()
+        if (mediaStoreAlbumId != null && mediaStoreAlbumId > 0) {
+          return "content://media/external/audio/albumart/$mediaStoreAlbumId"
         }
-    val romanizeLyrics: Boolean
-        get() = song.romanizeLyrics
+      }
+      return song.thumbnailUrl
+    }
+
+  val romanizeLyrics: Boolean
+    get() = song.romanizeLyrics
 }

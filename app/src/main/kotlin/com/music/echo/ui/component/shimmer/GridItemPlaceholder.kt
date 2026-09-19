@@ -27,40 +27,38 @@ import iad1tya.echo.music.utils.rememberEnumPreference
 
 @Composable
 fun GridItemPlaceHolder(
-    modifier: Modifier = Modifier,
-    thumbnailShape: Shape = RoundedCornerShape(ThumbnailCornerRadius),
-    fillMaxWidth: Boolean = false,
+  modifier: Modifier = Modifier,
+  thumbnailShape: Shape = RoundedCornerShape(ThumbnailCornerRadius),
+  fillMaxWidth: Boolean = false,
 ) {
-    val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
-    val gridHeight = if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
-    
-    Column(
-        modifier =
+  val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
+  val gridHeight =
+    if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
+
+  Column(
+    modifier =
+      if (fillMaxWidth) {
+        modifier.padding(12.dp).fillMaxWidth()
+      } else {
+        modifier.padding(12.dp).width(gridHeight)
+      },
+  ) {
+    Spacer(
+      modifier =
         if (fillMaxWidth) {
-            modifier
-                .padding(12.dp)
-                .fillMaxWidth()
-        } else {
-            modifier
-                .padding(12.dp)
-                .width(gridHeight)
-        },
-    ) {
-        Spacer(
-            modifier =
-            if (fillMaxWidth) {
-                Modifier.fillMaxWidth()
-            } else {
-                Modifier.height(gridHeight)
-            }.aspectRatio(1f)
-                .clip(thumbnailShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        )
+            Modifier.fillMaxWidth()
+          } else {
+            Modifier.height(gridHeight)
+          }
+          .aspectRatio(1f)
+          .clip(thumbnailShape)
+          .background(MaterialTheme.colorScheme.surfaceVariant),
+    )
 
-        Spacer(modifier = Modifier.height(6.dp))
+    Spacer(modifier = Modifier.height(6.dp))
 
-        TextPlaceholder()
+    TextPlaceholder()
 
-        TextPlaceholder()
-    }
+    TextPlaceholder()
+  }
 }

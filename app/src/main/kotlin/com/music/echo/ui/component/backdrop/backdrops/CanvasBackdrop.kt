@@ -19,26 +19,20 @@ import androidx.compose.ui.unit.Density
 import iad1tya.echo.music.ui.component.backdrop.Backdrop
 
 @Composable
-fun rememberCanvasBackdrop(
-    onDraw: DrawScope.() -> Unit
-): Backdrop {
-    return remember(onDraw) {
-        CanvasBackdrop(onDraw)
-    }
+fun rememberCanvasBackdrop(onDraw: DrawScope.() -> Unit): Backdrop {
+  return remember(onDraw) { CanvasBackdrop(onDraw) }
 }
 
 @Immutable
-private class CanvasBackdrop(
-    val onDraw: DrawScope.() -> Unit
-) : Backdrop {
+private class CanvasBackdrop(val onDraw: DrawScope.() -> Unit) : Backdrop {
 
-    override val isCoordinatesDependent: Boolean = false
+  override val isCoordinatesDependent: Boolean = false
 
-    override fun DrawScope.drawBackdrop(
-        density: Density,
-        coordinates: LayoutCoordinates?,
-        layerBlock: (GraphicsLayerScope.() -> Unit)?
-    ) {
-        onDraw()
-    }
+  override fun DrawScope.drawBackdrop(
+    density: Density,
+    coordinates: LayoutCoordinates?,
+    layerBlock: (GraphicsLayerScope.() -> Unit)?
+  ) {
+    onDraw()
+  }
 }

@@ -20,59 +20,57 @@ import androidx.compose.ui.platform.InspectorInfo
 import iad1tya.echo.music.ui.component.backdrop.internal.recordLayer
 
 fun Modifier.layerBackdrop(backdrop: LayerBackdrop): Modifier =
-    this then LayerBackdropElement(backdrop)
+  this then LayerBackdropElement(backdrop)
 
-private class LayerBackdropElement(
-    val backdrop: LayerBackdrop
-) : ModifierNodeElement<LayerBackdropNode>() {
+private class LayerBackdropElement(val backdrop: LayerBackdrop) :
+  ModifierNodeElement<LayerBackdropNode>() {
 
-    override fun create(): LayerBackdropNode {
-        return LayerBackdropNode(backdrop)
+  override fun create(): LayerBackdropNode {
+    return LayerBackdropNode(backdrop)
+  }
+
+  override fun update(node: LayerBackdropNode) {
+    if (node.backdrop != backdrop) {
+      node.backdrop.layerCoordinates = null
+      node.backdrop = backdrop
     }
+    node.invalidateDraw()
+  }
 
-    override fun update(node: LayerBackdropNode) {
-        if (node.backdrop != backdrop) {
-            node.backdrop.layerCoordinates = null
-            node.backdrop = backdrop
-        }
-        node.invalidateDraw()
-    }
+  override fun InspectorInfo.inspectableProperties() {
+    name = "layerBackdrop"
+    properties["backdrop"] = backdrop
+  }
 
-    override fun InspectorInfo.inspectableProperties() {
-        name = "layerBackdrop"
-        properties["backdrop"] = backdrop
-    }
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is LayerBackdropElement) return false
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is LayerBackdropElement) return false
+    if (backdrop != other.backdrop) return false
 
-        if (backdrop != other.backdrop) return false
+    return true
+  }
 
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return backdrop.hashCode()
-    }
+  override fun hashCode(): Int {
+    return backdrop.hashCode()
+  }
 }
 
-private class LayerBackdropNode(
-    var backdrop: LayerBackdrop
-) : DrawModifierNode, GlobalPositionAwareModifierNode, Modifier.Node() {
+private class LayerBackdropNode(var backdrop: LayerBackdrop) :
+  DrawModifierNode, GlobalPositionAwareModifierNode, Modifier.Node() {
 
-    override fun ContentDrawScope.draw() {
-        drawContent()
-        recordLayer(this@LayerBackdropNode, backdrop.graphicsLayer) { backdrop.onDraw(this@draw) }
-    }
+  override fun ContentDrawScope.draw() {
+    drawContent()
+    recordLayer(this@LayerBackdropNode, backdrop.graphicsLayer) { backdrop.onDraw(this@draw) }
+  }
 
-    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
-        if (coordinates.isAttached) {
-            backdrop.layerCoordinates = coordinates
-        }
+  override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
+    if (coordinates.isAttached) {
+      backdrop.layerCoordinates = coordinates
     }
+  }
 
-    override fun onDetach() {
-        backdrop.layerCoordinates = null
-    }
+  override fun onDetach() {
+    backdrop.layerCoordinates = null
+  }
 }

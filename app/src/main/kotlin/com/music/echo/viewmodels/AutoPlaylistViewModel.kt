@@ -29,22 +29,21 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AutoPlaylistViewModel
 @Inject
 constructor(
-    @ApplicationContext context: Context,
-    private val database: MusicDatabase,
-    savedStateHandle: SavedStateHandle,
-    private val syncUtils: SyncUtils,
+  @ApplicationContext context: Context,
+  private val database: MusicDatabase,
+  savedStateHandle: SavedStateHandle,
+  private val syncUtils: SyncUtils,
 ) : ViewModel() {
-    val playlist = savedStateHandle.get<String>("playlist")!!
+  val playlist = savedStateHandle.get<String>("playlist")!!
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
+  private val _isRefreshing = MutableStateFlow(false)
+  val isRefreshing = _isRefreshing.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val likedSongs =
@@ -60,47 +59,41 @@ constructor(
                     Unit
                 )
             }
-            .distinctUntilChanged()
-            .flatMapLatest { (triple, exportedSongIds, _) ->
-                val (sortDesc, hideExplicit, hideVideoSongs) = triple
-                val (sortType, descending) = sortDesc
-                when (playlist) {
-                    "liked" -> database.likedSongs(sortType, descending)
-                        .map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
-
-                    "downloaded" -> database.downloadedSongs(sortType, descending)
-                        .map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
-
-                    "uploaded" -> database.uploadedSongs(sortType, descending)
-                        .map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
-
-                    "exported" -> {
-                        val ids = exportedSongIds.split(",").filter { it.isNotBlank() }
-                        database.getSongsByIdsFlow(ids)
-                            .map { it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs) }
-                    }
-
-                    else -> kotlinx.coroutines.flow.flowOf(emptyList())
-                }
+          "downloaded" ->
+            database.downloadedSongs(sortType, descending).map {
+              it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs)
             }
-            .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Lazily, emptyList())
-
-    fun syncLikedSongs() {
-        viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedSongs() }
-    }
-
-    fun syncUploadedSongs() {
-        viewModelScope.launch(Dispatchers.IO) { syncUtils.syncUploadedSongs() }
-    }
-
-    fun refresh() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isRefreshing.value = true
-            when (playlist) {
-                "liked" -> syncUtils.syncLikedSongsSuspend()
-                "uploaded" -> syncUtils.syncUploadedSongsSuspend()
+          "uploaded" ->
+            database.uploadedSongs(sortType, descending).map {
+              it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs)
             }
-            _isRefreshing.value = false
+          "exported" -> {
+            val ids = exportedSongIds.split(",").filter { it.isNotBlank() }
+            database.getSongsByIdsFlow(ids).map {
+              it.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs)
+            }
+          }
+          else -> kotlinx.coroutines.flow.flowOf(emptyList())
         }
+      }
+      .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Lazily, emptyList())
+
+  fun syncLikedSongs() {
+    viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedSongs() }
+  }
+
+  fun syncUploadedSongs() {
+    viewModelScope.launch(Dispatchers.IO) { syncUtils.syncUploadedSongs() }
+  }
+
+  fun refresh() {
+    viewModelScope.launch(Dispatchers.IO) {
+      _isRefreshing.value = true
+      when (playlist) {
+        "liked" -> syncUtils.syncLikedSongsSuspend()
+        "uploaded" -> syncUtils.syncUploadedSongsSuspend()
+      }
+      _isRefreshing.value = false
     }
+  }
 }

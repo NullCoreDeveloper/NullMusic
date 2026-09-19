@@ -5,7 +5,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,12 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,40 +66,65 @@ import java.net.URL
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 
 data class CommitData(
-    val sha: String,
-    val message: String,
-    val authorName: String,
-    val authorAvatarUrl: String?,
-    val authorLogin: String?,
-    val date: String,
-    val htmlUrl: String
+  val sha: String,
+  val message: String,
+  val authorName: String,
+  val authorAvatarUrl: String?,
+  val authorLogin: String?,
+  val date: String,
+  val htmlUrl: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun CommitScreen(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior
-) {
-    val context = LocalContext.current
-    var commits by remember { mutableStateOf<List<CommitData>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    var hasError by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+fun CommitScreen(navController: NavController, scrollBehavior: TopAppBarScrollBehavior) {
+  val context = LocalContext.current
+  var commits by remember { mutableStateOf<List<CommitData>>(emptyList()) }
+  var isLoading by remember { mutableStateOf(true) }
+  var hasError by remember { mutableStateOf(false) }
+  val coroutineScope = rememberCoroutineScope()
 
-    val pullToRefreshState = rememberPullToRefreshState()
+  val pullToRefreshState = rememberPullToRefreshState()
 
-    val scaleFraction = {
-        if (isLoading) 1f
-        else LinearOutSlowInEasing.transform(pullToRefreshState.distanceFraction).coerceIn(0f, 1f)
-    }
+  val scaleFraction = {
+    if (isLoading) 1f
+    else LinearOutSlowInEasing.transform(pullToRefreshState.distanceFraction).coerceIn(0f, 1f)
+  }
 
-    fun fetchCommits() {
-        isLoading = true
-        hasError = false
-        coroutineScope.launch(Dispatchers.IO) {
+  fun fetchCommits() {
+    isLoading = true
+    hasError = false
+    coroutineScope.launch(Dispatchers.IO) {
+      try {
+        val url =
+          URL(
+            "https://api.github.com/repos/EchoMusicApp/Echo-Music/commits?branch=main&per_page=50"
+          )
+        val json = url.openStream().bufferedReader().use { it.readText() }
+        val array = JSONArray(json)
+        val outputFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
+
+        val list = mutableListOf<CommitData>()
+        for (i in 0 until array.length()) {
+          val obj = array.getJSONObject(i)
+          val sha = obj.getString("sha")
+          val htmlUrl = obj.getString("html_url")
+
+          val commitObj = obj.getJSONObject("commit")
+          val fullMessage = commitObj.getString("message")
+
+          val message = fullMessage.lines().firstOrNull { it.isNotBlank() } ?: fullMessage
+
+          val authorObj = commitObj.getJSONObject("author")
+          val authorName = authorObj.optString("name", "Unknown")
+          val rawDate = authorObj.optString("date", "")
+          val formattedDate =
             try {
                 val url = URL("https://api.github.com/repos/NullCoreDeveloper/NullMusic/commits?branch=main&per_page=50")
                 val json = url.openStream().bufferedReader().use { it.readText() }
@@ -145,182 +166,205 @@ fun CommitScreen(
                     hasError = false
                 }
             } catch (e: Exception) {
-                Log.e("CommitScreen", "Error fetching commits: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    hasError = true
-                    isLoading = false
-                }
+              rawDate
             }
-        }
-    }
 
-    LaunchedEffect(Unit) {
-        fetchCommits()
-    }
+          val authorLogin =
+            if (!obj.isNull("author")) {
+              obj.getJSONObject("author").optString("login", null)
+            } else null
+          val authorAvatarUrl =
+            if (!obj.isNull("author")) {
+              obj.getJSONObject("author").optString("avatar_url", null)
+            } else null
 
-    Scaffold(
-        modifier = Modifier.pullToRefresh(
-            state = pullToRefreshState,
-            isRefreshing = isLoading,
-            onRefresh = { fetchCommits() }
-        ),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.commits_title),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = navController::navigateUp) {
-                        Icon(painterResource(R.drawable.arrow_back), null)
-                    }
-                },
-                scrollBehavior = scrollBehavior
+          list.add(
+            CommitData(
+              sha,
+              message,
+              authorName,
+              authorAvatarUrl,
+              authorLogin,
+              formattedDate,
+              htmlUrl
             )
+          )
         }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
-                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-        ) {
-            when {
-                hasError && !isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Error,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.error_loading_commits),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
 
-                commits.isNotEmpty() -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Spacer(Modifier.height(8.dp))
-                        Material3SettingsGroup(
-                            items = commits.map { commit ->
-                                Material3SettingsItem(
-                                    icon = painterResource(R.drawable.commit),
-                                    title = {
-                                        Text(
-                                            text = commit.message,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    description = {
-                                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                            ) {
-                                                Text(
-                                                    text = commit.authorName,
-                                                    style = MaterialTheme.typography.labelMedium,
-                                                    color = MaterialTheme.colorScheme.primary,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                                Text(
-                                                    text = "·",
-                                                    style = MaterialTheme.typography.labelMedium,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-                                                Text(
-                                                    text = commit.date,
-                                                    style = MaterialTheme.typography.labelMedium,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-                                            }
-                                            Surface(
-                                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                                shape = RoundedCornerShape(4.dp)
-                                            ) {
-                                                Text(
-                                                    text = commit.sha.take(7),
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                )
-                                            }
-                                        }
-                                    },
-                                    trailingContent = {
-                                        if (commit.authorAvatarUrl != null) {
-                                            AsyncImage(
-                                                model = commit.authorAvatarUrl,
-                                                contentDescription = commit.authorName,
-                                                modifier = Modifier
-                                                    .size(36.dp)
-                                                    .clip(CircleShape)
-                                            )
-                                        } else {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(36.dp)
-                                                    .background(
-                                                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                                                        shape = CircleShape
-                                                    ),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = commit.authorName.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        ContextCompat.startActivity(
-                                            context,
-                                            Intent(Intent.ACTION_VIEW, Uri.parse(commit.htmlUrl)),
-                                            null
-                                        )
-                                    }
-                                )
-                            }
-                        )
-                        Spacer(Modifier.height(16.dp))
-                    }
-                }
-            }
-
-            
-            Box(
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .graphicsLayer {
-                        scaleX = scaleFraction()
-                        scaleY = scaleFraction()
-                    }
-            ) {
-                PullToRefreshDefaults.LoadingIndicator(state = pullToRefreshState, isRefreshing = isLoading)
-            }
+        withContext(Dispatchers.Main) {
+          commits = list
+          isLoading = false
+          hasError = false
         }
+      } catch (e: Exception) {
+        Log.e("CommitScreen", "Error fetching commits: ${e.message}")
+        withContext(Dispatchers.Main) {
+          hasError = true
+          isLoading = false
+        }
+      }
     }
-}
+  }
 
+  LaunchedEffect(Unit) { fetchCommits() }
+
+  Scaffold(
+    modifier =
+      Modifier.pullToRefresh(
+        state = pullToRefreshState,
+        isRefreshing = isLoading,
+        onRefresh = { fetchCommits() }
+      ),
+    topBar = {
+      TopAppBar(
+        title = {
+          Column {
+            Text(
+              text = stringResource(R.string.commits_title),
+              style = MaterialTheme.typography.titleLarge,
+              fontWeight = FontWeight.Bold
+            )
+          }
+        },
+        navigationIcon = {
+          IconButton(onClick = navController::navigateUp) {
+            Icon(painterResource(R.drawable.arrow_back), null)
+          }
+        },
+        scrollBehavior = scrollBehavior
+      )
+    }
+  ) { paddingValues ->
+    Box(
+      modifier =
+        Modifier.fillMaxSize()
+          .background(MaterialTheme.colorScheme.background)
+          .padding(paddingValues)
+          .windowInsetsPadding(
+            LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+          )
+    ) {
+      when {
+        hasError && !isLoading -> {
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+              Icon(
+                Icons.Default.Error,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(48.dp)
+              )
+              Spacer(Modifier.height(16.dp))
+              Text(
+                text = stringResource(R.string.error_loading_commits),
+                color = MaterialTheme.colorScheme.error
+              )
+            }
+          }
+        }
+        commits.isNotEmpty() -> {
+          Column(
+            modifier =
+              Modifier.fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+          ) {
+            Spacer(Modifier.height(8.dp))
+            Material3SettingsGroup(
+              items =
+                commits.map { commit ->
+                  Material3SettingsItem(
+                    icon = painterResource(R.drawable.commit),
+                    title = {
+                      Text(text = commit.message, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    },
+                    description = {
+                      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                          Text(
+                            text = commit.authorName,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                          )
+                          Text(
+                            text = "·",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                          )
+                          Text(
+                            text = commit.date,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                          )
+                        }
+                        Surface(
+                          color = MaterialTheme.colorScheme.secondaryContainer,
+                          shape = RoundedCornerShape(4.dp)
+                        ) {
+                          Text(
+                            text = commit.sha.take(7),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                          )
+                        }
+                      }
+                    },
+                    trailingContent = {
+                      if (commit.authorAvatarUrl != null) {
+                        AsyncImage(
+                          model = commit.authorAvatarUrl,
+                          contentDescription = commit.authorName,
+                          modifier = Modifier.size(36.dp).clip(CircleShape)
+                        )
+                      } else {
+                        Box(
+                          modifier =
+                            Modifier.size(36.dp)
+                              .background(
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
+                                shape = CircleShape
+                              ),
+                          contentAlignment = Alignment.Center
+                        ) {
+                          Text(
+                            text =
+                              commit.authorName.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                          )
+                        }
+                      }
+                    },
+                    onClick = {
+                      ContextCompat.startActivity(
+                        context,
+                        Intent(Intent.ACTION_VIEW, Uri.parse(commit.htmlUrl)),
+                        null
+                      )
+                    }
+                  )
+                }
+            )
+            Spacer(Modifier.height(16.dp))
+          }
+        }
+      }
+
+      Box(
+        Modifier.align(Alignment.TopCenter).graphicsLayer {
+          scaleX = scaleFraction()
+          scaleY = scaleFraction()
+        }
+      ) {
+        PullToRefreshDefaults.LoadingIndicator(state = pullToRefreshState, isRefreshing = isLoading)
+      }
+    }
+  }
+}

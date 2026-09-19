@@ -1,4 +1,6 @@
 plugins {
+    id("com.diffplug.spotless") version "6.25.0"
+
     alias(libs.plugins.hilt) apply (false)
     alias(libs.plugins.kotlin.ksp) apply (false)
     alias(libs.plugins.kotlin.serialization) apply false
@@ -18,11 +20,23 @@ buildscript {
     }
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
+// tasks.register<Delete>("clean") {
+//    delete(rootProject.layout.buildDirectory)
+// }
 
 subprojects {
+    apply(plugin = "com.diffplug.spotless")
+    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        kotlin {
+            target("**/*.kt")
+            ktfmt().googleStyle()
+        }
+        kotlinGradle {
+            target("*.gradle.kts")
+            ktfmt().googleStyle()
+        }
+    }
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
             if (project.findProperty("enableComposeCompilerReports") == "true") {

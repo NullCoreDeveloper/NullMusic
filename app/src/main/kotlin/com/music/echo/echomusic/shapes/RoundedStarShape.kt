@@ -11,36 +11,36 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
-
 class RoundedStarShape(
-    private val sides: Int,
-    private val curve: Double = 0.09,
-    private val rotation: Float = 0f,
-    iterations: Int = 360,
-
+  private val sides: Int,
+  private val curve: Double = 0.09,
+  private val rotation: Float = 0f,
+  iterations: Int = 360,
 ) : Shape {
 
-    private companion object {
-        const val TWO_PI = 2 * PI
-    }
+  private companion object {
+    const val TWO_PI = 2 * PI
+  }
 
-    private val steps = (TWO_PI) / min(iterations, 360)
-    private val rotationDegree = (PI / 180) * rotation
+  private val steps = (TWO_PI) / min(iterations, 360)
+  private val rotationDegree = (PI / 180) * rotation
 
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline = Outline.Generic(Path().apply {
+  override fun createOutline(
+    size: Size,
+    layoutDirection: LayoutDirection,
+    density: Density
+  ): Outline =
+    Outline.Generic(
+      Path().apply {
         val r = min(size.height, size.width) * 0.4 * mapRange(1.0, 0.0, 0.5, 1.0, curve)
 
         val xCenter = size.width * .5f
         val yCenter = size.height * .5f
 
         fun pointAt(t: Double): Pair<Float, Float> {
-            val x = r * (cos(t - rotationDegree) * (1 + curve * cos(sides * t)))
-            val y = r * (sin(t - rotationDegree) * (1 + curve * cos(sides * t)))
-            return (x + xCenter).toFloat() to (y + yCenter).toFloat()
+          val x = r * (cos(t - rotationDegree) * (1 + curve * cos(sides * t)))
+          val y = r * (sin(t - rotationDegree) * (1 + curve * cos(sides * t)))
+          return (x + xCenter).toFloat() to (y + yCenter).toFloat()
         }
 
         val (startX, startY) = pointAt(0.0)
@@ -48,16 +48,16 @@ class RoundedStarShape(
 
         var t = steps
         while (t < TWO_PI) {
-            val (x, y) = pointAt(t)
-            lineTo(x, y)
-            t += steps
+          val (x, y) = pointAt(t)
+          lineTo(x, y)
+          t += steps
         }
 
         close()
-    })
+      }
+    )
 
-
-    private fun mapRange(a: Double, b: Double, c: Double, d: Double, x: Double): Double {
-        return (x - a) / (b - a) * (d - c) + c
-    }
+  private fun mapRange(a: Double, b: Double, c: Double, d: Double, x: Double): Double {
+    return (x - a) / (b - a) * (d - c) + c
+  }
 }

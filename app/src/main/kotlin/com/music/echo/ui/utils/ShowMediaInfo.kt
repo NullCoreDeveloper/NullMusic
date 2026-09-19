@@ -60,333 +60,302 @@ import iad1tya.echo.music.ui.component.shimmer.TextPlaceholder
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ShowMediaInfo(videoId: String) {
-    if (videoId.isBlank() || videoId.isEmpty()) return
+  if (videoId.isBlank() || videoId.isEmpty()) return
 
-    val windowInsets = WindowInsets.systemBars
-    var info by remember { mutableStateOf<MediaInfo?>(null) }
-    val database = LocalDatabase.current
-    var song by remember { mutableStateOf<Song?>(null) }
-    var currentFormat by remember { mutableStateOf<FormatEntity?>(null) }
-    val playerConnection = LocalPlayerConnection.current
-    val context = LocalContext.current
-    val sheetState = LocalBottomSheetPageState.current
-    val clipboardManager = LocalClipboard.current
+  val windowInsets = WindowInsets.systemBars
+  var info by remember { mutableStateOf<MediaInfo?>(null) }
+  val database = LocalDatabase.current
+  var song by remember { mutableStateOf<Song?>(null) }
+  var currentFormat by remember { mutableStateOf<FormatEntity?>(null) }
+  val playerConnection = LocalPlayerConnection.current
+  val context = LocalContext.current
+  val sheetState = LocalBottomSheetPageState.current
+  val clipboardManager = LocalClipboard.current
 
-    LaunchedEffect(Unit, videoId) {
-        info = YouTube.getMediaInfo(videoId).getOrNull()
+  LaunchedEffect(Unit, videoId) { info = YouTube.getMediaInfo(videoId).getOrNull() }
+  LaunchedEffect(Unit, videoId) { database.song(videoId).collect { song = it } }
+  LaunchedEffect(Unit, videoId) { database.format(videoId).collect { currentFormat = it } }
+
+  val albumArtShape = RoundedCornerShape(24.dp)
+
+  LazyColumn(
+    state = rememberLazyListState(),
+    modifier =
+      Modifier.fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+        .padding(bottom = windowInsets.asPaddingValues().calculateBottomPadding())
+        .padding(horizontal = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp)
+  ) {
+    item {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Text(
+          text = stringResource(R.string.song_info),
+          style = MaterialTheme.typography.headlineMedium,
+          fontWeight = FontWeight.Bold,
+          color = MaterialTheme.colorScheme.onBackground
+        )
+        TextButton(onClick = { sheetState.dismiss() }) { Text(stringResource(R.string.done)) }
+      }
     }
-    LaunchedEffect(Unit, videoId) {
-        database.song(videoId).collect { song = it }
-    }
-    LaunchedEffect(Unit, videoId) {
-        database.format(videoId).collect { currentFormat = it }
+
+    item {
+      Box(
+        modifier =
+          Modifier.fillMaxWidth()
+            .height(200.dp)
+            .clip(albumArtShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+      ) {
+        val imageUrl = song?.thumbnailUrl ?: "https://i.ytimg.com/vi/$videoId/maxresdefault.jpg"
+
+        AsyncImage(
+          model = imageUrl,
+          contentDescription = null,
+          modifier = Modifier.fillMaxSize(),
+          contentScale = ContentScale.Crop
+        )
+      }
     }
 
-    
-    val albumArtShape = RoundedCornerShape(24.dp)
+    if (song != null || info != null) {
+      item {
+        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.song_info_title_label),
+              value = song?.title ?: info?.title ?: stringResource(R.string.unknown),
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.artist),
+              value =
+                song?.artists?.joinToString { it.name }
+                  ?: info?.author
+                  ?: stringResource(R.string.unknown),
+              modifier = Modifier.weight(1f)
+            )
+          }
 
-    LazyColumn(
-        state = rememberLazyListState(),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(bottom = windowInsets.asPaddingValues().calculateBottomPadding())
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.song_info),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                TextButton(onClick = { sheetState.dismiss() }) {
-                    Text(stringResource(R.string.done))
-                }
-            }
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            val duration =
+              song?.song?.duration?.let { totalSeconds ->
+                val minutes = totalSeconds / 60
+                val seconds = totalSeconds % 60
+                "%d:%02d".format(minutes, seconds)
+              } ?: stringResource(R.string.unknown)
+            InfoItem(
+              label = stringResource(R.string.song_info_duration_label),
+              value = duration,
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.media_id),
+              value = song?.id ?: videoId,
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            val viewCount = info?.viewCount?.toInt()?.let { shortNumberFormatter(it) } ?: "N/A"
+            InfoItem(
+              label = stringResource(R.string.views),
+              value = stringResource(R.string.song_info_views_count, viewCount),
+              modifier = Modifier.weight(1f)
+            )
+            val likeCount = info?.like?.toInt()?.let { shortNumberFormatter(it) } ?: "N/A"
+            InfoItem(
+              label = stringResource(R.string.likes),
+              value = stringResource(R.string.song_info_likes_count, likeCount),
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.dislikes),
+              value = info?.dislike?.let { shortNumberFormatter(it.toInt()) } ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.subscribers),
+              value = info?.subscribers ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.song_info_itag_label),
+              value = currentFormat?.itag?.toString() ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.loudness),
+              value = currentFormat?.loudnessDb?.let { "$it dB" } ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.mime_type),
+              value =
+                currentFormat?.mimeType?.substringBefore(";")
+                  ?: stringResource(R.string.song_info_standard),
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.bitrate),
+              value = currentFormat?.bitrate?.let { "${it / 1000} Kbps" } ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.codecs),
+              value = currentFormat?.codecs ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.sample_rate),
+              value = currentFormat?.sampleRate?.let { "$it Hz" } ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            InfoItem(
+              label = stringResource(R.string.file_size),
+              value =
+                currentFormat?.contentLength?.let { Formatter.formatShortFileSize(context, it) }
+                  ?: "N/A",
+              modifier = Modifier.weight(1f)
+            )
+            InfoItem(
+              label = stringResource(R.string.volume),
+              value =
+                if (playerConnection != null) "${(playerConnection.player.volume * 100).toInt()}%"
+                else "N/A",
+              modifier = Modifier.weight(1f)
+            )
+          }
         }
+      }
 
-        
-        item {
+      item {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(
+            text = stringResource(R.string.description),
+            style =
+              MaterialTheme.typography.labelMedium.copy(
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold
+              ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+          if (info == null) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(albumArtShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+              modifier = Modifier.fillMaxWidth().height(100.dp),
+              contentAlignment = Alignment.Center
             ) {
-                val imageUrl = song?.thumbnailUrl
-                    ?: "https://i.ytimg.com/vi/$videoId/maxresdefault.jpg"
-
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+              LoadingIndicator()
             }
+          } else {
+            Text(
+              text = info?.description ?: stringResource(R.string.song_info_no_description),
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onBackground
+            )
+          }
         }
+      }
+    } else {
 
-        
-        if (song != null || info != null) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.song_info_title_label),
-                            value = song?.title ?: info?.title ?: stringResource(R.string.unknown),
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.artist),
-                            value = song?.artists?.joinToString { it.name }
-                                ?: info?.author
-                                ?: stringResource(R.string.unknown),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val duration = song?.song?.duration?.let { totalSeconds ->
-                            val minutes = totalSeconds / 60
-                            val seconds = totalSeconds % 60
-                            "%d:%02d".format(minutes, seconds)
-                        } ?: stringResource(R.string.unknown)
-                        InfoItem(
-                            label = stringResource(R.string.song_info_duration_label),
-                            value = duration,
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.media_id),
-                            value = song?.id ?: videoId,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val viewCount = info?.viewCount?.toInt()?.let { shortNumberFormatter(it) } ?: "N/A"
-                        InfoItem(
-                            label = stringResource(R.string.views),
-                            value = stringResource(R.string.song_info_views_count, viewCount),
-                            modifier = Modifier.weight(1f)
-                        )
-                        val likeCount = info?.like?.toInt()?.let { shortNumberFormatter(it) } ?: "N/A"
-                        InfoItem(
-                            label = stringResource(R.string.likes),
-                            value = stringResource(R.string.song_info_likes_count, likeCount),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.dislikes),
-                            value = info?.dislike?.let { shortNumberFormatter(it.toInt()) } ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.subscribers),
-                            value = info?.subscribers ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.song_info_itag_label),
-                            value = currentFormat?.itag?.toString() ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.loudness),
-                            value = currentFormat?.loudnessDb?.let { "$it dB" } ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.mime_type),
-                            value = currentFormat?.mimeType?.substringBefore(";") ?: stringResource(R.string.song_info_standard),
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.bitrate),
-                            value = currentFormat?.bitrate?.let { "${it / 1000} Kbps" } ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.codecs),
-                            value = currentFormat?.codecs ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.sample_rate),
-                            value = currentFormat?.sampleRate?.let { "$it Hz" } ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        InfoItem(
-                            label = stringResource(R.string.file_size),
-                            value = currentFormat?.contentLength?.let {
-                                Formatter.formatShortFileSize(context, it)
-                            } ?: "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                        InfoItem(
-                            label = stringResource(R.string.volume),
-                            value = if (playerConnection != null)
-                                "${(playerConnection.player.volume * 100).toInt()}%"
-                            else "N/A",
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
+      item {
+        Box(
+          modifier = Modifier.fillMaxWidth().height(150.dp),
+          contentAlignment = Alignment.Center
+        ) {
+          ShimmerHost {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              TextPlaceholder()
+              TextPlaceholder()
+              TextPlaceholder()
             }
-
-            
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.description),
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    if (info == null) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingIndicator()
-                        }
-                    } else {
-                        Text(
-                            text = info?.description ?: stringResource(R.string.song_info_no_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
-            }
-
-        } else {
-            
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ShimmerHost {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextPlaceholder()
-                            TextPlaceholder()
-                            TextPlaceholder()
-                        }
-                    }
-                }
-            }
+          }
         }
-
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+      }
     }
+
+    item { Spacer(modifier = Modifier.height(24.dp)) }
+  }
 }
 
 @Composable
-fun InfoItem(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    Column(
-        modifier = modifier
-            .padding(end = 8.dp)
-            .clickable {
-                val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
-                cm.setPrimaryClip(ClipData.newPlainText(label, value))
-                Toast.makeText(context, "$label copied", Toast.LENGTH_SHORT).show()
-            },
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.SemiBold
-            ),
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
+fun InfoItem(label: String, value: String, modifier: Modifier = Modifier) {
+  val context = LocalContext.current
+  Column(
+    modifier =
+      modifier.padding(end = 8.dp).clickable {
+        val cm =
+          context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.setPrimaryClip(ClipData.newPlainText(label, value))
+        Toast.makeText(context, "$label copied", Toast.LENGTH_SHORT).show()
+      },
+    verticalArrangement = Arrangement.spacedBy(4.dp)
+  ) {
+    Text(
+      text = label,
+      style =
+        MaterialTheme.typography.labelMedium.copy(
+          fontFamily = FontFamily.Monospace,
+          fontWeight = FontWeight.Bold,
+          letterSpacing = 0.5.sp
+        ),
+      color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Text(
+      text = value,
+      style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+      color = MaterialTheme.colorScheme.onBackground
+    )
+  }
 }
 
 fun shortNumberFormatter(count: Int): String {
-    return when {
-        count < 1000 -> count.toString()
-        count < 1_000_000 -> String.format("%.1fk", count / 1000.0)
-        else -> String.format("%.1fM", count / 1_000_000.0)
-    }
+  return when {
+    count < 1000 -> count.toString()
+    count < 1_000_000 -> String.format("%.1fk", count / 1000.0)
+    else -> String.format("%.1fM", count / 1_000_000.0)
+  }
 }

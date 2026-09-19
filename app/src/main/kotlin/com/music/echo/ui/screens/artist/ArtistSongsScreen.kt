@@ -59,156 +59,151 @@ import iad1tya.echo.music.viewmodels.ArtistSongsViewModel
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistSongsScreen(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
-    viewModel: ArtistSongsViewModel = hiltViewModel(),
+  navController: NavController,
+  scrollBehavior: TopAppBarScrollBehavior,
+  viewModel: ArtistSongsViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-    val menuState = LocalMenuState.current
-    val haptic = LocalHapticFeedback.current
-    val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val context = LocalContext.current
+  val menuState = LocalMenuState.current
+  val haptic = LocalHapticFeedback.current
+  val playerConnection = LocalPlayerConnection.current ?: return
+  val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
+  val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        ArtistSongSortTypeKey,
-        ArtistSongSortType.CREATE_DATE
-    )
-    val (sortDescending, onSortDescendingChange) = rememberPreference(
-        ArtistSongSortDescendingKey,
-        true
-    )
-    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
-    val artist by viewModel.artist.collectAsState()
-    val songs by viewModel.songs.collectAsState()
-    val lazyListState = rememberLazyListState()
+  val (sortType, onSortTypeChange) =
+    rememberEnumPreference(ArtistSongSortTypeKey, ArtistSongSortType.CREATE_DATE)
+  val (sortDescending, onSortDescendingChange) =
+    rememberPreference(ArtistSongSortDescendingKey, true)
+  val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+  val artist by viewModel.artist.collectAsState()
+  val songs by viewModel.songs.collectAsState()
+  val lazyListState = rememberLazyListState()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
+  Box(
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    LazyColumn(
+      state = lazyListState,
+      contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) {
-        LazyColumn(
-            state = lazyListState,
-            contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+      item(
+        key = "header",
+        contentType = CONTENT_TYPE_HEADER,
+      ) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-            item(
-                key = "header",
-                contentType = CONTENT_TYPE_HEADER,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                    SortHeader(
-                        sortType = sortType,
-                        sortDescending = sortDescending,
-                        onSortTypeChange = onSortTypeChange,
-                        onSortDescendingChange = onSortDescendingChange,
-                        sortTypeText = { sortType ->
-                            when (sortType) {
-                                ArtistSongSortType.CREATE_DATE -> R.string.sort_by_create_date
-                                ArtistSongSortType.NAME -> R.string.sort_by_name
-                                ArtistSongSortType.PLAY_TIME -> R.string.sort_by_play_time
-                            }
-                        },
-                    )
+          SortHeader(
+            sortType = sortType,
+            sortDescending = sortDescending,
+            onSortTypeChange = onSortTypeChange,
+            onSortDescendingChange = onSortDescendingChange,
+            sortTypeText = { sortType ->
+              when (sortType) {
+                ArtistSongSortType.CREATE_DATE -> R.string.sort_by_create_date
+                ArtistSongSortType.NAME -> R.string.sort_by_name
+                ArtistSongSortType.PLAY_TIME -> R.string.sort_by_play_time
+              }
+            },
+          )
 
-                    Spacer(Modifier.weight(1f))
+          Spacer(Modifier.weight(1f))
 
-                    Text(
-                        text = pluralStringResource(R.plurals.n_song, songs.size, songs.size),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            }
-
-            itemsIndexed(
-                items = songs,
-                key = { _, item -> item.id },
-            ) { index, song ->
-                SongListItem(
-                    song = song,
-                    showInLibraryIcon = true,
-                    isActive = song.id == mediaMetadata?.id,
-                    isPlaying = isPlaying,
-                    shape = listItemShape(index, songs.size),
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
-                                menuState.show {
-                                    SongMenu(
-                                        originalSong = song,
-                                        navController = navController,
-                                        onDismiss = menuState::dismiss,
-                                    )
-                                }
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.more_vert),
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .combinedClickable(
-                            onClick = {
-                                if (song.id == mediaMetadata?.id) {
-                                    playerConnection.togglePlayPause()
-                                } else {
-                                    playerConnection.playQueue(
-                                        ListQueue(
-                                            title = context.getString(R.string.queue_all_songs),
-                                            items = songs.map { it.toMediaItem() },
-                                            startIndex = index,
-                                        ),
-                                    )
-                                }
-                            },
-                            onLongClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                menuState.show {
-                                    SongMenu(
-                                        originalSong = song,
-                                        navController = navController,
-                                        onDismiss = menuState::dismiss,
-                                    )
-                                }
-                            },
-                        )
-                        .animateItem(),
-                )
-            }
+          Text(
+            text = pluralStringResource(R.plurals.n_song, songs.size, songs.size),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.secondary,
+          )
         }
+      }
 
-        TopAppBar(
-            title = { Text(artist?.artist?.name.orEmpty()) },
-            navigationIcon = {
-                IconButton(
-                    onClick = navController::navigateUp,
-                    onLongClick = navController::backToMain,
-                ) {
-                    Icon(
-                        painterResource(R.drawable.arrow_back),
-                        contentDescription = null,
-                    )
+      itemsIndexed(
+        items = songs,
+        key = { _, item -> item.id },
+      ) { index, song ->
+        SongListItem(
+          song = song,
+          showInLibraryIcon = true,
+          isActive = song.id == mediaMetadata?.id,
+          isPlaying = isPlaying,
+          shape = listItemShape(index, songs.size),
+          trailingContent = {
+            IconButton(
+              onClick = {
+                menuState.show {
+                  SongMenu(
+                    originalSong = song,
+                    navController = navController,
+                    onDismiss = menuState::dismiss,
+                  )
                 }
-            },
+              },
+            ) {
+              Icon(
+                painter = painterResource(R.drawable.more_vert),
+                contentDescription = null,
+              )
+            }
+          },
+          modifier =
+            Modifier.fillMaxWidth()
+              .combinedClickable(
+                onClick = {
+                  if (song.id == mediaMetadata?.id) {
+                    playerConnection.togglePlayPause()
+                  } else {
+                    playerConnection.playQueue(
+                      ListQueue(
+                        title = context.getString(R.string.queue_all_songs),
+                        items = songs.map { it.toMediaItem() },
+                        startIndex = index,
+                      ),
+                    )
+                  }
+                },
+                onLongClick = {
+                  haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                  menuState.show {
+                    SongMenu(
+                      originalSong = song,
+                      navController = navController,
+                      onDismiss = menuState::dismiss,
+                    )
+                  }
+                },
+              )
+              .animateItem(),
         )
-
-        HideOnScrollFAB(
-            lazyListState = lazyListState,
-            icon = R.drawable.shuffle,
-            onClick = {
-                playerConnection.playQueue(
-                    ListQueue(
-                        title = artist?.artist?.name,
-                        items = songs.shuffled().map { it.toMediaItem() },
-                    ),
-                )
-            },
-        )
+      }
     }
+
+    TopAppBar(
+      title = { Text(artist?.artist?.name.orEmpty()) },
+      navigationIcon = {
+        IconButton(
+          onClick = navController::navigateUp,
+          onLongClick = navController::backToMain,
+        ) {
+          Icon(
+            painterResource(R.drawable.arrow_back),
+            contentDescription = null,
+          )
+        }
+      },
+    )
+
+    HideOnScrollFAB(
+      lazyListState = lazyListState,
+      icon = R.drawable.shuffle,
+      onClick = {
+        playerConnection.playQueue(
+          ListQueue(
+            title = artist?.artist?.name,
+            items = songs.shuffled().map { it.toMediaItem() },
+          ),
+        )
+      },
+    )
+  }
 }

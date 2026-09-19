@@ -46,237 +46,226 @@ import iad1tya.echo.music.utils.rememberPreference
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrivacySettings(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
-highlightKey: String? = null) {
-    val scrollState = androidx.compose.foundation.rememberScrollState()
+  navController: NavController,
+  scrollBehavior: TopAppBarScrollBehavior,
+  highlightKey: String? = null
+) {
+  val scrollState = androidx.compose.foundation.rememberScrollState()
 
-    val database = LocalDatabase.current
-    val (pauseListenHistory, onPauseListenHistoryChange) = rememberPreference(
-        key = PauseListenHistoryKey,
-        defaultValue = false
-    )
-    val (pauseSearchHistory, onPauseSearchHistoryChange) = rememberPreference(
-        key = PauseSearchHistoryKey,
-        defaultValue = false
-    )
-    val (disableScreenshot, onDisableScreenshotChange) = rememberPreference(
-        key = DisableScreenshotKey,
-        defaultValue = false
-    )
+  val database = LocalDatabase.current
+  val (pauseListenHistory, onPauseListenHistoryChange) =
+    rememberPreference(key = PauseListenHistoryKey, defaultValue = false)
+  val (pauseSearchHistory, onPauseSearchHistoryChange) =
+    rememberPreference(key = PauseSearchHistoryKey, defaultValue = false)
+  val (disableScreenshot, onDisableScreenshotChange) =
+    rememberPreference(key = DisableScreenshotKey, defaultValue = false)
 
-    var showClearListenHistoryDialog by remember {
-        mutableStateOf(false)
-    }
+  var showClearListenHistoryDialog by remember { mutableStateOf(false) }
 
-    if (showClearListenHistoryDialog) {
-        DefaultDialog(
-            onDismiss = { showClearListenHistoryDialog = false },
-            content = {
-                Text(
-                    text = stringResource(R.string.clear_listen_history_confirm),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 18.dp),
-                )
-            },
-            buttons = {
-                TextButton(
-                    onClick = { showClearListenHistoryDialog = false },
-                ) {
-                    Text(text = stringResource(android.R.string.cancel))
-                }
-
-                TextButton(
-                    onClick = {
-                        showClearListenHistoryDialog = false
-                        database.query {
-                            clearListenHistory()
-                        }
-                    },
-                ) {
-                    Text(text = stringResource(android.R.string.ok))
-                }
-            },
+  if (showClearListenHistoryDialog) {
+    DefaultDialog(
+      onDismiss = { showClearListenHistoryDialog = false },
+      content = {
+        Text(
+          text = stringResource(R.string.clear_listen_history_confirm),
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(horizontal = 18.dp),
         )
-    }
-
-    var showClearSearchHistoryDialog by remember {
-        mutableStateOf(false)
-    }
-
-    if (showClearSearchHistoryDialog) {
-        DefaultDialog(
-            onDismiss = { showClearSearchHistoryDialog = false },
-            content = {
-                Text(
-                    text = stringResource(R.string.clear_search_history_confirm),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 18.dp),
-                )
-            },
-            buttons = {
-                TextButton(
-                    onClick = { showClearSearchHistoryDialog = false },
-                ) {
-                    Text(text = stringResource(android.R.string.cancel))
-                }
-
-                TextButton(
-                    onClick = {
-                        showClearSearchHistoryDialog = false
-                        database.query {
-                            clearSearchHistory()
-                        }
-                    },
-                ) {
-                    Text(text = stringResource(android.R.string.ok))
-                }
-            },
-        )
-    }
-
-    Column(
-        Modifier
-            .windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Horizontal
-                )
-            )
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp)
-    ) {
-        Spacer(
-            Modifier.windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
-                )
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.listen_history),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.pause_listen_history)),
-                    icon = painterResource(R.drawable.history),
-                    title = { Text(stringResource(R.string.pause_listen_history)) },
-                    description = { Text(stringResource(R.string.pause_listen_history_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = pauseListenHistory,
-                            onCheckedChange = onPauseListenHistoryChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (pauseListenHistory) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onPauseListenHistoryChange(!pauseListenHistory) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_listen_history)),
-                    icon = painterResource(R.drawable.delete_history),
-                    title = { Text(stringResource(R.string.clear_listen_history)) },
-                    description = { Text(stringResource(R.string.clear_listen_history_desc)) },
-                    onClick = { showClearListenHistoryDialog = true }
-                )
-            )
-        )
-
-        
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.search_history),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.pause_search_history)),
-                    icon = painterResource(R.drawable.search_off),
-                    title = { Text(stringResource(R.string.pause_search_history)) },
-                    description = { Text(stringResource(R.string.pause_search_history_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = pauseSearchHistory,
-                            onCheckedChange = onPauseSearchHistoryChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (pauseSearchHistory) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onPauseSearchHistoryChange(!pauseSearchHistory) }
-                ),
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.clear_search_history)),
-                    icon = painterResource(R.drawable.clear_all),
-                    title = { Text(stringResource(R.string.clear_search_history)) },
-                    description = { Text(stringResource(R.string.clear_search_history_desc)) },
-                    onClick = { showClearSearchHistoryDialog = true }
-                )
-            )
-        )
-
-        
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.misc),
-            items = listOf(
-                Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.disable_screenshot)),
-                    icon = painterResource(R.drawable.screenshot),
-                    title = { Text(stringResource(R.string.disable_screenshot)) },
-                    description = { Text(stringResource(R.string.disable_screenshot_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = disableScreenshot,
-                            onCheckedChange = onDisableScreenshotChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (disableScreenshot) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
-                                )
-                            }
-                        )
-                    },
-                    onClick = { onDisableScreenshotChange(!disableScreenshot) }
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-    
-        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
-    }
-
-    TopAppBar(
-        title = { Text(stringResource(R.string.privacy)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
-            }
+      },
+      buttons = {
+        TextButton(
+          onClick = { showClearListenHistoryDialog = false },
+        ) {
+          Text(text = stringResource(android.R.string.cancel))
         }
+
+        TextButton(
+          onClick = {
+            showClearListenHistoryDialog = false
+            database.query { clearListenHistory() }
+          },
+        ) {
+          Text(text = stringResource(android.R.string.ok))
+        }
+      },
     )
+  }
+
+  var showClearSearchHistoryDialog by remember { mutableStateOf(false) }
+
+  if (showClearSearchHistoryDialog) {
+    DefaultDialog(
+      onDismiss = { showClearSearchHistoryDialog = false },
+      content = {
+        Text(
+          text = stringResource(R.string.clear_search_history_confirm),
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(horizontal = 18.dp),
+        )
+      },
+      buttons = {
+        TextButton(
+          onClick = { showClearSearchHistoryDialog = false },
+        ) {
+          Text(text = stringResource(android.R.string.cancel))
+        }
+
+        TextButton(
+          onClick = {
+            showClearSearchHistoryDialog = false
+            database.query { clearSearchHistory() }
+          },
+        ) {
+          Text(text = stringResource(android.R.string.ok))
+        }
+      },
+    )
+  }
+
+  Column(
+    Modifier.windowInsetsPadding(
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+      )
+      .verticalScroll(scrollState)
+      .padding(horizontal = 16.dp)
+  ) {
+    Spacer(
+      Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top))
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Material3SettingsGroup(
+      scrollState = scrollState,
+      title = stringResource(R.string.listen_history),
+      items =
+        listOf(
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.pause_listen_history)),
+            icon = painterResource(R.drawable.history),
+            title = { Text(stringResource(R.string.pause_listen_history)) },
+            description = { Text(stringResource(R.string.pause_listen_history_desc)) },
+            trailingContent = {
+              Switch(
+                checked = pauseListenHistory,
+                onCheckedChange = onPauseListenHistoryChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        id = if (pauseListenHistory) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onPauseListenHistoryChange(!pauseListenHistory) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.clear_listen_history)),
+            icon = painterResource(R.drawable.delete_history),
+            title = { Text(stringResource(R.string.clear_listen_history)) },
+            description = { Text(stringResource(R.string.clear_listen_history_desc)) },
+            onClick = { showClearListenHistoryDialog = true }
+          )
+        )
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Material3SettingsGroup(
+      scrollState = scrollState,
+      title = stringResource(R.string.search_history),
+      items =
+        listOf(
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.pause_search_history)),
+            icon = painterResource(R.drawable.search_off),
+            title = { Text(stringResource(R.string.pause_search_history)) },
+            description = { Text(stringResource(R.string.pause_search_history_desc)) },
+            trailingContent = {
+              Switch(
+                checked = pauseSearchHistory,
+                onCheckedChange = onPauseSearchHistoryChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        id = if (pauseSearchHistory) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onPauseSearchHistoryChange(!pauseSearchHistory) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.clear_search_history)),
+            icon = painterResource(R.drawable.clear_all),
+            title = { Text(stringResource(R.string.clear_search_history)) },
+            description = { Text(stringResource(R.string.clear_search_history_desc)) },
+            onClick = { showClearSearchHistoryDialog = true }
+          )
+        )
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Material3SettingsGroup(
+      scrollState = scrollState,
+      title = stringResource(R.string.misc),
+      items =
+        listOf(
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.disable_screenshot)),
+            icon = painterResource(R.drawable.screenshot),
+            title = { Text(stringResource(R.string.disable_screenshot)) },
+            description = { Text(stringResource(R.string.disable_screenshot_desc)) },
+            trailingContent = {
+              Switch(
+                checked = disableScreenshot,
+                onCheckedChange = onDisableScreenshotChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        id = if (disableScreenshot) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onDisableScreenshotChange(!disableScreenshot) }
+          )
+        )
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Spacer(
+      Modifier.windowInsetsPadding(
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
+      )
+    )
+  }
+
+  TopAppBar(
+    title = { Text(stringResource(R.string.privacy)) },
+    navigationIcon = {
+      IconButton(
+        onClick = navController::navigateUp,
+        onLongClick = navController::backToMain,
+      ) {
+        Icon(
+          painterResource(R.drawable.arrow_back),
+          contentDescription = null,
+        )
+      }
+    }
+  )
 }

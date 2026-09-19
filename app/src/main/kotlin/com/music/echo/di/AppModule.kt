@@ -24,25 +24,29 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
-    @ApplicationScope
-    fun provideApplicationScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    }
+  @Provides
+  @Singleton
+  @ApplicationScope
+  fun provideApplicationScope(): CoroutineScope {
+    return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+  }
 
-    @Singleton
-    @Provides
-    fun provideDao(
-        database: InternalDatabase,
-    ) = database.dao
+  @Singleton
+  @Provides
+  fun provideDao(
+    database: InternalDatabase,
+  ) = database.dao
 
+  @Singleton
+  @Provides
+  fun provideDatabase(
+    internalDatabase: InternalDatabase,
+  ): MusicDatabase = MusicDatabase(internalDatabase)
 
     @Singleton
     @Provides
@@ -89,57 +93,55 @@ object AppModule {
                     timber.log.Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
                 }
             }
-        })
-        .build()
+          }
+        }
+      )
+      .build()
 
-    @Singleton
-    @Provides
-    fun provideDatabaseProvider(
-        @ApplicationContext context: Context,
-    ): DatabaseProvider = StandaloneDatabaseProvider(context)
+  @Singleton
+  @Provides
+  fun provideDatabaseProvider(
+    @ApplicationContext context: Context,
+  ): DatabaseProvider = StandaloneDatabaseProvider(context)
 
-    @Singleton
-    @Provides
-    @PlayerCache
-    fun providePlayerCache(
-        @ApplicationContext context: Context,
-        databaseProvider: DatabaseProvider,
-    ): SimpleCache {
-        val cacheSize = context.dataStore[MaxSongCacheSizeKey] ?: 1024
-        return SimpleCache(
-            context.filesDir.resolve("exoplayer"),
-            when (cacheSize) {
-                -1 -> NoOpCacheEvictor()
-                else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
-            },
-            databaseProvider,
-        )
-    }
+  @Singleton
+  @Provides
+  @PlayerCache
+  fun providePlayerCache(
+    @ApplicationContext context: Context,
+    databaseProvider: DatabaseProvider,
+  ): SimpleCache {
+    val cacheSize = context.dataStore[MaxSongCacheSizeKey] ?: 1024
+    return SimpleCache(
+      context.filesDir.resolve("exoplayer"),
+      when (cacheSize) {
+        -1 -> NoOpCacheEvictor()
+        else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
+      },
+      databaseProvider,
+    )
+  }
 
-    @Singleton
-    @Provides
-    @DownloadCache
-    fun provideDownloadCache(
-        @ApplicationContext context: Context,
-        databaseProvider: DatabaseProvider,
-    ): SimpleCache {
-        return SimpleCache(
-            context.filesDir.resolve("download"),
-            NoOpCacheEvictor(),
-            databaseProvider
-        )
-    }
+  @Singleton
+  @Provides
+  @DownloadCache
+  fun provideDownloadCache(
+    @ApplicationContext context: Context,
+    databaseProvider: DatabaseProvider,
+  ): SimpleCache {
+    return SimpleCache(context.filesDir.resolve("download"), NoOpCacheEvictor(), databaseProvider)
+  }
 
-    @Singleton
-    @Provides
-    fun provideListenTogetherClient(
-        @ApplicationContext context: Context,
-    ): ListenTogetherClient = ListenTogetherClient(context)
+  @Singleton
+  @Provides
+  fun provideListenTogetherClient(
+    @ApplicationContext context: Context,
+  ): ListenTogetherClient = ListenTogetherClient(context)
 
-    @Singleton
-    @Provides
-    fun provideListenTogetherManager(
-        @ApplicationContext context: Context,
-        client: ListenTogetherClient,
-    ): ListenTogetherManager = ListenTogetherManager(client, context)
+  @Singleton
+  @Provides
+  fun provideListenTogetherManager(
+    @ApplicationContext context: Context,
+    client: ListenTogetherClient,
+  ): ListenTogetherManager = ListenTogetherManager(client, context)
 }

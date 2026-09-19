@@ -15,11 +15,10 @@ import iad1tya.echo.music.ui.component.backdrop.RuntimeShader
 import iad1tya.echo.music.ui.component.backdrop.asAndroidRuntimeShader
 
 internal fun Paint.blur(radius: Float) {
-    this.asFrameworkPaint().maskFilter =
-        if (radius > 0f) BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
-        else null
+  this.asFrameworkPaint().maskFilter =
+    if (radius > 0f) BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL) else null
 }
 
 internal fun Paint.setRuntimeShader(runtimeShader: RuntimeShader?) {
-    this.asFrameworkPaint().shader = runtimeShader?.asAndroidRuntimeShader()
+  this.asFrameworkPaint().shader = runtimeShader?.asAndroidRuntimeShader()
 }

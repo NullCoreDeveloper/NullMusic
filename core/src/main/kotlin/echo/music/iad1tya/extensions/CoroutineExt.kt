@@ -1,5 +1,3 @@
-
-
 package echo.music.iad1tya.extensions
 
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -9,21 +7,17 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 fun <T> Flow<T>.collect(
-    scope: CoroutineScope,
-    action: suspend (value: T) -> Unit,
+  scope: CoroutineScope,
+  action: suspend (value: T) -> Unit,
 ) {
-    scope.launch {
-        collect(action)
-    }
+  scope.launch { collect(action) }
 }
 
 fun <T> Flow<T>.collectLatest(
-    scope: CoroutineScope,
-    action: suspend (value: T) -> Unit,
+  scope: CoroutineScope,
+  action: suspend (value: T) -> Unit,
 ) {
-    scope.launch {
-        collectLatest(action)
-    }
+  scope.launch { collectLatest(action) }
 }
 
 val SilentHandler = CoroutineExceptionHandler { _, _ -> }

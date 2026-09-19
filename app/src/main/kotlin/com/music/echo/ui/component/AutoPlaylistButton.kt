@@ -21,34 +21,34 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AutoPlaylistButton(
-    title: String,
-    icon: Int,
-    iconTint: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+  title: String,
+  icon: Int,
+  iconTint: Color,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = modifier.clickable(onClick = onClick)
+  Surface(
+    shape = RoundedCornerShape(12.dp),
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    modifier = modifier.clickable(onClick = onClick)
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+      Icon(
+        painter = painterResource(id = icon),
+        contentDescription = null,
+        tint = iconTint,
+        modifier = Modifier.size(24.dp)
+      )
+      Spacer(modifier = Modifier.width(12.dp))
+      Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+      )
     }
+  }
 }

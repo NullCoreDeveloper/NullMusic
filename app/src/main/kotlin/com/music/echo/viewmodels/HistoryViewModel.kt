@@ -23,26 +23,22 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HistoryViewModel
 @Inject
 constructor(
-    @ApplicationContext private val context: Context,
-    val database: MusicDatabase,
+  @ApplicationContext private val context: Context,
+  val database: MusicDatabase,
 ) : ViewModel() {
-    var historySource = MutableStateFlow(HistorySource.LOCAL)
+  var historySource = MutableStateFlow(HistorySource.LOCAL)
 
-    private val today = LocalDate.now()
-    private val thisMonday = today.with(DayOfWeek.MONDAY)
-    private val lastMonday = thisMonday.minusDays(7)
+  private val today = LocalDate.now()
+  private val thisMonday = today.with(DayOfWeek.MONDAY)
+  private val lastMonday = thisMonday.minusDays(7)
 
-    val historyPage = MutableStateFlow<HistoryPage?>(null)
+  val historyPage = MutableStateFlow<HistoryPage?>(null)
 
     val events =
         context.dataStore.data
@@ -91,27 +87,50 @@ constructor(
             }.onFailure {
                 reportException(it)
             }
+            .toSortedMap(
+              compareBy { dateAgo ->
+                when (dateAgo) {
+                  DateAgo.Today -> 0L
+                  DateAgo.Yesterday -> 1L
+                  DateAgo.ThisWeek -> 2L
+                  DateAgo.LastWeek -> 3L
+                  is DateAgo.Other -> ChronoUnit.DAYS.between(dateAgo.date, today)
+                }
+              },
+            )
+            .mapValues { entry -> entry.value.distinctBy { it.song.id } }
         }
+      }
+      .stateIn(viewModelScope, SharingStarted.Lazily, emptyMap())
+
+  init {
+    fetchRemoteHistory()
+  }
+
+  fun fetchRemoteHistory() {
+    viewModelScope.launch(Dispatchers.IO) {
+      YouTube.musicHistory().onSuccess { historyPage.value = it }.onFailure { reportException(it) }
     }
+  }
 }
 
 sealed class DateAgo {
-    data object Today : DateAgo()
+  data object Today : DateAgo()
 
-    data object Yesterday : DateAgo()
+  data object Yesterday : DateAgo()
 
-    data object ThisWeek : DateAgo()
+  data object ThisWeek : DateAgo()
 
-    data object LastWeek : DateAgo()
+  data object LastWeek : DateAgo()
 
-    class Other(
-        val date: LocalDate,
-    ) : DateAgo() {
-        override fun equals(other: Any?): Boolean {
-            if (other is Other) return date == other.date
-            return super.equals(other)
-        }
-
-        override fun hashCode(): Int = date.hashCode()
+  class Other(
+    val date: LocalDate,
+  ) : DateAgo() {
+    override fun equals(other: Any?): Boolean {
+      if (other is Other) return date == other.date
+      return super.equals(other)
     }
+
+    override fun hashCode(): Int = date.hashCode()
+  }
 }

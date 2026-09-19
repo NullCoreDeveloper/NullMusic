@@ -9,7 +9,6 @@ import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -29,37 +28,60 @@ data class nullmusicCanvasItem(
 object nullmusicCanvasProvider {
     private const val BASE_URL = "https://canvas.nullmusic.fun/canvas.json"
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        explicitNulls = false
+  private val json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+    explicitNulls = false
+  }
+
+  private val client by lazy {
+    HttpClient(OkHttp) {
+      install(ContentNegotiation) { json(json) }
+      install(HttpTimeout) {
+        connectTimeoutMillis = 12_000
+        requestTimeoutMillis = 18_000
+        socketTimeoutMillis = 18_000
+      }
+      install(ContentEncoding) {
+        gzip()
+        deflate()
+      }
+      install(HttpCache)
+      expectSuccess = false
+    }
+  }
+
+  private data class CacheEntry(
+    val value: echomusicCanvasManifest?,
+    val expiresAtMs: Long,
+  )
+
+  private var manifestCache: CacheEntry? = null
+  // Cache TTL 1 minute (re-fetches json index every minute max for instant updates)
+  private val ttlMs = 60_000L
+
+  private suspend fun fetchManifest(): echomusicCanvasManifest? {
+    val currentCache = manifestCache
+    if (currentCache != null && currentCache.expiresAtMs > System.currentTimeMillis()) {
+      return currentCache.value
     }
 
-    private val client by lazy {
-        HttpClient(OkHttp) {
-            install(ContentNegotiation) { json(json) }
-            install(HttpTimeout) {
-                connectTimeoutMillis = 12_000
-                requestTimeoutMillis = 18_000
-                socketTimeoutMillis = 18_000
-            }
-            install(ContentEncoding) {
-                gzip()
-                deflate()
-            }
-            install(HttpCache)
-            expectSuccess = false
-        }
+    return try {
+      val manifest: echomusicCanvasManifest = client.get(BASE_URL).body()
+
+      manifestCache = CacheEntry(value = manifest, expiresAtMs = System.currentTimeMillis() + ttlMs)
+      manifest
+    } catch (e: Exception) {
+      null
     }
+  }
 
     private data class CacheEntry(
         val value: nullmusicCanvasManifest?,
         val expiresAtMs: Long,
     )
 
-    private var manifestCache: CacheEntry? = null
-    // Cache TTL 1 minute (re-fetches json index every minute max for instant updates)
-    private val ttlMs = 60_000L
+    val manifest = fetchManifest() ?: return null
 
     private suspend fun fetchManifest(): nullmusicCanvasManifest? {
         val currentCache = manifestCache
@@ -105,4 +127,5 @@ object nullmusicCanvasProvider {
             return null
         }
     }
+  }
 }

@@ -20,19 +20,18 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class TopPlaylistViewModel
 @Inject
 constructor(
-    @ApplicationContext context: Context,
-    database: MusicDatabase,
-    savedStateHandle: SavedStateHandle,
+  @ApplicationContext context: Context,
+  database: MusicDatabase,
+  savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val top = savedStateHandle.get<String>("top")!!
+  val top = savedStateHandle.get<String>("top")!!
 
-    val topPeriod = MutableStateFlow(MyTopFilter.ALL_TIME)
+  val topPeriod = MutableStateFlow(MyTopFilter.ALL_TIME)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topSongs =

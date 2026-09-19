@@ -1,6 +1,5 @@
 package iad1tya.echo.music.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,7 +16,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.music.innertube.utils.parseCookieString
 import kotlinx.coroutines.launch
@@ -38,26 +36,24 @@ import iad1tya.echo.music.viewmodels.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingDialoge(
-    onDismissRequest: () -> Unit,
-    onNavigate: (String) -> Unit,
-    homeViewModel: HomeViewModel
+  onDismissRequest: () -> Unit,
+  onNavigate: (String) -> Unit,
+  homeViewModel: HomeViewModel
 ) {
-    val uriHandler = LocalUriHandler.current
-    val (audioQuality) = rememberEnumPreference(
-        AudioQualityKey,
-        defaultValue = AudioQuality.OPUS
-    )
-    val (innerTubeCookie, _) = rememberPreference(InnerTubeCookieKey, "")
-    val isLoggedIn = remember(innerTubeCookie) {
-        innerTubeCookie.isNotEmpty() && "SAPISID" in parseCookieString(innerTubeCookie)
+  val uriHandler = LocalUriHandler.current
+  val (audioQuality) = rememberEnumPreference(AudioQualityKey, defaultValue = AudioQuality.OPUS)
+  val (innerTubeCookie, _) = rememberPreference(InnerTubeCookieKey, "")
+  val isLoggedIn =
+    remember(innerTubeCookie) {
+      innerTubeCookie.isNotEmpty() && "SAPISID" in parseCookieString(innerTubeCookie)
     }
 
-    val (accountEmail, _) = rememberPreference(AccountEmailKey, "")
-    val accountName by homeViewModel.accountName.collectAsState()
-    val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
+  val (accountEmail, _) = rememberPreference(AccountEmailKey, "")
+  val accountName by homeViewModel.accountName.collectAsState()
+  val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
 
-    val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
-    val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
+  val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
+  val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -70,14 +66,24 @@ fun SettingDialoge(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+  ModalBottomSheet(
+    onDismissRequest = onDismissRequest,
+    sheetState = sheetState,
+    dragHandle = { BottomSheetDefaults.DragHandle() },
+    containerColor = MaterialTheme.colorScheme.surfaceContainer
+  ) {
+    val primaryColor = MaterialTheme.colorScheme.onSurface
+    val onSecondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
+
+    Column(
+      modifier =
+        Modifier.fillMaxWidth()
+          .verticalScroll(rememberScrollState())
+          .padding(bottom = 32.dp, start = 16.dp, end = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val primaryColor = MaterialTheme.colorScheme.onSurface
-        val onSecondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
+      // Header
+      // Removed Echo Music text
 
         Column(
             modifier = Modifier

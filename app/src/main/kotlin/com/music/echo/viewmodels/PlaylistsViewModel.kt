@@ -1,5 +1,3 @@
-
-
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
 package iad1tya.echo.music.viewmodels
@@ -22,15 +20,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistsViewModel
 @Inject
 constructor(
-    @ApplicationContext context: Context,
-    database: MusicDatabase,
-    private val syncUtils: SyncUtils,
+  @ApplicationContext context: Context,
+  database: MusicDatabase,
+  private val syncUtils: SyncUtils,
 ) : ViewModel() {
     val allPlaylists =
         context.dataStore.data
@@ -42,8 +39,7 @@ constructor(
                 database.playlists(sortType, descending)
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    
-    suspend fun sync() {
-        syncUtils.syncSavedPlaylists()
-    }
+  suspend fun sync() {
+    syncUtils.syncSavedPlaylists()
+  }
 }

@@ -24,136 +24,135 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import iad1tya.echo.music.R
 
-
 private object VolumeSliderDefaults {
-    val TrackHeight: Dp = 40.dp
-    val HandleHeight: Dp = 52.dp
-    val HandleWidth: Dp = 4.dp
-    val TrackCornerRadius: Dp = 12.dp
-    val InsetIconSize: Dp = 24.dp
-    val IconPadding: Dp = 10.dp
-    val ThumbTrackGapSize: Dp = 6.dp
-    val StopIndicatorRadius: Dp = 4.dp
+  val TrackHeight: Dp = 40.dp
+  val HandleHeight: Dp = 52.dp
+  val HandleWidth: Dp = 4.dp
+  val TrackCornerRadius: Dp = 12.dp
+  val InsetIconSize: Dp = 24.dp
+  val IconPadding: Dp = 10.dp
+  val ThumbTrackGapSize: Dp = 6.dp
+  val StopIndicatorRadius: Dp = 4.dp
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VolumeSlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onValueChangeFinished: (() -> Unit)? = null,
-    accentColor: Color = MaterialTheme.colorScheme.primary
+  value: Float,
+  onValueChange: (Float) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  onValueChangeFinished: (() -> Unit)? = null,
+  accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
+  val interactionSource = remember { MutableInteractionSource() }
 
-    val volumeOffIcon = painterResource(R.drawable.volume_off)
-    val volumeMuteIcon = painterResource(R.drawable.volume_mute)
-    val volumeDownIcon = painterResource(R.drawable.volume_down)
-    val volumeUpIcon = painterResource(R.drawable.volume_up)
+  val volumeOffIcon = painterResource(R.drawable.volume_off)
+  val volumeMuteIcon = painterResource(R.drawable.volume_mute)
+  val volumeDownIcon = painterResource(R.drawable.volume_down)
+  val volumeUpIcon = painterResource(R.drawable.volume_up)
 
-    val currentIcon = when {
-        value <= 0f -> volumeOffIcon
-        value < 0.33f -> volumeMuteIcon
-        value < 0.66f -> volumeDownIcon
-        else -> volumeUpIcon
+  val currentIcon =
+    when {
+      value <= 0f -> volumeOffIcon
+      value < 0.33f -> volumeMuteIcon
+      value < 0.66f -> volumeDownIcon
+      else -> volumeUpIcon
     }
 
-    val colors = SliderDefaults.colors(
-        thumbColor = accentColor,
-        activeTrackColor = accentColor,
-        activeTickColor = MaterialTheme.colorScheme.onPrimary,
-        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-        inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant
+  val colors =
+    SliderDefaults.colors(
+      thumbColor = accentColor,
+      activeTrackColor = accentColor,
+      activeTickColor = MaterialTheme.colorScheme.onPrimary,
+      inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+      inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
-    
-    val stopIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    Slider(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        enabled = enabled,
-        valueRange = 0f..1f,
-        onValueChangeFinished = onValueChangeFinished,
-        colors = colors,
-        interactionSource = interactionSource,
-        track = { sliderState ->
-            val iconSize = DpSize(VolumeSliderDefaults.InsetIconSize, VolumeSliderDefaults.InsetIconSize)
-            val activeIconColor = colors.activeTickColor
-            val inactiveIconColor = colors.inactiveTickColor
+  val stopIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-            SliderDefaults.Track(
-                sliderState = sliderState,
-                modifier = Modifier
-                    .height(VolumeSliderDefaults.TrackHeight)
-                    .drawWithContent {
-                        drawContent()
-                        val yOffset = size.height / 2 - iconSize.toSize().height / 2
-                        val fraction = value.coerceIn(0f, 1f)
-                        val thumbGapPx = VolumeSliderDefaults.ThumbTrackGapSize.toPx()
-                        val activeTrackEnd = size.width * fraction - thumbGapPx
-                        val inactiveTrackStart = activeTrackEnd + thumbGapPx * 2
-                        val activeTrackWidth = activeTrackEnd
-                        val inactiveTrackWidth = size.width - inactiveTrackStart
+  Slider(
+    value = value,
+    onValueChange = onValueChange,
+    modifier = modifier,
+    enabled = enabled,
+    valueRange = 0f..1f,
+    onValueChangeFinished = onValueChangeFinished,
+    colors = colors,
+    interactionSource = interactionSource,
+    track = { sliderState ->
+      val iconSize = DpSize(VolumeSliderDefaults.InsetIconSize, VolumeSliderDefaults.InsetIconSize)
+      val activeIconColor = colors.activeTickColor
+      val inactiveIconColor = colors.inactiveTickColor
 
-                        drawVolumeIcon(
-                            icon = currentIcon,
-                            iconSize = iconSize,
-                            iconPadding = VolumeSliderDefaults.IconPadding,
-                            yOffset = yOffset,
-                            activeTrackWidth = activeTrackWidth,
-                            inactiveTrackStart = inactiveTrackStart,
-                            inactiveTrackWidth = inactiveTrackWidth,
-                            activeIconColor = activeIconColor,
-                            inactiveIconColor = inactiveIconColor,
-                            volumeOffIcon = volumeOffIcon
-                        )
-                    },
-                colors = colors,
-                enabled = enabled,
-                thumbTrackGapSize = VolumeSliderDefaults.ThumbTrackGapSize,
-                trackCornerSize = VolumeSliderDefaults.TrackCornerRadius,
-                drawStopIndicator = if (value < 0.90f) { offset ->
-                    drawCircle(
-                        color = stopIndicatorColor,
-                        radius = VolumeSliderDefaults.StopIndicatorRadius.toPx(),
-                        center = offset
-                    )
-                } else null
+      SliderDefaults.Track(
+        sliderState = sliderState,
+        modifier =
+          Modifier.height(VolumeSliderDefaults.TrackHeight).drawWithContent {
+            drawContent()
+            val yOffset = size.height / 2 - iconSize.toSize().height / 2
+            val fraction = value.coerceIn(0f, 1f)
+            val thumbGapPx = VolumeSliderDefaults.ThumbTrackGapSize.toPx()
+            val activeTrackEnd = size.width * fraction - thumbGapPx
+            val inactiveTrackStart = activeTrackEnd + thumbGapPx * 2
+            val activeTrackWidth = activeTrackEnd
+            val inactiveTrackWidth = size.width - inactiveTrackStart
+
+            drawVolumeIcon(
+              icon = currentIcon,
+              iconSize = iconSize,
+              iconPadding = VolumeSliderDefaults.IconPadding,
+              yOffset = yOffset,
+              activeTrackWidth = activeTrackWidth,
+              inactiveTrackStart = inactiveTrackStart,
+              inactiveTrackWidth = inactiveTrackWidth,
+              activeIconColor = activeIconColor,
+              inactiveIconColor = inactiveIconColor,
+              volumeOffIcon = volumeOffIcon
             )
-        }
-    )
+          },
+        colors = colors,
+        enabled = enabled,
+        thumbTrackGapSize = VolumeSliderDefaults.ThumbTrackGapSize,
+        trackCornerSize = VolumeSliderDefaults.TrackCornerRadius,
+        drawStopIndicator =
+          if (value < 0.90f)
+            { offset ->
+              drawCircle(
+                color = stopIndicatorColor,
+                radius = VolumeSliderDefaults.StopIndicatorRadius.toPx(),
+                center = offset
+              )
+            }
+          else null
+      )
+    }
+  )
 }
 
 private fun DrawScope.drawVolumeIcon(
-    icon: Painter,
-    iconSize: DpSize,
-    iconPadding: Dp,
-    yOffset: Float,
-    activeTrackWidth: Float,
-    inactiveTrackStart: Float,
-    inactiveTrackWidth: Float,
-    activeIconColor: Color,
-    inactiveIconColor: Color,
-    volumeOffIcon: Painter
+  icon: Painter,
+  iconSize: DpSize,
+  iconPadding: Dp,
+  yOffset: Float,
+  activeTrackWidth: Float,
+  inactiveTrackStart: Float,
+  inactiveTrackWidth: Float,
+  activeIconColor: Color,
+  inactiveIconColor: Color,
+  volumeOffIcon: Painter
 ) {
-    val iconSizePx = iconSize.toSize()
-    val iconPaddingPx = iconPadding.toPx()
-    val minSpaceForIcon = iconSizePx.width + iconPaddingPx * 2
+  val iconSizePx = iconSize.toSize()
+  val iconPaddingPx = iconPadding.toPx()
+  val minSpaceForIcon = iconSizePx.width + iconPaddingPx * 2
 
-    if (activeTrackWidth >= minSpaceForIcon) {
-        translate(iconPaddingPx, yOffset) {
-            with(icon) {
-                draw(iconSizePx, colorFilter = ColorFilter.tint(activeIconColor))
-            }
-        }
-    } else if (inactiveTrackWidth >= minSpaceForIcon) {
-        translate(inactiveTrackStart + iconPaddingPx, yOffset) {
-            with(volumeOffIcon) {
-                draw(iconSizePx, colorFilter = ColorFilter.tint(inactiveIconColor))
-            }
-        }
+  if (activeTrackWidth >= minSpaceForIcon) {
+    translate(iconPaddingPx, yOffset) {
+      with(icon) { draw(iconSizePx, colorFilter = ColorFilter.tint(activeIconColor)) }
     }
+  } else if (inactiveTrackWidth >= minSpaceForIcon) {
+    translate(inactiveTrackStart + iconPaddingPx, yOffset) {
+      with(volumeOffIcon) { draw(iconSizePx, colorFilter = ColorFilter.tint(inactiveIconColor)) }
+    }
+  }
 }

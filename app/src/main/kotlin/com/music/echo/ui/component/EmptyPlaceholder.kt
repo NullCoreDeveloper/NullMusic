@@ -21,29 +21,26 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun EmptyPlaceholder(
-    @DrawableRes icon: Int,
-    text: String,
-    modifier: Modifier = Modifier,
+  @DrawableRes icon: Int,
+  text: String,
+  modifier: Modifier = Modifier,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier =
-        modifier
-            .fillMaxSize()
-            .padding(12.dp),
-    ) {
-        Image(
-            painter = painterResource(icon),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            modifier = Modifier.size(64.dp),
-        )
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxSize().padding(12.dp),
+  ) {
+    Image(
+      painter = painterResource(icon),
+      contentDescription = null,
+      colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+      modifier = Modifier.size(64.dp),
+    )
 
-        Spacer(Modifier.height(12.dp))
+    Spacer(Modifier.height(12.dp))
 
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-    }
+    Text(
+      text = text,
+      style = MaterialTheme.typography.bodyLarge,
+    )
+  }
 }

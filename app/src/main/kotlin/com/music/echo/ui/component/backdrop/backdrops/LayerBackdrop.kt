@@ -32,52 +32,51 @@ private val DefaultOnDraw: ContentDrawScope.() -> Unit = { drawContent() }
 
 @Composable
 fun rememberLayerBackdrop(
-    graphicsLayer: GraphicsLayer = rememberGraphicsLayer(),
-    onDraw: ContentDrawScope.() -> Unit = DefaultOnDraw
+  graphicsLayer: GraphicsLayer = rememberGraphicsLayer(),
+  onDraw: ContentDrawScope.() -> Unit = DefaultOnDraw
 ): LayerBackdrop {
-    return remember(graphicsLayer, onDraw) {
-        LayerBackdrop(graphicsLayer, onDraw)
-    }
+  return remember(graphicsLayer, onDraw) { LayerBackdrop(graphicsLayer, onDraw) }
 }
 
 @Stable
-class LayerBackdrop internal constructor(
-    val graphicsLayer: GraphicsLayer,
-    internal val onDraw: ContentDrawScope.() -> Unit
+class LayerBackdrop
+internal constructor(
+  val graphicsLayer: GraphicsLayer,
+  internal val onDraw: ContentDrawScope.() -> Unit
 ) : Backdrop {
 
-    override val isCoordinatesDependent: Boolean = true
+  override val isCoordinatesDependent: Boolean = true
 
-    internal var layerCoordinates: LayoutCoordinates? by mutableStateOf(null)
+  internal var layerCoordinates: LayoutCoordinates? by mutableStateOf(null)
 
-    private var inverseLayerScope: InverseLayerScope? = null
+  private var inverseLayerScope: InverseLayerScope? = null
 
-    override fun DrawScope.drawBackdrop(
-        density: Density,
-        coordinates: LayoutCoordinates?,
-        layerBlock: (GraphicsLayerScope.() -> Unit)?
-    ) {
-        val coordinates = coordinates ?: return
-        val layerCoordinates = layerCoordinates ?: return
-        withTransform({
-            if (layerBlock != null) {
-                with(obtainInverseLayerScope()) { inverseTransform(density, layerBlock) }
-            }
-            val offset =
-                try {
-                    layerCoordinates.localPositionOf(coordinates)
-                } catch (_: Exception) {
-                    // TODO: outer transformations lead to wrong position calculation
-                    coordinates.positionInWindow() - layerCoordinates.positionInWindow()
-                }
-            translate(-offset.x, -offset.y)
-        }) {
-            drawLayer(graphicsLayer)
+  override fun DrawScope.drawBackdrop(
+    density: Density,
+    coordinates: LayoutCoordinates?,
+    layerBlock: (GraphicsLayerScope.() -> Unit)?
+  ) {
+    val coordinates = coordinates ?: return
+    val layerCoordinates = layerCoordinates ?: return
+    withTransform({
+      if (layerBlock != null) {
+        with(obtainInverseLayerScope()) { inverseTransform(density, layerBlock) }
+      }
+      val offset =
+        try {
+          layerCoordinates.localPositionOf(coordinates)
+        } catch (_: Exception) {
+          // TODO: outer transformations lead to wrong position calculation
+          coordinates.positionInWindow() - layerCoordinates.positionInWindow()
         }
+      translate(-offset.x, -offset.y)
+    }) {
+      drawLayer(graphicsLayer)
     }
+  }
 
-    private fun obtainInverseLayerScope(): InverseLayerScope {
-        return inverseLayerScope?.apply { reset() }
-            ?: InverseLayerScope().also { inverseLayerScope = it }
-    }
+  private fun obtainInverseLayerScope(): InverseLayerScope {
+    return inverseLayerScope?.apply { reset() }
+      ?: InverseLayerScope().also { inverseLayerScope = it }
+  }
 }

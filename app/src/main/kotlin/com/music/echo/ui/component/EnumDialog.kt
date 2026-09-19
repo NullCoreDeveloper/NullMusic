@@ -18,48 +18,45 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> EnumDialog(
-    onDismiss: () -> Unit,
-    onSelect: (T) -> Unit,
-    title: String,
-    current: T,
-    values: List<T>,
-    valueText: @Composable (T) -> String,
-    valueDescription: (@Composable (T) -> String)? = null,
+  onDismiss: () -> Unit,
+  onSelect: (T) -> Unit,
+  title: String,
+  current: T,
+  values: List<T>,
+  valueText: @Composable (T) -> String,
+  valueDescription: (@Composable (T) -> String)? = null,
 ) {
-    ListDialog(
-        onDismiss = onDismiss,
-    ) {
-        items(values) { value ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onSelect(value)
-                    }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
-                RadioButton(
-                    selected = value == current,
-                    onClick = null,
-                )
+  ListDialog(
+    onDismiss = onDismiss,
+  ) {
+    items(values) { value ->
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier =
+          Modifier.fillMaxWidth()
+            .clickable { onSelect(value) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+      ) {
+        RadioButton(
+          selected = value == current,
+          onClick = null,
+        )
 
-                Column(
-                    modifier = Modifier.padding(start = 16.dp),
-                ) {
-                    Text(
-                        text = valueText(value),
-                    )
-                    if (valueDescription != null && valueDescription(value).isNotEmpty()) {
-                        Text(
-                            text = valueDescription(value),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
+        Column(
+          modifier = Modifier.padding(start = 16.dp),
+        ) {
+          Text(
+            text = valueText(value),
+          )
+          if (valueDescription != null && valueDescription(value).isNotEmpty()) {
+            Text(
+              text = valueDescription(value),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
         }
+      }
     }
+  }
 }

@@ -68,11 +68,23 @@ class CrashActivity : ComponentActivity() {
         }
     }
 
-    private fun copyToClipboard(crashLog: String) {
-        val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        val clip = android.content.ClipData.newPlainText("CrashLog", crashLog)
-        cm.setPrimaryClip(clip)
-        android.widget.Toast.makeText(this, R.string.copied_to_clipboard, android.widget.Toast.LENGTH_SHORT).show()
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+
+    val crashLog =
+      intent.getStringExtra(CrashHandler.EXTRA_CRASH_LOG) ?: getString(R.string.crash_no_log)
+
+    setContent {
+      val darkTheme = isSystemInDarkTheme()
+      echomusicTheme(darkTheme = darkTheme) {
+        CrashScreen(
+          crashLog = crashLog,
+          onClose = { finishAffinity() },
+          onShare = { shareCrashLog(crashLog) },
+          onCopy = { copyToClipboard(crashLog) }
+        )
+      }
     }
     
     private fun shareCrashLog(crashLog: String) {
@@ -108,100 +120,100 @@ class CrashActivity : ComponentActivity() {
             }
             startActivity(Intent.createChooser(shareIntent, getString(R.string.crash_share_title)))
         }
+
+      startActivity(Intent.createChooser(shareIntent, getString(R.string.crash_share_title)))
+    } catch (e: Exception) {
+
+      val shareIntent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, crashLog)
+          putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crash_report_subject))
+        }
+      startActivity(Intent.createChooser(shareIntent, getString(R.string.crash_share_title)))
     }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CrashScreen(
-    crashLog: String,
-    onClose: () -> Unit,
-    onShare: () -> Unit,
-    onCopy: () -> Unit
-) {
-    val context = LocalContext.current
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        text = stringResource(R.string.crash_title),
-                        style = MaterialTheme.typography.headlineSmall
-                    ) 
-                },
-                actions = {
-                    IconButton(onClick = onCopy) {
-                        Icon(
-                            painter = painterResource(R.drawable.content_copy),
-                            contentDescription = stringResource(R.string.copy_logs)
-                        )
-                    }
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            painter = painterResource(R.drawable.close),
-                            contentDescription = stringResource(R.string.crash_close)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
+fun CrashScreen(crashLog: String, onClose: () -> Unit, onShare: () -> Unit, onCopy: () -> Unit) {
+  val context = LocalContext.current
+
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = {
+          Text(
+            text = stringResource(R.string.crash_title),
+            style = MaterialTheme.typography.headlineSmall
+          )
         },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onShare,
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.share),
-                        contentDescription = null
-                    )
-                },
-                text = { Text(stringResource(R.string.crash_share_logs)) },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        actions = {
+          IconButton(onClick = onCopy) {
+            Icon(
+              painter = painterResource(R.drawable.content_copy),
+              contentDescription = stringResource(R.string.copy_logs)
             )
+          }
+          IconButton(onClick = onClose) {
+            Icon(
+              painter = painterResource(R.drawable.close),
+              contentDescription = stringResource(R.string.crash_close)
+            )
+          }
         },
-        containerColor = MaterialTheme.colorScheme.surface
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                text = stringResource(R.string.crash_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = crashLog,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
-                        lineHeight = 16.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
-                )
-            }
-            
-            
-            Spacer(modifier = Modifier.height(88.dp))
-        }
+        colors =
+          TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+      )
+    },
+    floatingActionButton = {
+      ExtendedFloatingActionButton(
+        onClick = onShare,
+        icon = { Icon(painter = painterResource(R.drawable.share), contentDescription = null) },
+        text = { Text(stringResource(R.string.crash_share_logs)) },
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+      )
+    },
+    containerColor = MaterialTheme.colorScheme.surface
+  ) { paddingValues ->
+    Column(
+      modifier =
+        Modifier.fillMaxSize()
+          .padding(paddingValues)
+          .padding(horizontal = 16.dp)
+          .verticalScroll(rememberScrollState())
+    ) {
+      Text(
+        text = stringResource(R.string.crash_description),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+      )
+
+      Spacer(modifier = Modifier.height(16.dp))
+
+      Box(
+        modifier =
+          Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .padding(16.dp)
+      ) {
+        Text(
+          text = crashLog,
+          style =
+            MaterialTheme.typography.bodySmall.copy(
+              fontFamily = FontFamily.Monospace,
+              fontSize = 11.sp,
+              lineHeight = 16.sp
+            ),
+          color = MaterialTheme.colorScheme.onSurface,
+          modifier = Modifier.horizontalScroll(rememberScrollState())
+        )
+      }
+
+      Spacer(modifier = Modifier.height(88.dp))
     }
+  }
 }

@@ -22,39 +22,67 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
 @HiltViewModel
 class LyricsMenuViewModel
 @Inject
 constructor(
-    private val lyricsHelper: LyricsHelper,
-    val database: MusicDatabase,
-    private val networkConnectivity: NetworkConnectivityObserver,
+  private val lyricsHelper: LyricsHelper,
+  val database: MusicDatabase,
+  private val networkConnectivity: NetworkConnectivityObserver,
 ) : ViewModel() {
-    private var job: Job? = null
-    val results = MutableStateFlow(emptyList<LyricsResult>())
-    val isLoading = MutableStateFlow(false)
+  private var job: Job? = null
+  val results = MutableStateFlow(emptyList<LyricsResult>())
+  val isLoading = MutableStateFlow(false)
 
-    private val _isNetworkAvailable = MutableStateFlow(false)
-    val isNetworkAvailable: StateFlow<Boolean> = _isNetworkAvailable.asStateFlow()
+  private val _isNetworkAvailable = MutableStateFlow(false)
+  val isNetworkAvailable: StateFlow<Boolean> = _isNetworkAvailable.asStateFlow()
 
-    private val _currentSong = mutableStateOf<Song?>(null)
-    val currentSong: State<Song?> = _currentSong
+  private val _currentSong = mutableStateOf<Song?>(null)
+  val currentSong: State<Song?> = _currentSong
 
-    init {
-        viewModelScope.launch {
-            networkConnectivity.networkStatus.collect { isConnected ->
-                _isNetworkAvailable.value = isConnected
-            }
-        }
-
-        _isNetworkAvailable.value = try {
-            networkConnectivity.isCurrentlyConnected()
-        } catch (e: Exception) {
-            true 
-        }
+  init {
+    viewModelScope.launch {
+      networkConnectivity.networkStatus.collect { isConnected ->
+        _isNetworkAvailable.value = isConnected
+      }
     }
+
+    _isNetworkAvailable.value =
+      try {
+        networkConnectivity.isCurrentlyConnected()
+      } catch (e: Exception) {
+        true
+      }
+  }
+
+  fun setCurrentSong(song: Song) {
+    _currentSong.value = song
+  }
+
+  fun search(
+    mediaId: String,
+    title: String,
+    artist: String,
+    duration: Int,
+    album: String? = null,
+  ) {
+    isLoading.value = true
+    results.value = emptyList()
+    job?.cancel()
+    job =
+      viewModelScope.launch(Dispatchers.IO) {
+        lyricsHelper.getAllLyrics(mediaId, title, artist, duration, album) { result ->
+          results.update { it + result }
+        }
+        isLoading.value = false
+      }
+  }
+
+  fun cancelSearch() {
+    job?.cancel()
+    job = null
+  }
 
     fun setCurrentSong(song: Song) {
         _currentSong.value = song
@@ -99,4 +127,5 @@ constructor(
             upsert(LyricsEntity(mediaMetadata.id, lyricsWithProvider.lyrics, lyricsWithProvider.provider))
         }
     }
+  }
 }

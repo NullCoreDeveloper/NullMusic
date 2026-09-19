@@ -42,317 +42,310 @@ import iad1tya.echo.music.viewmodels.CsvImportState
 
 @Composable
 fun CsvColumnMappingDialog(
-    isVisible: Boolean,
-    csvState: CsvImportState,
-    onDismiss: () -> Unit,
-    onConfirm: (CsvImportState) -> Unit,
+  isVisible: Boolean,
+  csvState: CsvImportState,
+  onDismiss: () -> Unit,
+  onConfirm: (CsvImportState) -> Unit,
 ) {
-    if (!isVisible) return
+  if (!isVisible) return
 
-    var artistColumnIndex by remember { mutableIntStateOf(csvState.artistColumnIndex) }
-    var titleColumnIndex by remember { mutableIntStateOf(csvState.titleColumnIndex) }
-    var urlColumnIndex by remember { mutableIntStateOf(csvState.urlColumnIndex) }
-    var hasHeader by remember { mutableStateOf(csvState.hasHeader) }
+  var artistColumnIndex by remember { mutableIntStateOf(csvState.artistColumnIndex) }
+  var titleColumnIndex by remember { mutableIntStateOf(csvState.titleColumnIndex) }
+  var urlColumnIndex by remember { mutableIntStateOf(csvState.urlColumnIndex) }
+  var hasHeader by remember { mutableStateOf(csvState.hasHeader) }
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+  Dialog(
+    onDismissRequest = onDismiss,
+    properties = DialogProperties(usePlatformDefaultWidth = false),
+  ) {
+    Column(
+      modifier =
+        Modifier.fillMaxWidth(0.95f)
+          .clip(RoundedCornerShape(16.dp))
+          .background(MaterialTheme.colorScheme.surface)
+          .padding(24.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+      Text(
+        text = stringResource(R.string.map_csv_columns),
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.onSurface,
+      )
+
+      if (csvState.previewRows.isNotEmpty()) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+          modifier =
+            Modifier.fillMaxWidth()
+              .clip(RoundedCornerShape(8.dp))
+              .background(MaterialTheme.colorScheme.surfaceVariant)
+              .padding(12.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                text = stringResource(R.string.map_csv_columns),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+          Text(
+            text = stringResource(R.string.preview),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
 
-            
-            if (csvState.previewRows.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.preview),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        csvState.previewRows.take(5).forEachIndexed { rowIndex, row ->
-                            Column(
-                                modifier = Modifier.verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
-                            ) {
-                                row.forEachIndexed { colIndex, cell ->
-                                    Box(
-                                        modifier = Modifier
-                                            .width(120.dp)
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(
-                                                when {
-                                                    rowIndex == 0 && hasHeader -> MaterialTheme.colorScheme.primaryContainer
-                                                    colIndex == artistColumnIndex -> MaterialTheme.colorScheme.tertiaryContainer
-                                                    colIndex == titleColumnIndex -> MaterialTheme.colorScheme.secondaryContainer
-                                                    colIndex == urlColumnIndex && urlColumnIndex >= 0 -> MaterialTheme.colorScheme.tertiaryContainer
-                                                    else -> MaterialTheme.colorScheme.background
-                                                },
-                                            )
-                                            .padding(6.dp),
-                                    ) {
-                                        Text(
-                                            text = cell.take(18),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis,
-                                            fontFamily = FontFamily.Monospace,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Checkbox(
-                    checked = hasHeader,
-                    onCheckedChange = { hasHeader = it },
-                )
-                Text(
-                    text = stringResource(R.string.first_row_is_header),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-
-            
-            ColumnSelector(
-                label = stringResource(R.string.artist_name_column),
-                selectedIndex = artistColumnIndex,
-                maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
-                onSelected = { artistColumnIndex = it },
-            )
-
-            ColumnSelector(
-                label = stringResource(R.string.song_title_column),
-                selectedIndex = titleColumnIndex,
-                maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
-                onSelected = { titleColumnIndex = it },
-            )
-
-            ColumnSelector(
-                label = stringResource(R.string.youtube_url_column),
-                selectedIndex = urlColumnIndex,
-                maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
-                allowNone = true,
-                onSelected = { urlColumnIndex = it },
-            )
-
-            
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-            ) {
-                OutlinedButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.cancel))
-                }
-                Button(
-                    onClick = {
-                        onConfirm(
-                            CsvImportState(
-                                previewRows = csvState.previewRows,
-                                artistColumnIndex = artistColumnIndex,
-                                titleColumnIndex = titleColumnIndex,
-                                urlColumnIndex = urlColumnIndex,
-                                hasHeader = hasHeader,
-                            )
+          Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+          ) {
+            csvState.previewRows.take(5).forEachIndexed { rowIndex, row ->
+              Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+              ) {
+                row.forEachIndexed { colIndex, cell ->
+                  Box(
+                    modifier =
+                      Modifier.width(120.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(
+                          when {
+                            rowIndex == 0 && hasHeader -> MaterialTheme.colorScheme.primaryContainer
+                            colIndex == artistColumnIndex ->
+                              MaterialTheme.colorScheme.tertiaryContainer
+                            colIndex == titleColumnIndex ->
+                              MaterialTheme.colorScheme.secondaryContainer
+                            colIndex == urlColumnIndex && urlColumnIndex >= 0 ->
+                              MaterialTheme.colorScheme.tertiaryContainer
+                            else -> MaterialTheme.colorScheme.background
+                          },
                         )
-                    },
-                ) {
-                    Text(stringResource(R.string.continue_action))
+                        .padding(6.dp),
+                  ) {
+                    Text(
+                      text = cell.take(18),
+                      style = MaterialTheme.typography.labelSmall,
+                      color = MaterialTheme.colorScheme.onSurface,
+                      maxLines = 2,
+                      overflow = TextOverflow.Ellipsis,
+                      fontFamily = FontFamily.Monospace,
+                    )
+                  }
                 }
+              }
             }
+          }
         }
+      }
+
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Checkbox(
+          checked = hasHeader,
+          onCheckedChange = { hasHeader = it },
+        )
+        Text(
+          text = stringResource(R.string.first_row_is_header),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurface,
+        )
+      }
+
+      ColumnSelector(
+        label = stringResource(R.string.artist_name_column),
+        selectedIndex = artistColumnIndex,
+        maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
+        onSelected = { artistColumnIndex = it },
+      )
+
+      ColumnSelector(
+        label = stringResource(R.string.song_title_column),
+        selectedIndex = titleColumnIndex,
+        maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
+        onSelected = { titleColumnIndex = it },
+      )
+
+      ColumnSelector(
+        label = stringResource(R.string.youtube_url_column),
+        selectedIndex = urlColumnIndex,
+        maxColumns = csvState.previewRows.firstOrNull()?.size ?: 0,
+        allowNone = true,
+        onSelected = { urlColumnIndex = it },
+      )
+
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+      ) {
+        OutlinedButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+        Button(
+          onClick = {
+            onConfirm(
+              CsvImportState(
+                previewRows = csvState.previewRows,
+                artistColumnIndex = artistColumnIndex,
+                titleColumnIndex = titleColumnIndex,
+                urlColumnIndex = urlColumnIndex,
+                hasHeader = hasHeader,
+              )
+            )
+          },
+        ) {
+          Text(stringResource(R.string.continue_action))
+        }
+      }
     }
+  }
 }
 
 @Composable
 private fun ColumnSelector(
-    label: String,
-    selectedIndex: Int,
-    maxColumns: Int,
-    allowNone: Boolean = false,
-    onSelected: (Int) -> Unit,
+  label: String,
+  selectedIndex: Int,
+  maxColumns: Int,
+  allowNone: Boolean = false,
+  onSelected: (Int) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+  Column(
+    modifier = Modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    Text(
+      text = label,
+      style = MaterialTheme.typography.labelMedium,
+      color = MaterialTheme.colorScheme.onSurface,
+    )
+
+    Row(
+      modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            if (allowNone) {
-                if (selectedIndex == -1) {
-                    Button(
-                        onClick = { onSelected(-1) },
-                        modifier = Modifier.height(36.dp),
-                    ) {
-                        Text(stringResource(R.string.none), style = MaterialTheme.typography.labelSmall)
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = { onSelected(-1) },
-                        modifier = Modifier.height(36.dp),
-                    ) {
-                        Text(stringResource(R.string.none), style = MaterialTheme.typography.labelSmall)
-                    }
-                }
-            }
-
-            repeat(maxColumns) { index ->
-                if (selectedIndex == index) {
-                    Button(
-                        onClick = { onSelected(index) },
-                        modifier = Modifier.height(36.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.column_label, index + 1),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = { onSelected(index) },
-                        modifier = Modifier.height(36.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.column_label, index + 1),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                }
-            }
+      if (allowNone) {
+        if (selectedIndex == -1) {
+          Button(
+            onClick = { onSelected(-1) },
+            modifier = Modifier.height(36.dp),
+          ) {
+            Text(stringResource(R.string.none), style = MaterialTheme.typography.labelSmall)
+          }
+        } else {
+          OutlinedButton(
+            onClick = { onSelected(-1) },
+            modifier = Modifier.height(36.dp),
+          ) {
+            Text(stringResource(R.string.none), style = MaterialTheme.typography.labelSmall)
+          }
         }
+      }
+
+      repeat(maxColumns) { index ->
+        if (selectedIndex == index) {
+          Button(
+            onClick = { onSelected(index) },
+            modifier = Modifier.height(36.dp),
+          ) {
+            Text(
+              stringResource(R.string.column_label, index + 1),
+              style = MaterialTheme.typography.labelSmall,
+            )
+          }
+        } else {
+          OutlinedButton(
+            onClick = { onSelected(index) },
+            modifier = Modifier.height(36.dp),
+          ) {
+            Text(
+              stringResource(R.string.column_label, index + 1),
+              style = MaterialTheme.typography.labelSmall,
+            )
+          }
+        }
+      }
     }
+  }
 }
 
 @Composable
 fun CsvImportProgressDialog(
-    isVisible: Boolean,
-    progress: Int,
-    recentLogs: List<ConvertedSongLog>,
-    onDismiss: () -> Unit,
+  isVisible: Boolean,
+  progress: Int,
+  recentLogs: List<ConvertedSongLog>,
+  onDismiss: () -> Unit,
 ) {
-    if (!isVisible) return
+  if (!isVisible) return
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnBackPress = false, dismissOnClickOutside = false),
+  Dialog(
+    onDismissRequest = onDismiss,
+    properties =
+      DialogProperties(
+        usePlatformDefaultWidth = false,
+        dismissOnBackPress = false,
+        dismissOnClickOutside = false
+      ),
+  ) {
+    Column(
+      modifier =
+        Modifier.fillMaxWidth(0.85f)
+          .clip(RoundedCornerShape(16.dp))
+          .background(MaterialTheme.colorScheme.surface)
+          .padding(24.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+      Text(
+        text = stringResource(R.string.importing_csv),
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.onSurface,
+      )
+
+      LinearProgressIndicator(
+        progress = { progress / 100f },
+        modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
+      )
+
+      Text(
+        text = stringResource(R.string.percentage_format, progress),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+
+      if (recentLogs.isNotEmpty()) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+          modifier =
+            Modifier.fillMaxWidth()
+              .clip(RoundedCornerShape(8.dp))
+              .background(MaterialTheme.colorScheme.surfaceVariant)
+              .padding(12.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                text = stringResource(R.string.importing_csv),
-                style = MaterialTheme.typography.headlineSmall,
+          Text(
+            text = stringResource(R.string.recently_converted),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+
+          recentLogs.forEach { log ->
+            Column(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .clip(RoundedCornerShape(4.dp))
+                  .background(MaterialTheme.colorScheme.background)
+                  .padding(8.dp),
+              verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+              Text(
+                text = log.title,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            LinearProgressIndicator(
-                progress = { progress / 100f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-            )
-
-            Text(
-                text = stringResource(R.string.percentage_format, progress),
-                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+              Text(
+                text = log.artists,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            if (recentLogs.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.recently_converted),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-
-                    recentLogs.forEach { log ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.background)
-                                .padding(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            Text(
-                                text = log.title,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = log.artists,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                }
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
             }
+          }
         }
+      }
     }
+  }
 }

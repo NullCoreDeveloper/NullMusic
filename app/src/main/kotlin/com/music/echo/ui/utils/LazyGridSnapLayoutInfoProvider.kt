@@ -11,58 +11,61 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 
 @ExperimentalFoundationApi
 fun SnapLayoutInfoProvider(
-    lazyGridState: LazyGridState,
-    positionInLayout: (layoutSize: Float, itemSize: Float) -> Float = { layoutSize, itemSize ->
-        (layoutSize / 2f - itemSize / 2f)
-    },
-): SnapLayoutInfoProvider = object : SnapLayoutInfoProvider {
+  lazyGridState: LazyGridState,
+  positionInLayout: (layoutSize: Float, itemSize: Float) -> Float = { layoutSize, itemSize ->
+    (layoutSize / 2f - itemSize / 2f)
+  },
+): SnapLayoutInfoProvider =
+  object : SnapLayoutInfoProvider {
     private val layoutInfo: LazyGridLayoutInfo
-        get() = lazyGridState.layoutInfo
+      get() = lazyGridState.layoutInfo
 
     override fun calculateApproachOffset(velocity: Float, decayOffset: Float): Float = 0f
 
     override fun calculateSnapOffset(velocity: Float): Float {
-        val bounds = calculateSnappingOffsetBounds()
-        return when {
-            velocity < 0 -> bounds.start
-            velocity > 0 -> bounds.endInclusive
-            else -> 0f
-        }
+      val bounds = calculateSnappingOffsetBounds()
+      return when {
+        velocity < 0 -> bounds.start
+        velocity > 0 -> bounds.endInclusive
+        else -> 0f
+      }
     }
 
     fun calculateSnappingOffsetBounds(): ClosedFloatingPointRange<Float> {
-        var lowerBoundOffset = Float.NEGATIVE_INFINITY
-        var upperBoundOffset = Float.POSITIVE_INFINITY
+      var lowerBoundOffset = Float.NEGATIVE_INFINITY
+      var upperBoundOffset = Float.POSITIVE_INFINITY
 
-        layoutInfo.visibleItemsInfo.forEach { item ->
-            val offset = calculateDistanceToDesiredSnapPosition(layoutInfo, item, positionInLayout)
+      layoutInfo.visibleItemsInfo.forEach { item ->
+        val offset = calculateDistanceToDesiredSnapPosition(layoutInfo, item, positionInLayout)
 
-            if (offset <= 0 && offset > lowerBoundOffset) {
-                lowerBoundOffset = offset
-            }
-
-            if (offset >= 0 && offset < upperBoundOffset) {
-                upperBoundOffset = offset
-            }
+        if (offset <= 0 && offset > lowerBoundOffset) {
+          lowerBoundOffset = offset
         }
 
-        return lowerBoundOffset.rangeTo(upperBoundOffset)
+        if (offset >= 0 && offset < upperBoundOffset) {
+          upperBoundOffset = offset
+        }
+      }
+
+      return lowerBoundOffset.rangeTo(upperBoundOffset)
     }
-}
+  }
 
 fun calculateDistanceToDesiredSnapPosition(
-    layoutInfo: LazyGridLayoutInfo,
-    item: LazyGridItemInfo,
-    positionInLayout: (layoutSize: Float, itemSize: Float) -> Float,
+  layoutInfo: LazyGridLayoutInfo,
+  item: LazyGridItemInfo,
+  positionInLayout: (layoutSize: Float, itemSize: Float) -> Float,
 ): Float {
-    val containerSize =
-        layoutInfo.singleAxisViewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
+  val containerSize =
+    layoutInfo.singleAxisViewportSize -
+      layoutInfo.beforeContentPadding -
+      layoutInfo.afterContentPadding
 
-    val desiredDistance = positionInLayout(containerSize.toFloat(), item.size.width.toFloat())
-    val itemCurrentPosition = item.offset.x.toFloat()
+  val desiredDistance = positionInLayout(containerSize.toFloat(), item.size.width.toFloat())
+  val itemCurrentPosition = item.offset.x.toFloat()
 
-    return itemCurrentPosition - desiredDistance
+  return itemCurrentPosition - desiredDistance
 }
 
 private val LazyGridLayoutInfo.singleAxisViewportSize: Int
-    get() = if (orientation == Orientation.Vertical) viewportSize.height else viewportSize.width
+  get() = if (orientation == Orientation.Vertical) viewportSize.height else viewportSize.width

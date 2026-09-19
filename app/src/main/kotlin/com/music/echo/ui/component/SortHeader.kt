@@ -45,131 +45,138 @@ import iad1tya.echo.music.constants.PlaylistSongSortType
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 inline fun <reified T : Enum<T>> SortHeader(
-    sortType: T,
-    sortDescending: Boolean,
-    crossinline onSortTypeChange: (T) -> Unit,
-    crossinline onSortDescendingChange: (Boolean) -> Unit,
-    crossinline sortTypeText: (T) -> Int,
-    modifier: Modifier = Modifier,
-    showDescending: Boolean? = true,
+  sortType: T,
+  sortDescending: Boolean,
+  crossinline onSortTypeChange: (T) -> Unit,
+  crossinline onSortDescendingChange: (Boolean) -> Unit,
+  crossinline sortTypeText: (T) -> Int,
+  modifier: Modifier = Modifier,
+  showDescending: Boolean? = true,
 ) {
-    var menuExpanded by remember { mutableStateOf(false) }
+  var menuExpanded by remember { mutableStateOf(false) }
 
-    val displayDescending = showDescending == true && sortType != PlaylistSongSortType.CUSTOM
+  val displayDescending = showDescending == true && sortType != PlaylistSongSortType.CUSTOM
 
-    SplitButtonLayout(
-        leadingButton = {
-            SplitButtonDefaults.LeadingButton(
-                onClick = { menuExpanded = !menuExpanded },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.widthIn(min = 120.dp)
-            ) {
-                Text(
-                    text = stringResource(sortTypeText(sortType)),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        },
-        trailingButton = {
-            if (displayDescending) {
-                val description = "Toggle sort order"
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-                    tooltip = { PlainTooltip { Text(description) } },
-                    state = rememberTooltipState(),
-                ) {
-                    SplitButtonDefaults.TrailingButton(
-                        checked = sortDescending,
-                        onCheckedChange = { onSortDescendingChange(it) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        modifier = Modifier.semantics {
-                            stateDescription = if (sortDescending) "Descending" else "Ascending"
-                            contentDescription = description
-                        },
-                    ) {
-                        val rotation: Float by animateFloatAsState(
-                            targetValue = if (sortDescending) 180f else 0f,
-                            label = "Trailing Icon Rotation",
-                        )
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            modifier = Modifier
-                                .size(SplitButtonDefaults.TrailingIconSize)
-                                .graphicsLayer {
-                                    this.rotationZ = rotation
-                                },
-                            contentDescription = null,
-                        )
-                    }
-                }
-            } else {
-                SplitButtonDefaults.TrailingButton(
-                    checked = menuExpanded,
-                    onCheckedChange = { menuExpanded = it },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.semantics {
-                        stateDescription = if (menuExpanded) "Expanded" else "Collapsed"
-                        contentDescription = "Show sort options"
-                    },
-                ) {
-                    val rotation: Float by animateFloatAsState(
-                        targetValue = if (menuExpanded) 180f else 0f,
-                        label = "Trailing Icon Rotation",
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
-                        modifier = Modifier
-                            .size(SplitButtonDefaults.TrailingIconSize)
-                            .graphicsLayer {
-                                this.rotationZ = rotation
-                            },
-                        contentDescription = null,
-                    )
-                }
-            }
-        },
-        modifier = modifier.padding(vertical = 8.dp)
-    )
-
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = { menuExpanded = false },
-        modifier = Modifier.widthIn(min = 172.dp),
-    ) {
-        enumValues<T>().forEach { type ->
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(sortTypeText(type)),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    )
+  SplitButtonLayout(
+    leadingButton = {
+      SplitButtonDefaults.LeadingButton(
+        onClick = { menuExpanded = !menuExpanded },
+        colors =
+          ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+          ),
+        modifier = Modifier.widthIn(min = 120.dp)
+      ) {
+        Text(
+          text = stringResource(sortTypeText(sortType)),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          style = MaterialTheme.typography.labelLarge,
+        )
+      }
+    },
+    trailingButton = {
+      if (displayDescending) {
+        val description = "Toggle sort order"
+        TooltipBox(
+          positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+          tooltip = { PlainTooltip { Text(description) } },
+          state = rememberTooltipState(),
+        ) {
+          SplitButtonDefaults.TrailingButton(
+            checked = sortDescending,
+            onCheckedChange = { onSortDescendingChange(it) },
+            colors =
+              ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+              ),
+            modifier =
+              Modifier.semantics {
+                stateDescription = if (sortDescending) "Descending" else "Ascending"
+                contentDescription = description
+              },
+          ) {
+            val rotation: Float by
+              animateFloatAsState(
+                targetValue = if (sortDescending) 180f else 0f,
+                label = "Trailing Icon Rotation",
+              )
+            Icon(
+              imageVector = Icons.Filled.KeyboardArrowDown,
+              modifier =
+                Modifier.size(SplitButtonDefaults.TrailingIconSize).graphicsLayer {
+                  this.rotationZ = rotation
                 },
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(
-                            if (sortType == type) R.drawable.radio_button_checked
-                            else R.drawable.radio_button_unchecked
-                        ),
-                        contentDescription = null,
-                    )
-                },
-                onClick = {
-                    onSortTypeChange(type)
-                    menuExpanded = false
-                },
+              contentDescription = null,
             )
+          }
         }
+      } else {
+        SplitButtonDefaults.TrailingButton(
+          checked = menuExpanded,
+          onCheckedChange = { menuExpanded = it },
+          colors =
+            ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+              contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+          modifier =
+            Modifier.semantics {
+              stateDescription = if (menuExpanded) "Expanded" else "Collapsed"
+              contentDescription = "Show sort options"
+            },
+        ) {
+          val rotation: Float by
+            animateFloatAsState(
+              targetValue = if (menuExpanded) 180f else 0f,
+              label = "Trailing Icon Rotation",
+            )
+          Icon(
+            imageVector = Icons.Filled.KeyboardArrowDown,
+            modifier =
+              Modifier.size(SplitButtonDefaults.TrailingIconSize).graphicsLayer {
+                this.rotationZ = rotation
+              },
+            contentDescription = null,
+          )
+        }
+      }
+    },
+    modifier = modifier.padding(vertical = 8.dp)
+  )
+
+  DropdownMenu(
+    expanded = menuExpanded,
+    onDismissRequest = { menuExpanded = false },
+    modifier = Modifier.widthIn(min = 172.dp),
+  ) {
+    enumValues<T>().forEach { type ->
+      DropdownMenuItem(
+        text = {
+          Text(
+            text = stringResource(sortTypeText(type)),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+          )
+        },
+        trailingIcon = {
+          Icon(
+            painter =
+              painterResource(
+                if (sortType == type) R.drawable.radio_button_checked
+                else R.drawable.radio_button_unchecked
+              ),
+            contentDescription = null,
+          )
+        },
+        onClick = {
+          onSortTypeChange(type)
+          menuExpanded = false
+        },
+      )
     }
+  }
 }

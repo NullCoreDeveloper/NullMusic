@@ -1,5 +1,3 @@
-
-
 package echo.music.iad1tya.db.entities
 
 import androidx.compose.runtime.Immutable
@@ -9,29 +7,31 @@ import androidx.room.Relation
 
 @Immutable
 data class Album(
-    @Embedded
-    val album: AlbumEntity,
-    @Relation(
-        entity = ArtistEntity::class,
-        entityColumn = "id",
-        parentColumn = "id",
-        associateBy =
-        Junction(
-            value = AlbumArtistMap::class,
-            parentColumn = "albumId",
-            entityColumn = "artistId",
-        ),
-    )
-    val artists: List<ArtistEntity> = emptyList(),
-    val songCountListened: Int? = 0,
-    val timeListened: Long? = 0
+  @Embedded val album: AlbumEntity,
+  @Relation(
+    entity = ArtistEntity::class,
+    entityColumn = "id",
+    parentColumn = "id",
+    associateBy =
+      Junction(
+        value = AlbumArtistMap::class,
+        parentColumn = "albumId",
+        entityColumn = "artistId",
+      ),
+  )
+  val artists: List<ArtistEntity> = emptyList(),
+  val songCountListened: Int? = 0,
+  val timeListened: Long? = 0
 ) : LocalItem() {
-    override val id: String
-        get() = album.id
-    override val title: String
-        get() = album.title
-    override val thumbnailUrl: String?
-        get() = album.thumbnailUrl
-    val description: String?
-        get() = album.description
+  override val id: String
+    get() = album.id
+
+  override val title: String
+    get() = album.title
+
+  override val thumbnailUrl: String?
+    get() = album.thumbnailUrl
+
+  val description: String?
+    get() = album.description
 }

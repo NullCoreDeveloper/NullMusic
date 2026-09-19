@@ -24,92 +24,81 @@ import iad1tya.echo.music.constants.ThumbnailCornerRadius
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun RandomizeGridItem(
-    isLoading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    
-    
-    val dotOffsetMultiplier by animateFloatAsState(
-        targetValue = if (isLoading) 0f else 1f,
-        animationSpec = tween(durationMillis = 600),
-        label = "dotOffset"
+fun RandomizeGridItem(isLoading: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+
+  val dotOffsetMultiplier by
+    animateFloatAsState(
+      targetValue = if (isLoading) 0f else 1f,
+      animationSpec = tween(durationMillis = 600),
+      label = "dotOffset"
     )
 
-    val loadingAlpha by animateFloatAsState(
-        targetValue = if (isLoading) 1f else 0f,
-        animationSpec = tween(durationMillis = 400),
-        label = "loadingAlpha"
+  val loadingAlpha by
+    animateFloatAsState(
+      targetValue = if (isLoading) 1f else 0f,
+      animationSpec = tween(durationMillis = 400),
+      label = "loadingAlpha"
+    )
+
+  Box(
+    modifier =
+      modifier
+        .aspectRatio(1f)
+        .clip(RoundedCornerShape(ThumbnailCornerRadius))
+        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        .clickable(onClick = onClick),
+    contentAlignment = Alignment.Center
+  ) {
+    val dotColor = MaterialTheme.colorScheme.onSurface
+    val dotSize = 14.dp
+    val padding = 24.dp
+
+    Box(
+      modifier =
+        Modifier.align(Alignment.Center)
+          .offset(x = -padding * dotOffsetMultiplier, y = -padding * dotOffsetMultiplier)
+          .size(dotSize)
+          .clip(CircleShape)
+          .background(dotColor)
     )
 
     Box(
-        modifier = modifier
-            .aspectRatio(1f)
-            .clip(RoundedCornerShape(ThumbnailCornerRadius))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        
-        val dotColor = MaterialTheme.colorScheme.onSurface
-        val dotSize = 14.dp
-        val padding = 24.dp
+      modifier =
+        Modifier.align(Alignment.Center)
+          .offset(x = padding * dotOffsetMultiplier, y = -padding * dotOffsetMultiplier)
+          .size(dotSize)
+          .clip(CircleShape)
+          .background(dotColor)
+    )
 
-        
-        
+    Box(
+      modifier =
+        Modifier.align(Alignment.Center).size(dotSize).clip(CircleShape).background(dotColor)
+    )
 
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = -padding * dotOffsetMultiplier, y = -padding * dotOffsetMultiplier)
-                .size(dotSize)
-                .clip(CircleShape)
-                .background(dotColor)
-        )
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = padding * dotOffsetMultiplier, y = -padding * dotOffsetMultiplier)
-                .size(dotSize)
-                .clip(CircleShape)
-                .background(dotColor)
-        )
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(dotSize)
-                .clip(CircleShape)
-                .background(dotColor)
-        )
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = -padding * dotOffsetMultiplier, y = padding * dotOffsetMultiplier)
-                .size(dotSize)
-                .clip(CircleShape)
-                .background(dotColor)
-        )
-        
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = padding * dotOffsetMultiplier, y = padding * dotOffsetMultiplier)
-                .size(dotSize)
-                .clip(CircleShape)
-                .background(dotColor)
-        )
-        
-        
-        Box(modifier = Modifier.alpha(loadingAlpha)) {
-            LoadingIndicator(
-                modifier = Modifier.size(48.dp),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+    Box(
+      modifier =
+        Modifier.align(Alignment.Center)
+          .offset(x = -padding * dotOffsetMultiplier, y = padding * dotOffsetMultiplier)
+          .size(dotSize)
+          .clip(CircleShape)
+          .background(dotColor)
+    )
+
+    Box(
+      modifier =
+        Modifier.align(Alignment.Center)
+          .offset(x = padding * dotOffsetMultiplier, y = padding * dotOffsetMultiplier)
+          .size(dotSize)
+          .clip(CircleShape)
+          .background(dotColor)
+    )
+
+    Box(modifier = Modifier.alpha(loadingAlpha)) {
+      LoadingIndicator(
+        modifier = Modifier.size(48.dp),
+        color = MaterialTheme.colorScheme.onSurface,
+      )
     }
+  }
 }

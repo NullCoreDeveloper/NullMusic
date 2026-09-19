@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.Density
 
 interface Backdrop {
 
-    val isCoordinatesDependent: Boolean
+  val isCoordinatesDependent: Boolean
 
-    fun DrawScope.drawBackdrop(
-        density: Density,
-        coordinates: LayoutCoordinates?,
-        layerBlock: (GraphicsLayerScope.() -> Unit)? = null
-    )
+  fun DrawScope.drawBackdrop(
+    density: Density,
+    coordinates: LayoutCoordinates?,
+    layerBlock: (GraphicsLayerScope.() -> Unit)? = null
+  )
 }

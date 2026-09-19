@@ -39,7 +39,7 @@ data class PlaylistEntity(
 
   val shareLink: String?
     get() {
-      return if (browseId != null) "https://share.echomusic.fun/playlist?list=$browseId" else null
+      return if (browseId != null) "https://share.nullmusic.fun/playlist?list=$browseId" else null
     }
 
     val shareLink: String?

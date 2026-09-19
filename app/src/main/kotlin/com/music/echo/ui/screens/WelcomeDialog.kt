@@ -165,24 +165,24 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
           WelcomeActionRow(
             icon = painterResource(R.drawable.coffee),
             title = "Buy Me a Coffee",
-            subtitle = "buymeacoffee.com/iad1tya",
-            onClick = { uriHandler.openUri("https://buymeacoffee.com/iad1tya") }
+            subtitle = "github.com/NullCoreDeveloper",
+            onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") }
           )
           WelcomeDivider()
           WelcomeActionRow(
             icon = painterResource(R.drawable.ic_patreon_new),
             title = "Patreon",
-            subtitle = "patreon.com/cw/iad1tya",
-            onClick = { uriHandler.openUri("https://www.patreon.com/cw/iad1tya") }
+            subtitle = "t.me/NullCoreDeveloper",
+            onClick = { uriHandler.openUri("https://www.t.me/NullCoreDeveloper") }
           )
           WelcomeDivider()
           WelcomeActionRow(
             icon = painterResource(R.drawable.upi_new),
             title = "UPI",
-            subtitle = "iad1tya@upi",
+            subtitle = "nullcore@upi",
             onClick = {
               uriHandler.openUri(
-                "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
+                "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
               )
             }
           )
@@ -200,7 +200,7 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
         Spacer(modifier = Modifier.height(4.dp))
 
         Button(
-          onClick = { uriHandler.openUri("https://github.com/EchoMusicApp/Echo-Music") },
+          onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper/NullMusic") },
           modifier = Modifier.fillMaxWidth().height(50.dp),
           shape = RoundedCornerShape(16.dp),
           colors =
@@ -262,7 +262,7 @@ private fun WelcomeAppCard() {
       )
       Spacer(Modifier.height(4.dp))
       Text(
-        text = "Echo Music",
+        text = "NullMusic",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,

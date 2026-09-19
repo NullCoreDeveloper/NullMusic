@@ -77,7 +77,7 @@ class CrashActivity : ComponentActivity() {
 
     setContent {
       val darkTheme = isSystemInDarkTheme()
-      echomusicTheme(darkTheme = darkTheme) {
+      nullmusicTheme(darkTheme = darkTheme) {
         CrashScreen(
           crashLog = crashLog,
           onClose = { finishAffinity() },

@@ -1909,7 +1909,7 @@ fun Lyrics(
             ->
             val isSelected = selectedIndices.contains(index)
             if (
-              lyricsAnimationStyle == LyricsAnimationStyle.echomusic_1 &&
+              lyricsAnimationStyle == LyricsAnimationStyle.nullmusic_1 &&
                 item.words?.isNotEmpty() == true
             ) {
               val currentLineTime =
@@ -1920,7 +1920,7 @@ fun Lyrics(
               val isActiveByIndex = index == displayedCurrentLineIndex
               val isActiveByTime = isLineAtSameTime && displayedCurrentLineIndex >= 0
 
-              echomusicLyricsLine(
+              nullmusicLyricsLine(
                 entry = item,
                 nextEntryTime = lines.getOrNull(index + 1)?.time,
                 effectivePlaybackPosition = effectivePlaybackPosition,
@@ -3164,7 +3164,7 @@ fun Lyrics(
                   Intent().apply {
                     action = Intent.ACTION_SEND
                     type = "text/plain"
-                    val songLink = "https://share.echomusic.fun/watch?v=${mediaMetadata?.id}"
+                    val songLink = "https://share.nullmusic.fun/watch?v=${mediaMetadata?.id}"
                     putExtra(
                       Intent.EXTRA_TEXT,
                       "\"$lyricsText\"\n\n$songTitle - $artists\n$songLink"

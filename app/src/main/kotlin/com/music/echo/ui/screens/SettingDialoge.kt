@@ -83,7 +83,7 @@ fun SettingDialoge(
       verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
       // Header
-      // Removed Echo Music text
+      // Removed NullMusic text
 
         Column(
             modifier = Modifier

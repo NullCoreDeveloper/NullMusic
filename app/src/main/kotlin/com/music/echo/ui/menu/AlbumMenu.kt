@@ -410,7 +410,7 @@ fun AlbumMenu(
                     type = "text/plain"
                     putExtra(
                       Intent.EXTRA_TEXT,
-                      "https://share.echomusic.fun/playlist?list=${album.album.playlistId}"
+                      "https://share.nullmusic.fun/playlist?list=${album.album.playlistId}"
                     )
                   }
                 context.startActivity(Intent.createChooser(intent, null))

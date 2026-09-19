@@ -64,7 +64,7 @@ fun rememberAlbumCanvas(
         searchTasks
           .filter { (s, a) -> s.isNotBlank() && a.isNotBlank() }
           .firstNotNullOfOrNull { (s, a) ->
-            echomusicCanvasProvider.getBySongArtist(song = s, artist = a)?.takeIf {
+            nullmusicCanvasProvider.getBySongArtist(song = s, artist = a)?.takeIf {
               !it.preferredAnimationUrl.isNullOrBlank()
             }
               ?: AppleMusicCanvasProvider.getByAlbumArtist(

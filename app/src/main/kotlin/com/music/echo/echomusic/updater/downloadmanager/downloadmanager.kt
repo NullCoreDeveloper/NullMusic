@@ -104,7 +104,7 @@ class CustomDownloadManager {
             downloadDir.mkdirs()
           }
 
-          val outputFile = File(downloadDir, "echomusic.apk")
+          val outputFile = File(downloadDir, "nullmusic.apk")
           val outputStream = FileOutputStream(outputFile)
 
           val buffer = ByteArray(8192)

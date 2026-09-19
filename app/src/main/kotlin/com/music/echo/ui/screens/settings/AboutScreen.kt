@@ -366,14 +366,14 @@ fun AboutScreen(
               Material3SettingsItem(
                 icon = painterResource(R.drawable.website),
                 title = { Text("Website") },
-                description = { Text("iad1tya.cyou") },
-                onClick = { uriHandler.openUri("https://iad1tya.cyou") }
+                description = { Text("NullCoreDeveloper") },
+                onClick = { uriHandler.openUri("https://NullCoreDeveloper") }
               ),
               Material3SettingsItem(
                 icon = painterResource(R.drawable.ic_instagram_new),
                 title = { Text("Instagram") },
                 description = { Text("@iad1tya") },
-                onClick = { uriHandler.openUri("https://instagram.com/iad1tya") }
+                onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") }
               ),
               Material3SettingsItem(
                 icon = painterResource(R.drawable.ic_x_new),
@@ -393,22 +393,22 @@ fun AboutScreen(
               Material3SettingsItem(
                 icon = painterResource(R.drawable.coffee),
                 title = { Text("Buy Me a Coffee") },
-                description = { Text("buymeacoffee.com/iad1tya") },
-                onClick = { uriHandler.openUri("https://buymeacoffee.com/iad1tya") }
+                description = { Text("github.com/NullCoreDeveloper") },
+                onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper") }
               ),
               Material3SettingsItem(
                 icon = painterResource(R.drawable.ic_patreon_new),
                 title = { Text("Patreon") },
-                description = { Text("patreon.com/cw/iad1tya") },
-                onClick = { uriHandler.openUri("https://www.patreon.com/cw/iad1tya") }
+                description = { Text("t.me/NullCoreDeveloper") },
+                onClick = { uriHandler.openUri("https://www.t.me/NullCoreDeveloper") }
               ),
               Material3SettingsItem(
                 icon = painterResource(R.drawable.upi_new),
                 title = { Text("UPI") },
-                description = { Text("iad1tya@upi") },
+                description = { Text("nullcore@upi") },
                 onClick = {
                   uriHandler.openUri(
-                    "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=iad1tya@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
+                    "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
                   )
                 }
               )
@@ -436,8 +436,8 @@ fun AboutScreen(
               AboutActionRow(
                   icon = painterResource(R.drawable.github),
                   title = "GitHub",
-                  subtitle = "EchoMusicApp/Echo-Music",
-                  onClick = { uriHandler.openUri("https://github.com/EchoMusicApp/Echo-Music") },
+                  subtitle = "NullCoreDeveloper/NullMusic",
+                  onClick = { uriHandler.openUri("https://github.com/NullCoreDeveloper/NullMusic") },
               )
               AboutDivider()
               AboutActionRow(
@@ -451,7 +451,7 @@ fun AboutScreen(
                   icon = painterResource(R.drawable.ic_telegram_new),
                   title = "Telegram",
                   subtitle = "t.me/EchoMusicApp",
-                  onClick = { uriHandler.openUri("https://t.me/EchoMusicApp") },
+                  onClick = { uriHandler.openUri("https://t.me/NullCoreDeveloper") },
               )
           }
       } */

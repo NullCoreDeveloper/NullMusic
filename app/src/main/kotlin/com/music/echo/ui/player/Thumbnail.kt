@@ -926,7 +926,7 @@ private fun ThumbnailItem(
                       }
                   }
 
-                  echomusicCanvasProvider.getBySongArtist(song = s, artist = a)?.takeIf {
+                  nullmusicCanvasProvider.getBySongArtist(song = s, artist = a)?.takeIf {
                     !it.preferredAnimationUrl.isNullOrBlank()
                   }
                     ?: TidalCanvasProvider.getBySongArtist(song = s, artist = a, album = albumName)

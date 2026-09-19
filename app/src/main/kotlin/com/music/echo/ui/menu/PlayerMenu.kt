@@ -996,7 +996,7 @@ fun PlayerMenu(
                     type = "text/plain"
                     putExtra(
                       android.content.Intent.EXTRA_TEXT,
-                      "https://share.echomusic.fun/watch?v=${mediaMetadata.id}"
+                      "https://share.nullmusic.fun/watch?v=${mediaMetadata.id}"
                     )
                   }
                 context.startActivity(android.content.Intent.createChooser(intent, null))
@@ -2080,7 +2080,7 @@ fun ListenTogetherDialog(
                 Spacer(modifier = Modifier.height(12.dp))
                 val inviteLink =
                   remember(room.roomCode) {
-                    "https://echomusic-listen-together.onrender.com/listen?code=${room.roomCode}"
+                    "https://nullmusic-listen-together.onrender.com/listen?code=${room.roomCode}"
                   }
                 Row(
                   verticalAlignment = Alignment.CenterVertically,

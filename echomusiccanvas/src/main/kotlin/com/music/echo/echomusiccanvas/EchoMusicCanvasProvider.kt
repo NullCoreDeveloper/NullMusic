@@ -52,7 +52,7 @@ object nullmusicCanvasProvider {
   }
 
   private data class CacheEntry(
-    val value: echomusicCanvasManifest?,
+    val value: nullmusicCanvasManifest?,
     val expiresAtMs: Long,
   )
 
@@ -60,14 +60,14 @@ object nullmusicCanvasProvider {
   // Cache TTL 1 minute (re-fetches json index every minute max for instant updates)
   private val ttlMs = 60_000L
 
-  private suspend fun fetchManifest(): echomusicCanvasManifest? {
+  private suspend fun fetchManifest(): nullmusicCanvasManifest? {
     val currentCache = manifestCache
     if (currentCache != null && currentCache.expiresAtMs > System.currentTimeMillis()) {
       return currentCache.value
     }
 
     return try {
-      val manifest: echomusicCanvasManifest = client.get(BASE_URL).body()
+      val manifest: nullmusicCanvasManifest = client.get(BASE_URL).body()
 
       manifestCache = CacheEntry(value = manifest, expiresAtMs = System.currentTimeMillis() + ttlMs)
       manifest

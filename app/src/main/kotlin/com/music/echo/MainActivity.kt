@@ -362,7 +362,7 @@ class MainActivity : ComponentActivity() {
         var whatsNewInfo by remember { androidx.compose.runtime.mutableStateOf<echo.music.iad1tya.nullmusic.updater.WhatsNewInfo?>(null) }
 
     setContent {
-      echomusicApp(
+      nullmusicApp(
         playerConnection = playerConnection,
         database = database,
         downloadUtil = downloadUtil,
@@ -374,7 +374,7 @@ class MainActivity : ComponentActivity() {
   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
   @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
   @Composable
-  private fun echomusicApp(
+  private fun nullmusicApp(
     playerConnection: PlayerConnection?,
     database: MusicDatabase,
     downloadUtil: DownloadUtil,
@@ -387,7 +387,7 @@ class MainActivity : ComponentActivity() {
     var availableUpdateVersion by remember { androidx.compose.runtime.mutableStateOf("") }
     var availableUpdateChangelog by remember {
       androidx.compose.runtime.mutableStateOf<
-        List<echo.music.iad1tya.echomusic.updater.ChangelogSection>
+        List<echo.music.iad1tya.nullmusic.updater.ChangelogSection>
       >(
         emptyList()
       )
@@ -396,7 +396,7 @@ class MainActivity : ComponentActivity() {
       androidx.compose.runtime.mutableStateOf<String?>(null)
     }
     var whatsNewInfo by remember {
-      androidx.compose.runtime.mutableStateOf<echo.music.iad1tya.echomusic.updater.WhatsNewInfo?>(
+      androidx.compose.runtime.mutableStateOf<echo.music.iad1tya.nullmusic.updater.WhatsNewInfo?>(
         null
       )
     }
@@ -404,16 +404,16 @@ class MainActivity : ComponentActivity() {
     LaunchedEffect(Unit) {
       val currentVersion = BuildConfig.VERSION_NAME
       val lastSeenVersion =
-        echo.music.iad1tya.echomusic.updater.getLastSeenChangelogVersion(context)
+        echo.music.iad1tya.nullmusic.updater.getLastSeenChangelogVersion(context)
       if (lastSeenVersion.isEmpty()) {
         // Fresh install, not an update — nothing "new" to show, so mark this
         // version seen right away rather than waiting on a dialog dismissal.
-        echo.music.iad1tya.echomusic.updater.saveLastSeenChangelogVersion(context, currentVersion)
+        echo.music.iad1tya.nullmusic.updater.saveLastSeenChangelogVersion(context, currentVersion)
       } else if (lastSeenVersion != currentVersion) {
         // Only mark the version seen once its changelog is actually shown (see
         // onDismiss below) — if the fetch fails here, retry on the next launch
         // instead of losing that version's release notes forever.
-        whatsNewInfo = echo.music.iad1tya.echomusic.updater.fetchChangelogForVersion(currentVersion)
+        whatsNewInfo = echo.music.iad1tya.nullmusic.updater.fetchChangelogForVersion(currentVersion)
       }
     }
 
@@ -541,13 +541,13 @@ class MainActivity : ComponentActivity() {
     val view = LocalView.current
     var lastScrollHapticTime by remember { mutableStateOf(0L) }
 
-    echomusicTheme(
+    nullmusicTheme(
       darkTheme = useDarkTheme,
       pureBlack = pureBlack,
       themeColor = themeColor,
     ) {
       if (showUpdateDialog) {
-        echo.music.iad1tya.echomusic.component.UpdateAvailableDialog(
+        echo.music.iad1tya.nullmusic.component.UpdateAvailableDialog(
           version = availableUpdateVersion,
           changelog = availableUpdateChangelog,
           description = availableUpdateDescription,
@@ -555,11 +555,11 @@ class MainActivity : ComponentActivity() {
         )
       } else {
         whatsNewInfo?.let { info ->
-          echo.music.iad1tya.echomusic.updater.WhatsNewDialog(
+          echo.music.iad1tya.nullmusic.updater.WhatsNewDialog(
             version = BuildConfig.VERSION_NAME,
             info = info,
             onDismiss = {
-              echo.music.iad1tya.echomusic.updater.saveLastSeenChangelogVersion(
+              echo.music.iad1tya.nullmusic.updater.saveLastSeenChangelogVersion(
                 context,
                 BuildConfig.VERSION_NAME,
               )
@@ -1985,7 +1985,7 @@ class MainActivity : ComponentActivity() {
         val videoId =
           when {
             path == "watch" -> uri.getQueryParameter("v")
-            uri.host == "youtu.be" || uri.host == "share.echomusic.fun" ->
+            uri.host == "youtu.be" || uri.host == "share.nullmusic.fun" ->
               uri.pathSegments.firstOrNull()
             else -> null
           }

@@ -728,7 +728,7 @@ fun BottomSheetPlayer(
       val a = normalizeCanvasArtistName(requestedArtist)
 
       val fetched =
-        echomusicCanvasProvider.getBySongArtist(s, a)?.takeIf {
+        nullmusicCanvasProvider.getBySongArtist(s, a)?.takeIf {
           !it.preferredAnimationUrl.isNullOrBlank()
         }
           ?: TidalCanvasProvider.getBySongArtist(s, a, requestedAlbum)?.takeIf {

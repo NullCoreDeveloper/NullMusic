@@ -391,7 +391,7 @@ fun DiscordSettings(
   val (button2Label) =
     rememberPreference(
       key = DiscordActivityButton2LabelKey,
-      defaultValue = "Go to Echo Music",
+      defaultValue = "Go to NullMusic",
     )
   val (button2Enabled) =
     rememberPreference(
@@ -416,7 +416,7 @@ fun DiscordSettings(
   val (button2CustomUrl) =
     rememberPreference(
       key = DiscordActivityButton2CustomUrlKey,
-      defaultValue = "https://github.com/EchoMusicApp/Echo-Music",
+      defaultValue = "https://github.com/NullCoreDeveloper/NullMusic",
     )
 
   val (activityType, onActivityTypeChange) =

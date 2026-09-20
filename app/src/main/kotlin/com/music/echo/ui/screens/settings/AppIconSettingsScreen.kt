@@ -132,6 +132,24 @@ fun AppIconSettingsScreen(
             "Sky Icon",
             "A beautiful sky-themed icon",
             R.mipmap.sky_icon
+          ),
+          AppIconOption(
+            AppIconType.ECHO_CAT,
+            "Echo Cat",
+            "A playful cat by Alarp_Svc",
+            R.mipmap.echo_cat_icon
+          ),
+          AppIconOption(
+            AppIconType.EKO,
+            "Eko",
+            "A sleek design by Kouki",
+            R.mipmap.eko_icon
+          ),
+          AppIconOption(
+            AppIconType.WIERD_CAT,
+            "Wierd Cat",
+            "A quirky cat by ! Udransh...",
+            R.mipmap.wierd_cat_icon
           )
         )
 

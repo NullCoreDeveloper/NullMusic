@@ -336,7 +336,9 @@ constructor(
         val combined =
           (relatedSongs + forgotten + ytSimilarSongs).distinctBy { it.id }.shuffled().take(20)
 
-        quickPicks.value = combined.ifEmpty { relatedSongs.shuffled().take(20) }
+        quickPicks.value = combined
+          .ifEmpty { relatedSongs.shuffled().take(20) }
+          .ifEmpty { database.songs(echo.music.iad1tya.constants.SongSortType.CREATE_DATE, true).first().shuffled().take(20) }
       }
       QuickPicks.LAST_LISTEN -> {
         val song = database.events().first().firstOrNull()?.song
@@ -348,6 +350,10 @@ constructor(
               .filterVideoSongs(hideVideoSongs)
               .shuffled()
               .take(20)
+        } else {
+          val fallbackSongs = database.quickPicks().first().filterVideoSongs(hideVideoSongs)
+          quickPicks.value = fallbackSongs.shuffled().take(20)
+            .ifEmpty { database.songs(echo.music.iad1tya.constants.SongSortType.CREATE_DATE, true).first().shuffled().take(20) }
         }
       }
     }

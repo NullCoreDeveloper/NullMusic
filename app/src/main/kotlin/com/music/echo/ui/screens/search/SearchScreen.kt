@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -386,7 +387,12 @@ fun SearchScreen(navController: NavController, pureBlack: Boolean) {
             SecondaryTabRow(
               selectedTabIndex = selectedTabIndex,
               containerColor = Color.Transparent,
-              divider = {},
+              divider = {
+                androidx.compose.material3.HorizontalDivider(
+                  color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
+                  thickness = 1.5.dp
+                )
+              },
               indicator = {
                 Box(
                   modifier = Modifier.tabIndicatorOffset(selectedTabIndex).fillMaxWidth(),
@@ -405,7 +411,7 @@ fun SearchScreen(navController: NavController, pureBlack: Boolean) {
               Tab(
                 selected = selectedTabIndex == 0,
                 onClick = { selectedTabIndex = 0 },
-                modifier = Modifier.padding(vertical = 12.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 text = { Text(stringResource(R.string.tab_explore)) }
@@ -413,7 +419,7 @@ fun SearchScreen(navController: NavController, pureBlack: Boolean) {
               Tab(
                 selected = selectedTabIndex == 1,
                 onClick = { selectedTabIndex = 1 },
-                modifier = Modifier.padding(vertical = 12.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 text = { Text("Echo Chart") }
@@ -421,7 +427,7 @@ fun SearchScreen(navController: NavController, pureBlack: Boolean) {
               Tab(
                 selected = selectedTabIndex == 2,
                 onClick = { selectedTabIndex = 2 },
-                modifier = Modifier.padding(vertical = 12.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 text = { Text(stringResource(R.string.tab_album)) }
@@ -500,7 +506,12 @@ fun ExploreTabContent(
                   .padding(6.dp)
                   .height(64.dp)
                   .clip(RoundedCornerShape(12.dp))
-                  .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                  .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                  .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp)
+                  )
                   .clickable {
                     navController.navigate(
                       "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"

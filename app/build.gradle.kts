@@ -296,6 +296,8 @@ dependencies {
   implementation(libs.media3.hls)
   implementation(libs.media3.ui)
   implementation(libs.media3.okhttp)
+  implementation(libs.media3.cronet)
+  implementation("com.google.android.gms:play-services-cronet:18.0.1")
 
   // Google Cast - only included in GMS flavor (not available in F-Droid/FOSS builds)
   "gmsImplementation"(libs.mediarouter)

@@ -257,6 +257,16 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable(
+    route = "bottom_playlist/{bottom}",
+    arguments =
+      listOf(
+        navArgument("bottom") { type = NavType.StringType },
+      ),
+  ) {
+    BottomPlaylistScreen(navController, scrollBehavior)
+  }
+
+  composable(
     route = "youtube_browse/{browseId}?params={params}",
     arguments =
       listOf(

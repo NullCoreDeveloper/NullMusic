@@ -1010,14 +1010,21 @@ object YTPlayerUtils {
   ): PlayerResponse.StreamingData.Format? {
     Timber.tag(logTag)
       .d(
-        "Finding format with audioQuality: $audioQuality, network metered: ${connectivityManager.isActiveNetworkMetered}"
+        "Finding format with audioQuality: $audioQuality, network metered: ${connectivityManager.isActiveNetworkMetered}, forceOpus: $forceOpusEnabled"
       )
 
-    val format =
-      playerResponse.streamingData
-        ?.adaptiveFormats
-        ?.filter { it.isAudio && it.isOriginal }
-        ?.maxByOrNull { it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0) }
+    var availableFormats = playerResponse.streamingData?.adaptiveFormats?.filter { it.isAudio && it.isOriginal } ?: emptyList()
+    
+    // Explicitly force Opus/WebM if enabled and available
+    if (forceOpusEnabled) {
+      val opusFormats = availableFormats.filter { it.mimeType.contains("audio/webm") }
+      if (opusFormats.isNotEmpty()) {
+        availableFormats = opusFormats
+        Timber.tag(logTag).d("Forcing Opus: Filtered down to ${opusFormats.size} webm formats")
+      }
+    }
+
+    val format = availableFormats.maxByOrNull { it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0) }
 
     if (format != null) {
       Timber.tag(logTag).d("Selected format: ${format.mimeType}, bitrate: ${format.bitrate}")
@@ -1259,6 +1266,41 @@ object YTPlayerUtils {
           Timber.tag(logTag).e(e, "StreamInfo fallback failed")
         }
       }
+    }
+
+    // --- Emergency Piped API Fallback ---
+    Timber.tag(logTag).d("Trying Emergency Piped API Fallback")
+    try {
+      val pipedUrl = "https://pipedapi.kavin.rocks/streams/$videoId"
+      val request = okhttp3.Request.Builder().url(pipedUrl).build()
+      val response = okhttp3.OkHttpClient().newCall(request).execute()
+      if (response.isSuccessful) {
+        val body = response.body?.string()
+        if (body != null) {
+          val json = org.json.JSONObject(body)
+          val audioStreams = json.optJSONArray("audioStreams")
+          if (audioStreams != null && audioStreams.length() > 0) {
+            var bestUrl: String? = null
+            var bestBitrate = 0
+            for (i in 0 until audioStreams.length()) {
+              val stream = audioStreams.optJSONObject(i)
+              if (stream != null) {
+                val bitrate = stream.optInt("bitrate", 0)
+                if (bitrate > bestBitrate) {
+                  bestBitrate = bitrate
+                  bestUrl = stream.optString("url", null)
+                }
+              }
+            }
+            if (bestUrl != null) {
+              Timber.tag(logTag).d("Stream URL obtained via Emergency Piped API")
+              return bestUrl
+            }
+          }
+        }
+      }
+    } catch (e: Exception) {
+      Timber.tag(logTag).e(e, "Piped API fallback failed")
     }
 
     Timber.tag(logTag).e("Failed to get stream URL")

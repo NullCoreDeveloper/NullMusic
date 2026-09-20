@@ -79,6 +79,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -2174,9 +2175,11 @@ fun HomeScreen(
 
                   item(key = "quick_picks_list") {
                     val distinctQuickPicks = quickPicks.distinctBy { it.id }
+                    val configuration = LocalConfiguration.current
+                    val heroWidth = configuration.screenWidthDp.dp - 32.dp
                     HorizontalCenteredHeroCarousel(
                       state = rememberCarouselState { distinctQuickPicks.size },
-                      maxItemWidth = 250.dp,
+                      maxItemWidth = heroWidth,
                       itemSpacing = 8.dp,
                       contentPadding = PaddingValues(horizontal = 16.dp),
                       modifier = Modifier.fillMaxWidth().height(290.dp).animateItem()

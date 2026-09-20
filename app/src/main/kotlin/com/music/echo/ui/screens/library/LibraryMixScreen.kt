@@ -172,6 +172,7 @@ fun LibraryMixScreen(
   val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
   val (showExported) = rememberPreference(ShowExportedPlaylistKey, true)
   val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
+  val (showBottom) = rememberPreference(ShowBottomPlaylistKey, true)
   val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
 
   val albums = viewModel.albums.collectAsState()
@@ -360,6 +361,15 @@ fun LibraryMixScreen(
                   icon = R.drawable.trending_up,
                   iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                   onClick = { navController.navigate("top_playlist/$topSize") },
+                  modifier = itemModifier
+                )
+              }
+              if (showBottom) {
+                AutoPlaylistButton(
+                  title = stringResource(R.string.my_bottom) + " 50",
+                  icon = R.drawable.trending_down,
+                  iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                  onClick = { navController.navigate("bottom_playlist/50") },
                   modifier = itemModifier
                 )
               }
@@ -629,6 +639,15 @@ fun LibraryMixScreen(
                   icon = R.drawable.trending_up,
                   iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                   onClick = { navController.navigate("top_playlist/$topSize") },
+                  modifier = itemModifier
+                )
+              }
+              if (showBottom) {
+                AutoPlaylistButton(
+                  title = stringResource(R.string.my_bottom) + " 50",
+                  icon = R.drawable.trending_down,
+                  iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                  onClick = { navController.navigate("bottom_playlist/50") },
                   modifier = itemModifier
                 )
               }

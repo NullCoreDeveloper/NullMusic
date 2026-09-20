@@ -48,6 +48,10 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.datasource.cronet.CronetDataSource
+import org.chromium.net.CronetEngine
+import echo.music.iad1tya.constants.EnableCronetKey
+import echo.music.iad1tya.constants.ForceOpusKey
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
@@ -2584,6 +2588,17 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     dataStore.data
       .map {
         (try {
+          it[ForceOpusKey]
+        } catch (e: Exception) {
+          null
+        }) ?: false
+      }
+      .distinctUntilChanged()
+      .collect(scope) { YTPlayerUtils.forceOpusEnabled = it }
+
+    dataStore.data
+      .map {
+        (try {
           it[AutomixCrossfadeKey]
         } catch (e: Exception) {
           null
@@ -3146,7 +3161,15 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           createRenderersFactory(eqProcessor, silenceProcessor, duckProcessor, stereoWidener)
         )
         .setLoadControl(
-          DefaultLoadControl.Builder().setBufferDurationsMs(50_000, 50_000, 500, 1_000).build()
+          DefaultLoadControl.Builder()
+            .setBufferDurationsMs(
+              360_000, // min buffer: 6 minutes (will fetch heavily ahead)
+              360_000, // max buffer: 6 minutes
+              150,     // bufferForPlaybackMs: 150ms for near-instant zero-latency startup
+              500      // bufferForPlaybackAfterRebufferMs: 500ms
+            )
+            .setPrioritizeTimeOverSizeThresholds(true)
+            .build()
         )
         .setHandleAudioBecomingNoisy(true)
         .setWakeMode(C.WAKE_MODE_NETWORK)
@@ -5766,41 +5789,64 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     }
   }
 
-  private fun createCacheDataSource(): CacheDataSource.Factory =
-    CacheDataSource.Factory()
+  private fun createCacheDataSource(): CacheDataSource.Factory {
+    val useCronet = runBlocking { dataStore.get(EnableCronetKey, false) }
+    
+    val upstreamFactory = if (useCronet) {
+      try {
+        Timber.tag(TAG).d("Initializing CronetEngine for HTTP/3 QUIC streaming")
+        val cronetEngine = CronetEngine.Builder(this)
+          .enableQuic(true)
+          .enableHttp2(true)
+          .enableBrotli(true)
+          .build()
+        CronetDataSource.Factory(cronetEngine, java.util.concurrent.Executors.newSingleThreadExecutor())
+      } catch (e: Exception) {
+        Timber.tag(TAG).e(e, "Failed to initialize Cronet, falling back to OkHttp")
+        createOkHttpFactory()
+      }
+    } else {
+      createOkHttpFactory()
+    }
+
+    return CacheDataSource.Factory()
       .setCache(downloadCache)
       .setUpstreamDataSourceFactory(
         CacheDataSource.Factory()
           .setCache(playerCache)
-          .setUpstreamDataSourceFactory(
-            OkHttpDataSource.Factory(
-              OkHttpClient.Builder()
-                .dns(
-                  object : Dns {
-                    override fun lookup(hostname: String): List<InetAddress> {
-                      val addresses = Dns.SYSTEM.lookup(hostname)
-                      return when (this@MusicService.ipVersion) {
-                        IpVersion.IPV4 ->
-                          addresses.filter { it is Inet4Address }.ifEmpty { addresses }
-                        IpVersion.IPV6 ->
-                          addresses.filter { it is Inet6Address }.ifEmpty { addresses }
-                        IpVersion.AUTO -> addresses
-                      }
-                    }
-                  }
-                )
-                .proxy(YouTube.proxy)
-                .proxyAuthenticator { _, response ->
-                  YouTube.proxyAuth?.let { auth ->
-                    response.request.newBuilder().header("Proxy-Authorization", auth).build()
-                  } ?: response.request
-                }
-                .build()
-            )
-          )
+          .setUpstreamDataSourceFactory(upstreamFactory)
       )
       .setCacheWriteDataSinkFactory(null)
-      .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
+      .setFlags(androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+  }
+
+  private fun createOkHttpFactory(): androidx.media3.datasource.DataSource.Factory {
+    return OkHttpDataSource.Factory(
+      OkHttpClient.Builder()
+        .connectionPool(okhttp3.ConnectionPool(15, 10, java.util.concurrent.TimeUnit.MINUTES))
+        .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+        .dns(
+          object : Dns {
+            override fun lookup(hostname: String): List<InetAddress> {
+              val addresses = Dns.SYSTEM.lookup(hostname)
+              return when (this@MusicService.ipVersion) {
+                IpVersion.IPV4 -> addresses.filter { it is Inet4Address }.ifEmpty { addresses }
+                IpVersion.IPV6 -> addresses.filter { it is Inet6Address }.ifEmpty { addresses }
+                IpVersion.AUTO -> addresses
+              }
+            }
+          }
+        )
+        .proxy(YouTube.proxy)
+        .proxyAuthenticator { _, response ->
+          YouTube.proxyAuth?.let { auth ->
+            response.request.newBuilder().header("Proxy-Authorization", auth).build()
+          } ?: response.request
+        }
+        .build()
+    )
+  }
 
   private var isSilenceSkipping = false
 
@@ -7353,6 +7399,28 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
                 songUrlCache["${mediaId}_${audioQuality.name}"] =
                   Pair(streamUrl, System.currentTimeMillis() + 1000 * 60 * 60)
                 Timber.tag(TAG).d("Preloaded stream for $mediaId")
+                
+                kotlin.runCatching {
+                  Timber.tag(TAG).d("AOT Preloading bytes for $mediaId")
+                  val dataSpec = androidx.media3.datasource.DataSpec.Builder()
+                    .setUri(android.net.Uri.parse(streamUrl))
+                    .setKey("${mediaId}_${audioQuality.name}")
+                    .setLength(2 * 1024 * 1024)
+                    .build()
+                  val cacheDataSource = createCacheDataSource().createDataSource()
+                  val cacheWriter = androidx.media3.datasource.cache.CacheWriter(
+                    cacheDataSource,
+                    dataSpec,
+                    null,
+                    null
+                  )
+                  cacheWriter.cache()
+                  Timber.tag(TAG).d("AOT Preloading bytes for $mediaId completed")
+                }.onFailure { e ->
+                  if (e !is kotlinx.coroutines.CancellationException) {
+                    Timber.tag(TAG).e(e, "AOT Preloading bytes failed for $mediaId")
+                  }
+                }
               }
             }
           }

@@ -307,6 +307,8 @@ fun AppearanceSettings(
     rememberPreference(ShowExportedPlaylistKey, defaultValue = true)
   val (showTopPlaylist, onShowTopPlaylistChange) =
     rememberPreference(ShowTopPlaylistKey, defaultValue = true)
+  val (showBottomPlaylist, onShowBottomPlaylistChange) =
+    rememberPreference(ShowBottomPlaylistKey, defaultValue = true)
   val (showCachedPlaylist, onShowCachedPlaylistChange) =
     rememberPreference(ShowCachedPlaylistKey, defaultValue = true)
   val (showCommentButton, onShowCommentButtonChange) =
@@ -3113,6 +3115,29 @@ fun AppearanceSettings(
               )
             },
             onClick = { onShowTopPlaylistChange(!showTopPlaylist) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.show_bottom_playlist)),
+            icon = painterResource(R.drawable.trending_down),
+            title = { Text(stringResource(R.string.show_bottom_playlist)) },
+            description = { Text(stringResource(R.string.show_bottom_playlist_desc)) },
+            trailingContent = {
+              Switch(
+                checked = showBottomPlaylist,
+                onCheckedChange = onShowBottomPlaylistChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        id = if (showBottomPlaylist) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onShowBottomPlaylistChange(!showBottomPlaylist) }
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.show_cached_playlist)),

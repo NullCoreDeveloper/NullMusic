@@ -343,6 +343,10 @@ fun NavGraphBuilder.navigationBuilder(
   composable("settings/appearance/app_icon") {
     AppIconSettingsScreen(navController, activity, snackbarHostState)
   }
+  
+  composable("settings/appearance/liquidglass") {
+    GlassEffectSettings(navController, scrollBehavior)
+  }
 
   composable(
     route = "settings/content?highlightKey={highlightKey}",

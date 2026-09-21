@@ -1828,7 +1828,7 @@ class MainActivity : ComponentActivity() {
                         it / 8
                       } + fadeOut(tween(400, easing = EmphasizedEasing))
                   },
-                  modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                  modifier = Modifier.layerBackdrop(appBackdrop).nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                   navigationBuilder(
                     navController = navController,

@@ -219,14 +219,24 @@ fun MiniPlayer(
     val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
     val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
 
-    val contentColor = if (pureBlack) Color.White else MaterialTheme.colorScheme.onSurface
-    val bgTint = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
+    val glassConfig = LocalGlassEffectConfig.current
+    val useGlass = miniPlayerBackground == PlayerBackgroundStyle.LIQUID_GLASS && glassConfig.isEnabledFor(GlassComponent.MINI_PLAYER) && isGlassSupported()
+    
+    val contentColor = if (useGlass) glassConfig.textColor else if (pureBlack) Color.White else MaterialTheme.colorScheme.onSurface
+    val bgTint = if (useGlass) Color.Transparent else if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
     android.util.Log.d(
       "COLOR_MATCH",
       "MiniPlayer - isFollowTheme: $isFollowTheme, globalPureBlack: $globalPureBlack, pureBlackMini: $pureBlackMini, pureBlack final: $pureBlack, bgTint: $bgTint"
     )
 
-    val tabBarContentModifier = Modifier.clip(RoundedCornerShape(percent = 50)).background(bgTint)
+    val tabBarContentModifier = if (useGlass) {
+        Modifier.liquidGlass(
+            config = glassConfig,
+            shape = RoundedCornerShape(percent = 50),
+        )
+    } else {
+        Modifier.clip(RoundedCornerShape(percent = 50)).background(bgTint)
+    }
 
     Box(
       modifier =
@@ -276,7 +286,9 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
   val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
   val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
 
-  val bgTint = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
+  val glassConfig = LocalGlassEffectConfig.current
+  val useGlass = miniPlayerBackground == PlayerBackgroundStyle.LIQUID_GLASS && glassConfig.isEnabledFor(GlassComponent.MINI_PLAYER) && isGlassSupported()
+  val bgTint = if (useGlass) Color.Transparent else if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
 
   val playbackState by playerConnection.playbackState.collectAsState()
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -340,17 +352,18 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
 
   val isDynamicBackground = miniPlayerBackground != PlayerBackgroundStyle.DEFAULT
   val backgroundColor =
-    if (pureBlack && useDarkTheme) {
+    if (useGlass) {
+      Color.Transparent
+    } else if (pureBlack && useDarkTheme) {
       Color.Black
     } else {
       MaterialTheme.colorScheme.surfaceContainerHigh
     }
 
-  val primaryColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
-  val onPrimaryColor = if (isDynamicBackground) Color.Black else MaterialTheme.colorScheme.surface
-  val outlineColor =
-    if (isDynamicBackground) Color.White.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline
-  val onSurfaceColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
+  val primaryColor = if (useGlass) glassConfig.textColor else if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
+  val onPrimaryColor = if (useGlass) glassConfig.textColor else if (isDynamicBackground) Color.Black else MaterialTheme.colorScheme.surface
+  val outlineColor = if (useGlass) glassConfig.textColor.copy(alpha = 0.5f) else if (isDynamicBackground) Color.White.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline
+  val onSurfaceColor = if (useGlass) glassConfig.textColor else if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
   val errorColor = MaterialTheme.colorScheme.error
 
   Box(
@@ -638,7 +651,9 @@ private fun LegacyMiniPlayer(progressState: ProgressState, modifier: Modifier = 
   val globalPureBlack = pureBlackGlobalPref && useDarkTheme
   val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
   val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
-  val bgTint = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
+  val glassConfig = LocalGlassEffectConfig.current
+  val useGlass = miniPlayerBackground == PlayerBackgroundStyle.LIQUID_GLASS && glassConfig.isEnabledFor(GlassComponent.MINI_PLAYER) && isGlassSupported()
+  val bgTint = if (useGlass) Color.Transparent else if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
 
   val playbackState by playerConnection.playbackState.collectAsState()
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -1191,6 +1206,23 @@ private fun MiniPlayerBackgroundLayer(
           modifier = Modifier.fillMaxSize().blur(40.dp).graphicsLayer { rotationZ = rotation.value }
         )
         Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
+      }
+    }
+    PlayerBackgroundStyle.LIQUID_GLASS -> {
+      val glassConfig = LocalGlassEffectConfig.current
+      if (glassConfig.isEnabledFor(GlassComponent.MINI_PLAYER) && isGlassSupported()) {
+        Box(
+          Modifier
+            .fillMaxSize()
+            .liquidGlass(config = glassConfig)
+        )
+      } else if (gradientColors.isNotEmpty()) {
+        Box(
+          modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(gradientColors))
+            .background(Color.Black.copy(alpha = 0.2f))
+        )
       }
     }
     else -> {}

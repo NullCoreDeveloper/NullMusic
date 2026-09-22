@@ -280,7 +280,6 @@ dependencies {
   implementation(libs.androidx.adaptive.navigation)
   implementation(libs.palette)
   implementation(libs.materialKolor)
-  implementation(libs.androidx.browser)
 
   implementation(libs.appcompat)
 

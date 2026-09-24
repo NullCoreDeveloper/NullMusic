@@ -15,8 +15,7 @@ enum class AppIconType(val value: Int) {
   POOKIE(5),
   SKY(6),
   ECHO_CAT(7),
-  EKO(8),
-  WIERD_CAT(9)
+  BILLIE_EILISH(13)
 }
 
 object IconUtils {
@@ -75,14 +74,8 @@ object IconUtils {
       PackageManager.DONT_KILL_APP
     )
     pm.setComponentEnabledSetting(
-      eko,
-      if (iconType == AppIconType.EKO) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-      else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-      PackageManager.DONT_KILL_APP
-    )
-    pm.setComponentEnabledSetting(
-      wierdCat,
-      if (iconType == AppIconType.WIERD_CAT) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+      billieEilish,
+      if (iconType == AppIconType.BILLIE_EILISH) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
       else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
       PackageManager.DONT_KILL_APP
     )

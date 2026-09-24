@@ -794,3 +794,26 @@ val LiquidGlassNavBarEnabledKey = booleanPreferencesKey("liquidGlassNavBarEnable
 val UseFloatingNavBarKey = booleanPreferencesKey("useFloatingNavBar")
 val SavedAccountsKey = stringPreferencesKey("savedAccounts")
 val LiveBlurDensityKey = floatPreferencesKey("live_blur_density")
+
+// Ambient Mode
+val AmbientArtScaleKey = floatPreferencesKey("ambient_art_scale")
+val AmbientShowTitleKey = booleanPreferencesKey("ambient_show_title")
+val AmbientShowArtistKey = booleanPreferencesKey("ambient_show_artist")
+val AmbientShowLyricsKey = booleanPreferencesKey("ambient_show_lyrics")
+
+
+enum class AppFont(val value: String) {
+    SYSTEM("system"),
+    GOOGLE_SANS("google_sans"),
+    SANS_FLEX("sans_flex"),
+    OUTFIT("outfit"),
+    PLUS_JAKARTA_SANS("plus_jakarta_sans"),
+    CUSTOM("custom");
+
+    companion object {
+        fun fromValue(value: String): AppFont = entries.find { it.value == value } ?: SYSTEM
+    }
+}
+
+val SelectedFontKey = stringPreferencesKey("selected_app_font")
+val CustomFontPathKey = androidx.datastore.preferences.core.stringPreferencesKey("custom_font_path")

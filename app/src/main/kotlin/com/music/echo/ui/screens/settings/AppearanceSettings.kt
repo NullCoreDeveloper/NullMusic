@@ -2,6 +2,9 @@
 
 package iad1tya.echo.music.ui.screens.settings
 
+import echo.music.iad1tya.constants.AppFont
+import echo.music.iad1tya.constants.SelectedFontKey
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -1423,6 +1426,25 @@ PlayerBackgroundStyle.LIQUID_GLASS -> stringResource(R.string.player_background_
               onClick = { navController.navigate("settings/appearance/app_icon") }
             )
           )
+          add(
+            Material3SettingsItem(
+              icon = painterResource(echo.music.iad1tya.R.drawable.alphabet_cyrillic),
+              title = { Text(stringResource(echo.music.iad1tya.R.string.app_font)) },
+              trailingContent = {
+                  val fontLabel = when (AppFont.fromValue(selectedFontValue)) {
+                      AppFont.SYSTEM -> stringResource(echo.music.iad1tya.R.string.font_system)
+                      AppFont.GOOGLE_SANS -> stringResource(echo.music.iad1tya.R.string.font_google_sans)
+                      AppFont.SANS_FLEX -> stringResource(echo.music.iad1tya.R.string.font_sans_flex)
+                      AppFont.OUTFIT -> stringResource(echo.music.iad1tya.R.string.font_outfit)
+                      AppFont.PLUS_JAKARTA_SANS -> stringResource(echo.music.iad1tya.R.string.font_plus_jakarta_sans)
+                      AppFont.CUSTOM -> stringResource(echo.music.iad1tya.R.string.font_custom)
+                  }
+                  Text(fontLabel)
+              },
+              onClick = { navController.navigate("settings/appearance/font") }
+            )
+          )
+
           add(
             Material3SettingsItem(
               isHighlighted = (highlightKey == stringResource(R.string.theme)),
@@ -2865,6 +2887,22 @@ PlayerBackgroundStyle.LIQUID_GLASS -> stringResource(R.string.player_background_
             onClick = { onHideStatusBarOnFullscreenChange(!hideStatusBarOnFullscreen) }
           )
         )
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Material3SettingsGroup(
+      scrollState = scrollState,
+      title = "Ambient Mode",
+      items = listOf(
+        Material3SettingsItem(
+          isHighlighted = false,
+          icon = painterResource(R.drawable.image),
+          title = { Text("Ambient Mode Options") },
+          description = { Text("Customize the appearance of the ambient player") },
+          onClick = { navController.navigate("ambient_settings") }
+        )
+      )
     )
 
     Spacer(modifier = Modifier.height(16.dp))

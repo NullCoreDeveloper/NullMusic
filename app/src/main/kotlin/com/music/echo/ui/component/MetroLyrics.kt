@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -132,7 +131,6 @@ fun MetroLyricsLine(
   lyricsLineSpacing: Float = 1.3f,
   modifier: Modifier = Modifier
 ) {
-  val (appleMusicLyricsBlur) = rememberPreference(AppleMusicLyricsBlurKey, true)
   val (romanizeAsMain) = rememberPreference(LyricsRomanizeAsMainKey, false)
 
   val romanizedTextState by entry.romanizedTextFlow.collectAsState()
@@ -150,27 +148,7 @@ fun MetroLyricsLine(
   val subText =
     if (entry.isBackground) subTextRaw?.removePrefix("(")?.removeSuffix(")") else subTextRaw
 
-  val targetBlur =
-    if (
-      !appleMusicLyricsBlur || !isAutoScrollActive || isActive || !isSynced || isSelectionModeActive
-    ) {
-      0f
-    } else {
-      when (distanceFromCurrent) {
-        1 -> 0f
-        2 -> 0f
-        3 -> 2f
-        4 -> 4f
-        else -> 6f
-      }
-    }
 
-  val animatedBlur by
-    animateFloatAsState(
-      targetValue = targetBlur,
-      animationSpec = tween(durationMillis = 1000),
-      label = "blur"
-    )
 
   val focusedAlpha = if (entry.isBackground) 0.5f else 0.3f
   val activeAlpha = 1f
@@ -199,9 +177,20 @@ fun MetroLyricsLine(
       label = "lineAlpha"
     )
 
+  val scale by
+    animateFloatAsState(
+      targetValue = if (isActive) 1f else 0.85f,
+      animationSpec = tween(durationMillis = 400),
+      label = "lineScale"
+    )
+
   val itemModifier =
     modifier
       .fillMaxWidth()
+      .graphicsLayer {
+        this.scaleX = scale
+        this.scaleY = scale
+      }
       .clip(RoundedCornerShape(16.dp))
       .combinedClickable(enabled = true, onClick = onClick, onLongClick = onLongClick)
       .background(
@@ -210,7 +199,6 @@ fun MetroLyricsLine(
         else Color.Transparent
       )
       .padding(horizontal = 24.dp, vertical = (8 * lyricsLineSpacing).dp)
-      .blur(animatedBlur.dp)
 
   val agentAlignment =
     when {

@@ -319,13 +319,22 @@
             </intent-filter>
         </activity-alias>
 
+        
+
+        
+        
+
+        
+
+        
+
         <activity-alias
-            android:name=".MainActivityEko"
+            android:name=".MainActivityBillieEilish"
             android:enabled="false"
             android:exported="true"
-            android:icon="@mipmap/eko_icon"
+            android:icon="@mipmap/billie_eilish_icon"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/eko_icon_round"
+            android:roundIcon="@mipmap/billie_eilish_icon_round"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -333,19 +342,6 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias
-            android:name=".MainActivityWierdCat"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/wierd_cat_icon"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/wierd_cat_icon_round"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
 
         <provider
             android:name="androidx.core.content.FileProvider"

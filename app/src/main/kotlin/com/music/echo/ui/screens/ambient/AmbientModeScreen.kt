@@ -49,6 +49,11 @@ fun AmbientModeScreen(navController: NavController) {
   val playerConnection = LocalPlayerConnection.current ?: return
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
+  val artScale by rememberPreference(AmbientArtScaleKey, 0.85f)
+  val showTitle by rememberPreference(AmbientShowTitleKey, false)
+  val showArtist by rememberPreference(AmbientShowArtistKey, false)
+  val showLyrics by rememberPreference(AmbientShowLyricsKey, true)
+
   DisposableEffect(Unit) {
     val activity = context as? Activity
     val originalOrientation =
@@ -129,38 +134,67 @@ fun AmbientModeScreen(navController: NavController) {
       modifier = Modifier.fillMaxSize().safeDrawingPadding(),
       verticalAlignment = Alignment.CenterVertically
     ) {
-      // Left Side: Album Art
+      // Left Side: Album Art & Info
       Box(
         modifier = Modifier.weight(1f).fillMaxHeight().padding(32.dp),
         contentAlignment = Alignment.Center
       ) {
-        AsyncImage(
-          model = mediaMetadata?.thumbnailUrl,
-          contentDescription = "Album Art",
-          contentScale = ContentScale.Crop,
-          modifier =
-            Modifier.fillMaxHeight(0.85f)
-              .aspectRatio(1f)
-              .clip(RoundedCornerShape(16.dp))
-              .pointerInput(Unit) {
-                detectTapGestures(onDoubleTap = { playerConnection.togglePlayPause() })
-              }
-        )
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          AsyncImage(
+            model = mediaMetadata?.thumbnailUrl,
+            contentDescription = "Album Art",
+            contentScale = ContentScale.Crop,
+            modifier =
+              Modifier.fillMaxHeight(artScale)
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(16.dp))
+                .pointerInput(Unit) {
+                  detectTapGestures(onDoubleTap = { playerConnection.togglePlayPause() })
+                }
+          )
+          
+          if (showTitle || showArtist) {
+            Spacer(modifier = Modifier.height(16.dp))
+            if (showTitle) {
+              Text(
+                text = mediaMetadata?.title ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+              )
+            }
+            if (showArtist) {
+              Text(
+                text = mediaMetadata?.artists?.joinToString { it.name } ?: "",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+              )
+            }
+          }
+        }
       }
 
       // Right Side: Lyrics
-      Box(
-        modifier =
-          Modifier.weight(1f)
-            .fillMaxHeight()
-            .padding(start = 16.dp, end = 32.dp, top = 32.dp, bottom = 32.dp),
-        contentAlignment = Alignment.Center
-      ) {
-        InlineLyricsView(
-          mediaMetadata = mediaMetadata,
-          showLyrics = true,
-          positionProvider = { playerConnection.player.currentPosition }
-        )
+      if (showLyrics) {
+        Box(
+          modifier =
+            Modifier.weight(1f)
+              .fillMaxHeight()
+              .padding(start = 16.dp, end = 32.dp, top = 32.dp, bottom = 32.dp),
+          contentAlignment = Alignment.Center
+        ) {
+          InlineLyricsView(
+            mediaMetadata = mediaMetadata,
+            showLyrics = true,
+            positionProvider = { playerConnection.player.currentPosition }
+          )
+        }
       }
     }
 

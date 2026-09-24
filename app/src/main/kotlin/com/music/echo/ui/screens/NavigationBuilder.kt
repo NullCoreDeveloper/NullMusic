@@ -319,6 +319,8 @@ fun NavGraphBuilder.navigationBuilder(
     )
   }
 
+  composable("ambient_settings") { echo.music.iad1tya.ui.screens.settings.AmbientSettingsScreen(navController) }
+
   composable(
     route = "settings/appearance?highlightKey={highlightKey}",
     arguments =
@@ -343,6 +345,29 @@ fun NavGraphBuilder.navigationBuilder(
   composable("settings/appearance/app_icon") {
     AppIconSettingsScreen(navController, activity, snackbarHostState)
   }
+
+  composable("settings/appearance/font") {
+    com.music.echo.ui.screens.settings.FontSelectionScreen(navController, scrollBehavior)
+  }
+
+  composable("settings/listening_summary") {
+    com.music.echo.ui.screens.ListeningSummaryScreen(navController)
+  }
+
+
+  composable(
+        route = "detailed_listening_history/{startTimestamp}",
+        arguments = listOf(
+            navArgument("startTimestamp") {
+                type = NavType.StringType
+            },
+        ),
+    ) {
+        echo.music.iad1tya.ui.screens.DetailedListeningHistoryScreen(navController)
+    }
+
+
+
   
   composable("settings/appearance/liquidglass") {
     GlassEffectSettings(navController, scrollBehavior)

@@ -1060,7 +1060,7 @@ object YouTube {
       PlaylistContinuationPage(songs = songs, continuation = nextContinuation)
     }
 
-  suspend fun home(continuation: String? = null, params: String? = null): Result<HomePage> =
+  suspend fun home(continuation: String? = null, browseId: String = "FEmusic_home", params: String? = null): Result<HomePage> =
     runCatching {
       if (continuation != null) {
         return@runCatching homeContinuation(continuation).getOrThrow()
@@ -1068,7 +1068,7 @@ object YouTube {
 
       val response =
         innerTube
-          .browse(WEB_REMIX, browseId = "FEmusic_home", params = params)
+          .browse(WEB_REMIX, browseId = browseId, params = params)
           .body<BrowseResponse>()
       val continuation =
         response.contents

@@ -116,7 +116,7 @@ object AppModule {
       context.filesDir.resolve("exoplayer"),
       when (cacheSize) {
         -1 -> NoOpCacheEvictor()
-        else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
+        else -> com.music.echo.playback.DynamicLruCacheEvictor(cacheSize * 1024 * 1024L)
       },
       databaseProvider,
     )

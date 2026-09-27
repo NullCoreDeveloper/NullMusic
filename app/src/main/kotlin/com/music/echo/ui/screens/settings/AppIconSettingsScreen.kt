@@ -120,7 +120,7 @@ fun AppIconSettingsScreen(
         AppIconOption(
           AppIconType.BILLIE_EILISH,
           "Billie Eilish",
-          "billie eilish by Lalo salamanca",
+          "billie eilish suggested by Lalo salamanca",
           R.mipmap.billie_eilish_icon
         ),
         AppIconOption(
@@ -160,12 +160,25 @@ fun AppIconSettingsScreen(
           R.mipmap.pookie_icon
         ),
         AppIconOption(
+          AppIconType.SABRINA_CARPENTER,
+          "Sabrina Carpenter",
+          "Suggested by notdieinganymore",
+          R.mipmap.ic_launcher_sabrina
+        ),
+        AppIconOption(
+          AppIconType.SABRINA_CARPENTER_2,
+          "Sabrina Carpenter 2",
+          "Suggested by notdieinganymore",
+          R.mipmap.ic_launcher_sabrina2
+        ),
+        AppIconOption(
           AppIconType.SKY,
           "Sky Icon",
           "A beautiful sky-themed icon",
           R.mipmap.sky_icon
         )
       )
+
 
     Column(
       modifier =

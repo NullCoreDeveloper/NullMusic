@@ -3,6 +3,7 @@
 package iad1tya.echo.music.ui.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
@@ -192,6 +193,8 @@ fun ActionPromptDialog(
 fun ListDialog(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
+  color: androidx.compose.ui.graphics.Color = AlertDialogDefaults.containerColor,
+  title: (@Composable () -> Unit)? = null,
   content: LazyListScope.() -> Unit,
 ) {
   Dialog(
@@ -201,14 +204,26 @@ fun ListDialog(
     Surface(
       modifier = Modifier.padding(24.dp),
       shape = AlertDialogDefaults.shape,
-      color = AlertDialogDefaults.containerColor,
+      color = color,
       tonalElevation = AlertDialogDefaults.TonalElevation,
     ) {
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(vertical = 24.dp).imePadding(),
+        modifier = modifier.imePadding(),
       ) {
-        LazyColumn(content = content)
+        if (title != null) {
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 8.dp)
+          ) {
+            title()
+          }
+        }
+        LazyColumn(
+          contentPadding = PaddingValues(top = if (title != null) 0.dp else 24.dp, bottom = 24.dp),
+          content = content
+        )
       }
     }
   }

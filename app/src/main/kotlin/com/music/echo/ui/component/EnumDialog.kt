@@ -2,11 +2,18 @@
 
 package iad1tya.echo.music.ui.component
 
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -28,35 +35,55 @@ fun <T> EnumDialog(
 ) {
   ListDialog(
     onDismiss = onDismiss,
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.onSurface
+      )
+    }
   ) {
-    items(values) { value ->
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier =
-          Modifier.fillMaxWidth()
-            .clickable { onSelect(value) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-      ) {
-        RadioButton(
-          selected = value == current,
-          onClick = null,
-        )
-
-        Column(
-          modifier = Modifier.padding(start = 16.dp),
+    itemsIndexed(values) { index, value ->
+        val shape = when {
+            values.size == 1 -> RoundedCornerShape(24.dp)
+            index == 0 -> RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+            index == values.size - 1 -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
+            else -> RoundedCornerShape(4.dp)
+        }
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier =
+            Modifier.fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 2.dp)
+              .clip(shape)
+              .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+              .clickable { onSelect(value) }
+              .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-          Text(
-            text = valueText(value),
+          RadioButton(
+            selected = value == current,
+            onClick = null,
           )
-          if (valueDescription != null && valueDescription(value).isNotEmpty()) {
+
+          Column(
+            modifier = Modifier.padding(start = 16.dp),
+          ) {
             Text(
-              text = valueDescription(value),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              text = valueText(value),
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.onSurface
             )
+            if (valueDescription != null && valueDescription(value).isNotEmpty()) {
+              Text(
+                text = valueDescription(value),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
           }
         }
-      }
     }
   }
 }

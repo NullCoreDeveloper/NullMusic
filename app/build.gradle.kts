@@ -28,8 +28,8 @@ android {
     applicationId = "echo.music.iad1tya"
     minSdk = 26
     targetSdk = 36
-    versionCode = 158
-    versionName = "1.3.0"
+    versionCode = 161
+    versionName = "1.4"
 
     defaultConfig {
         applicationId = "com.nullcore.music"

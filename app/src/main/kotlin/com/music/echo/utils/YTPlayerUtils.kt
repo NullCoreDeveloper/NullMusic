@@ -39,6 +39,7 @@ import okhttp3.OkHttpClient
 import timber.log.Timber
 
 object YTPlayerUtils {
+  private val extractionMutex = Mutex()
   private const val logTag = "YTPlayerUtils"
   private const val TAG = "YTPlayerUtils"
 
@@ -298,6 +299,7 @@ object YTPlayerUtils {
     val format: PlayerResponse.StreamingData.Format,
     val streamUrl: String,
     val streamExpiresInSeconds: Int,
+    val headers: Map<String, String>? = null,
   )
   /**
    * Custom player response intended to use for playback. Metadata like audioConfig and videoDetails
@@ -335,21 +337,35 @@ object YTPlayerUtils {
             "loggedIn" to isLoggedIn,
             "thread" to Thread.currentThread().name,
           ),
-        )
-        // Session identity. These decide whether YouTube treats the request as coherent, so their
-        // presence/absence is the first thing to check on any 403 — see the account-bound
-        // visitorData bug. Values are redacted; only presence and identity-stability matter.
-        Fix403.i(
-          fx,
-          "resolve.session",
-          Fix403.kv(
-            "cookie" to Fix403.redact(YouTube.cookie),
-            "visitorData" to Fix403.redact(YouTube.visitorData),
-            "dataSyncId" to Fix403.redact(YouTube.dataSyncId),
-            "proxy" to (YouTube.proxy?.toString() ?: "none"),
-            "locale" to "${YouTube.locale.hl}/${YouTube.locale.gl}",
+          videoDetails = null,
+          playbackTracking = null,
+          format = com.music.innertube.models.response.PlayerResponse.StreamingData.Format(
+              itag = 251,
+              url = extracted.url,
+              mimeType = extracted.mimeType,
+              bitrate = extracted.kbps * 1000,
+              width = null,
+              height = null,
+              contentLength = null,
+              quality = "high",
+              fps = null,
+              qualityLabel = null,
+              averageBitrate = extracted.kbps * 1000,
+              audioQuality = "AUDIO_QUALITY_HIGH",
+              approxDurationMs = null,
+              audioSampleRate = 48000,
+              audioChannels = 2,
+              loudnessDb = extracted.loudnessDb,
+              lastModified = null,
+              signatureCipher = null,
+              cipher = null,
+              audioTrack = null
           ),
-        )
+          streamUrl = extracted.url,
+          streamExpiresInSeconds = 21600,
+          headers = extracted.headers
+      )
+    }
 
         // Get signature timestamp (same as before for normal content)
         val signatureTimestamp = getSignatureTimestampOrNull(videoId)
@@ -1053,7 +1069,11 @@ object YTPlayerUtils {
         } else {
           "bytes=0-${VALIDATION_CHUNK_LENGTH - 1}"
         }
-      val requestBuilder = okhttp3.Request.Builder().head().url(url).addHeader("Range", range)
+            val requestBuilder = okhttp3.Request.Builder().head().url(url).addHeader("Range", range)
+      val extraHeaders = echo.music.iad1tya.utils.InnerTubeXResolver.headersFor(url) ?: echo.music.iad1tya.utils.PlayerClient.forStreamUrl(url).mediaHeaders()
+      for ((k, v) in extraHeaders) {
+        requestBuilder.header(k, v)
+      }
 
       YouTube.cookie?.let { cookie -> requestBuilder.addHeader("Cookie", cookie) }
 
@@ -1086,9 +1106,9 @@ object YTPlayerUtils {
 
   data class SignatureTimestampResult(val timestamp: Int?, val isAgeRestricted: Boolean)
 
-  private fun getSignatureTimestampOrNull(videoId: String): SignatureTimestampResult {
+  private suspend fun getSignatureTimestampOrNull(videoId: String): SignatureTimestampResult {
     Timber.tag(logTag).d("Getting signature timestamp for videoId: $videoId")
-    val result = NewPipeExtractor.getSignatureTimestamp(videoId)
+    val result = extractionMutex.withLock { NewPipeExtractor.getSignatureTimestamp(videoId) }
     return result.fold(
       onSuccess = { timestamp ->
         Timber.tag(logTag).d("Signature timestamp obtained: $timestamp")
@@ -1115,7 +1135,7 @@ object YTPlayerUtils {
     videoId: String,
     playerResponse: PlayerResponse,
     skipNewPipe: Boolean = false
-  ): String? {
+  ): Pair<String, Map<String, String>?>? {
     val engine = playbackEngine
     Timber.tag(logTag)
       .d(
@@ -1125,7 +1145,19 @@ object YTPlayerUtils {
     // First check if format already has a URL
     if (!format.url.isNullOrEmpty()) {
       Timber.tag(logTag).d("Using URL from format directly")
-      return format.url
+      return format.url!! to null
+    }
+
+
+    // --- InnerTubeX Path ---
+    try {
+      val extracted = InnerTubeXResolver.extract(videoId, format.bitrate / 1000)
+      if (extracted != null) {
+        Timber.tag(logTag).d("Stream URL obtained via InnerTubeX (client: ${extracted.clientName})")
+        return extracted.url to extracted.headers
+      }
+    } catch (e: Exception) {
+      Timber.tag(logTag).e(e, "InnerTubeX extraction failed")
     }
 
     // --- PoToken / CipherDeobfuscator path ---
@@ -1142,7 +1174,7 @@ object YTPlayerUtils {
             CipherDeobfuscator.deobfuscateStreamUrl(signatureCipher, videoId)
           if (customDeobfuscatedUrl != null) {
             Timber.tag(logTag).d("Stream URL obtained via custom cipher deobfuscation")
-            return customDeobfuscatedUrl
+            return customDeobfuscatedUrl to null
           }
         } catch (e: Exception) {
           Timber.tag(logTag).e(e, "Custom cipher deobfuscation failed")
@@ -1227,10 +1259,10 @@ object YTPlayerUtils {
       } else {
         // Try to get URL using NewPipeExtractor signature deobfuscation
         try {
-          val deobfuscatedUrl = NewPipeExtractor.getStreamUrl(format, videoId)
+          val deobfuscatedUrl = extractionMutex.withLock { NewPipeExtractor.getStreamUrl(format, videoId) }
           if (deobfuscatedUrl != null) {
             Timber.tag(logTag).d("Stream URL obtained via NewPipe deobfuscation")
-            return deobfuscatedUrl
+            return deobfuscatedUrl to null
           }
         } catch (e: Exception) {
           Timber.tag(logTag).e(e, "NewPipe deobfuscation failed")
@@ -1239,12 +1271,12 @@ object YTPlayerUtils {
         // Fallback: try to get URL from StreamInfo
         Timber.tag(logTag).d("Trying StreamInfo fallback for URL")
         try {
-          val streamUrls = YouTube.getNewPipeStreamUrls(videoId)
+          val streamUrls = extractionMutex.withLock { YouTube.getNewPipeStreamUrls(videoId) }
           if (streamUrls.isNotEmpty()) {
             val streamUrl = streamUrls.find { it.first == format.itag }?.second
             if (streamUrl != null) {
               Timber.tag(logTag).d("Stream URL obtained from StreamInfo")
-              return streamUrl
+              return streamUrl to null
             }
 
             // If exact itag not found, try to find any audio stream
@@ -1259,7 +1291,7 @@ object YTPlayerUtils {
 
             if (audioStream != null) {
               Timber.tag(logTag).d("Audio stream URL obtained from StreamInfo (different itag)")
-              return audioStream
+              return audioStream to null
             }
           }
         } catch (e: Exception) {
@@ -1294,7 +1326,7 @@ object YTPlayerUtils {
             }
             if (bestUrl != null) {
               Timber.tag(logTag).d("Stream URL obtained via Emergency Piped API")
-              return bestUrl
+              return bestUrl to null
             }
           }
         }

@@ -146,46 +146,67 @@ fun LibraryScreen(navController: NavController) {
             Icon(painter = painterResource(R.drawable.add), contentDescription = "Add")
           }
 
-          DropdownMenu(expanded = showFabMenu, onDismissRequest = { showFabMenu = false }) {
-            DropdownMenuItem(
-              text = { Text(stringResource(R.string.create_playlist)) },
-              leadingIcon = {
-                Icon(painter = painterResource(R.drawable.add), contentDescription = null)
-              },
+
+
+
+        }
+      }
+    }
+  }
+
+  if (showFabMenu) {
+    @kotlin.OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class) androidx.compose.material3.ModalBottomSheet(
+      onDismissRequest = { showFabMenu = false },
+      sheetState = @kotlin.OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class) androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+      Column(modifier = Modifier.padding(bottom = 24.dp, start = 16.dp, end = 16.dp)) {
+        Material3SettingsGroup(
+          compact = true,
+          items = listOf(
+            Material3SettingsItem(
+              title = { Text(stringResource(R.string.create_playlist)) },
+              icon = painterResource(R.drawable.add),
               onClick = {
                 showFabMenu = false
                 showCreatePlaylistOptionsDialog = true
               }
-            )
-            DropdownMenuItem(
-              text = { Text(stringResource(R.string.import_playlist)) },
-              leadingIcon = {
-                Icon(painter = painterResource(R.drawable.download), contentDescription = null)
-              },
+            ),
+            Material3SettingsItem(
+              title = { Text(stringResource(R.string.import_playlist)) },
+              icon = painterResource(R.drawable.download),
               onClick = {
                 showFabMenu = false
                 showImportMenu = true
               }
             )
-          }
+          )
+        )
+      }
+    }
+  }
 
-          DropdownMenu(expanded = showImportMenu, onDismissRequest = { showImportMenu = false }) {
-            DropdownMenuItem(
-              text = { Text(stringResource(R.string.import_from_spotify)) },
-              onClick = {
-                showImportMenu = false
-                navController.navigate("settings/spotify_import")
-              }
-            )
-            DropdownMenuItem(
-              text = { Text(stringResource(R.string.import_from_youtube_music)) },
-              onClick = {
-                showImportMenu = false
-                showYoutubeImportDialog = true
-              }
-            )
+  if (showImportMenu) {
+    @kotlin.OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class) androidx.compose.material3.ModalBottomSheet(
+      onDismissRequest = { showImportMenu = false },
+      sheetState = @kotlin.OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class) androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+      Column(modifier = Modifier.padding(bottom = 24.dp)) {
+        androidx.compose.material3.ListItem(
+          headlineContent = { Text(stringResource(R.string.import_from_spotify)) },
+          
+          modifier = Modifier.clickable {
+            showImportMenu = false
+            navController.navigate("settings/spotify_import")
           }
-        }
+        )
+        androidx.compose.material3.ListItem(
+          headlineContent = { Text(stringResource(R.string.import_from_youtube_music)) },
+          
+          modifier = Modifier.clickable {
+            showImportMenu = false
+            showYoutubeImportDialog = true
+          }
+        )
       }
     }
   }

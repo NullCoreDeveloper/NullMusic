@@ -5476,6 +5476,18 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       }
       isExpiredUrlError(error) -> {
         Timber.tag(TAG).d("Expired URL (403) detected, refreshing stream URL")
+        
+        var cause: Throwable? = error.cause
+        while (cause != null) {
+          if (cause is androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException) {
+             val urlStr = cause.dataSpec.uri.toString()
+             Timber.tag(TAG).d("Extracted 403 URL: $urlStr")
+             echo.music.iad1tya.utils.InnerTubeXResolver.onRefused(urlStr)
+             break
+          }
+          cause = cause.cause
+        }
+        
         handleExpiredUrlError(mediaId)
         return
       }
@@ -5790,7 +5802,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
   }
 
   private fun createCacheDataSource(): CacheDataSource.Factory {
-    val useCronet = runBlocking { dataStore.get(EnableCronetKey, true) }
+    val useCronet = false
     
     val upstreamFactory = if (useCronet) {
       try {
@@ -5803,10 +5815,10 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         CronetDataSource.Factory(cronetEngine, java.util.concurrent.Executors.newSingleThreadExecutor())
       } catch (e: Exception) {
         Timber.tag(TAG).e(e, "Failed to initialize Cronet, falling back to OkHttp")
-        createOkHttpFactory()
+        com.music.echo.playback.ChunkedDataSource.Factory(createOkHttpFactory(), 1024 * 1024L)
       }
     } else {
-      createOkHttpFactory()
+      com.music.echo.playback.ChunkedDataSource.Factory(createOkHttpFactory(), 1024 * 1024L)
     }
 
     return CacheDataSource.Factory()
@@ -6170,7 +6182,11 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         songUrlCache["${mediaId}_${lockedQuality.name}"] =
           streamUrl to System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
 
-        return@Factory dataSpec.buildUpon().setKey(targetCacheKey).setUri(streamUrl.toUri()).build()
+        var builder = dataSpec.buildUpon().setKey(targetCacheKey).setUri(streamUrl.toUri())
+        val finalHeaders = nonNullPlayback.headers ?: echo.music.iad1tya.utils.InnerTubeXResolver.headersFor(streamUrl) ?: echo.music.iad1tya.utils.PlayerClient.forStreamUrl(streamUrl).mediaHeaders()
+        android.util.Log.d("MusicService", "EXOPLAYER REQUEST: url=$streamUrl headers=$finalHeaders")
+        builder = builder.setHttpRequestHeaders(finalHeaders)
+        return@Factory builder.build()
       }
     }
   }
@@ -7371,6 +7387,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     preloadJob?.cancel()
     preloadJob =
       scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        kotlinx.coroutines.delay(8000L) // 8-second grace period before prefetching
         for (mediaId in upcomingMediaIds) {
 
           val isFullyDownloaded = downloadCache.getCachedSpans(mediaId).isNotEmpty()
@@ -7405,7 +7422,6 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
                   val dataSpec = androidx.media3.datasource.DataSpec.Builder()
                     .setUri(android.net.Uri.parse(streamUrl))
                     .setKey("${mediaId}_${audioQuality.name}")
-                    .setLength(2 * 1024 * 1024)
                     .build()
                   val cacheDataSource = createCacheDataSource().createDataSource()
                   val cacheWriter = androidx.media3.datasource.cache.CacheWriter(

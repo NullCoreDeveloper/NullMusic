@@ -24,7 +24,7 @@ Use the correct semantic color roles as defined by our theme:
 
 ## 2. Liquid Glass System (Glassmorphism)
 
-A signature part of Echo Music's design is the **Liquid Glass** effect, which provides high-quality blur, refraction, and translucency to navigation bars, headers, and media players.
+A signature part of NullMusic's design is the **Liquid Glass** effect, which provides high-quality blur, refraction, and translucency to navigation bars, headers, and media players.
 
 ### Core Implementation
 The Liquid Glass effect is driven by a custom `Modifier.liquidGlass()` extension found in `GlassEffect.kt`. It utilizes a heavily customized RenderEffect pipeline (available on Android 12 / API 31+) over a recorded `Backdrop`.
@@ -112,7 +112,7 @@ Do NOT strictly force Material 3 components if they break the app's custom aesth
 
 ## 4. Typography & Iconography
 
-*   **Typography:** Always use `MaterialTheme.typography` but respect the app's established font weights and sizes. Echo Music leans towards bold, expressive headers and softer, highly legible body text.
+*   **Typography:** Always use `MaterialTheme.typography` but respect the app's established font weights and sizes. NullMusic leans towards bold, expressive headers and softer, highly legible body text.
 *   **Iconography:** We use a mix of Material Symbols/Icons Extended (`androidx.compose.material.material-icons-extended`) and custom SVG drawables. Check `scripts/compose_svg_drawable.py` and existing drawables before importing new vector assets to avoid duplication.
 
 ---

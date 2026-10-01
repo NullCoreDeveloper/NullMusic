@@ -37,6 +37,7 @@ fun ListeningSummaryScreen(
 ) {
     val weekTotalMs by viewModel.weekTotalMs.collectAsState()
     val weekDailyData by viewModel.weekDailyData.collectAsState()
+    val vibeSummary by viewModel.vibeSummary.collectAsState()
     val weekOffset by viewModel.weekOffset.collectAsState()
 
     var showDailyBreakdown by remember { mutableStateOf(true) }
@@ -103,6 +104,28 @@ fun ListeningSummaryScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                if (vibeSummary.dominantVibePlayTime > 0 || vibeSummary.dominantVibe == "🎧 Mixed / Unknown") {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = "Your Music Vibe This Week", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = "${vibeSummary.dominantVibe} is your most-played style this week!")
+                            
+                            val direction = if (vibeSummary.percentageChange >= 0) "increased" else "decreased"
+                            if (vibeSummary.previousVibePlayTime > 0) {
+                                Text(text = "Your ${vibeSummary.dominantVibe.split(" ")[1]} listening $direction by ${kotlin.math.abs(vibeSummary.percentageChange)}% compared with last week.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f))
+                            } else {
+                                Text(text = "You discovered this vibe this week!", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f))
+                            }
+                        }
+                    }
+                }
+            }
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
             // Usage Card

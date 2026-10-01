@@ -115,6 +115,7 @@ enum class DownloadQuality {
 }
 
 val DownloadOnWifiOnlyKey = booleanPreferencesKey("downloadOnWifiOnly")
+val DownloadWithMetadataKey = booleanPreferencesKey("downloadWithMetadata")
 
 val AudioOffload = booleanPreferencesKey("enableOffload")
 
@@ -817,3 +818,4 @@ enum class AppFont(val value: String) {
 
 val SelectedFontKey = stringPreferencesKey("selected_app_font")
 val CustomFontPathKey = androidx.datastore.preferences.core.stringPreferencesKey("custom_font_path")
+val BlockedArtistsKey = androidx.datastore.preferences.core.stringSetPreferencesKey("blockedArtists")

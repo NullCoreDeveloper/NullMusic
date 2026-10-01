@@ -284,6 +284,7 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable("settings") { SettingsScreen(navController, scrollBehavior) }
+    composable("blocked_artists") { BlockedArtistsScreen(navController) }
 
   composable(
     route = "settings/update?highlightKey={highlightKey}",

@@ -57,6 +57,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
@@ -641,6 +643,20 @@ fun ContentSettings(
 
     Spacer(modifier = Modifier.height(16.dp))
 
+    Material3SettingsGroup(
+      scrollState = scrollState,
+      title = "Privacy",
+      items = listOf(
+        Material3SettingsItem(
+          isHighlighted = false,
+          title = { Text("Blocked Artists") },
+          description = { Text("Manage hidden artists") },
+          customIcon = { Icon(Icons.Default.Block, null) },
+          onClick = { navController.navigate("blocked_artists") }
+        )
+      )
+    )
+    
     Material3SettingsGroup(
       scrollState = scrollState,
       title = stringResource(R.string.general),

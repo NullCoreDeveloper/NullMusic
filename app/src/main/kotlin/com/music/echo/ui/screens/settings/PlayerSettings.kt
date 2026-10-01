@@ -155,6 +155,8 @@ fun PlayerSettings(
     rememberPreference(AutoDownloadOnLikeKey, defaultValue = false)
   val (downloadOnWifiOnly, onDownloadOnWifiOnlyChange) =
     rememberPreference(DownloadOnWifiOnlyKey, defaultValue = false)
+  val (downloadWithMetadata, onDownloadWithMetadataChange) =
+    rememberPreference(DownloadWithMetadataKey, defaultValue = true)
   val (similarContentEnabled, similarContentEnabledChange) =
     rememberPreference(key = SimilarContent, defaultValue = true)
   val (autoSkipNextOnError, onAutoSkipNextOnErrorChange) =
@@ -280,7 +282,7 @@ fun PlayerSettings(
         ),
       valueText = {
         when (it) {
-          echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "PoToken (Recommended)"
+          echo.music.iad1tya.constants.PlaybackEngine.POTOKEN -> "eXtended InnerTube"
           echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE -> "BravePipe (NewPipe)"
           echo.music.iad1tya.constants.PlaybackEngine.AUTO -> "Auto (Try Both)"
         }

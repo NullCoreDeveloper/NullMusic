@@ -23,6 +23,14 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import echo.music.iad1tya.db.entities.EventWithSong
+
+data class VibeSummary(
+    val dominantVibe: String,
+    val dominantVibePlayTime: Long,
+    val previousVibePlayTime: Long,
+    val percentageChange: Int
+)
 
 data class DayUsageData(
     val dayName: String,
@@ -89,6 +97,47 @@ class ListeningSummaryViewModel @Inject constructor(
     fun goToPreviousWeek() { weekOffset.value++ }
     fun goToNextWeek() { if (weekOffset.value > 0) weekOffset.value-- }
     fun isCurrentWeek(): Boolean = weekOffset.value == 0
+    val vibeSummary = weekOffset.flatMapLatest { offset ->
+        val currentWeekStart = weekStartMs(offset)
+        val currentWeekEnd = currentWeekStart + 7 * dayMs
+        
+        val prevWeekStart = weekStartMs(offset + 1)
+        val prevWeekEnd = currentWeekStart
+
+        combine(
+            database.eventsForPeriod(currentWeekStart, currentWeekEnd),
+            database.eventsForPeriod(prevWeekStart, prevWeekEnd)
+        ) { currentEvents, prevEvents ->
+            
+            fun categorizeVibe(songTitle: String, artistName: String): String {
+                val text = (songTitle + " " + artistName).lowercase()
+                return when {
+                    text.contains("phonk") || text.contains("drift") -> "🔥 Phonk"
+                    text.contains("lofi") || text.contains("chill") || text.contains("slowed") || text.contains("reverb") -> "🌙 Chill"
+                    text.contains("sad") || text.contains("broken") || text.contains("lonely") -> "💔 Sad"
+                    text.contains("love") || text.contains("romantic") || text.contains("heart") -> "❤️ Romantic"
+                    text.contains("bass") || text.contains("remix") || text.contains("hardstyle") || text.contains("edm") -> "⚡ High Energy"
+                    else -> "🎧 Mixed / Unknown"
+                }
+            }
+            
+            val currentVibes = currentEvents.groupBy { categorizeVibe(it.song.title, it.song.artists.joinToString { a -> a.name }) }
+                .mapValues { it.value.sumOf { e -> e.event.playTime } }
+                
+            val prevVibes = prevEvents.groupBy { categorizeVibe(it.song.title, it.song.artists.joinToString { a -> a.name }) }
+                .mapValues { it.value.sumOf { e -> e.event.playTime } }
+
+            val dominant = currentVibes.maxByOrNull { it.value }
+            if (dominant == null) {
+                VibeSummary("🎧 Mixed / Unknown", 0L, 0L, 0)
+            } else {
+                val prevPlayTime = prevVibes[dominant.key] ?: 0L
+                val diff = if (prevPlayTime == 0L) 100 else ((dominant.value - prevPlayTime).toDouble() / prevPlayTime * 100).toInt()
+                VibeSummary(dominant.key, dominant.value, prevPlayTime, diff)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, VibeSummary("🎧 Mixed / Unknown", 0L, 0L, 0))
+
     fun setWeekFromEpoch(epochMilli: Long) {
         val selectedDate = Instant.ofEpochMilli(epochMilli).atZone(ZoneOffset.UTC).toLocalDate()
         val currentMonday = LocalDate.now().with(DayOfWeek.MONDAY)

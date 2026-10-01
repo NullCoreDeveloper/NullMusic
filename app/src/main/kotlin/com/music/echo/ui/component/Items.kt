@@ -143,11 +143,12 @@ inline fun ListItem(
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
   color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  verticalPadding: Dp = 2.dp,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier =
-      Modifier.padding(vertical = 2.dp)
+      Modifier.padding(vertical = verticalPadding)
         .padding(horizontal = horizontalPadding)
         .clip(shape)
         .background(
@@ -221,6 +222,7 @@ fun ListItem(
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
   color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  verticalPadding: Dp = 2.dp,
 ) =
   ListItem(
     title = title,
@@ -261,6 +263,7 @@ fun ListItem(
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
   color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  verticalPadding: Dp = 2.dp,
 ) =
   ListItem(
     title = title,
@@ -981,6 +984,7 @@ fun MediaMetadataListItem(
   isPlaying: Boolean = false,
   shape: Shape = RectangleShape,
   color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  verticalPadding: Dp = 2.dp,
   trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
   ListItem(
@@ -1018,7 +1022,8 @@ fun MediaMetadataListItem(
     modifier = modifier,
     isActive = isActive,
     shape = shape,
-    color = color
+    color = color,
+    verticalPadding = verticalPadding
   )
 }
 

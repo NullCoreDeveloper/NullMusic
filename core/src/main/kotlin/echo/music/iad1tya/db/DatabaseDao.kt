@@ -1244,6 +1244,10 @@ interface DatabaseDao {
   fun events(): Flow<List<EventWithSong>>
 
   @Transaction
+  @Query("SELECT * FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
+  fun eventsForPeriod(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<List<EventWithSong>>
+
+  @Transaction
   @Query("SELECT * FROM event ORDER BY rowId ASC LIMIT 1")
   fun firstEvent(): Flow<EventWithSong?>
 

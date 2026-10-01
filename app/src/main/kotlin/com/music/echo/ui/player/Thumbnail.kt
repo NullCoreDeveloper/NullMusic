@@ -890,6 +890,18 @@ private fun ThumbnailItem(
             canvasArtwork = cached
             return@LaunchedEffect
           }
+          
+          try {
+              val file = File(context.filesDir, "canvas_${item.mediaId}.json")
+              if (file.exists()) {
+                  val cached = Json.decodeFromString<CanvasArtwork>(file.readText())
+                  CanvasArtworkPlaybackCache.put(item.mediaId, cached)
+                  canvasArtwork = cached
+                  return@LaunchedEffect
+              }
+          } catch (e: Exception) {
+              e.printStackTrace()
+          }
 
           if (canvasFetchInFlight) return@LaunchedEffect
           canvasFetchInFlight = true

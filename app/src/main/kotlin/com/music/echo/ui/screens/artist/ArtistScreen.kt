@@ -2,6 +2,12 @@
 
 package iad1tya.echo.music.ui.screens.artist
 
+import androidx.compose.material.icons.Icons
+import echo.music.iad1tya.utils.dataStore
+import echo.music.iad1tya.constants.BlockedArtistsKey
+import androidx.datastore.preferences.core.edit
+import androidx.compose.material.icons.filled.Block
+import kotlinx.coroutines.flow.map
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -585,10 +591,9 @@ fun ArtistScreen(
                   }
                 }
 
-                Row(
+                Column(
                   modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                  horizontalArrangement =
-                    Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+                  verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                   ToggleButton(
                     checked = libraryArtist?.artist?.bookmarkedAt != null,
@@ -612,7 +617,7 @@ fun ArtistScreen(
                         }
                       }
                     },
-                    modifier = Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
+                    modifier = Modifier.fillMaxWidth().height(52.dp).semantics { role = Role.Button },
                     shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
                   ) {
                     Icon(
@@ -649,48 +654,76 @@ fun ArtistScreen(
                     )
                   }
 
-                  if (!showLocal && !isGuest) {
-                    artistPage?.artist?.radioEndpoint?.let { radioEndpoint ->
-                      ToggleButton(
-                        checked = false,
-                        onCheckedChange = {
-                          playerConnection.playQueue(YouTubeQueue(radioEndpoint))
-                        },
-                        modifier =
-                          Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
-                        shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
-                      ) {
-                        Icon(
-                          painter = painterResource(R.drawable.radio),
-                          contentDescription = null,
-                          modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                        Text(
-                          text = stringResource(R.string.radio),
-                          style = MaterialTheme.typography.labelMedium,
-                          maxLines = 1,
-                          overflow = TextOverflow.Ellipsis
-                        )
+                  Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+                  ) {
+                    if (!showLocal && !isGuest) {
+                      artistPage?.artist?.radioEndpoint?.let { radioEndpoint ->
+                        ToggleButton(
+                          checked = false,
+                          onCheckedChange = {
+                            playerConnection.playQueue(YouTubeQueue(radioEndpoint))
+                          },
+                          modifier = Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
+                          shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
+                        ) {
+                          Icon(
+                            painter = painterResource(R.drawable.radio),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                          )
+                          Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                          Text(
+                            text = stringResource(R.string.radio),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                          )
+                        }
                       }
                     }
-                  }
 
-                  if (!showLocal && !isGuest) {
-                    artistPage?.artist?.shuffleEndpoint?.let { shuffleEndpoint ->
+                    if (!showLocal && !isGuest) {
+                      artistPage?.artist?.shuffleEndpoint?.let { shuffleEndpoint ->
+                        ToggleButton(
+                          checked = false,
+                          onCheckedChange = {
+                            playerConnection.playQueue(YouTubeQueue(shuffleEndpoint))
+                          },
+                          modifier = Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
+                          shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
+                        ) {
+                          Icon(
+                            painter = painterResource(R.drawable.shuffle),
+                            contentDescription = stringResource(R.string.shuffle),
+                            modifier = Modifier.size(20.dp)
+                          )
+                          Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                          Text(
+                            text = stringResource(R.string.shuffle),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                          )
+                        }
+                      }
+                    } else if (librarySongs.isNotEmpty() && !isGuest) {
                       ToggleButton(
                         checked = false,
                         onCheckedChange = {
-                          playerConnection.playQueue(YouTubeQueue(shuffleEndpoint))
-                        },
-                        modifier =
-                          Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
-                        shapes =
-                          if (artistPage?.artist?.radioEndpoint != null) {
-                            ButtonGroupDefaults.connectedTrailingButtonShapes()
-                          } else {
-                            ButtonGroupDefaults.connectedTrailingButtonShapes()
+                          val shuffledSongs = librarySongs.shuffled()
+                          if (shuffledSongs.isNotEmpty()) {
+                            playerConnection.playQueue(
+                              ListQueue(
+                                title = libraryArtist?.artist?.name ?: "Unknown Artist",
+                                items = shuffledSongs.map { it.toMediaItem() }
+                              )
+                            )
                           }
+                        },
+                        modifier = Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
+                        shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
                       ) {
                         Icon(
                           painter = painterResource(R.drawable.shuffle),
@@ -706,31 +739,40 @@ fun ArtistScreen(
                         )
                       }
                     }
-                  } else if (librarySongs.isNotEmpty() && !isGuest) {
+
+                    val context = LocalContext.current
+                    val coroutineScope = rememberCoroutineScope()
+                    val blockedArtists by context.dataStore.data.map { it[BlockedArtistsKey] ?: emptySet() }.collectAsState(initial = emptySet())
+                                        val blockedEntry = blockedArtists.find { it.startsWith("${viewModel.artistId}||") }
+                    val isBlocked = blockedEntry != null || blockedArtists.contains(viewModel.artistId)
+                    
                     ToggleButton(
-                      checked = false,
+                      checked = isBlocked,
                       onCheckedChange = {
-                        val shuffledSongs = librarySongs.shuffled()
-                        if (shuffledSongs.isNotEmpty()) {
-                          playerConnection.playQueue(
-                            ListQueue(
-                              title = libraryArtist?.artist?.name ?: "Unknown Artist",
-                              items = shuffledSongs.map { it.toMediaItem() }
-                            )
-                          )
+                        coroutineScope.launch {
+                          context.dataStore.edit { prefs ->
+                            val current = prefs[BlockedArtistsKey] ?: emptySet()
+                            if (isBlocked) {
+                              val toRemove = current.filter { it == viewModel.artistId || it.startsWith("${viewModel.artistId}||") }
+                              prefs[BlockedArtistsKey] = current - toRemove.toSet()
+                            } else {
+                              val name = artistPage?.artist?.title ?: "Unknown Artist"
+                              prefs[BlockedArtistsKey] = current + "${viewModel.artistId}||${name}"
+                            }
+                          }
                         }
                       },
                       modifier = Modifier.weight(1f).height(52.dp).semantics { role = Role.Button },
                       shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
                     ) {
                       Icon(
-                        painter = painterResource(R.drawable.shuffle),
-                        contentDescription = stringResource(R.string.shuffle),
+                        imageVector = Icons.Default.Block,
+                        contentDescription = null,
                         modifier = Modifier.size(20.dp)
                       )
                       Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
                       Text(
-                        text = stringResource(R.string.shuffle),
+                        text = if (isBlocked) "Blocked" else "Block",
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

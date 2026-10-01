@@ -713,6 +713,18 @@ fun BottomSheetPlayer(
       canvasArtwork = cached
       return@LaunchedEffect
     }
+    
+    try {
+        val file = File(context.filesDir, "canvas_${item.id}.json")
+        if (file.exists()) {
+            val cached = Json.decodeFromString<echo.music.iad1tya.canvas.CanvasArtwork>(file.readText())
+            CanvasArtworkPlaybackCache.put(item.id, cached)
+            canvasArtwork = cached
+            return@LaunchedEffect
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 
     if (canvasFetchInFlight) return@LaunchedEffect
     canvasFetchInFlight = true

@@ -478,7 +478,7 @@ class MainActivity : ComponentActivity() {
             val bitmap = android.graphics.BitmapFactory.decodeResource(context.resources, R.drawable.birthday_image)
             
             val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
-              .setSmallIcon(R.drawable.echomusicnotification) // Use correct transparent echo icon
+              .setSmallIcon(R.drawable.nullmusicnotification) // Use correct transparent echo icon
               .setContentTitle("Happy Birthday Aditya!")
               .setContentText("Today is the developer's birthday!")
               .setLargeIcon(bitmap)

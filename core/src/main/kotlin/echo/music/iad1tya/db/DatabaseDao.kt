@@ -57,9 +57,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Locale
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 
 @Dao
 interface DatabaseDao {
@@ -1069,11 +1067,13 @@ interface DatabaseDao {
   )
   fun playlist(playlistId: String): Flow<Playlist?>
 
+  @Transaction
   @Query(
     "SELECT *, (SELECT COUNT(*) FROM playlist_song_map WHERE playlistId = playlist.id) AS songCount FROM playlist WHERE id = :playlistId"
   )
   suspend fun getPlaylistById(playlistId: String): Playlist?
 
+  @Transaction
   @Query(
     "SELECT *, (SELECT COUNT(*) FROM playlist_song_map WHERE playlistId = playlist.id) AS songCount FROM playlist WHERE id = :playlistId"
   )
@@ -1245,7 +1245,10 @@ interface DatabaseDao {
 
   @Transaction
   @Query("SELECT * FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
-  fun eventsForPeriod(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<List<EventWithSong>>
+  fun eventsForPeriod(
+    fromTimeStamp: Long,
+    toTimeStamp: Long
+  ): kotlinx.coroutines.flow.Flow<List<EventWithSong>>
 
   @Transaction
   @Query("SELECT * FROM event ORDER BY rowId ASC LIMIT 1")
@@ -1298,14 +1301,10 @@ interface DatabaseDao {
   )
   fun incrementPlayCount(songId: String, year: Int, month: Int)
 
+  @Transaction
   fun incrementPlayCount(songId: String) {
     val time = LocalDateTime.now().atOffset(ZoneOffset.UTC)
-    var oldCount: Int
-    runBlocking { oldCount = getPlayCountByMonth(songId, time.year, time.monthValue).first() }
-
-    if (oldCount <= 0) {
-      insert(PlayCountEntity(songId, time.year, time.monthValue, 0))
-    }
+    insert(PlayCountEntity(songId, time.year, time.monthValue, 0))
     incrementPlayCount(songId, time.year, time.monthValue)
   }
 
@@ -1756,15 +1755,32 @@ interface DatabaseDao {
   @Query("DELETE FROM album_artist_map WHERE albumId IN (:albumIds)")
   fun deleteAlbumArtistMapsByAlbumIds(albumIds: List<String>)
 
-  @Query("SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
+  @Query(
+    "SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp"
+  )
   fun getPlayTimeForDay(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<Long>
 
-  @Query("SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
-  fun getSongsPlayTimeForDay(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<Long>
+  @Query(
+    "SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp"
+  )
+  fun getSongsPlayTimeForDay(
+    fromTimeStamp: Long,
+    toTimeStamp: Long
+  ): kotlinx.coroutines.flow.Flow<Long>
 
-  @Query("SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
-  fun getArtistPlayTimeForDay(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<Long>
+  @Query(
+    "SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp"
+  )
+  fun getArtistPlayTimeForDay(
+    fromTimeStamp: Long,
+    toTimeStamp: Long
+  ): kotlinx.coroutines.flow.Flow<Long>
 
-  @Query("SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp")
-  fun getAlbumPlayTimeForDay(fromTimeStamp: Long, toTimeStamp: Long): kotlinx.coroutines.flow.Flow<Long>
+  @Query(
+    "SELECT COALESCE(SUM(playTime), 0) FROM event WHERE timestamp >= :fromTimeStamp AND timestamp < :toTimeStamp"
+  )
+  fun getAlbumPlayTimeForDay(
+    fromTimeStamp: Long,
+    toTimeStamp: Long
+  ): kotlinx.coroutines.flow.Flow<Long>
 }

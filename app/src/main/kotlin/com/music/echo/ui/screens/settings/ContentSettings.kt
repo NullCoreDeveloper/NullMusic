@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -57,8 +59,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Block
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
@@ -167,8 +167,7 @@ fun ContentSettings(
     rememberPreference(key = ContentCountryKey, defaultValue = "system")
   val (suggestionRegion, onSuggestionRegionChange) =
     rememberPreference(key = SuggestionRegionKey, defaultValue = "system")
-  val (forceOpus, onForceOpusChange) =
-    rememberPreference(key = ForceOpusKey, defaultValue = true)
+  val (forceOpus, onForceOpusChange) = rememberPreference(key = ForceOpusKey, defaultValue = true)
   val (enableCronet, onEnableCronetChange) =
     rememberPreference(key = EnableCronetKey, defaultValue = true)
   val (hideExplicit, onHideExplicitChange) =
@@ -646,17 +645,18 @@ fun ContentSettings(
     Material3SettingsGroup(
       scrollState = scrollState,
       title = "Privacy",
-      items = listOf(
-        Material3SettingsItem(
-          isHighlighted = false,
-          title = { Text("Blocked Artists") },
-          description = { Text("Manage hidden artists") },
-          customIcon = { Icon(Icons.Default.Block, null) },
-          onClick = { navController.navigate("blocked_artists") }
+      items =
+        listOf(
+          Material3SettingsItem(
+            isHighlighted = false,
+            title = { Text("Blocked Artists") },
+            description = { Text("Manage hidden artists") },
+            customIcon = { Icon(Icons.Default.Block, null) },
+            onClick = { navController.navigate("blocked_artists") }
+          )
         )
-      )
     )
-    
+
     Material3SettingsGroup(
       scrollState = scrollState,
       title = stringResource(R.string.general),
@@ -666,7 +666,11 @@ fun ContentSettings(
             isHighlighted = (highlightKey == "Force Opus Audio"),
             icon = painterResource(R.drawable.music_note),
             title = { Text("Force Opus Audio (itag 251)") },
-            description = { Text("Force WebM/Opus streaming. Halves data usage and buffers 2x faster, but may lower raw bitrate.") },
+            description = {
+              Text(
+                "Force WebM/Opus streaming. Halves data usage and buffers 2x faster, but may lower raw bitrate."
+              )
+            },
             trailingContent = {
               Switch(
                 checked = forceOpus,
@@ -674,9 +678,7 @@ fun ContentSettings(
                 thumbContent = {
                   Icon(
                     painter =
-                      painterResource(
-                        id = if (forceOpus) R.drawable.check else R.drawable.close
-                      ),
+                      painterResource(id = if (forceOpus) R.drawable.check else R.drawable.close),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
@@ -689,7 +691,9 @@ fun ContentSettings(
             isHighlighted = (highlightKey == "Enable HTTP/3 (Cronet)"),
             icon = painterResource(R.drawable.speed),
             title = { Text("Enable HTTP/3 (Cronet)") },
-            description = { Text("Use QUIC over UDP for zero-latency streaming (Restart required)") },
+            description = {
+              Text("Use QUIC over UDP for zero-latency streaming (Restart required)")
+            },
             trailingContent = {
               Switch(
                 checked = enableCronet,

@@ -30,15 +30,34 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+enum class LocalFolderFilterMode {
+  EXCLUDE,
+  INCLUDE,
+}
+
 data class LocalSongScanConfig(
   val minimumDurationSeconds: Int = 0,
   val excludedFolders: Set<String> = emptySet(),
+  val includedFolders: Set<String> = emptySet(),
+  val filterMode: LocalFolderFilterMode = LocalFolderFilterMode.EXCLUDE,
+  val allowClearAll: Boolean = false,
 ) {
   val sanitizedMinimumDurationSeconds: Int
     get() = minimumDurationSeconds.coerceAtLeast(0)
 
   val sanitizedExcludedFolders: Set<String>
     get() = deduplicateFolderEntries(excludedFolders)
+
+  val sanitizedIncludedFolders: Set<String>
+    get() = deduplicateFolderEntries(includedFolders)
+
+  val hasActiveFolderFilter: Boolean
+    get() =
+      if (filterMode == LocalFolderFilterMode.INCLUDE) {
+        sanitizedIncludedFolders.isNotEmpty()
+      } else {
+        sanitizedExcludedFolders.isNotEmpty()
+      }
 
   companion object {
     private val DuplicateSlashRegex = Regex("/+")
@@ -84,7 +103,19 @@ constructor(
         val removedIds = existingLocalIds.filterNot(scannedIdSet::contains)
 
         if (scannedIds.isEmpty()) {
-          clearLocalSongs()
+          val isFolderFilteredEmpty =
+            snapshot.queryCompleted &&
+              snapshot.totalDeviceRows > 0 &&
+              scanConfig.hasActiveFolderFilter &&
+              snapshot.matchedFolderRowsCount == 0
+
+          // Safeguard against accidental/temporary empty scans wiping user playlists & play history
+          if (scanConfig.allowClearAll || isFolderFilteredEmpty || existingLocalIds.isEmpty()) {
+            clearLocalSongs()
+          } else {
+            summary = LocalSongScanSummary(scannedSongs = 0, removedSongs = 0)
+            return@withTransaction
+          }
         } else {
           removedIds.chunked(SqlBatchSize).forEach(::deleteSongsByIds)
         }
@@ -252,6 +283,9 @@ constructor(
     val sanitizedMinimumDurationMs = scanConfig.sanitizedMinimumDurationSeconds.toLong() * 1000L
     val sanitizedExcludedFolders =
       scanConfig.sanitizedExcludedFolders.map { it.lowercase(Locale.ROOT) }.toSet()
+    val sanitizedIncludedFolders =
+      scanConfig.sanitizedIncludedFolders.map { it.lowercase(Locale.ROOT) }.toSet()
+    val isIncludeMode = scanConfig.filterMode == LocalFolderFilterMode.INCLUDE
     val projection =
       buildList {
           add(MediaStore.Audio.Media._ID)
@@ -293,6 +327,9 @@ constructor(
     val unknownArtist = context.getString(R.string.unknown_artist)
     val unknownTitle = context.getString(R.string.unknown)
     val tracks = mutableListOf<LocalTrackRecord>()
+    var totalDeviceRows = 0
+    var matchedFolderRowsCount = 0
+    var queryCompleted = false
     context.contentResolver
       .query(
         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -318,6 +355,7 @@ constructor(
         val dataPathIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
 
         while (cursor.moveToNext()) {
+          totalDeviceRows++
           val mediaId = cursor.getLong(idIndex)
           val contentUri =
             ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId)
@@ -326,9 +364,19 @@ constructor(
               relativePath = cursor.getStringOrNull(relativePathIndex),
               absolutePath = cursor.getStringOrNull(dataPathIndex),
             )
-          if (shouldExcludeFolder(normalizedFolderPath, sanitizedExcludedFolders)) {
-            continue
+          if (isIncludeMode) {
+            if (
+              sanitizedIncludedFolders.isEmpty() ||
+                !matchesFolder(normalizedFolderPath, sanitizedIncludedFolders)
+            ) {
+              continue
+            }
+          } else {
+            if (matchesFolder(normalizedFolderPath, sanitizedExcludedFolders)) {
+              continue
+            }
           }
+          matchedFolderRowsCount++
           val displayName = cursor.getString(displayNameIndex)
           val mimeType = cursor.getString(mimeTypeIndex)?.takeIf(String::isNotBlank) ?: "audio/*"
           if (!SupportedLocalAudio.isSupported(displayName, mimeType)) {
@@ -383,9 +431,11 @@ constructor(
               thumbnailUrl =
                 mediaStoreAlbumId
                   ?.takeIf { it > 0 }
-                  ?.let { ContentUris.withAppendedId(AlbumArtUri, it).toString() },
+                  ?.let { ContentUris.withAppendedId(AlbumArtUri, it).toString() }
+                  ?: contentUri.toString(),
             )
         }
+        queryCompleted = true
       }
 
     val albums =
@@ -409,6 +459,9 @@ constructor(
       tracks = tracks,
       artists = tracks.flatMap(LocalTrackRecord::artists).distinctBy(LocalArtistRecord::id),
       albums = albums,
+      queryCompleted = queryCompleted,
+      totalDeviceRows = totalDeviceRows,
+      matchedFolderRowsCount = matchedFolderRowsCount,
     )
   }
 
@@ -484,14 +537,14 @@ constructor(
     return normalizedAbsoluteFolder.takeIf(String::isNotEmpty)?.lowercase(Locale.ROOT)
   }
 
-  private fun shouldExcludeFolder(folderPath: String?, excludedFolders: Set<String>): Boolean {
-    if (folderPath.isNullOrEmpty() || excludedFolders.isEmpty()) return false
-    return excludedFolders.any { excludedFolder ->
-      val lowerExcluded = excludedFolder.lowercase(java.util.Locale.ROOT)
-      folderPath == lowerExcluded ||
-        folderPath.startsWith("$lowerExcluded/") ||
-        folderPath.endsWith("/$lowerExcluded") ||
-        folderPath.contains("/$lowerExcluded/")
+  private fun matchesFolder(folderPath: String?, folders: Set<String>): Boolean {
+    if (folderPath.isNullOrEmpty() || folders.isEmpty()) return false
+    return folders.any { folder ->
+      val lower = folder.lowercase(Locale.ROOT)
+      folderPath == lower ||
+        folderPath.startsWith("$lower/") ||
+        folderPath.endsWith("/$lower") ||
+        folderPath.contains("/$lower/")
     }
   }
 
@@ -511,6 +564,9 @@ constructor(
     val tracks: List<LocalTrackRecord>,
     val artists: List<LocalArtistRecord>,
     val albums: List<LocalAlbumRecord>,
+    val queryCompleted: Boolean = false,
+    val totalDeviceRows: Int = 0,
+    val matchedFolderRowsCount: Int = 0,
   )
 
   private data class LocalTrackRecord(

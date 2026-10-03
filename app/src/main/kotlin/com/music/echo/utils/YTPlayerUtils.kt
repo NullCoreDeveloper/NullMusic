@@ -1029,8 +1029,10 @@ object YTPlayerUtils {
         "Finding format with audioQuality: $audioQuality, network metered: ${connectivityManager.isActiveNetworkMetered}, forceOpus: $forceOpusEnabled"
       )
 
-    var availableFormats = playerResponse.streamingData?.adaptiveFormats?.filter { it.isAudio && it.isOriginal } ?: emptyList()
-    
+    var availableFormats =
+      playerResponse.streamingData?.adaptiveFormats?.filter { it.isAudio && it.isOriginal }
+        ?: emptyList()
+
     // Explicitly force Opus/WebM if enabled and available
     if (forceOpusEnabled) {
       val opusFormats = availableFormats.filter { it.mimeType.contains("audio/webm") }
@@ -1040,7 +1042,10 @@ object YTPlayerUtils {
       }
     }
 
-    val format = availableFormats.maxByOrNull { it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0) }
+    val format =
+      availableFormats.maxByOrNull {
+        it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0)
+      }
 
     if (format != null) {
       Timber.tag(logTag).d("Selected format: ${format.mimeType}, bitrate: ${format.bitrate}")
@@ -1069,8 +1074,10 @@ object YTPlayerUtils {
         } else {
           "bytes=0-${VALIDATION_CHUNK_LENGTH - 1}"
         }
-            val requestBuilder = okhttp3.Request.Builder().head().url(url).addHeader("Range", range)
-      val extraHeaders = echo.music.iad1tya.utils.InnerTubeXResolver.headersFor(url) ?: echo.music.iad1tya.utils.PlayerClient.forStreamUrl(url).mediaHeaders()
+      val requestBuilder = okhttp3.Request.Builder().head().url(url).addHeader("Range", range)
+      val extraHeaders =
+        echo.music.iad1tya.utils.InnerTubeXResolver.headersFor(url)
+          ?: echo.music.iad1tya.utils.PlayerClient.forStreamUrl(url).mediaHeaders()
       for ((k, v) in extraHeaders) {
         requestBuilder.header(k, v)
       }
@@ -1147,7 +1154,6 @@ object YTPlayerUtils {
       Timber.tag(logTag).d("Using URL from format directly")
       return format.url!! to null
     }
-
 
     // --- InnerTubeX Path ---
     try {
@@ -1259,7 +1265,8 @@ object YTPlayerUtils {
       } else {
         // Try to get URL using NewPipeExtractor signature deobfuscation
         try {
-          val deobfuscatedUrl = extractionMutex.withLock { NewPipeExtractor.getStreamUrl(format, videoId) }
+          val deobfuscatedUrl =
+            extractionMutex.withLock { NewPipeExtractor.getStreamUrl(format, videoId) }
           if (deobfuscatedUrl != null) {
             Timber.tag(logTag).d("Stream URL obtained via NewPipe deobfuscation")
             return deobfuscatedUrl to null
@@ -1305,10 +1312,9 @@ object YTPlayerUtils {
     try {
       val pipedUrl = "https://pipedapi.kavin.rocks/streams/$videoId"
       val request = okhttp3.Request.Builder().url(pipedUrl).build()
-      val response = okhttp3.OkHttpClient().newCall(request).execute()
-      if (response.isSuccessful) {
-        val body = response.body?.string()
-        if (body != null) {
+      httpClient.newCall(request).execute().use { response ->
+        if (response.isSuccessful) {
+          val body = response.body.string()
           val json = org.json.JSONObject(body)
           val audioStreams = json.optJSONArray("audioStreams")
           if (audioStreams != null && audioStreams.length() > 0) {
@@ -1317,10 +1323,11 @@ object YTPlayerUtils {
             for (i in 0 until audioStreams.length()) {
               val stream = audioStreams.optJSONObject(i)
               if (stream != null) {
+                val url = stream.optString("url").takeIf { it.isNotEmpty() }
                 val bitrate = stream.optInt("bitrate", 0)
-                if (bitrate > bestBitrate) {
+                if (url != null && bitrate > bestBitrate) {
                   bestBitrate = bitrate
-                  bestUrl = stream.optString("url", null)
+                  bestUrl = url
                 }
               }
             }

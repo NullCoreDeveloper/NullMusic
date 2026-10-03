@@ -127,7 +127,7 @@ class App : Application(), SingletonImageLoader.Factory {
       initializeSettings()
 
       echo.music.iad1tya.utils.InnerTubeXResolver.init(this@App)
-    observeSettingsChanges()
+      observeSettingsChanges()
     }
   }
 

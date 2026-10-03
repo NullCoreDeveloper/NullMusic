@@ -75,10 +75,7 @@ fun SpeedDialGridItem(
     }
 
     if (isPinned) {
-      Box(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
-        contentAlignment = Alignment.BottomEnd
-      ) {
+      Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.BottomEnd) {
         Icon(
           painter = painterResource(R.drawable.ic_push_pin),
           contentDescription = null,

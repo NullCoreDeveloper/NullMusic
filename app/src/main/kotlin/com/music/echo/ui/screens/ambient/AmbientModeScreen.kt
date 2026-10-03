@@ -8,10 +8,18 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +27,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.MoreVert
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +48,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -44,15 +61,23 @@ import iad1tya.echo.music.ui.player.InlineLyricsView
 import kotlin.math.abs
 
 @Composable
+@androidx.compose.material3.ExperimentalMaterial3Api
+
 fun AmbientModeScreen(navController: NavController) {
   val context = LocalContext.current
   val playerConnection = LocalPlayerConnection.current ?: return
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
   val artScale by rememberPreference(AmbientArtScaleKey, 0.85f)
+  val showArt by rememberPreference(AmbientShowArtKey, true)
+  val fullScreenArt by rememberPreference(AmbientFullScreenArtKey, false)
+
+
   val showTitle by rememberPreference(AmbientShowTitleKey, false)
   val showArtist by rememberPreference(AmbientShowArtistKey, false)
   val showLyrics by rememberPreference(AmbientShowLyricsKey, true)
+  val spacing by rememberPreference(AmbientSpacingKey, 32f)
+
 
   DisposableEffect(Unit) {
     val activity = context as? Activity
@@ -80,6 +105,9 @@ fun AmbientModeScreen(navController: NavController) {
   }
 
   BackHandler { navController.popBackStack() }
+
+  
+  var showSettingsSheet by remember { mutableStateOf(false) }
 
   var swipeThresholdX by remember { mutableStateOf(0f) }
   var swipeThresholdY by remember { mutableStateOf(0f) }
@@ -134,47 +162,61 @@ fun AmbientModeScreen(navController: NavController) {
       modifier = Modifier.fillMaxSize().safeDrawingPadding(),
       verticalAlignment = Alignment.CenterVertically
     ) {
-      // Left Side: Album Art & Info
-      Box(
-        modifier = Modifier.weight(1f).fillMaxHeight().padding(32.dp),
-        contentAlignment = Alignment.Center
-      ) {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally
+      if (showArt) {
+        // Left Side: Album Art & Info
+        Box(
+          modifier =
+            Modifier.weight(1f)
+              .fillMaxHeight()
+              .padding(
+                start = if (showLyrics) spacing.dp else 0.dp,
+                end = if (showLyrics) (spacing / 2).dp else 0.dp,
+                top = 32.dp,
+                bottom = 32.dp
+              ),
+          contentAlignment = if (showLyrics) Alignment.CenterEnd else Alignment.Center
         ) {
-          AsyncImage(
-            model = mediaMetadata?.thumbnailUrl,
-            contentDescription = "Album Art",
-            contentScale = ContentScale.Crop,
-            modifier =
-              Modifier.fillMaxHeight(artScale)
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(16.dp))
-                .pointerInput(Unit) {
-                  detectTapGestures(onDoubleTap = { playerConnection.togglePlayPause() })
-                }
-          )
-          
-          if (showTitle || showArtist) {
-            Spacer(modifier = Modifier.height(16.dp))
-            if (showTitle) {
-              Text(
-                text = mediaMetadata?.title ?: "",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+              modifier =
+                Modifier.fillMaxHeight(artScale)
+                  .aspectRatio(1f)
+                  .clip(RoundedCornerShape(16.dp))
+                  .pointerInput(Unit) {
+                    detectTapGestures(onDoubleTap = { playerConnection.togglePlayPause() })
+                  }
+            ) {
+              AsyncImage(
+                model = mediaMetadata?.thumbnailUrl,
+                contentDescription = "Album Art",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
               )
+              AmbientCanvasBackground(modifier = Modifier.fillMaxSize())
             }
-            if (showArtist) {
-              Text(
-                text = mediaMetadata?.artists?.joinToString { it.name } ?: "",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = 0.7f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-              )
+
+            if (showTitle || showArtist) {
+              Spacer(modifier = Modifier.height(16.dp))
+              if (showTitle) {
+                Text(
+                  text = mediaMetadata?.title ?: "",
+                  style = MaterialTheme.typography.titleLarge,
+                  fontWeight = FontWeight.Bold,
+                  color = Color.White,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis
+                )
+              }
+              if (showArtist) {
+                Text(
+                  text = mediaMetadata?.artists?.joinToString { it.name } ?: "",
+                  style = MaterialTheme.typography.bodyLarge,
+                  color = Color.White.copy(alpha = 0.7f),
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis
+                )
+              }
+>>>>>>> main
             }
           }
         }
@@ -186,8 +228,13 @@ fun AmbientModeScreen(navController: NavController) {
           modifier =
             Modifier.weight(1f)
               .fillMaxHeight()
-              .padding(start = 16.dp, end = 32.dp, top = 32.dp, bottom = 32.dp),
-          contentAlignment = Alignment.Center
+              .padding(
+                start = if (showArt) (spacing / 2).dp else 32.dp,
+                end = if (showArt) spacing.dp else 32.dp,
+                top = 32.dp,
+                bottom = 32.dp
+              ),
+          contentAlignment = if (showArt) Alignment.CenterStart else Alignment.Center
         ) {
           InlineLyricsView(
             mediaMetadata = mediaMetadata,
@@ -198,16 +245,74 @@ fun AmbientModeScreen(navController: NavController) {
       }
     }
 
-    // Back Button Overlay
-    IconButton(
-      onClick = { navController.popBackStack() },
+    // Top Left Controls
+    Box(
       modifier = Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(16.dp)
     ) {
-      Icon(
-        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-        contentDescription = "Back",
-        tint = Color.White
-      )
+      var expandedMenu by remember { mutableStateOf(false) }
+      IconButton(onClick = { expandedMenu = true }) {
+        Icon(
+          imageVector = androidx.compose.material.icons.Icons.Rounded.MoreVert,
+          contentDescription = "Menu",
+          tint = Color.White.copy(alpha = 0.5f)
+        )
+      }
+
+      androidx.compose.material3.DropdownMenu(
+        expanded = expandedMenu,
+        onDismissRequest = { expandedMenu = false }
+      ) {
+        androidx.compose.material3.DropdownMenuItem(
+          text = { Text("Settings") },
+          leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
+          onClick = {
+            expandedMenu = false
+            showSettingsSheet = true
+          }
+        )
+        androidx.compose.material3.DropdownMenuItem(
+          text = { Text("Back") },
+          leadingIcon = { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null) },
+          onClick = {
+            expandedMenu = false
+            navController.popBackStack()
+          }
+        )
+      }
+    }
+
+    if (showSettingsSheet) {
+      androidx.compose.ui.window.Dialog(
+        onDismissRequest = { showSettingsSheet = false },
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+      ) {
+        Box(
+          modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+              interactionSource = remember { MutableInteractionSource() },
+              indication = null
+            ) { showSettingsSheet = false }
+            .padding(16.dp),
+          contentAlignment = Alignment.CenterEnd
+        ) {
+          androidx.compose.material3.Surface(
+            modifier = Modifier
+              .fillMaxHeight()
+              .fillMaxWidth(0.5f)
+              .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+              ) {}, // consume clicks so they don't dismiss
+            shape = RoundedCornerShape(24.dp),
+            tonalElevation = 3.dp
+          ) {
+            echo.music.iad1tya.ui.screens.settings.AmbientSettingsContent(
+              modifier = Modifier.padding(8.dp)
+            )
+          }
+        }
+      }
     }
   }
 }

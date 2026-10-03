@@ -34,14 +34,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import nl.dionsegijn.konfetti.compose.KonfettiView
-import nl.dionsegijn.konfetti.core.Party
-import nl.dionsegijn.konfetti.core.Position
-import nl.dionsegijn.konfetti.core.emitter.Emitter
-import nl.dionsegijn.konfetti.core.models.Size
-import java.util.concurrent.TimeUnit
-import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -142,8 +134,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -238,15 +228,23 @@ import timber.log.Timber
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import timber.log.Timber
 
 val EmphasizedEasing = CubicBezierEasing(0.2f, 0.0f, 0.0f, 1.0f)
@@ -457,21 +455,34 @@ class MainActivity : ComponentActivity() {
       }
     }
 
-    val HasShownBirthdayNotificationKey = remember { androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification") }
+    val HasShownBirthdayNotificationKey = remember {
+      androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification")
+    }
     LaunchedEffect(Unit) {
       val today = java.time.LocalDate.now()
       if (today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14) {
         val prefs = context.dataStore.data.first()
         val hasShown = prefs[HasShownBirthdayNotificationKey] ?: false
         if (!hasShown) {
-          if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
-            androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            
+          if (
+            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
+              androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+              ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+          ) {
+
             val channelId = "birthday_channel"
-            val notificationManager = context.getSystemService(android.app.NotificationManager::class.java)
-            
+            val notificationManager =
+              context.getSystemService(android.app.NotificationManager::class.java)
+
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-              val channel = android.app.NotificationChannel(channelId, "Birthday", android.app.NotificationManager.IMPORTANCE_HIGH)
+              val channel =
+                android.app.NotificationChannel(
+                  channelId,
+                  "Birthday",
+                  android.app.NotificationManager.IMPORTANCE_HIGH
+                )
               notificationManager.createNotificationChannel(channel)
             }
             
@@ -488,7 +499,7 @@ class MainActivity : ComponentActivity() {
               .build()
               
             notificationManager.notify(1014, notification)
-            
+
             context.dataStore.edit { preferences ->
               preferences[HasShownBirthdayNotificationKey] = true
             }
@@ -652,14 +663,19 @@ class MainActivity : ComponentActivity() {
         val bottomInsetDp = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
 
         val navController = rememberNavController()
-        val blockedArtists by dataStore.data.map { it[BlockedArtistsKey] ?: emptySet() }.collectAsState(initial = emptySet())
-        LaunchedEffect(blockedArtists) { com.music.innertube.YouTube.blockedArtists = blockedArtists }
+        val blockedArtists by
+          dataStore.data
+            .map { it[BlockedArtistsKey] ?: emptySet() }
+            .collectAsState(initial = emptySet())
+        LaunchedEffect(blockedArtists) {
+          com.music.innertube.YouTube.blockedArtists = blockedArtists
+        }
         val homeViewModel: HomeViewModel = hiltViewModel()
         val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val onRailSearchLongClick: () -> Unit =
           remember(navController) {
-            { } // User requested to disable opening the recognize music page on long press
+            {} // User requested to disable opening the recognize music page on long press
           }
 
         val (previousTab, setPreviousTab) = rememberSaveable { mutableStateOf("home") }
@@ -793,9 +809,10 @@ class MainActivity : ComponentActivity() {
             }
           }
 
-        val playerMediaMetadata = playerConnection?.player?.currentMediaItem?.mediaMetadata
+        val mediaMetadata by
+          playerConnection?.mediaMetadata?.collectAsState() ?: remember { mutableStateOf(null) }
         val hasDockedPlayerAccessory =
-          useFloatingNavBar && playerMediaMetadata != null && !showRail && shouldShowNavigationBar
+          useFloatingNavBar && mediaMetadata != null && !showRail && shouldShowNavigationBar
 
         val playerAwareWindowInsets =
           remember(
@@ -809,7 +826,8 @@ class MainActivity : ComponentActivity() {
             if (shouldShowNavigationBar && !showRail) {
               bottom += NavigationBarHeight
             }
-            if (!playerBottomSheetState.isDismissed || hasDockedPlayerAccessory) bottom += MiniPlayerHeight
+            if (!playerBottomSheetState.isDismissed || hasDockedPlayerAccessory)
+              bottom += MiniPlayerHeight
             windowsInsets
               .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
               .add(WindowInsets(top = AppBarHeight, bottom = bottom))
@@ -858,9 +876,8 @@ class MainActivity : ComponentActivity() {
           navController.currentBackStackEntry?.destination?.route?.let { setPreviousTab(it) }
         }
 
-        LaunchedEffect(playerConnection) {
-          val player = playerConnection?.player ?: return@LaunchedEffect
-          if (player.currentMediaItem == null) {
+        LaunchedEffect(mediaMetadata) {
+          if (mediaMetadata == null) {
             if (!playerBottomSheetState.isDismissed) {
               playerBottomSheetState.dismiss()
             }
@@ -869,27 +886,6 @@ class MainActivity : ComponentActivity() {
               playerBottomSheetState.collapseSoft()
             }
           }
-        }
-
-        DisposableEffect(playerConnection, playerBottomSheetState) {
-          val player = playerConnection?.player ?: return@DisposableEffect onDispose {}
-          val listener =
-            object : Player.Listener {
-              override fun onMediaItemTransition(
-                mediaItem: MediaItem?,
-                reason: Int,
-              ) {
-                if (
-                  reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED &&
-                    mediaItem != null &&
-                    playerBottomSheetState.isDismissed
-                ) {
-                  playerBottomSheetState.collapseSoft()
-                }
-              }
-            }
-          player.addListener(listener)
-          onDispose { player.removeListener(listener) }
         }
 
         var shouldShowTopBar by rememberSaveable { mutableStateOf(false) }
@@ -910,12 +906,12 @@ class MainActivity : ComponentActivity() {
         val snackbarHostState = remember { SnackbarHostState() }
         var showSettingDialoge by remember { mutableStateOf(false) }
 
-        val (lastOpenedVersionCode, setLastOpenedVersionCode) =
-          rememberPreference(echo.music.iad1tya.constants.LastOpenedVersionCodeKey, -1)
         var showWelcomeDialog by remember { mutableStateOf(false) }
 
-        LaunchedEffect(lastOpenedVersionCode) {
-          if (lastOpenedVersionCode < BuildConfig.VERSION_CODE) {
+        LaunchedEffect(Unit) {
+          val prefs = context.dataStore.data.first()
+          val lastOpened = prefs[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] ?: -1
+          if (lastOpened < BuildConfig.VERSION_CODE) {
             showWelcomeDialog = true
           }
         }
@@ -1792,8 +1788,6 @@ class MainActivity : ComponentActivity() {
                   }
                 }
 
-
-
               if (showRail && currentRoute != "update") {
                 AppNavigationRail(
                   navigationItems = navigationItems,
@@ -1883,7 +1877,9 @@ class MainActivity : ComponentActivity() {
                         it / 8
                       } + fadeOut(tween(400, easing = EmphasizedEasing))
                   },
-                  modifier = Modifier.layerBackdrop(appBackdrop).nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                  modifier =
+                    Modifier.layerBackdrop(appBackdrop)
+                      .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                   navigationBuilder(
                     navController = navController,
@@ -1971,14 +1967,16 @@ class MainActivity : ComponentActivity() {
             WelcomeDialog(
               onDismissRequest = {
                 showWelcomeDialog = false
-                setLastOpenedVersionCode(BuildConfig.VERSION_CODE)
+                coroutineScope.launch {
+                  context.dataStore.edit { it[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] = BuildConfig.VERSION_CODE }
+                }
               }
             )
           }
 
-          var showPartyBomb by remember { 
+          var showPartyBomb by remember {
             val today = java.time.LocalDate.now()
-            mutableStateOf(today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14) 
+            mutableStateOf(today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14)
           }
           if (showPartyBomb) {
             val parties = remember {
@@ -2018,11 +2016,15 @@ class MainActivity : ComponentActivity() {
             KonfettiView(
               modifier = Modifier.fillMaxSize(),
               parties = parties,
-              updateListener = object : OnParticleSystemUpdateListener {
-                  override fun onParticleSystemEnded(system: nl.dionsegijn.konfetti.core.PartySystem, activeSystems: Int) {
-                      if (activeSystems == 0) showPartyBomb = false
+              updateListener =
+                object : OnParticleSystemUpdateListener {
+                  override fun onParticleSystemEnded(
+                    system: nl.dionsegijn.konfetti.core.PartySystem,
+                    activeSystems: Int
+                  ) {
+                    if (activeSystems == 0) showPartyBomb = false
                   }
-              }
+                }
             )
           }
         }

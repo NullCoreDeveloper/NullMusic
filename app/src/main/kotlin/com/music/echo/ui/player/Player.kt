@@ -354,7 +354,8 @@ fun BottomSheetPlayer(
         PlayerBackgroundStyle.GRADIENT,
         PlayerBackgroundStyle.GLOW_ANIMATED,
         PlayerBackgroundStyle.APPLE_MUSIC,
-        PlayerBackgroundStyle.LIVE_MESH, PlayerBackgroundStyle.LIQUID_GLASS -> true
+        PlayerBackgroundStyle.LIVE_MESH,
+        PlayerBackgroundStyle.LIQUID_GLASS -> true
         PlayerBackgroundStyle.DEFAULT -> useDarkTheme
       }
     }
@@ -713,17 +714,17 @@ fun BottomSheetPlayer(
       canvasArtwork = cached
       return@LaunchedEffect
     }
-    
+
     try {
-        val file = File(context.filesDir, "canvas_${item.id}.json")
-        if (file.exists()) {
-            val cached = Json.decodeFromString<echo.music.iad1tya.canvas.CanvasArtwork>(file.readText())
-            CanvasArtworkPlaybackCache.put(item.id, cached)
-            canvasArtwork = cached
-            return@LaunchedEffect
-        }
+      val file = File(context.filesDir, "canvas_${item.id}.json")
+      if (file.exists()) {
+        val cached = Json.decodeFromString<echo.music.iad1tya.canvas.CanvasArtwork>(file.readText())
+        CanvasArtworkPlaybackCache.put(item.id, cached)
+        canvasArtwork = cached
+        return@LaunchedEffect
+      }
     } catch (e: Exception) {
-        e.printStackTrace()
+      e.printStackTrace()
     }
 
     if (canvasFetchInFlight) return@LaunchedEffect
@@ -781,7 +782,8 @@ fun BottomSheetPlayer(
         playerBackground == PlayerBackgroundStyle.GRADIENT ||
         playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED ||
         playerBackground == PlayerBackgroundStyle.APPLE_MUSIC ||
-        playerBackground == PlayerBackgroundStyle.LIVE_MESH || playerBackground == PlayerBackgroundStyle.LIQUID_GLASS -> {
+        playerBackground == PlayerBackgroundStyle.LIVE_MESH ||
+        playerBackground == PlayerBackgroundStyle.LIQUID_GLASS -> {
         when (playerButtonsStyle) {
           PlayerButtonsStyle.DEFAULT -> Pair(Color.White, Color.Black)
           PlayerButtonsStyle.PRIMARY ->
@@ -935,7 +937,7 @@ fun BottomSheetPlayer(
   LaunchedEffect(isPlaying, isCasting) {
     if (!isCasting && isPlaying) {
       while (isActive) {
-        delay(100)
+        delay(200)
         if (sliderPosition == null) {
           position = playerConnection.player.currentPosition
           duration = playerConnection.player.duration
@@ -983,7 +985,8 @@ fun BottomSheetPlayer(
           PlayerBackgroundStyle.GLOW_ANIMATED,
           PlayerBackgroundStyle.APPLE_MUSIC
         ) -> MaterialTheme.colorScheme.surfaceContainer
-      playerBackground == PlayerBackgroundStyle.LIVE_MESH || playerBackground == PlayerBackgroundStyle.LIQUID_GLASS -> Color.Black
+      playerBackground == PlayerBackgroundStyle.LIVE_MESH ||
+        playerBackground == PlayerBackgroundStyle.LIQUID_GLASS -> Color.Black
       else -> if (useBlackBackground) Color.Black else MaterialTheme.colorScheme.surfaceContainer
     }
 
@@ -1297,7 +1300,8 @@ fun BottomSheetPlayer(
               }
             }
           }
-          PlayerBackgroundStyle.LIVE_MESH, PlayerBackgroundStyle.LIQUID_GLASS -> {
+          PlayerBackgroundStyle.LIVE_MESH,
+          PlayerBackgroundStyle.LIQUID_GLASS -> {
             val infiniteTransition = rememberInfiniteTransition(label = "liveMeshRotation")
 
             val anchorRotation by
@@ -1617,7 +1621,7 @@ fun BottomSheetPlayer(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
           ) {
-            if (mediaMetadata.explicit) MIcon.Explicit()
+            if (mediaMetadata.explicit) MIcon.Explicit(tint = TextBackgroundColor)
 
             if (mediaMetadata.artists.any { it.name.isNotBlank() }) {
               val annotatedString = buildAnnotatedString {

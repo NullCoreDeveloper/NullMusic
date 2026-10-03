@@ -19,7 +19,6 @@ import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import com.music.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
 import com.music.innertube.models.YTItem
-import com.music.innertube.models.filterBlockedArtists
 import com.music.innertube.models.YouTubeClient
 import com.music.innertube.models.YouTubeClient.Companion.WEB
 import com.music.innertube.models.YouTubeClient.Companion.WEB_REMIX
@@ -27,6 +26,7 @@ import com.music.innertube.models.YouTubeLocale
 import com.music.innertube.models.comment.CommentResponse
 import com.music.innertube.models.comment.CommentThreadRenderer
 import com.music.innertube.models.extractCountText
+import com.music.innertube.models.filterBlockedArtists
 import com.music.innertube.models.getContinuation
 import com.music.innertube.models.getItems
 import com.music.innertube.models.oddElements
@@ -205,7 +205,8 @@ object YouTube {
               SearchSuggestionPage.fromMusicResponsiveListItemRenderer(renderer)
             }
           }
-          .orEmpty().filterBlockedArtists()
+          .orEmpty()
+          .filterBlockedArtists()
     )
   }
 
@@ -313,7 +314,12 @@ object YouTube {
         ?.firstOrNull()
     SearchResult(
       items =
-        musicShelfRenderer?.contents?.getItems()?.mapNotNull { SearchPage.toYTItem(it) }.orEmpty().filterBlockedArtists(),
+        musicShelfRenderer
+          ?.contents
+          ?.getItems()
+          ?.mapNotNull { SearchPage.toYTItem(it) }
+          .orEmpty()
+          .filterBlockedArtists(),
       continuation = musicShelfRenderer?.continuations?.getContinuation()
     )
   }
@@ -1115,6 +1121,40 @@ object YouTube {
         val chips = sectionListRender.header?.chipCloudRenderer?.chips?.mapNotNull { HomePage.Chip.fromChipCloudChipRenderer(it) }
         HomePage(chips, sections, continuation)
     }
+
+    val response =
+      innerTube.browse(WEB_REMIX, browseId = browseId, params = params).body<BrowseResponse>()
+    val continuation =
+      response.contents
+        ?.singleColumnBrowseResultsRenderer
+        ?.tabs
+        ?.firstOrNull()
+        ?.tabRenderer
+        ?.content
+        ?.sectionListRenderer
+        ?.continuations
+        ?.getContinuation()
+    val sectionListRender =
+      response.contents
+        ?.singleColumnBrowseResultsRenderer
+        ?.tabs
+        ?.firstOrNull()
+        ?.tabRenderer
+        ?.content
+        ?.sectionListRenderer
+    val sections =
+      sectionListRender
+        ?.contents
+        .orEmpty()
+        .mapNotNull { it.musicCarouselShelfRenderer }
+        .mapNotNull { HomePage.Section.fromMusicCarouselShelfRenderer(it) }
+        .toMutableList()
+    val chips =
+      sectionListRender?.header?.chipCloudRenderer?.chips?.mapNotNull {
+        HomePage.Chip.fromChipCloudChipRenderer(it)
+      }
+    HomePage(chips, sections, continuation).filterBlockedArtists()
+  }
 
   private suspend fun homeContinuation(continuation: String): Result<HomePage> = runCatching {
     val response = innerTube.browse(WEB_REMIX, continuation = continuation).body<BrowseResponse>()

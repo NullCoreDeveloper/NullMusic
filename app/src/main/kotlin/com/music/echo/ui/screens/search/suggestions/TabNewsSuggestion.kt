@@ -2,7 +2,6 @@
 
 package iad1tya.echo.music.ui.screens.search.suggestions
 
-import com.valentinilk.shimmer.shimmer
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -484,7 +483,11 @@ fun TopArtistsSection(artists: List<SuggestionArtist>, onArtistClick: (Suggestio
               contentDescription = artist.name,
               contentScale = ContentScale.Crop,
               loading = {
-                Box(Modifier.fillMaxSize().shimmer().background(MaterialTheme.colorScheme.surfaceVariant))
+                Box(
+                  Modifier.fillMaxSize()
+                    .shimmer()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                )
               },
               modifier =
                 Modifier.size(120.dp)
@@ -563,7 +566,11 @@ fun TrendingAlbumsSection(
               contentDescription = album.title,
               contentScale = ContentScale.Crop,
               loading = {
-                Box(Modifier.fillMaxSize().shimmer().background(MaterialTheme.colorScheme.surfaceVariant))
+                Box(
+                  Modifier.fillMaxSize()
+                    .shimmer()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                )
               },
               modifier =
                 Modifier.size(120.dp)

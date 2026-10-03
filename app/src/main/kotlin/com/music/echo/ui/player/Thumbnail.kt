@@ -105,6 +105,8 @@ import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 @Immutable
 data class ThumbnailDimensions(
@@ -193,7 +195,8 @@ private fun getTextColor(playerBackground: PlayerBackgroundStyle): Color {
     PlayerBackgroundStyle.GRADIENT,
     PlayerBackgroundStyle.GLOW_ANIMATED,
     PlayerBackgroundStyle.APPLE_MUSIC,
-    PlayerBackgroundStyle.LIVE_MESH, PlayerBackgroundStyle.LIQUID_GLASS -> Color.White
+    PlayerBackgroundStyle.LIVE_MESH,
+    PlayerBackgroundStyle.LIQUID_GLASS -> Color.White
   }
 }
 
@@ -890,17 +893,17 @@ private fun ThumbnailItem(
             canvasArtwork = cached
             return@LaunchedEffect
           }
-          
+
           try {
-              val file = File(context.filesDir, "canvas_${item.mediaId}.json")
-              if (file.exists()) {
-                  val cached = Json.decodeFromString<CanvasArtwork>(file.readText())
-                  CanvasArtworkPlaybackCache.put(item.mediaId, cached)
-                  canvasArtwork = cached
-                  return@LaunchedEffect
-              }
+            val file = File(context.filesDir, "canvas_${item.mediaId}.json")
+            if (file.exists()) {
+              val cached = Json.decodeFromString<CanvasArtwork>(file.readText())
+              CanvasArtworkPlaybackCache.put(item.mediaId, cached)
+              canvasArtwork = cached
+              return@LaunchedEffect
+            }
           } catch (e: Exception) {
-              e.printStackTrace()
+            e.printStackTrace()
           }
 
           if (canvasFetchInFlight) return@LaunchedEffect

@@ -306,6 +306,12 @@ fun BottomSheetPlayer(
   navController: NavController,
   modifier: Modifier = Modifier,
   pureBlack: Boolean,
+  expandQueueRequested: Boolean = false,
+  onQueueExpanded: () -> Unit = {},
+  showPlayerMenuRequested: Boolean = false,
+  onPlayerMenuShown: () -> Unit = {},
+  showLyricsRequested: Boolean = false,
+  onLyricsShown: () -> Unit = {},
 ) {
   val context = LocalContext.current
   val database = LocalDatabase.current
@@ -448,6 +454,7 @@ fun BottomSheetPlayer(
   val (audioQuality) = rememberEnumPreference(AudioQualityKey, defaultValue = AudioQuality.OPUS)
   val sliderStyle by rememberEnumPreference(SliderStyleKey, SliderStyle.SLIM)
   val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = false)
+  val wavyPlayPause by rememberPreference(WavyPlayPauseKey, defaultValue = true)
 
   val listenTogetherManager = LocalListenTogetherManager.current
   val isListenTogetherGuest by
@@ -974,6 +981,42 @@ fun BottomSheetPlayer(
       collapsedBound = dismissedBound + 1.dp,
       initialAnchor = 1
     )
+
+  LaunchedEffect(expandQueueRequested) {
+    if (expandQueueRequested) {
+      state.expandSoft()
+      queueSheetState.expandSoft()
+      onQueueExpanded()
+    }
+  }
+
+  LaunchedEffect(showPlayerMenuRequested, mediaMetadata) {
+    if (showPlayerMenuRequested && mediaMetadata != null) {
+      state.expandSoft()
+      menuState.show {
+        PlayerMenu(
+          mediaMetadata = mediaMetadata!!,
+          navController = navController,
+          playerBottomSheetState = state,
+          onShowDetailsDialog = {
+            mediaMetadata?.id?.let { id ->
+              bottomSheetPageState.show { ShowMediaInfo(id) }
+            }
+          },
+          onDismiss = menuState::dismiss
+        )
+      }
+      onPlayerMenuShown()
+    }
+  }
+
+  LaunchedEffect(showLyricsRequested) {
+    if (showLyricsRequested) {
+      state.expandSoft()
+      showInlineLyrics = true
+      onLyricsShown()
+    }
+  }
 
   val bottomSheetBackgroundColor =
     when {
@@ -2768,7 +2811,7 @@ fun BottomSheetPlayer(
                   }
                 },
                 shape =
-                  if (cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else CircleShape,
+                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else CircleShape,
                 interactionSource = playPauseInteractionSource,
                 colors =
                   IconButtonDefaults.filledIconButtonColors(

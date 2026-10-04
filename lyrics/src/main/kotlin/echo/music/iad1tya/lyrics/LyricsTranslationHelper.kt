@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 object LyricsTranslationHelper {
@@ -53,6 +54,7 @@ object LyricsTranslationHelper {
   val translationSaved: SharedFlow<Unit> = _translationSaved.asSharedFlow()
 
   private var translationJob: Job? = null
+  private var statusResetJob: Job? = null
   private var isCompositionActive = true
 
   private val translationCache = mutableMapOf<String, List<String>>()
@@ -150,6 +152,8 @@ object LyricsTranslationHelper {
     )
 
   fun resetStatus() {
+    statusResetJob?.cancel()
+    statusResetJob = null
     _status.value = TranslationStatus.Idle
   }
 
@@ -162,9 +166,25 @@ object LyricsTranslationHelper {
   }
 
   fun cancelTranslation() {
-    isCompositionActive = false
+    statusResetJob?.cancel()
+    statusResetJob = null
     translationJob?.cancel()
     translationJob = null
+    _status.value = TranslationStatus.Idle
+  }
+
+  private fun setErrorStatus(scope: CoroutineScope, message: String) {
+    if (!isCompositionActive) return
+    statusResetJob?.cancel()
+    val errorStatus = TranslationStatus.Error(message)
+    _status.value = errorStatus
+    statusResetJob =
+      scope.launch {
+        delay(3000)
+        if (_status.value == errorStatus && isCompositionActive) {
+          _status.value = TranslationStatus.Idle
+        }
+      }
   }
 
   fun loadTranslationsFromDatabase(
@@ -223,6 +243,8 @@ object LyricsTranslationHelper {
     songId: String = "",
     database: MusicDatabase? = null,
   ) {
+    statusResetJob?.cancel()
+    statusResetJob = null
     translationJob?.cancel()
     _status.value = TranslationStatus.Translating()
 
@@ -234,18 +256,18 @@ object LyricsTranslationHelper {
 
           val effectiveApiKey = if (provider == "DeepL") deeplApiKey else apiKey
           if (effectiveApiKey.isBlank()) {
-            _status.value =
-              TranslationStatus.Error(
-                context.getString(com.music.echo.lyrics.R.string.ai_error_api_key_required)
-              )
+            setErrorStatus(
+              scope,
+              context.getString(com.music.echo.lyrics.R.string.ai_error_api_key_required)
+            )
             return@launch
           }
 
           if (lyrics.isEmpty()) {
-            _status.value =
-              TranslationStatus.Error(
-                context.getString(com.music.echo.lyrics.R.string.ai_error_no_lyrics)
-              )
+            setErrorStatus(
+              scope,
+              context.getString(com.music.echo.lyrics.R.string.ai_error_no_lyrics)
+            )
             return@launch
           }
 
@@ -255,10 +277,10 @@ object LyricsTranslationHelper {
             }
 
           if (nonEmptyEntries.isEmpty()) {
-            _status.value =
-              TranslationStatus.Error(
-                context.getString(com.music.echo.lyrics.R.string.ai_error_lyrics_empty)
-              )
+            setErrorStatus(
+              scope,
+              context.getString(com.music.echo.lyrics.R.string.ai_error_lyrics_empty)
+            )
             return@launch
           }
 
@@ -304,10 +326,10 @@ object LyricsTranslationHelper {
           }
 
           if (targetLanguage.isBlank()) {
-            _status.value =
-              TranslationStatus.Error(
-                context.getString(com.music.echo.lyrics.R.string.ai_error_language_required)
-              )
+            setErrorStatus(
+              scope,
+              context.getString(com.music.echo.lyrics.R.string.ai_error_language_required)
+            )
             return@launch
           }
 
@@ -323,108 +345,115 @@ object LyricsTranslationHelper {
               ?: targetLanguage
 
           val result =
-            if (provider == "DeepL") {
-              Timber.d("Using DeepL for translation")
-              DeepLService.translate(
-                text = fullText,
-                targetLanguage = targetLanguage,
-                apiKey = deeplApiKey,
-                formality = deeplFormality,
-                onLog = { logMsg ->
-                  val currentStatus = _status.value
-                  if (currentStatus is TranslationStatus.Translating) {
-                    _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+            withTimeoutOrNull(45_000L) {
+              if (provider == "DeepL") {
+                Timber.d("Using DeepL for translation")
+                DeepLService.translate(
+                  text = fullText,
+                  targetLanguage = targetLanguage,
+                  apiKey = deeplApiKey,
+                  formality = deeplFormality,
+                  onLog = { logMsg ->
+                    val currentStatus = _status.value
+                    if (currentStatus is TranslationStatus.Translating) {
+                      _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                    }
                   }
-                }
-              )
-            } else if (provider == "Mistral") {
-              Timber.d("Using Mistral for translation")
-              MistralService.translate(
-                text = fullText,
-                targetLanguage = fullLanguageName,
-                apiKey = apiKey,
-                model = model,
-                mode = mode,
-                onLog = { logMsg ->
-                  val currentStatus = _status.value
-                  if (currentStatus is TranslationStatus.Translating) {
-                    _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                )
+              } else if (provider == "Mistral") {
+                Timber.d("Using Mistral for translation")
+                MistralService.translate(
+                  text = fullText,
+                  targetLanguage = fullLanguageName,
+                  apiKey = apiKey,
+                  model = model,
+                  mode = mode,
+                  onLog = { logMsg ->
+                    val currentStatus = _status.value
+                    if (currentStatus is TranslationStatus.Translating) {
+                      _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                    }
                   }
-                }
-              )
-            } else if (useStreaming && provider != "Custom") {
-              Timber.d("Using streaming for translation with provider: $provider")
-              var translatedLines: List<String>? = null
-              var hasError = false
-              var errorMessage = ""
-              val contentAccumulator = StringBuilder()
+                )
+              } else if (useStreaming && provider != "Custom") {
+                Timber.d("Using streaming for translation with provider: $provider")
+                var translatedLines: List<String>? = null
+                var hasError = false
+                var errorMessage = ""
+                val contentAccumulator = StringBuilder()
 
-              OpenRouterStreamingService.streamTranslation(
+                OpenRouterStreamingService.streamTranslation(
+                    text = fullText,
+                    targetLanguage = fullLanguageName,
+                    apiKey = apiKey,
+                    baseUrl = baseUrl,
+                    model = model,
+                    mode = mode,
+                  )
+                  .collect { chunk ->
+                    Timber.v("Received streaming chunk: $chunk")
+                    when (chunk) {
+                      is OpenRouterStreamingService.StreamChunk.Content -> {
+                        contentAccumulator.append(chunk.text)
+
+                        val partialContent = contentAccumulator.toString()
+                        val partialResult =
+                          tryParsePartialTranslation(partialContent, nonEmptyEntries.size)
+                        if (partialResult.isNotEmpty()) {
+                          partialResult.forEachIndexed { idx, translation ->
+                            if (idx < nonEmptyEntries.size && translation.isNotBlank()) {
+                              val originalIndex = nonEmptyEntries[idx].first
+                              lyrics[originalIndex].translatedTextFlow.value = translation
+                            }
+                          }
+                          _status.value = TranslationStatus.Translating()
+                        }
+                      }
+                      is OpenRouterStreamingService.StreamChunk.Complete -> {
+                        Timber.d("Streaming complete with ${chunk.translatedLines.size} lines")
+                        translatedLines = chunk.translatedLines
+                      }
+                      is OpenRouterStreamingService.StreamChunk.Error -> {
+                        Timber.e("Streaming error: ${chunk.message}")
+                        hasError = true
+                        errorMessage = chunk.message
+                      }
+                    }
+                  }
+
+                Timber.d(
+                  "Streaming collection complete. hasError=$hasError, translatedLines=${translatedLines?.size}"
+                )
+                if (hasError) {
+                  Result.failure(Exception(errorMessage))
+                } else if (translatedLines != null) {
+                  Result.success(translatedLines)
+                } else {
+                  Result.failure(Exception("No translation received"))
+                }
+              } else {
+                Timber.d("Using non-streaming for translation")
+                OpenRouterService.translate(
                   text = fullText,
                   targetLanguage = fullLanguageName,
                   apiKey = apiKey,
                   baseUrl = baseUrl,
                   model = model,
                   mode = mode,
+                  onLog = { logMsg ->
+                    val currentStatus = _status.value
+                    if (currentStatus is TranslationStatus.Translating) {
+                      _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
+                    }
+                  }
                 )
-                .collect { chunk ->
-                  Timber.v("Received streaming chunk: $chunk")
-                  when (chunk) {
-                    is OpenRouterStreamingService.StreamChunk.Content -> {
-                      contentAccumulator.append(chunk.text)
-
-                      val partialContent = contentAccumulator.toString()
-                      val partialResult =
-                        tryParsePartialTranslation(partialContent, nonEmptyEntries.size)
-                      if (partialResult.isNotEmpty()) {
-                        partialResult.forEachIndexed { idx, translation ->
-                          if (idx < nonEmptyEntries.size && translation.isNotBlank()) {
-                            val originalIndex = nonEmptyEntries[idx].first
-                            lyrics[originalIndex].translatedTextFlow.value = translation
-                          }
-                        }
-                        _status.value = TranslationStatus.Translating()
-                      }
-                    }
-                    is OpenRouterStreamingService.StreamChunk.Complete -> {
-                      Timber.d("Streaming complete with ${chunk.translatedLines.size} lines")
-                      translatedLines = chunk.translatedLines
-                    }
-                    is OpenRouterStreamingService.StreamChunk.Error -> {
-                      Timber.e("Streaming error: ${chunk.message}")
-                      hasError = true
-                      errorMessage = chunk.message
-                    }
-                  }
-                }
-
-              Timber.d(
-                "Streaming collection complete. hasError=$hasError, translatedLines=${translatedLines?.size}"
-              )
-              if (hasError) {
-                Result.failure(Exception(errorMessage))
-              } else if (translatedLines != null) {
-                Result.success(translatedLines)
-              } else {
-                Result.failure(Exception("No translation received"))
               }
-            } else {
-              Timber.d("Using non-streaming for translation")
-              OpenRouterService.translate(
-                text = fullText,
-                targetLanguage = fullLanguageName,
-                apiKey = apiKey,
-                baseUrl = baseUrl,
-                model = model,
-                mode = mode,
-                onLog = { logMsg ->
-                  val currentStatus = _status.value
-                  if (currentStatus is TranslationStatus.Translating) {
-                    _status.value = currentStatus.copy(logs = currentStatus.logs + logMsg)
-                  }
-                }
-              )
             }
+              ?: Result.failure(
+                Exception(
+                  context.getString(com.music.echo.lyrics.R.string.ai_error_translation_failed)
+                )
+              )
 
           result
             .onSuccess { translatedLines ->
@@ -479,10 +508,10 @@ object LyricsTranslationHelper {
                   _status.value = TranslationStatus.Success
                 }
                 else -> {
-                  _status.value =
-                    TranslationStatus.Error(
-                      context.getString(com.music.echo.lyrics.R.string.ai_error_unexpected)
-                    )
+                  setErrorStatus(
+                    scope,
+                    context.getString(com.music.echo.lyrics.R.string.ai_error_unexpected)
+                  )
                 }
               }
 
@@ -492,20 +521,16 @@ object LyricsTranslationHelper {
               }
             }
             .onFailure { error ->
-              if (!isCompositionActive) {
-                return@onFailure
-              }
-
               val errorMessage =
                 error.message ?: context.getString(com.music.echo.lyrics.R.string.ai_error_unknown)
-              _status.value = TranslationStatus.Error(errorMessage)
+              setErrorStatus(scope, errorMessage)
             }
         } catch (e: Exception) {
-          if (e !is kotlinx.coroutines.CancellationException && isCompositionActive) {
+          if (e !is kotlinx.coroutines.CancellationException) {
             val errorMessage =
               e.message
                 ?: context.getString(com.music.echo.lyrics.R.string.ai_error_translation_failed)
-            _status.value = TranslationStatus.Error(errorMessage)
+            setErrorStatus(scope, errorMessage)
           }
         }
       }

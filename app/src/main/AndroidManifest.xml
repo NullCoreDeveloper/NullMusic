@@ -440,6 +440,7 @@
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
         <!-- Music Widget -->
+        <!-- Music Widget -->
         <receiver
             android:name=".widget.MusicWidgetReceiver"
             android:exported="true"

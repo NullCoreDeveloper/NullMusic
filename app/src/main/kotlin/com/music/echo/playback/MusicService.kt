@@ -378,12 +378,18 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     isMuted.value = newMutedState
 
     player.volume = if (newMutedState) 0f else playerVolume.value
+    if (::player.isInitialized) {
+      updateWidgetUI(player.isPlaying)
+    }
   }
 
   fun setMuted(muted: Boolean) {
     isMuted.value = muted
 
     player.volume = if (muted) 0f else playerVolume.value
+    if (::player.isInitialized) {
+      updateWidgetUI(player.isPlaying)
+    }
   }
 
   fun setPreferredAudioDevice(deviceId: Int?) {
@@ -5456,6 +5462,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     if (dataStore.get(PersistentQueueKey, true)) {
       saveQueueToDisk()
     }
+    updateWidgetUI(player.isPlaying)
   }
 
   override fun onRepeatModeChanged(repeatMode: Int) {
@@ -5465,6 +5472,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     if (dataStore.get(PersistentQueueKey, true)) {
       saveQueueToDisk()
     }
+    updateWidgetUI(player.isPlaying)
   }
 
   private fun applyShuffleOrder(currentIndex: Int, totalCount: Int, shufflePlaylistFirst: Boolean) {
@@ -6631,6 +6639,31 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         player.seekToPrevious()
         updateWidgetUI(player.isPlaying)
       }
+      MusicWidgetReceiver.ACTION_SHUFFLE -> {
+        player.shuffleModeEnabled = !player.shuffleModeEnabled
+        updateWidgetUI(player.isPlaying)
+      }
+      MusicWidgetReceiver.ACTION_REPEAT -> {
+        val nextRepeat = when (player.repeatMode) {
+          Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+          Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+          else -> Player.REPEAT_MODE_OFF
+        }
+        player.repeatMode = nextRepeat
+        updateWidgetUI(player.isPlaying)
+      }
+      MusicWidgetReceiver.ACTION_MUTE -> {
+        toggleMute()
+        updateWidgetUI(player.isPlaying)
+      }
+      MusicWidgetReceiver.ACTION_SKIP_TO_QUEUE_ITEM -> {
+        val targetIndex = intent.getIntExtra(MusicWidgetReceiver.EXTRA_QUEUE_INDEX, -1)
+        if (targetIndex in 0 until player.mediaItemCount) {
+          player.seekToDefaultPosition(targetIndex)
+          if (!player.isPlaying) player.play()
+          updateWidgetUI(true)
+        }
+      }
       MusicWidgetReceiver.ACTION_UPDATE_WIDGET -> {
         updateWidgetUI(player.isPlaying)
       }
@@ -6657,6 +6690,36 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open)
         val isLiked = songData?.song?.liked == true
 
+        val queueItems = mutableListOf<WidgetQueueItem>()
+        if (::player.isInitialized && player.mediaItemCount > 0) {
+          val currentIndex = player.currentMediaItemIndex
+          val timeline = player.currentTimeline
+          val visited = mutableSetOf<Int>()
+          if (!timeline.isEmpty) {
+            val repeatForQueue = if (player.repeatMode == Player.REPEAT_MODE_ALL) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
+            var nextIdx = timeline.getNextWindowIndex(currentIndex, repeatForQueue, player.shuffleModeEnabled)
+            while (nextIdx != C.INDEX_UNSET && nextIdx != currentIndex && nextIdx !in visited && queueItems.size < 50) {
+              visited.add(nextIdx)
+              val mediaItem = player.getMediaItemAt(nextIdx)
+              val title = mediaItem.mediaMetadata.title?.toString() ?: "Track ${nextIdx + 1}"
+              val artist = mediaItem.mediaMetadata.artist?.toString() ?: ""
+              queueItems.add(WidgetQueueItem(nextIdx, title, artist, false))
+              nextIdx = timeline.getNextWindowIndex(nextIdx, repeatForQueue, player.shuffleModeEnabled)
+            }
+          }
+          if (queueItems.isEmpty() && player.mediaItemCount > 1) {
+            val count = player.mediaItemCount
+            val upcomingCount = minOf(50, count - 1)
+            for (i in 1..upcomingCount) {
+              val itemIndex = (currentIndex + i) % count
+              val mediaItem = player.getMediaItemAt(itemIndex)
+              val title = mediaItem.mediaMetadata.title?.toString() ?: "Track ${itemIndex + 1}"
+              val artist = mediaItem.mediaMetadata.artist?.toString() ?: ""
+              queueItems.add(WidgetQueueItem(itemIndex, title, artist, false))
+            }
+          }
+        }
+
         widgetManager.updateWidgets(
           title = songTitle,
           artist = artistName,
@@ -6664,7 +6727,11 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           isPlaying = isPlaying,
           isLiked = isLiked,
           duration = if (player.duration != C.TIME_UNSET) player.duration else 0,
-          currentPosition = player.currentPosition
+          currentPosition = player.currentPosition,
+          isShuffle = if (::player.isInitialized) player.shuffleModeEnabled else false,
+          repeatMode = if (::player.isInitialized) player.repeatMode else Player.REPEAT_MODE_OFF,
+          isMuted = isMuted.value,
+          queueItems = queueItems
         )
       } catch (e: Exception) {}
     }

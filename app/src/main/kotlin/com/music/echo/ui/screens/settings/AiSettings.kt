@@ -86,7 +86,6 @@ fun AiSettings(
       "Nvidia" to "https://integrate.api.nvidia.com/v1/chat/completions",
       "OrcaRouter" to "https://api.orcarouter.ai/v1/chat/completions",
       "Groq" to "https://api.groq.com/openai/v1/chat/completions",
-      "Requesty" to "https://router.requesty.ai/v1/chat/completions",
       "Puter" to "https://api.puter.com/puterai/openai/v1/chat/completions",
       "DeepL" to "https://api.deepl.com/v2/translate",
       "Custom" to ""
@@ -104,7 +103,6 @@ fun AiSettings(
       "Nvidia" to stringResource(R.string.ai_provider_nvidia_help),
       "OrcaRouter" to stringResource(R.string.ai_provider_orcarouter_help),
       "Groq" to stringResource(R.string.ai_provider_groq_help),
-      "Requesty" to stringResource(R.string.ai_provider_requesty_help),
       "Puter" to stringResource(R.string.ai_provider_puter_help),
       "DeepL" to stringResource(R.string.ai_provider_deepl_help),
       "Custom" to ""
@@ -169,14 +167,6 @@ fun AiSettings(
           "moonshotai/kimi-k2-instruct",
           "qwen/qwen3-32b",
           "gemma2-9b-it"
-        ),
-      "Requesty" to
-        listOf(
-          "openai/gpt-4o-mini",
-          "google/gemini-2.5-flash",
-          "anthropic/claude-haiku-4-5",
-          "deepseek/deepseek-chat",
-          "xai/grok-4-fast"
         ),
       "Puter" to
         listOf(
@@ -333,8 +323,21 @@ fun AiSettings(
       icon = { Icon(painterResource(R.drawable.key), null) },
       initialTextFieldValue = TextFieldValue(text = openRouterApiKey),
       isInputValid = { true },
+      onReset =
+        if (openRouterApiKey.isNotEmpty()) {
+          {
+            openRouterApiKey = ""
+            LyricsTranslationHelper.cancelTranslation()
+            LyricsTranslationHelper.resetStatus()
+          }
+        } else null,
+      resetText = stringResource(R.string.remove),
       onDone = {
-        openRouterApiKey = it
+        openRouterApiKey = it.trim()
+        if (it.isBlank()) {
+          LyricsTranslationHelper.cancelTranslation()
+          LyricsTranslationHelper.resetStatus()
+        }
         showApiKeyDialog = false
       },
       onDismiss = { showApiKeyDialog = false }
@@ -347,8 +350,21 @@ fun AiSettings(
       icon = { Icon(painterResource(R.drawable.key), null) },
       initialTextFieldValue = TextFieldValue(text = deeplApiKey),
       isInputValid = { true },
+      onReset =
+        if (deeplApiKey.isNotEmpty()) {
+          {
+            deeplApiKey = ""
+            LyricsTranslationHelper.cancelTranslation()
+            LyricsTranslationHelper.resetStatus()
+          }
+        } else null,
+      resetText = stringResource(R.string.remove),
       onDone = {
-        deeplApiKey = it
+        deeplApiKey = it.trim()
+        if (it.isBlank()) {
+          LyricsTranslationHelper.cancelTranslation()
+          LyricsTranslationHelper.resetStatus()
+        }
         showDeeplApiKeyDialog = false
       },
       onDismiss = { showDeeplApiKeyDialog = false }
@@ -491,7 +507,25 @@ fun AiSettings(
                     else stringResource(R.string.not_set)
                   )
                 },
-                onClick = { showDeeplApiKeyDialog = true }
+                onClick = { showDeeplApiKeyDialog = true },
+                trailingContent =
+                  if (deeplApiKey.isNotEmpty()) {
+                    {
+                      IconButton(
+                        onClick = {
+                          deeplApiKey = ""
+                          LyricsTranslationHelper.cancelTranslation()
+                          LyricsTranslationHelper.resetStatus()
+                        }
+                      ) {
+                        Icon(
+                          painter = painterResource(R.drawable.close),
+                          contentDescription = stringResource(R.string.remove),
+                          modifier = Modifier.size(20.dp)
+                        )
+                      }
+                    }
+                  } else null
               )
             )
             add(
@@ -524,7 +558,25 @@ fun AiSettings(
                     else stringResource(R.string.not_set)
                   )
                 },
-                onClick = { showApiKeyDialog = true }
+                onClick = { showApiKeyDialog = true },
+                trailingContent =
+                  if (openRouterApiKey.isNotEmpty()) {
+                    {
+                      IconButton(
+                        onClick = {
+                          openRouterApiKey = ""
+                          LyricsTranslationHelper.cancelTranslation()
+                          LyricsTranslationHelper.resetStatus()
+                        }
+                      ) {
+                        Icon(
+                          painter = painterResource(R.drawable.close),
+                          contentDescription = stringResource(R.string.remove),
+                          modifier = Modifier.size(20.dp)
+                        )
+                      }
+                    }
+                  } else null
               )
             )
             if (aiProvider != "Custom") {

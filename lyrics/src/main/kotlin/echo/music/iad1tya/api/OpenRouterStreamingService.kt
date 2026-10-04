@@ -1,12 +1,18 @@
 package echo.music.iad1tya.api
 
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -20,8 +26,9 @@ object OpenRouterStreamingService {
   private val client =
     OkHttpClient.Builder()
       .connectTimeout(30, TimeUnit.SECONDS)
-      .readTimeout(120, TimeUnit.SECONDS)
+      .readTimeout(45, TimeUnit.SECONDS)
       .writeTimeout(30, TimeUnit.SECONDS)
+      .callTimeout(45, TimeUnit.SECONDS)
       .build()
   private val JSON = "application/json; charset=utf-8".toMediaType()
   private val json = Json { ignoreUnknownKeys = true }
@@ -128,78 +135,102 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
                 .post(jsonBody.toString().toRequestBody(JSON))
                 .build()
 
-          client.newCall(request).execute().use { response ->
-            Timber.d("Got streaming response: ${response.code}")
-
-            if (!response.isSuccessful) {
-              val errorMsg =
-                try {
-                  JSONObject(response.body?.string() ?: "")
-                    .optJSONObject("error")
-                    ?.optString("message") ?: "HTTP ${response.code}: ${response.message}"
-                } catch (e: Exception) {
-                  "HTTP ${response.code}: ${response.message}"
-                }
-              emit(StreamChunk.Error("Translation failed: $errorMsg"))
-              return@flow
-            }
-
-            val reader = BufferedReader(InputStreamReader(response.body?.byteStream()))
-            var line: String?
-            val contentBuilder = StringBuilder()
-            var chunkCount = 0
-
-            while (reader.readLine().also { line = it } != null) {
-              line?.let { currentLine ->
-                if (currentLine.startsWith("data: ")) {
-                  val data = currentLine.substring(6)
-                  if (data == "[DONE]") {
-                    Timber.d("Streaming complete, received $chunkCount chunks")
-
-                    val fullContent = contentBuilder.toString()
-                    Timber.d("Full content length: ${fullContent.length}")
-                    val result = parseTranslationContent(fullContent, lineCount)
-                    result
-                      .onSuccess { translatedLines ->
-                        Timber.d("Successfully parsed ${translatedLines.size} lines")
-                        emit(StreamChunk.Complete(translatedLines))
-                      }
-                      .onFailure { error ->
-                        Timber.e(error, "Failed to parse translation")
-                        emit(StreamChunk.Error(error.message ?: "Parsing failed"))
-                      }
-                    return@flow
-                  }
-
-                  try {
-                    val jsonObject = json.parseToJsonElement(data).jsonObject
-                    val choices = jsonObject["choices"]?.jsonArray
-                    val delta = choices?.get(0)?.jsonObject?.get("delta")?.jsonObject
-                    val content = delta?.get("content")?.jsonPrimitive?.content
-
-                    content?.let { chunk ->
-                      contentBuilder.append(chunk)
-                      chunkCount++
-                      emit(StreamChunk.Content(chunk))
-                    }
-                  } catch (e: Exception) {
-
-                    Timber.v("Ignored malformed chunk: ${e.message}")
-                  }
-                }
+          val call = client.newCall(request)
+          val cancellationHandle =
+            currentCoroutineContext()[Job]?.invokeOnCompletion { cause ->
+              if (cause != null) {
+                call.cancel()
               }
             }
 
-            if (contentBuilder.isNotEmpty()) {
-              Timber.w("Stream ended without [DONE] marker, attempting to parse content")
-              val fullContent = contentBuilder.toString()
-              val result = parseTranslationContent(fullContent, lineCount)
-              result
-                .onSuccess { translatedLines -> emit(StreamChunk.Complete(translatedLines)) }
-                .onFailure { error -> emit(StreamChunk.Error(error.message ?: "Parsing failed")) }
+          try {
+            call.execute().use { response ->
+              Timber.d("Got streaming response: ${response.code}")
+
+              if (!response.isSuccessful) {
+                val errorMsg =
+                  try {
+                    JSONObject(response.body?.string() ?: "")
+                      .optJSONObject("error")
+                      ?.optString("message") ?: "HTTP ${response.code}: ${response.message}"
+                  } catch (e: Exception) {
+                    "HTTP ${response.code}: ${response.message}"
+                  }
+                emit(StreamChunk.Error("Translation failed: $errorMsg"))
+                return@flow
+              }
+
+              val reader = BufferedReader(InputStreamReader(response.body?.byteStream()))
+              var line: String? = null
+              val contentBuilder = StringBuilder()
+              var chunkCount = 0
+
+              while (
+                currentCoroutineContext().isActive && reader.readLine().also { line = it } != null
+              ) {
+                line?.let { currentLine ->
+                  if (currentLine.startsWith("data: ")) {
+                    val data = currentLine.substring(6)
+                    if (data == "[DONE]") {
+                      Timber.d("Streaming complete, received $chunkCount chunks")
+
+                      val fullContent = contentBuilder.toString()
+                      Timber.d("Full content length: ${fullContent.length}")
+                      val result = parseTranslationContent(fullContent, lineCount)
+                      result
+                        .onSuccess { translatedLines ->
+                          Timber.d("Successfully parsed ${translatedLines.size} lines")
+                          emit(StreamChunk.Complete(translatedLines))
+                        }
+                        .onFailure { error ->
+                          Timber.e(error, "Failed to parse translation")
+                          emit(StreamChunk.Error(error.message ?: "Parsing failed"))
+                        }
+                      return@flow
+                    }
+
+                    try {
+                      val jsonObject = json.parseToJsonElement(data).jsonObject
+                      val choices = jsonObject["choices"]?.jsonArray
+                      val delta = choices?.get(0)?.jsonObject?.get("delta")?.jsonObject
+                      val content = delta?.get("content")?.jsonPrimitive?.content
+
+                      content?.let { chunk ->
+                        contentBuilder.append(chunk)
+                        chunkCount++
+                        emit(StreamChunk.Content(chunk))
+                      }
+                    } catch (e: Exception) {
+                      Timber.v("Ignored malformed chunk: ${e.message}")
+                    }
+                  }
+                }
+              }
+
+              if (!currentCoroutineContext().isActive) {
+                return@flow
+              }
+
+              if (contentBuilder.isNotEmpty()) {
+                Timber.w("Stream ended without [DONE] marker, attempting to parse content")
+                val fullContent = contentBuilder.toString()
+                val result = parseTranslationContent(fullContent, lineCount)
+                result
+                  .onSuccess { translatedLines -> emit(StreamChunk.Complete(translatedLines)) }
+                  .onFailure { error -> emit(StreamChunk.Error(error.message ?: "Parsing failed")) }
+              }
             }
+          } finally {
+            cancellationHandle?.dispose()
           }
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: IOException) {
+          currentCoroutineContext().ensureActive()
+          Timber.e(e, "Streaming network error")
+          emit(StreamChunk.Error(e.message ?: "Network error"))
         } catch (e: Exception) {
+          currentCoroutineContext().ensureActive()
           Timber.e(e, "Streaming error")
           emit(StreamChunk.Error(e.message ?: "Unknown error"))
         }

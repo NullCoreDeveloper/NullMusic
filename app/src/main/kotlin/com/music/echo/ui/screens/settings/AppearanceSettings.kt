@@ -183,8 +183,6 @@ fun AppearanceSettings(
   var showAppIconDialog by rememberSaveable { mutableStateOf(false) }
   val (enableHighRefreshRate, onEnableHighRefreshRateChange) =
     rememberPreference(echo.music.iad1tya.constants.EnableHighRefreshRateKey, defaultValue = true)
-  val (enableHaptics, onEnableHapticsChange) =
-    rememberPreference(echo.music.iad1tya.constants.EnableHapticsKey, defaultValue = false)
   val (liveBlurDensity, onLiveBlurDensityChange) =
     rememberPreference(echo.music.iad1tya.constants.LiveBlurDensityKey, defaultValue = 50f)
   val (selectedThemeColorInt) =
@@ -262,6 +260,8 @@ fun AppearanceSettings(
     rememberEnumPreference(SliderStyleKey, defaultValue = SliderStyle.SLIM)
   val (squigglySlider, onSquigglySliderChange) =
     rememberPreference(SquigglySliderKey, defaultValue = false)
+  val (wavyPlayPause, onWavyPlayPauseChange) =
+    rememberPreference(WavyPlayPauseKey, defaultValue = true)
   val (swipeThumbnail, onSwipeThumbnailChange) =
     rememberPreference(SwipeThumbnailKey, defaultValue = true)
   val (swipeSensitivity, onSwipeSensitivityChange) =
@@ -622,6 +622,7 @@ fun AppearanceSettings(
       }
     )
   }
+
 
   var showGridSizeDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -2440,6 +2441,29 @@ fun AppearanceSettings(
             onClick = { showSliderOptionDialog = true }
           ),
           Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.wavy_play_pause)),
+            icon = painterResource(R.drawable.play),
+            title = { Text(stringResource(R.string.wavy_play_pause)) },
+            description = { Text(stringResource(R.string.wavy_play_pause_desc)) },
+            trailingContent = {
+              Switch(
+                checked = wavyPlayPause,
+                onCheckedChange = onWavyPlayPauseChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        if (wavyPlayPause) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onWavyPlayPauseChange(!wavyPlayPause) }
+          ),
+          Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.enable_swipe_thumbnail)),
             icon = painterResource(R.drawable.swipe),
             title = { Text(stringResource(R.string.enable_swipe_thumbnail)) },
@@ -2872,7 +2896,7 @@ fun AppearanceSettings(
       scrollState = scrollState,
       title = stringResource(R.string.misc),
       items =
-        listOf(
+        listOfNotNull(
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.default_open_tab)),
             icon = painterResource(R.drawable.nav_bar),
@@ -2928,28 +2952,16 @@ fun AppearanceSettings(
             onClick = { onSwipeToSongChange(!swipeToSong) }
           ),
           Material3SettingsItem(
-            isHighlighted = (highlightKey == stringResource(R.string.enable_haptics)),
+            isHighlighted = (highlightKey == stringResource(R.string.haptics)),
             icon = painterResource(R.drawable.vibration),
-            title = { Text(stringResource(R.string.enable_haptics)) },
-            description = { Text(stringResource(R.string.enable_haptics_desc)) },
-            trailingContent = {
-              Switch(
-                checked = enableHaptics,
-                onCheckedChange = onEnableHapticsChange,
-                thumbContent = {
-                  Icon(
-                    painter =
-                      painterResource(
-                        id = if (enableHaptics) R.drawable.check else R.drawable.close
-                      ),
-                    contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                  )
-                }
-              )
-            },
-            onClick = { onEnableHapticsChange(!enableHaptics) }
+            title = { Text(stringResource(R.string.haptics)) },
+            description = { Text(stringResource(R.string.haptics_desc)) },
+            onClick = { navController.navigate("settings/appearance/haptics") }
           ),
+
+
+
+
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.swipe_song_to_remove)),
             icon = painterResource(R.drawable.swipe),

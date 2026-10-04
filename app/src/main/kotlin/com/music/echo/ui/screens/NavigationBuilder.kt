@@ -344,6 +344,18 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable("settings/appearance/theme") { ThemeScreen(navController) }
+  composable(
+    route = "settings/appearance/haptics?highlightKey={highlightKey}",
+    arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
+  ) { backStackEntry ->
+    echo.music.iad1tya.ui.screens.settings.HapticsSettings(
+      navController = navController,
+      scrollBehavior = scrollBehavior,
+      activity = activity,
+      snackbarHostState = snackbarHostState,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
 
   composable("settings/appearance/app_icon") {
     AppIconSettingsScreen(navController, activity, snackbarHostState)

@@ -1284,7 +1284,7 @@ private fun MiniPlayerControls(
     castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
   val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
   val isMuted by playerConnection.isMuted.collectAsState()
-
+  val wavyPlayPause by echo.music.iad1tya.utils.rememberPreference(echo.music.iad1tya.constants.WavyPlayPauseKey, defaultValue = true)
   Row(verticalAlignment = Alignment.CenterVertically) {
     IconButton(
       enabled = canSkipPrevious && !isListenTogetherGuest,
@@ -1356,7 +1356,7 @@ private fun MiniPlayerControls(
             .graphicsLayer {
               rotationZ = rotation
               clip = true
-              shape = PolygonCookieShape(sides = 9, indent = cookieIndent)
+              shape = if (wavyPlayPause) PolygonCookieShape(sides = 9, indent = cookieIndent) else androidx.compose.foundation.shape.CircleShape
             }
             .background(primaryColor)
       )

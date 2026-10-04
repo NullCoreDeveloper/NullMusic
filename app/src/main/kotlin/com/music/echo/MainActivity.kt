@@ -28,7 +28,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
 import android.util.Log
+import echo.music.iad1tya.echomusic.AudioDeviceBottomSheet
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.WindowManager
@@ -100,18 +102,16 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -145,6 +145,8 @@ import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.toBitmap
+import com.music.echo.utils.HapticType
+import com.music.echo.utils.rememberHapticHelper
 import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
@@ -234,8 +236,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -605,6 +605,8 @@ class MainActivity : ComponentActivity() {
       pureBlack = pureBlack,
       themeColor = themeColor,
     ) {
+      val hapticHelper = rememberHapticHelper()
+
       if (showUpdateDialog) {
         echo.music.iad1tya.nullmusic.component.UpdateAvailableDialog(
           version = availableUpdateVersion,
@@ -631,23 +633,14 @@ class MainActivity : ComponentActivity() {
         modifier =
           Modifier.fillMaxSize()
             .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
-            .pointerInput(enableHaptics) {
-              if (enableHaptics) {
+            .pointerInput(hapticHelper) {
+              if (hapticHelper.masterEnabled && hapticHelper.clickEnabled) {
                 awaitPointerEventScope {
                   while (true) {
                     val event =
                       awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial)
-                    val isClick = event.changes.any { it.changedToDown() }
-                    val isScroll =
-                      event.changes.any { it.positionChange() != Offset.Zero && it.pressed }
-                    if (isClick) {
-                      view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                    } else if (isScroll) {
-                      val currentTime = System.currentTimeMillis()
-                      if (currentTime - lastScrollHapticTime > 100) {
-                        view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                        lastScrollHapticTime = currentTime
-                      }
+                    if (event.changes.any { it.changedToDown() }) {
+                      hapticHelper.performHaptic(HapticType.CLICK)
                     }
                   }
                 }
@@ -784,6 +777,52 @@ class MainActivity : ComponentActivity() {
             expandedBound = maxHeight,
           )
 
+        var expandQueueRequested by remember { mutableStateOf(false) }
+        var showPlayerMenuRequested by remember { mutableStateOf(false) }
+        var showAudioDeviceBottomSheet by remember { mutableStateOf(false) }
+        var showLyricsRequested by remember { mutableStateOf(false) }
+
+        val handleWidgetAction: (Intent) -> Unit = remember {
+          { targetIntent ->
+            when (targetIntent.action) {
+              ACTION_NOW_PLAYING -> {
+                playerBottomSheetState.expandSoft()
+              }
+              ACTION_QUEUE -> {
+                playerBottomSheetState.expandSoft()
+                expandQueueRequested = true
+              }
+              ACTION_SONG_OPTIONS -> {
+                playerBottomSheetState.expandSoft()
+                showPlayerMenuRequested = true
+              }
+              ACTION_OUTPUT_SWITCHER -> {
+                var launchedSystemPanel = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                  try {
+                    val panelIntent =
+                      Intent(ACTION_MEDIA_OUTPUT).apply {
+                        putExtra(EXTRA_MEDIA_OUTPUT_PACKAGE_NAME, packageName)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                      }
+                    if (packageManager.resolveActivity(panelIntent, 0) != null) {
+                      startActivity(panelIntent)
+                      launchedSystemPanel = true
+                    }
+                  } catch (_: Exception) {}
+                }
+                if (!launchedSystemPanel) {
+                  showAudioDeviceBottomSheet = true
+                }
+              }
+              ACTION_LYRICS -> {
+                playerBottomSheetState.expandSoft()
+                showLyricsRequested = true
+              }
+            }
+          }
+        }
+
         val onShuffleClick: (() -> Unit)? =
           remember(playerConnection, playerBottomSheetState) {
             playerConnection?.let { connection ->
@@ -917,6 +956,10 @@ class MainActivity : ComponentActivity() {
         }
 
         LaunchedEffect(Unit) {
+          val activeIntent = pendingIntent ?: intent
+          if (activeIntent != null) {
+            handleWidgetAction(activeIntent)
+          }
           if (pendingIntent != null) {
             handleDeepLinkIntent(pendingIntent!!, navController)
             handleRecognitionIntent(pendingIntent!!, navController)
@@ -1610,7 +1653,13 @@ class MainActivity : ComponentActivity() {
                   BottomSheetPlayer(
                     state = playerBottomSheetState,
                     navController = navController,
-                    pureBlack = pureBlack
+                    pureBlack = pureBlack,
+                    expandQueueRequested = expandQueueRequested,
+                    onQueueExpanded = { expandQueueRequested = false },
+                    showPlayerMenuRequested = showPlayerMenuRequested,
+                    onPlayerMenuShown = { showPlayerMenuRequested = false },
+                    showLyricsRequested = showLyricsRequested,
+                    onLyricsShown = { showLyricsRequested = false },
                   )
 
                   val navSlideDistance =
@@ -1729,7 +1778,13 @@ class MainActivity : ComponentActivity() {
                   BottomSheetPlayer(
                     state = playerBottomSheetState,
                     navController = navController,
-                    pureBlack = pureBlack
+                    pureBlack = pureBlack,
+                    expandQueueRequested = expandQueueRequested,
+                    onQueueExpanded = { expandQueueRequested = false },
+                    showPlayerMenuRequested = showPlayerMenuRequested,
+                    onPlayerMenuShown = { showPlayerMenuRequested = false },
+                    showLyricsRequested = showLyricsRequested,
+                    onLyricsShown = { showLyricsRequested = false },
                   )
                 }
 
@@ -1902,6 +1957,12 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.align(Alignment.BottomCenter)
           )
 
+          if (showAudioDeviceBottomSheet) {
+            AudioDeviceBottomSheet(
+              onDismiss = { showAudioDeviceBottomSheet = false }
+            )
+          }
+
           sharedSong?.let { song ->
             playerConnection?.let {
               Dialog(
@@ -1968,7 +2029,10 @@ class MainActivity : ComponentActivity() {
               onDismissRequest = {
                 showWelcomeDialog = false
                 coroutineScope.launch {
-                  context.dataStore.edit { it[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] = BuildConfig.VERSION_CODE }
+                  context.dataStore.edit {
+                    it[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] =
+                      BuildConfig.VERSION_CODE
+                  }
                 }
               }
             )

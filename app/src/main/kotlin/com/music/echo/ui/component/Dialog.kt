@@ -261,6 +261,8 @@ fun TextFieldDialog(
   isInputValid: (String) -> Boolean = { it.isNotEmpty() },
   keyboardType: KeyboardType = KeyboardType.Text,
   onDone: (String) -> Unit = {},
+  onReset: (() -> Unit)? = null,
+  resetText: String? = null,
   textFields: List<Pair<String, TextFieldValue>>? = null,
   onTextFieldsChange: ((Int, TextFieldValue) -> Unit)? = null,
   onDoneMultiple: ((List<String>) -> Unit)? = null,
@@ -285,6 +287,17 @@ fun TextFieldDialog(
     icon = icon,
     title = title,
     buttons = {
+      if (onReset != null) {
+        TextButton(
+          onClick = {
+            if (autoDismiss) onDismiss()
+            onReset()
+          }
+        ) {
+          Text(text = resetText ?: stringResource(R.string.clear))
+        }
+      }
+
       TextButton(onClick = onDismiss) { Text(text = stringResource(android.R.string.cancel)) }
 
       val isValid =

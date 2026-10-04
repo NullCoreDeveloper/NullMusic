@@ -94,6 +94,7 @@ import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.music.echo.utils.hapticScrollEdge
 import com.music.innertube.YouTube
 import com.music.innertube.models.AlbumItem
 import com.music.innertube.models.ArtistItem
@@ -1902,6 +1903,7 @@ fun HomeScreen(
 
       LazyColumn(
         state = lazylistState,
+        modifier = Modifier.hapticScrollEdge(lazylistState),
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
       ) {
         item {
@@ -2173,16 +2175,12 @@ fun HomeScreen(
                     val heroWidth = configuration.screenWidthDp.dp - 32.dp
 
                     val carouselState = rememberCarouselState { distinctQuickPicks.size }
-                    var autoScrollIndex by remember {
-                      androidx.compose.runtime.mutableIntStateOf(0)
-                    }
-
                     LaunchedEffect(carouselState) {
                       while (true) {
                         kotlinx.coroutines.delay(5000)
                         if (distinctQuickPicks.isNotEmpty() && !carouselState.isScrollInProgress) {
-                          autoScrollIndex = (autoScrollIndex + 1) % distinctQuickPicks.size
-                          carouselState.animateScrollToItem(autoScrollIndex)
+                          val nextIndex = (carouselState.currentItem + 1) % distinctQuickPicks.size
+                          carouselState.animateScrollToItem(nextIndex)
                         }
                       }
                     }

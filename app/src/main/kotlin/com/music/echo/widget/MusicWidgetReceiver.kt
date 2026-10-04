@@ -13,7 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import iad1tya.echo.music.playback.MusicService
 
-class MusicWidgetReceiver : AppWidgetProvider() {
+open class MusicWidgetReceiver : AppWidgetProvider() {
 
   override fun onUpdate(
     context: Context,
@@ -58,7 +58,11 @@ class MusicWidgetReceiver : AppWidgetProvider() {
       ACTION_PLAY_PAUSE,
       ACTION_LIKE,
       ACTION_NEXT,
-      ACTION_PREVIOUS -> {
+      ACTION_PREVIOUS,
+      ACTION_SHUFFLE,
+      ACTION_REPEAT,
+      ACTION_MUTE,
+      ACTION_SKIP_TO_QUEUE_ITEM -> {
         // User interactions from widget buttons can start the service
         // Android allows starting FGS from widget PendingIntent clicks
         val serviceIntent =

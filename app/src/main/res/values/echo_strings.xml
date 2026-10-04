@@ -623,7 +623,7 @@
     <string name="playback_progress">Playback progress</string>
     <string name="widget_playing_on">Playing on</string>
     <string name="widget_this_phone">This Phone</string>
-    <string name="widget_echo_music">Echo Music</string>
+    <string name="widget_echo_music">NullMusic</string>
     <string name="widget_queue">Queue</string>
     <string name="widget_cast">Cast</string>
     <string name="widget_options">More options</string>

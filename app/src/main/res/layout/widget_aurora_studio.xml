@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/widget_aurora_card_bg"
     android:padding="12dp"
-    android:theme="@style/Theme.Widget.echomusic">
+    android:theme="@style/Theme.Widget.nullmusic">
 
     <LinearLayout
         android:layout_width="match_parent"

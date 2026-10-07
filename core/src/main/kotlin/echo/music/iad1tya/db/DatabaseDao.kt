@@ -1296,6 +1296,9 @@ interface DatabaseDao {
   @Query("UPDATE song SET totalPlayTime = totalPlayTime + :playTime WHERE id = :songId")
   fun incrementTotalPlayTime(songId: String, playTime: Long)
 
+  @Query("UPDATE song SET liked = :liked, likedDate = :likedDate WHERE id = :songId")
+  fun updateLikedStatus(songId: String, liked: Boolean, likedDate: LocalDateTime?)
+
   @Query(
     "UPDATE playCount SET count = count + 1 WHERE song = :songId AND year = :year AND month = :month"
   )

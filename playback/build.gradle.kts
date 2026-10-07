@@ -18,12 +18,18 @@ android {
     create("gms") { dimension = "variant" }
     create("foss") { dimension = "variant" }
   }
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
 }
 
 kotlin { jvmToolchain(21) }
 
 dependencies {
   implementation(project(":core"))
+  api(project(":audio-dsp"))
+  api(project(":dsp-core"))
+  api(project(":usbaudio"))
   "gmsImplementation"(libs.cast.framework)
   api(libs.media3)
   api(libs.media3.session)
@@ -31,4 +37,6 @@ dependencies {
 
   implementation(libs.hilt)
   ksp(libs.hilt.compiler)
+
+  testImplementation(libs.junit)
 }

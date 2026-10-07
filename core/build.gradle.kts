@@ -37,9 +37,14 @@ dependencies {
   api(libs.media3)
   api(libs.media3.session)
   api(project(":innertube"))
+  api(project(":metadata"))
+  api(project(":domain"))
   api(libs.ktor.serialization.json)
   api(libs.protobuf.javalite)
   coreLibraryDesugaring(libs.desugaring)
+  testImplementation(libs.junit)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.robolectric)
 }
 
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }

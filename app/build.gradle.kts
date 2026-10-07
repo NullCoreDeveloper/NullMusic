@@ -370,4 +370,8 @@ dependencies {
   implementation(libs.work.runtime.ktx)
   implementation(libs.androidx.core.splashscreen)
   implementation(libs.ffmpeg.kit.audio)
+
+  testImplementation(libs.junit)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.robolectric)
 }

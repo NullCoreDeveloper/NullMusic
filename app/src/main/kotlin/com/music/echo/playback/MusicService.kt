@@ -226,7 +226,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
 
   @Inject lateinit var mediaLibrarySessionCallback: MediaLibrarySessionCallback
 
-  @Inject lateinit var equalizerService: EqualizerService
+  @Inject lateinit var dspController: DspController
 
   @Inject lateinit var eqProfileRepository: EQProfileRepository
 
@@ -236,6 +236,14 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
     
+
+  @Inject
+  lateinit var songPlayStatsRepository: SongPlayStatsRepository
+
+  private var trackedMediaItem: MediaItem? = null
+  private var trackedDurationMs: Long = 0L
+  private var trackedAccumulatedPlayMs: Long = 0L
+  private var trackedPlayStartTs: Long = 0L
 
   private lateinit var audioManager: AudioManager
   // Wi-Fi Lock: Prevents modern Wi-Fi 6/7 routers from putting the Wi-Fi chip into
@@ -253,10 +261,24 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
   var preferredDeviceId: Int? = null
     private set
 
+  private val usbAudioDriver by lazy { UsbAudioDriver() }
+  private val usbDacManager by lazy {
+    UsbDacManager(this, usbAudioDriver).apply {
+      onDeviceDetachedCallback = {
+        if (isBitPerfectEnabled) {
+          player.pause()
+        }
+      }
+    }
+  }
+
+  @Volatile private var isBitPerfectEnabled = false
+
   private var crossfadeEnabled = false
   private var crossfadeDuration = 5000f
   private var crossfadeGapless = true
   private var crossfadeTriggerJob: Job? = null
+  private val preArmManager by lazy { echo.music.iad1tya.playback.crossfade.AdaptivePreArmManager() }
 
   private var automixEnabled = false
   private var activeAutomixPlan: AutomixPlan? = null
@@ -266,6 +288,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     val player: ExoPlayer,
     val plan: AutomixPlan?,
     val targetMediaId: String,
+    val prepStartTimeMs: Long = System.currentTimeMillis()
   )
 
   private var prebuffered: PrebufferedTransition? = null
@@ -432,6 +455,8 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
   private val playerSilenceProcessors = HashMap<Player, SilenceDetectorAudioProcessor>()
   private val playerDuckProcessors = HashMap<Player, AutomixDuckAudioProcessor>()
   private val playerStereoWideners = HashMap<Player, StereoWidenerAudioProcessor>()
+  private val playerEqProcessors = HashMap<Player, CustomEqualizerAudioProcessor>()
+  private val cutoffGuard = PlaybackCutoffGuard()
 
   private val instantSilenceSkipEnabled = MutableStateFlow(false)
 
@@ -1565,6 +1590,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
             }
 
     audioManager.registerAudioDeviceCallback(audioDeviceCallback, null)
+    usbDacManager.register()
 
     audioQuality =
       dataStore.get(AudioQualityKey).toEnum(echo.music.iad1tya.constants.AudioQuality.OPUS)
@@ -1576,18 +1602,37 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     scope.launch {
       eqProfileRepository.activeProfile.collect { profile ->
         if (profile != null) {
-          val result = equalizerService.applyProfile(profile)
+          val result = dspController.applyProfile(profile)
           if (result.isSuccess && player.playbackState == Player.STATE_READY && player.isPlaying) {
 
             player.seekTo(player.currentPosition)
           }
         } else {
-          equalizerService.disable()
+          dspController.disableEqualizer()
           if (player.playbackState == Player.STATE_READY && player.isPlaying) {
             player.seekTo(player.currentPosition)
           }
         }
       }
+    }
+
+    scope.launch {
+      usbDacManager.activeDacFlow.collect {
+        if (player.playbackState == Player.STATE_READY && player.isPlaying) {
+          player.seekTo(player.currentPosition)
+        }
+      }
+    }
+
+    scope.launch {
+      dataStore.data.map { it[EnableBitPerfectUsbDacKey] ?: false }
+        .distinctUntilChanged()
+        .collect { enabled ->
+          isBitPerfectEnabled = enabled
+          if (player.playbackState == Player.STATE_READY && player.isPlaying) {
+            player.seekTo(player.currentPosition)
+          }
+        }
     }
 
     scope.launch {
@@ -3168,7 +3213,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
 
   private fun createExoPlayer(): ExoPlayer {
     val eqProcessor = CustomEqualizerAudioProcessor()
-    equalizerService.addAudioProcessor(eqProcessor)
+    dspController.addAudioProcessor(eqProcessor)
 
     val duckProcessor = AutomixDuckAudioProcessor()
 
@@ -3217,6 +3262,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     playerSilenceProcessors[player] = silenceProcessor
     playerDuckProcessors[player] = duckProcessor
     playerStereoWideners[player] = stereoWidener
+    playerEqProcessors[player] = eqProcessor
 
     player.apply {
       runBlocking {
@@ -5200,6 +5246,42 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     mediaItem: MediaItem?,
     reason: Int,
   ) {
+    cutoffGuard.onTrackChanged(mediaItem?.mediaId)
+    val prevItem = trackedMediaItem
+    if (prevItem != null) {
+      if (trackedPlayStartTs > 0L) {
+        trackedAccumulatedPlayMs += (System.currentTimeMillis() - trackedPlayStartTs)
+        trackedPlayStartTs = 0L
+      }
+      val durationMs = if (trackedDurationMs > 0L) trackedDurationMs else (prevItem.metadata?.duration?.takeIf { it > 0 }?.times(1000L) ?: 0L)
+      val wasAutoTransition = reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
+      val completionRatio = if (durationMs > 0L) trackedAccumulatedPlayMs.toFloat() / durationMs else 0f
+      val wasSkip = !wasAutoTransition && completionRatio < 0.85f
+
+      if (wasSkip && trackedAccumulatedPlayMs > 0L) {
+        val prevMeta = prevItem.metadata
+        val title = prevMeta?.title ?: prevItem.mediaMetadata.title?.toString().orEmpty()
+        val artist = prevMeta?.artists?.joinToString(", ") { it.name }
+          ?: prevItem.mediaMetadata.artist?.toString().orEmpty()
+        val artworkUrl = prevMeta?.thumbnailUrl ?: prevItem.mediaMetadata.artworkUri?.toString()
+        val videoId = prevItem.mediaId
+        scope.launch(Dispatchers.IO) {
+          songPlayStatsRepository.recordSkip(
+            title = title,
+            artist = artist,
+            videoId = videoId,
+            artworkUrl = artworkUrl,
+            listenedMs = 0L,
+          )
+        }
+      }
+    }
+
+    trackedMediaItem = mediaItem
+    trackedDurationMs = player.duration.takeIf { it > 0 && it != C.TIME_UNSET }
+      ?: (mediaItem?.metadata?.duration?.takeIf { it > 0 }?.times(1000L) ?: 0L)
+    trackedAccumulatedPlayMs = 0L
+    trackedPlayStartTs = if (player.isPlaying) System.currentTimeMillis() else 0L
     // Stale plan belongs to the previous track; planner re-arms when the new one is READY.
     if (!isCrossfading.value) automixDebugInfo.value = null
     prepareAutomixForCurrentPair()
@@ -5227,7 +5309,9 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     checkAndSubmitListenBrainzFinished()
 
     if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
-      scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
+      val canonicalDur = (player.currentMetadata?.duration ?: 0) * 1000L
+      val safeDur = if (canonicalDur > 0L) canonicalDur else player.duration
+      scrobbleManager?.onSongStart(player.currentMetadata, duration = safeDur)
       player.currentMediaItem?.mediaId?.let { mediaId ->
         if (listenBrainzCurrentMediaId != mediaId) {
           listenBrainzCurrentMediaId = mediaId
@@ -5308,6 +5392,36 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
   ) {
 
     if (playbackState == Player.STATE_ENDED) {
+      val isCasting = castConnectionHandler?.isCasting?.value == true
+      val isSleepTimerStopping = ::sleepTimer.isInitialized && sleepTimer.pauseWhenSongEnd
+      val currentItem = player.currentMediaItem
+      val canonicalDurationMs = (currentItem?.metadata?.duration ?: 0) * 1000L
+      val currentPos = player.currentPosition
+      val playerDur = player.duration
+
+      val decision = if (!isCasting && !isSleepTimerStopping) {
+        cutoffGuard.verifyTrackCompletion(
+          currentPositionMs = currentPos,
+          canonicalDurationMs = canonicalDurationMs,
+          playerDurationMs = playerDur
+        )
+      } else {
+        CutoffDecision.AllowEnd
+      }
+
+      if (decision is CutoffDecision.RecoverPrematureCutoff) {
+        Timber.tag(TAG).w(
+          "Premature cutoff detected for ${currentItem?.mediaId}: pos=$currentPos ms, canonical=$canonicalDurationMs ms (retry #${decision.retryAttempt}). Recovering..."
+        )
+        val shouldPlay = player.playWhenReady
+        player.seekTo(decision.resumePositionMs)
+        player.prepare()
+        if (shouldPlay) {
+          player.play()
+        }
+        return
+      }
+
       if (cachedRepeatMode == REPEAT_MODE_ALL && player.mediaItemCount > 0) {
         player.seekTo(0, 0)
         player.prepare()
@@ -5421,11 +5535,29 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       }
     }
 
+    if (events.containsAny(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
+      if (player.playbackState == Player.STATE_READY && trackedDurationMs <= 0L && player.duration > 0 && player.duration != C.TIME_UNSET) {
+        trackedDurationMs = player.duration
+      }
+    }
+
     if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
+      val canonicalDur = (player.currentMetadata?.duration ?: 0) * 1000L
+      val safeDur = if (canonicalDur > 0L) canonicalDur else player.duration
+      if (player.isPlaying) {
+        if (trackedPlayStartTs == 0L) {
+          trackedPlayStartTs = System.currentTimeMillis()
+        }
+      } else {
+        if (trackedPlayStartTs > 0L) {
+          trackedAccumulatedPlayMs += (System.currentTimeMillis() - trackedPlayStartTs)
+          trackedPlayStartTs = 0L
+        }
+      }
       scrobbleManager?.onPlayerStateChanged(
         player.isPlaying,
         player.currentMetadata,
-        duration = player.duration
+        duration = safeDur
       )
 
       if (player.isPlaying) {
@@ -5434,7 +5566,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
             checkAndSubmitListenBrainzFinished()
             listenBrainzCurrentMediaId = mediaId
             listenBrainzCurrentStartTs = System.currentTimeMillis()
-            scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
+            scrobbleManager?.onSongStart(player.currentMetadata, duration = safeDur)
           }
           checkAndSubmitListenBrainzPlayingNow(mediaId)
         }
@@ -6396,8 +6528,8 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         context: Context,
         enableFloatOutput: Boolean,
         enableAudioTrackPlaybackParams: Boolean,
-      ) =
-        DefaultAudioSink.Builder(this@MusicService)
+      ): androidx.media3.exoplayer.audio.AudioSink {
+        val defaultSink = DefaultAudioSink.Builder(this@MusicService)
           .setEnableFloatOutput(enableFloatOutput)
           .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
           .setAudioProcessorChain(
@@ -6413,6 +6545,21 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
             ),
           )
           .build()
+
+        val usbSink = UsbDacAudioSink(
+          driver = usbAudioDriver,
+          dacConnectionProvider = { usbDacManager.activeDacFlow.value as? echo.music.usbaudio.DacDeviceState.Connected }
+        )
+
+        return AudioSinkSelector.createRoutingSink(
+          defaultAudioSink = defaultSink,
+          usbDacAudioSink = usbSink,
+          isBitPerfectActive = {
+            val dacConnected = usbDacManager.activeDacFlow.value is echo.music.usbaudio.DacDeviceState.Connected
+            isBitPerfectEnabled && dacConnected
+          }
+        )
+      }
     }
 
   override fun onPlaybackStatsReady(
@@ -6437,6 +6584,32 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
             ),
           )
         } catch (_: SQLException) {}
+      }
+
+      val meta = mediaItem.metadata
+      val title = meta?.title ?: mediaItem.mediaMetadata.title?.toString().orEmpty()
+      val artist = meta?.artists?.joinToString(", ") { it.name }
+        ?: mediaItem.mediaMetadata.artist?.toString().orEmpty()
+      val window = eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window())
+      val durationMs = if (window.durationMs > 0 && window.durationMs != C.TIME_UNSET) {
+        window.durationMs
+      } else {
+        meta?.duration?.takeIf { it > 0 }?.toLong()?.times(1000L) ?: 0L
+      }
+      val completed = if (durationMs > 0L) {
+        (playbackStats.totalPlayTimeMs.toFloat() / durationMs.toFloat()) >= 0.85f
+      } else {
+        playbackStats.totalPlayTimeMs >= historyDurationMs
+      }
+      scope.launch(Dispatchers.IO) {
+        songPlayStatsRepository.recordListenedMs(
+          title = title,
+          artist = artist,
+          videoId = mediaItem.mediaId,
+          artworkUrl = meta?.thumbnailUrl ?: mediaItem.mediaMetadata.artworkUri?.toString(),
+          listenedMs = playbackStats.totalPlayTimeMs,
+          completed = completed,
+        )
       }
     }
 
@@ -6562,6 +6735,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     } catch (e: Exception) {}
 
     audioManager.unregisterAudioDeviceCallback(audioDeviceCallback)
+    usbDacManager.unregister()
     castConnectionHandler?.release()
     if (dataStore.get(PersistentQueueKey, true)) {
       saveQueueToDisk()
@@ -6583,6 +6757,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     player.removeListener(sleepTimer)
     playerSilenceProcessors.remove(player)
     playerStereoWideners.remove(player)
+    playerEqProcessors.remove(player)?.let { dspController.removeAudioProcessor(it) }
 
     player.release()
     discordUpdateJob?.cancel()
@@ -6897,11 +7072,12 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           if (player.currentMediaItem?.mediaId != targetMediaId) return@launch
           val remaining = triggerTime - player.currentPosition
           if (remaining <= 0) break
-          if (!prebufferStarted && remaining <= PREBUFFER_LEAD_MS) {
+          val leadTime = preArmManager.currentLeadTimeMs
+          if (!prebufferStarted && remaining <= leadTime) {
             prebufferStarted = true
             prebufferSecondaryPlayer(plan)
           }
-          delay(minOf(remaining, 250L))
+          delay(minOf(remaining, 100L))
         }
         if (
           isActive &&
@@ -7252,6 +7428,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     playerDuckProcessors.remove(pb.player)
     playerSilenceProcessors.remove(pb.player)
     playerStereoWideners.remove(pb.player)
+    playerEqProcessors.remove(pb.player)?.let { dspController.removeAudioProcessor(it) }
     try {
       pb.player.removeListener(secondaryPlayerListener)
       pb.player.stop()
@@ -7272,6 +7449,9 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
 
     val savedRepeatMode = cachedRepeatMode
     val savedShuffleEnabled = cachedShuffleEnabled
+    if (isBitPerfectEnabled && usbDacManager.activeDacFlow.value is echo.music.usbaudio.DacDeviceState.Connected) {
+      return
+    }
     val targetIndex =
       if (savedRepeatMode == REPEAT_MODE_ONE) {
         player.currentMediaItemIndex
@@ -7281,8 +7461,20 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     if (targetIndex == C.INDEX_UNSET) return
     val targetMediaId = player.getMediaItemAt(targetIndex).mediaId
 
+    val startTime = android.os.SystemClock.elapsedRealtime()
     val secPlayer = createExoPlayer()
     secPlayer.addListener(secondaryPlayerListener)
+    secPlayer.addListener(object : Player.Listener {
+      override fun onPlaybackStateChanged(playbackState: Int) {
+        if (playbackState == Player.STATE_READY) {
+          val bufferTime = android.os.SystemClock.elapsedRealtime() - startTime
+          if (bufferTime > 0) {
+            preArmManager.recordPreparationDuration(bufferTime)
+          }
+          secPlayer.removeListener(this)
+        }
+      }
+    })
 
     val itemCount = player.mediaItemCount
     val items = mutableListOf<MediaItem>()
@@ -7304,11 +7496,14 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     secPlayer.shuffleModeEnabled = savedShuffleEnabled
     secPlayer.prepare() // playWhenReady left false: buffers ahead without playing.
 
-    prebuffered = PrebufferedTransition(secPlayer, plan, targetMediaId)
+    prebuffered = PrebufferedTransition(secPlayer, plan, targetMediaId, startTime)
   }
 
   private fun startCrossfade(plan: AutomixPlan? = null) {
     if (isCrossfading.value) return
+    if (isBitPerfectEnabled && usbDacManager.activeDacFlow.value is echo.music.usbaudio.DacDeviceState.Connected) {
+      return
+    }
 
     val savedRepeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
     val savedShuffleEnabled = runBlocking { dataStore.get(ShuffleModeKey, false) }
@@ -7439,6 +7634,12 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       timber.log.Timber.e(e, "Failed to swap player in MediaSession")
     }
 
+    trackedMediaItem = player.currentMediaItem
+    trackedDurationMs = player.duration.takeIf { it > 0 && it != C.TIME_UNSET }
+      ?: (player.currentMediaItem?.metadata?.duration?.takeIf { it > 0 }?.times(1000L) ?: 0L)
+    trackedAccumulatedPlayMs = 0L
+    trackedPlayStartTs = if (player.isPlaying) System.currentTimeMillis() else 0L
+
     // The crossfade swap moves playback to a brand-new ExoPlayer with its own
     // audio session id, but this player's listener was attached after the
     // seek/prepare already happened, so no EVENT_MEDIA_ITEM_TRANSITION fires for
@@ -7496,16 +7697,14 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         val outDuck = fadingPlayer?.let { playerDuckProcessors[it] }
         val inDuck = playerDuckProcessors[player]
 
-        // Equal-power curve: sin/cos gains keep combined signal energy ~constant
-        // through the blend, so linearly summing two tracks doesn't dip in
-        // perceived loudness at the midpoint the way linear/smoothstep gain does.
+        // Equal-power curve: delegate to EqualPowerCurve for constant acoustic power
         fun equalPowerIn(edge0: Float, edge1: Float, x: Float): Float {
           val t = ((x - edge0) / (edge1 - edge0)).coerceIn(0f, 1f)
-          return kotlin.math.sin(t * (Math.PI / 2.0).toFloat())
+          return echo.music.iad1tya.playback.crossfade.EqualPowerCurve.calculateGains(t).incomingGain
         }
         fun equalPowerOut(edge0: Float, edge1: Float, x: Float): Float {
           val t = ((x - edge0) / (edge1 - edge0)).coerceIn(0f, 1f)
-          return kotlin.math.cos(t * (Math.PI / 2.0).toFloat())
+          return echo.music.iad1tya.playback.crossfade.EqualPowerCurve.calculateGains(t).outgoingGain
         }
 
         try {
@@ -7524,18 +7723,12 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
               break
             }
 
-            val progress = i / steps.toFloat()
-            // Fade-out then fade-in with a gentle dip: the outgoing track drops away
-            // over the first ~60% of the blend, the incoming rises over the last ~60%,
-            // so they overlap only through the middle where both sit well below full.
-            // Old track leaves, new one arrives — no sudden level match, no boost.
-            // Both curves are cosine/sine eased, so the ramp stays click-free.
-            val fadeOut = equalPowerOut(0f, 0.6f, progress)
-            val fadeIn = equalPowerIn(0.4f, 1f, progress)
+            val progress = (i / steps.toFloat()).coerceIn(0f, 1f)
+            val gains = echo.music.iad1tya.playback.crossfade.EqualPowerCurve.calculateGains(progress)
 
             try {
-              player.volume = startVolume * fadeIn
-              fadingPlayer?.volume = startVolume * fadeOut
+              player.volume = startVolume * gains.incomingGain
+              fadingPlayer?.volume = startVolume * gains.outgoingGain
             } catch (e: Exception) {
               break
             }
@@ -7574,6 +7767,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     }
     fadingPlayer?.let { playerDuckProcessors.remove(it) }
     fadingPlayer?.let { playerStereoWideners.remove(it) }
+    fadingPlayer?.let { playerEqProcessors.remove(it)?.let { eq -> dspController.removeAudioProcessor(eq) } }
     fadingPlayer?.stop()
     fadingPlayer?.clearMediaItems()
     fadingPlayer?.release()
@@ -7599,8 +7793,6 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     const val CHUNK_LENGTH = 512 * 1024L
     const val PERSISTENT_QUEUE_FILE = "persistent_queue.data"
     const val PERSISTENT_AUTOMIX_FILE = "persistent_automix.data"
-    /** How far ahead of the crossfade trigger to start buffering the incoming track. */
-    const val PREBUFFER_LEAD_MS = 10000L
     const val PERSISTENT_PLAYER_STATE_FILE = "persistent_player_state.data"
     const val MAX_CONSECUTIVE_ERR = 5
     const val MAX_RETRY_COUNT = 10

@@ -124,6 +124,12 @@ fun PlayerSettings(
   val (audioOffload, onAudioOffloadChange) =
     rememberPreference(key = AudioOffload, defaultValue = false)
 
+  val (enableBitPerfectUsbDac, onEnableBitPerfectUsbDacChange) =
+    rememberPreference(key = EnableBitPerfectUsbDacKey, defaultValue = false)
+
+  val (usbDacVolumeMode, onUsbDacVolumeModeChange) =
+    rememberPreference(key = UsbDacVolumeModeKey, defaultValue = "PURE_BIT_PERFECT")
+
   val (preloadNextSongEnabled, onPreloadNextSongEnabledChange) =
     rememberPreference(key = PreloadNextSongEnabledKey, defaultValue = true)
 
@@ -901,6 +907,32 @@ fun PlayerSettings(
               )
             )
           }
+
+          add(
+            Material3SettingsItem(
+              isHighlighted = (highlightKey == "Bit-Perfect USB-DAC"),
+              icon = painterResource(R.drawable.volume_up),
+              title = { Text("Bit-Perfect USB-DAC Output") },
+              description = { Text("Direct UAC1/UAC2 driver bypassing Android OS mixer") },
+              trailingContent = {
+                Switch(
+                  checked = enableBitPerfectUsbDac,
+                  onCheckedChange = onEnableBitPerfectUsbDacChange,
+                  thumbContent = {
+                    Icon(
+                      painter =
+                        painterResource(
+                          id = if (enableBitPerfectUsbDac) R.drawable.check else R.drawable.close
+                        ),
+                      contentDescription = null,
+                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                    )
+                  }
+                )
+              },
+              onClick = { onEnableBitPerfectUsbDacChange(!enableBitPerfectUsbDac) }
+            )
+          )
 
           add(
             Material3SettingsItem(

@@ -34,63 +34,12 @@ object LrcLib {
     }
   }
 
-  // Patterns to clean from title
-  private val titleCleanupPatterns =
-    listOf(
-      Regex(
-        """\s*\(.*?(official|video|audio|lyrics|lyric|visualizer|hd|hq|4k|remaster|remix|live|acoustic|version|edit|extended|radio|clean|explicit).*?\)""",
-        RegexOption.IGNORE_CASE
-      ),
-      Regex(
-        """\s*\[.*?(official|video|audio|lyrics|lyric|visualizer|hd|hq|4k|remaster|remix|live|acoustic|version|edit|extended|radio|clean|explicit).*?\]""",
-        RegexOption.IGNORE_CASE
-      ),
-      Regex("""\s*【.*?】"""),
-      Regex("""\s*\|.*$"""),
-      Regex(
-        """\s*-\s*(official|video|audio|lyrics|lyric|visualizer).*$""",
-        RegexOption.IGNORE_CASE
-      ),
-      Regex("""\s*\(feat\..*?\)""", RegexOption.IGNORE_CASE),
-      Regex("""\s*\(ft\..*?\)""", RegexOption.IGNORE_CASE),
-      Regex("""\s*feat\..*$""", RegexOption.IGNORE_CASE),
-      Regex("""\s*ft\..*$""", RegexOption.IGNORE_CASE),
-    )
-
-  // Patterns to extract primary artist
-  private val artistSeparators =
-    listOf(
-      " & ",
-      " and ",
-      ", ",
-      " x ",
-      " X ",
-      " feat. ",
-      " feat ",
-      " ft. ",
-      " ft ",
-      " featuring ",
-      " with "
-    )
-
-  private fun cleanTitle(title: String): String {
-    var cleaned = title.trim()
-    for (pattern in titleCleanupPatterns) {
-      cleaned = cleaned.replace(pattern, "")
-    }
-    return cleaned.trim()
+  private fun cleanTitle(title: String, artist: String = ""): String {
+    return com.music.echo.metadata.cleaner.MetadataCleaner.clean(title, artist).toSearchQuery().first
   }
 
-  private fun cleanArtist(artist: String): String {
-    var cleaned = artist.trim()
-    // Get primary artist (first one before any separator)
-    for (separator in artistSeparators) {
-      if (cleaned.contains(separator, ignoreCase = true)) {
-        cleaned = cleaned.split(separator, ignoreCase = true, limit = 2)[0]
-        break
-      }
-    }
-    return cleaned.trim()
+  private fun cleanArtist(artist: String, title: String = ""): String {
+    return com.music.echo.metadata.cleaner.MetadataCleaner.clean(title, artist).toSearchQuery().second
   }
 
   private suspend fun queryLyricsWithParams(
@@ -116,15 +65,25 @@ object LrcLib {
     title: String,
     album: String? = null,
   ): List<Track> {
-    val cleanedTitle = cleanTitle(title)
-    val cleanedArtist = cleanArtist(artist)
+    val cleaned = com.music.echo.metadata.cleaner.MetadataCleaner.clean(title, artist)
+    val (cleanedTitle, cleanedArtist) = cleaned.toSearchQuery()
+    val primaryArtist = cleaned.primaryArtist
 
-    // Strategy 1: Search with cleaned title and artist
+    // Strategy 1: Search with cleaned title and primary artist
     var results =
-      queryLyricsWithParams(trackName = cleanedTitle, artistName = cleanedArtist, albumName = album)
+      queryLyricsWithParams(trackName = cleanedTitle, artistName = primaryArtist, albumName = album)
         .filter { it.syncedLyrics != null || it.plainLyrics != null }
 
     if (results.isNotEmpty()) return results
+
+    // Strategy 1b: Fallback to full cleaned artist if different from primary artist
+    if (primaryArtist != cleanedArtist) {
+      results =
+        queryLyricsWithParams(trackName = cleanedTitle, artistName = cleanedArtist, albumName = album)
+          .filter { it.syncedLyrics != null || it.plainLyrics != null }
+
+      if (results.isNotEmpty()) return results
+    }
 
     // Strategy 2: Search with cleaned title only (artist might be different)
     results =
@@ -167,9 +126,8 @@ object LrcLib {
     duration: Int,
     album: String? = null,
   ) = runCatching {
+    val (cleanedTitle, cleanedArtist) = com.music.echo.metadata.cleaner.MetadataCleaner.clean(title, artist).toSearchQuery()
     val tracks = queryLyrics(artist, title, album)
-    val cleanedTitle = cleanTitle(title)
-    val cleanedArtist = cleanArtist(artist)
 
     val res =
       when {
@@ -202,9 +160,8 @@ object LrcLib {
     album: String? = null,
     callback: (String) -> Unit,
   ) {
+    val (cleanedTitle, cleanedArtist) = com.music.echo.metadata.cleaner.MetadataCleaner.clean(title, artist).toSearchQuery()
     val tracks = queryLyrics(artist, title, album)
-    val cleanedTitle = cleanTitle(title)
-    val cleanedArtist = cleanArtist(artist)
     var count = 0
     var plain = 0
 

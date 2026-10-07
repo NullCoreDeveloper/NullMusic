@@ -17,7 +17,7 @@ class EQViewModel
 @Inject
 constructor(
   private val eqProfileRepository: EQProfileRepository,
-  private val equalizerService: EqualizerService
+  private val dspController: DspController
 ) : ViewModel() {
 
   private val _state = MutableStateFlow(EQState())
@@ -47,13 +47,13 @@ constructor(
     viewModelScope.launch {
       if (profileId == null) {
 
-        equalizerService.disable()
+        dspController.disableEqualizer()
         eqProfileRepository.setActiveProfile(null)
       } else {
 
         val profile = _state.value.profiles.find { it.id == profileId }
         if (profile != null) {
-          val result = equalizerService.applyProfile(profile)
+          val result = dspController.applyProfile(profile)
           result
             .onSuccess { eqProfileRepository.setActiveProfile(profileId) }
             .onFailure { e -> _state.update { it.copy(error = e.message ?: "Unknown error") } }

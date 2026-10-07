@@ -947,7 +947,10 @@ fun BottomSheetPlayer(
         delay(200)
         if (sliderPosition == null) {
           position = playerConnection.player.currentPosition
-          duration = playerConnection.player.duration
+          duration = echo.music.iad1tya.playback.PlaybackCutoffGuard.computeEffectiveDuration(
+            mediaMetadata?.duration,
+            playerConnection.player.duration
+          )
         }
       }
     }
@@ -956,7 +959,10 @@ fun BottomSheetPlayer(
   LaunchedEffect(playbackState, mediaMetadata?.id) {
     if (!isCasting) {
       position = playerConnection.player.currentPosition
-      duration = playerConnection.player.duration
+      duration = echo.music.iad1tya.playback.PlaybackCutoffGuard.computeEffectiveDuration(
+        mediaMetadata?.duration,
+        playerConnection.player.duration
+      )
     }
   }
 

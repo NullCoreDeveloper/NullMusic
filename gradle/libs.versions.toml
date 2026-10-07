@@ -127,6 +127,8 @@ brotli = { module = "org.brotli:dec", version.ref = "brotli" }
 desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "desugaring" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 

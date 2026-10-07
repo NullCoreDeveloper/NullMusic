@@ -3,6 +3,8 @@
 package iad1tya.echo.music.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.NoOpCacheEvictor
@@ -40,6 +42,48 @@ object AppModule {
   fun provideDao(
     database: InternalDatabase,
   ) = database.dao
+
+  @Singleton
+  @Provides
+  fun provideSongPlayStatsDao(
+    database: InternalDatabase,
+  ) = database.songPlayStatsDao
+
+  @Singleton
+  @Provides
+  fun provideRecommendationExclusionDao(
+    database: InternalDatabase,
+  ) = database.recommendationExclusionDao
+
+  @Singleton
+  @Provides
+  fun provideTasteProfileDao(
+    database: InternalDatabase,
+  ) = database.tasteProfileDao
+
+  @Singleton
+  @Provides
+  fun provideLastFmTasteApi(
+    api: RealLastFmTasteApi,
+  ): LastFmTasteApi = api
+
+  @Singleton
+  @Provides
+  fun providePreferencesDataStore(
+    @ApplicationContext context: Context,
+  ): DataStore<Preferences> = context.dataStore
+
+  @Singleton
+  @Provides
+  fun provideGenerationStatus(
+    status: RealGenerationStatus,
+  ): GenerationStatus = status
+
+  @Singleton
+  @Provides
+  fun provideLocalTasteEngine(
+    recommendationEngine: RecommendationEngine,
+  ): LocalTasteEngine = recommendationEngine
 
   @Singleton
   @Provides

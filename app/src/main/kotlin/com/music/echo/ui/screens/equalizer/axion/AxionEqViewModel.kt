@@ -22,7 +22,7 @@ class AxionEqViewModel
 @Inject
 constructor(
   @ApplicationContext private val context: Context,
-  private val equalizerService: EqualizerService,
+  private val dspController: DspController,
   private val eqProfileRepository: EQProfileRepository
 ) : ViewModel() {
 
@@ -61,7 +61,7 @@ constructor(
       applyToService()
     } else {
       viewModelScope.launch { eqProfileRepository.setActiveProfile(null) }
-      equalizerService.disable()
+      dspController.disableEqualizer()
     }
   }
 
@@ -160,7 +160,7 @@ constructor(
       eqProfileRepository.saveProfile(profile)
       eqProfileRepository.setActiveProfile(profile.id)
 
-      equalizerService.applyProfile(profile)
+      dspController.applyProfile(profile)
     }
   }
 }

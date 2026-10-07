@@ -29,6 +29,7 @@ dependencies {
   testImplementation(libs.junit)
 
   implementation(project(":betterlyrics"))
+  implementation(project(":metadata"))
 
   coreLibraryDesugaring(libs.desugaring)
 }

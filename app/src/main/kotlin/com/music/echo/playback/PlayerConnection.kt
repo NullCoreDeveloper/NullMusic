@@ -141,6 +141,16 @@ class PlayerConnection(
   val currentFormat =
     mediaMetadata.flatMapLatest { mediaMetadata -> database.format(mediaMetadata?.id) }
 
+  val duration: kotlinx.coroutines.flow.StateFlow<Long> =
+    combine(mediaMetadata, playbackState) { meta, _ ->
+      val playerDur = try {
+        player.duration
+      } catch (_: Exception) {
+        androidx.media3.common.C.TIME_UNSET
+      }
+      echo.music.iad1tya.playback.PlaybackCutoffGuard.computeEffectiveDuration(meta?.duration, playerDur)
+    }.stateIn(scope, SharingStarted.Lazily, 0L)
+
   val queueTitle = MutableStateFlow<String?>(null)
   val queueWindows = MutableStateFlow<List<Timeline.Window>>(emptyList())
   val currentMediaItemIndex = MutableStateFlow(-1)

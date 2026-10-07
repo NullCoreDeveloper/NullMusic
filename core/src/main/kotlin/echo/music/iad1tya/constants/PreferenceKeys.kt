@@ -843,3 +843,6 @@ val SelectedFontKey = stringPreferencesKey("selected_app_font")
 val CustomFontPathKey = androidx.datastore.preferences.core.stringPreferencesKey("custom_font_path")
 val BlockedArtistsKey =
   androidx.datastore.preferences.core.stringSetPreferencesKey("blockedArtists")
+
+val EnableBitPerfectUsbDacKey = booleanPreferencesKey("enable_bit_perfect_usb_dac")
+val UsbDacVolumeModeKey = stringPreferencesKey("usb_dac_volume_mode")

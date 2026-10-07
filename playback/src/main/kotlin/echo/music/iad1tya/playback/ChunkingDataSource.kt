@@ -8,8 +8,11 @@ import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.datasource.TransferListener
 import java.io.IOException
 
-class ChunkingDataSource(private val upstream: DataSource, private val chunkSize: Long) :
-  DataSource {
+class ChunkingDataSource(
+  private val upstream: DataSource,
+  private val chunkSize: Long,
+  private val maxRetries: Int = 3
+) : DataSource {
 
   private var dataSpec: DataSpec? = null
   private var bytesToRead: Long = C.LENGTH_UNSET.toLong()
@@ -40,57 +43,125 @@ class ChunkingDataSource(private val upstream: DataSource, private val chunkSize
         chunkSize
       } else {
         val remaining = bytesToRead - bytesReadTotal
-        if (remaining == 0L) return
+        if (remaining <= 0L) return
         minOf(chunkSize, remaining)
       }
 
     val chunkDataSpec = currentDataSpec.buildUpon().setPosition(position).setLength(length).build()
-
     upstream.open(chunkDataSpec)
   }
 
   override fun read(buffer: ByteArray, offset: Int, readLength: Int): Int {
+    if (readLength == 0) return 0
     if (!isOpened) return C.RESULT_END_OF_INPUT
     if (bytesToRead != C.LENGTH_UNSET.toLong() && bytesReadTotal >= bytesToRead) {
       return C.RESULT_END_OF_INPUT
     }
 
-    val bytes =
-      try {
-        upstream.read(buffer, offset, readLength)
-      } catch (e: Exception) {
-        -1
+    var attempts = 0
+    var lastException: Exception? = null
+
+    while (attempts <= maxRetries) {
+      val bytes =
+        try {
+          upstream.read(buffer, offset, readLength)
+        } catch (e: java.io.InterruptedIOException) {
+          throw e
+        } catch (e: Exception) {
+          lastException = e
+          -1
+        }
+
+      if (bytes != C.RESULT_END_OF_INPUT && bytes > 0) {
+        bytesReadTotal += bytes
+        return bytes
       }
 
-    if (bytes == C.RESULT_END_OF_INPUT || bytes == -1) {
-      upstream.close()
-      try {
-        openNextChunk()
-      } catch (e: InvalidResponseCodeException) {
-        if (e.responseCode == 416) {
-          return C.RESULT_END_OF_INPUT
-        }
-        throw e
-      } catch (e: androidx.media3.datasource.DataSourceException) {
-        if (e.reason == androidx.media3.datasource.DataSourceException.POSITION_OUT_OF_RANGE) {
-          return C.RESULT_END_OF_INPUT
-        }
-        throw e
+      // Upstream returned EOF or error. Check if we actually reached the expected end.
+      if (bytesToRead != C.LENGTH_UNSET.toLong() && bytesReadTotal >= bytesToRead) {
+        return C.RESULT_END_OF_INPUT
       }
-      return try {
-        val newBytes = upstream.read(buffer, offset, readLength)
-        if (newBytes == C.RESULT_END_OF_INPUT || newBytes == -1) {
-          C.RESULT_END_OF_INPUT
-        } else {
-          bytesReadTotal += newBytes
-          newBytes
+
+      // We need more bytes. Try opening the next chunk at current position.
+      try {
+        upstream.close()
+      } catch (_: Exception) {}
+
+      val opened =
+        try {
+          openNextChunk()
+          true
+        } catch (e: InvalidResponseCodeException) {
+          if (e.responseCode == 416) {
+            return C.RESULT_END_OF_INPUT
+          }
+          attempts++
+          lastException = e
+          if (attempts > maxRetries) throw e
+          false
+        } catch (e: androidx.media3.datasource.DataSourceException) {
+          @Suppress("DEPRECATION")
+          if (e.reason == androidx.media3.datasource.DataSourceException.POSITION_OUT_OF_RANGE) {
+            return C.RESULT_END_OF_INPUT
+          }
+          attempts++
+          lastException = e
+          if (attempts > maxRetries) throw e
+          false
+        } catch (e: Exception) {
+          attempts++
+          lastException = e
+          if (attempts > maxRetries) {
+            throw IOException("Failed to reconnect chunk after $maxRetries retries", e)
+          }
+          false
         }
-      } catch (e: Exception) {
-        C.RESULT_END_OF_INPUT
+
+      if (opened) {
+        val nextBytes =
+          try {
+            upstream.read(buffer, offset, readLength)
+          } catch (e: java.io.InterruptedIOException) {
+            throw e
+          } catch (e: Exception) {
+            lastException = e
+            -1
+          }
+
+        if (nextBytes != C.RESULT_END_OF_INPUT && nextBytes > 0) {
+          bytesReadTotal += nextBytes
+          return nextBytes
+        }
+
+        if (bytesToRead != C.LENGTH_UNSET.toLong() && bytesReadTotal >= bytesToRead) {
+          return C.RESULT_END_OF_INPUT
+        }
+
+        attempts++
+      }
+
+      if (attempts <= maxRetries) {
+        try {
+          Thread.sleep((attempts * 50L).coerceAtMost(250L))
+        } catch (e: InterruptedException) {
+          Thread.currentThread().interrupt()
+          throw java.io.InterruptedIOException("Interrupted during chunk retry backoff").apply {
+            initCause(e)
+          }
+        }
       }
     }
-    bytesReadTotal += bytes
-    return bytes
+
+    if (bytesToRead != C.LENGTH_UNSET.toLong() && bytesReadTotal < bytesToRead) {
+      throw IOException(
+        "Premature EOF: expected $bytesToRead bytes, but only received $bytesReadTotal bytes after $maxRetries retries",
+        lastException
+      )
+    }
+
+    lastException?.let { throw IOException("Failed to read chunk after $maxRetries retries", it) }
+
+    return C.RESULT_END_OF_INPUT
   }
 
   override fun getUri(): Uri? = upstream.uri

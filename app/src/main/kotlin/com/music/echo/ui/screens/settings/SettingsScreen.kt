@@ -240,6 +240,8 @@ highlightKey: String? = null) {
         )
       }
 
+
+
       if (
         privacyText.lowercase().contains(searchLower) ||
           privacyDesc.lowercase().contains(searchLower)

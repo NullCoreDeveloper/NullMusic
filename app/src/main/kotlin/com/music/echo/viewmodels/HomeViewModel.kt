@@ -71,6 +71,7 @@ constructor(
   @ApplicationContext val context: Context,
   val database: MusicDatabase,
   val syncUtils: SyncUtils,
+  val loadSpotifyRecommendationsUseCase: com.music.echo.spotify.LoadSpotifyRecommendationsUseCase,
 ) : ViewModel() {
   val isRefreshing = MutableStateFlow(false)
   val isLoading = MutableStateFlow(false)
@@ -499,6 +500,26 @@ constructor(
     val hideExplicit = context.dataStore.get(HideExplicitKey, false)
     val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
     val fromTimeStamp = System.currentTimeMillis() - 86400000L * 7 * 2
+
+            val recommendationSource =
+                context.dataStore.data.first()[RecommendationSourceKey]
+                    .toEnum(RecommendationSource.YOUTUBE)
+
+            if (recommendationSource == RecommendationSource.SPOTIFY) {
+                val spotifyRecs = try {
+                        loadSpotifyRecommendationsUseCase(
+                            hideExplicit = hideExplicit,
+                            fromTimeStamp = fromTimeStamp,
+                        )
+                    } catch (e: Exception) { null }
+
+                if (!spotifyRecs.isNullOrEmpty()) {
+                    similarRecommendations.value = spotifyRecs.shuffled()
+                    // updateAllYtItems()
+                    return
+                }
+            }
+
 
     coroutineScope {
       val artistDeferreds =

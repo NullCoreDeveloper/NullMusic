@@ -133,6 +133,16 @@ fun ContentSettings(
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
 
+
+  val (spotifySpDc) = rememberPreference(key = SpotifySpDcKey, defaultValue = "")
+  val (recommendationSource, onRecommendationSourceChange) = rememberEnumPreference(key = RecommendationSourceKey, defaultValue = RecommendationSource.YOUTUBE)
+  
+  LaunchedEffect(spotifySpDc, recommendationSource) {
+      if (spotifySpDc.isBlank() && recommendationSource == RecommendationSource.SPOTIFY) {
+          onRecommendationSourceChange(RecommendationSource.YOUTUBE)
+      }
+  }
+
   val (appLanguage, onAppLanguageChange) =
     rememberPreference(key = AppLanguageKey, defaultValue = SYSTEM_DEFAULT)
 
@@ -1055,6 +1065,33 @@ fun ContentSettings(
       title = stringResource(R.string.misc),
       items =
         listOf(
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.recommendation_source)),
+            icon = painterResource(R.drawable.explore_outlined),
+            title = { Text(stringResource(R.string.recommendation_source)) },
+            description = {
+              Text(
+                when (recommendationSource) {
+                  RecommendationSource.YOUTUBE -> stringResource(R.string.recommendation_source_youtube)
+                  RecommendationSource.SPOTIFY -> stringResource(R.string.recommendation_source_spotify)
+                }
+              )
+            },
+            onClick = {
+              if (recommendationSource == RecommendationSource.YOUTUBE) {
+                if (spotifySpDc.isBlank()) {
+                   // Cannot switch to Spotify if not logged in
+                   scope.launch {
+                       android.widget.Toast.makeText(context, R.string.spotify_recommendation_login_required, android.widget.Toast.LENGTH_LONG).show()
+                   }
+                } else {
+                   onRecommendationSourceChange(RecommendationSource.SPOTIFY)
+                }
+              } else {
+                onRecommendationSourceChange(RecommendationSource.YOUTUBE)
+              }
+            }
+          ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.randomize_home_order)),
             icon = painterResource(R.drawable.shuffle),

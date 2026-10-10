@@ -103,6 +103,9 @@ fun OldPlayerMenu(
         null
       }
     }
+  val varispeedMode by rememberPreference(VarispeedKey, defaultValue = false)
+  var showSpeedDialog by rememberSaveable { mutableStateOf(false) }
+
   val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
   val castVolume by
     castHandler?.castVolume?.collectAsState() ?: remember { mutableFloatStateOf(1f) }
@@ -247,6 +250,12 @@ fun OldPlayerMenu(
         }
       }
     }
+  }
+
+  if (showSpeedDialog) {
+    SpeedDialog(
+      onDismiss = { showSpeedDialog = false },
+    )
   }
 
   if (showPitchTempoDialog) {
@@ -1229,7 +1238,7 @@ fun OldPlayerMenu(
                     modifier = Modifier.size(24.dp)
                   )
                 },
-                onClick = { showPitchTempoDialog = true }
+                onClick = { if (!varispeedMode) showPitchTempoDialog = true else showSpeedDialog = true }
               )
             )
           }

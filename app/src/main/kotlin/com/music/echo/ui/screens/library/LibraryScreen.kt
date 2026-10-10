@@ -65,6 +65,7 @@ fun LibraryScreen(navController: NavController) {
   var showYoutubeImportDialog by remember { mutableStateOf(false) }
   var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
   var showCreatePlaylistOptionsDialog by rememberSaveable { mutableStateOf(false) }
+  var showTasteGenerationDialog by rememberSaveable { mutableStateOf(false) }
   var showAiPlaylistDialog by rememberSaveable { mutableStateOf(false) }
   val context = LocalContext.current
 
@@ -168,6 +169,14 @@ fun LibraryScreen(navController: NavController) {
                 onClick = {
                   showFabMenu = false
                   showCreatePlaylistOptionsDialog = true
+                }
+              ),
+              Material3SettingsItem(
+                title = { Text("Create from Taste") },
+                icon = painterResource(R.drawable.sparks),
+                onClick = {
+                  showFabMenu = false
+                  showTasteGenerationDialog = true
                 }
               ),
               Material3SettingsItem(

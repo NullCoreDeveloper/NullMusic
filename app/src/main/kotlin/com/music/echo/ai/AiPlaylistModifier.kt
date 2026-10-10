@@ -23,7 +23,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 object AiPlaylistModifier {
-  private val client = OkHttpClient()
+  private val client =
+    OkHttpClient.Builder()
+      .connectTimeout(30, TimeUnit.SECONDS)
+      .readTimeout(90, TimeUnit.SECONDS)
+      .writeTimeout(30, TimeUnit.SECONDS)
+      .build()
 
   suspend fun modifyPlaylist(
     context: Context,

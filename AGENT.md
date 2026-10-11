@@ -337,10 +337,15 @@ NDK `27.0.12077973`. JDK 21 (kotlin/java toolchain).
 - Never commit: `local.properties`, `*.keystore`, real `google-services.json`,
   any `gradle.properties` containing signing credentials.
 
+## Recommendation query safety
+
+`DatabaseDao.quickPicks` and `forgottenFavorites` use a bound, per-invocation random seed to order song row IDs deterministically (including Quick Picks' fallback seeds). Do not use SQLite `RANDOM()` in queries returning Room relations: Room resets and re-executes the parent statement while building relations, so a randomized `LIMIT` can return different IDs and crash with `NoSuchElementException` from the generated relation map even inside `@Transaction`. A new invocation gets a new seed, preserving refresh variety without a schema migration.
+
 ## Testing
 
 A 4-tier test suite covers database migrations, scoring algorithms, repository persistence, caching, and UI flows:
 - **Tier 1 (Pure Logic):** `app/src/test/.../generate/LocalTasteScoringTest.kt` (pure JVM scoring, skip penalty, recency, time-of-day bonuses, candidate filter) and `RecommendationScoringTest.kt` (Last.fm additive scoring bonuses).
+- **Recommendation relations regression:** `core/src/test/.../db/RecommendationRelationsTest.kt` loads Quick Picks and Forgotten Favorites with more than 100 candidates, checks stable seeded selections and artist relations (including artistless songs), exclusion filtering, and variety across seeds.
 - **Tier 2 (Database Migration & Cache):** `core/src/test/.../db/Migration46To47Test.kt`, `Migration47To48Test.kt` (v47 -> v48 `taste_profile` table), and `app/src/test/.../generate/TasteProfileProviderTest.kt` (1-hour TTL cache, refresh, offline fallback).
 - **Tier 3 (Repository Logic):** `app/src/test/.../generate/SongPlayStatsRepositoryTest.kt` (accumulated play time, skip tracking, error handling with fake DAOs).
 - **Tier 4 (UI & Pipeline Flow Tests):** `app/src/test/.../generate/GenerateViewModelTest.kt` (state transitions, exclusions handling, cancel logic) and `RecommendationEngineTest.kt` (multi-source scoring, filtering, exclusion enforcement).

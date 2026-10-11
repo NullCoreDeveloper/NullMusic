@@ -260,6 +260,7 @@ class MainActivity : ComponentActivity() {
     }
 
   @Inject lateinit var database: MusicDatabase
+  @Inject lateinit var localTasteEngine: echo.music.iad1tya.generate.LocalTasteEngine
 
   @Inject lateinit var downloadUtil: DownloadUtil
 
@@ -1729,7 +1730,7 @@ class MainActivity : ComponentActivity() {
                         onAiHubClick = {
                           navController.navigate("settings/ai") { launchSingleTop = true }
                         },
-                        aiHubIconRes = R.drawable.sparks,
+                        aiHubIconRes = R.drawable.ai_pfp,
                         aiHubContentDescription = stringResource(R.string.ai_lyrics_translation),
                         onSearchLongClick = onRailSearchLongClick,
                         isSelected = { screen ->
@@ -1859,7 +1860,7 @@ class MainActivity : ComponentActivity() {
                   onAiHubClick = {
                     navController.navigate("settings/ai") { launchSingleTop = true }
                   },
-                  aiHubIconRes = R.drawable.sparks,
+                  aiHubIconRes = R.drawable.ai_pfp,
                   aiHubContentDescription = stringResource(R.string.ai_lyrics_translation)
                 )
               }

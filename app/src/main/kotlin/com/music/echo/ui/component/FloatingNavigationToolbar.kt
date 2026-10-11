@@ -367,6 +367,8 @@ fun FloatingToolbarOverflowMenuButton(
                     Material3SettingsItem(
                       title = { Text(aiHubContentDescription) },
                       icon = painterResource(aiHubIconRes),
+                      tintIcon = false,
+                      iconShape = androidx.compose.foundation.shape.CircleShape,
                       onClick = {
                         scope
                           .launch { sheetState.hide() }

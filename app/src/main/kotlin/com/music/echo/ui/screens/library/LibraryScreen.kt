@@ -40,6 +40,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -173,7 +177,9 @@ fun LibraryScreen(navController: NavController) {
               ),
               Material3SettingsItem(
                 title = { Text("Create from Taste") },
-                icon = painterResource(R.drawable.sparks),
+                icon = painterResource(R.drawable.tast),
+                tintIcon = false,
+                iconShape = androidx.compose.foundation.shape.CircleShape,
                 onClick = {
                   showFabMenu = false
                   showTasteGenerationDialog = true

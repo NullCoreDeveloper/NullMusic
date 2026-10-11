@@ -73,6 +73,7 @@ fun AiSettings(
   var translateMode by rememberPreference(TranslateModeKey, "Literal")
   var autoTranslate by rememberPreference(AutoTranslateKey, false)
   var aiRecommendations by rememberPreference(AiRecommendationsKey, false)
+  var createFromTasteDaily by rememberPreference(echo.music.iad1tya.constants.CreateFromTasteDailyKey, false)
   var deeplApiKey by rememberPreference(DeeplApiKey, "")
   var deeplFormality by rememberPreference(DeeplFormalityKey, "default")
 
@@ -88,6 +89,7 @@ fun AiSettings(
     mapOf(
       "OpenRouter" to "https://openrouter.ai/api/v1/chat/completions",
       "OpenAI" to "https://api.openai.com/v1/chat/completions",
+      "API Route" to "https://global.api-route.com/v1/chat/completions",
       "Perplexity" to "https://api.perplexity.ai/chat/completions",
       "Claude" to "https://api.anthropic.com/v1/messages",
       "Gemini" to "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
@@ -96,6 +98,7 @@ fun AiSettings(
       "Nvidia" to "https://integrate.api.nvidia.com/v1/chat/completions",
       "OrcaRouter" to "https://api.orcarouter.ai/v1/chat/completions",
       "Groq" to "https://api.groq.com/openai/v1/chat/completions",
+      "Opper" to "https://api.opper.ai/v3/compat/chat/completions",
       "Puter" to "https://api.puter.com/puterai/openai/v1/chat/completions",
       "DeepL" to "https://api.deepl.com/v2/translate",
       "Custom" to ""
@@ -105,6 +108,7 @@ fun AiSettings(
     mapOf(
       "OpenRouter" to stringResource(R.string.ai_provider_openrouter_help),
       "OpenAI" to stringResource(R.string.ai_provider_openai_help),
+      "API Route" to stringResource(R.string.ai_provider_api_route_help),
       "Perplexity" to stringResource(R.string.ai_provider_perplexity_help),
       "Claude" to stringResource(R.string.ai_provider_claude_help),
       "Gemini" to stringResource(R.string.ai_provider_gemini_help),
@@ -113,6 +117,7 @@ fun AiSettings(
       "Nvidia" to stringResource(R.string.ai_provider_nvidia_help),
       "OrcaRouter" to stringResource(R.string.ai_provider_orcarouter_help),
       "Groq" to stringResource(R.string.ai_provider_groq_help),
+      "Opper" to stringResource(R.string.ai_provider_opper_help),
       "Puter" to stringResource(R.string.ai_provider_puter_help),
       "DeepL" to stringResource(R.string.ai_provider_deepl_help),
       "Custom" to ""
@@ -130,6 +135,7 @@ fun AiSettings(
           "google/gemini-3-flash-preview"
         ),
       "OpenAI" to listOf("gpt-4o-mini", "gpt-4o", "gpt-4-turbo"),
+      "API Route" to listOf("claude-fable-5-1"),
       "Claude" to
         listOf("claude-3-5-haiku-latest", "claude-3-5-sonnet-latest", "claude-3-opus-latest"),
       "Gemini" to
@@ -178,6 +184,14 @@ fun AiSettings(
           "qwen/qwen3-32b",
           "gemma2-9b-it"
         ),
+      "Opper" to
+        listOf(
+          "gpt-5.4-mini",
+          "claude-sonnet-4-6",
+          "gemini-3.8-flash",
+          "deepseek-v4-pro",
+          "mistral-large-2512"
+        ),
       "Puter" to
         listOf(
           "gpt-4o-mini",
@@ -196,6 +210,9 @@ fun AiSettings(
   var showTranslateModeHelpDialog by rememberSaveable { mutableStateOf(false) }
   var showApiHelpDialog by rememberSaveable { mutableStateOf(false) }
   var showRefreshDialog by rememberSaveable { mutableStateOf(false) }
+  var showTasteGenerationDialog by rememberSaveable { mutableStateOf(false) }
+  var showLogsDialog by rememberSaveable { mutableStateOf(false) }
+
   var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
   var showApiKeyDialog by rememberSaveable { mutableStateOf(false) }
   var showDeeplApiKeyDialog by rememberSaveable { mutableStateOf(false) }
@@ -943,7 +960,9 @@ fun AiSettings(
           add(
             Material3SettingsItem(
               isHighlighted = (highlightKey == stringResource(R.string.ai_recommendations)),
-              icon = painterResource(R.drawable.sparks),
+              icon = painterResource(R.drawable.ai_pfp),
+              tintIcon = false,
+              iconShape = androidx.compose.foundation.shape.CircleShape,
               title = { Text(stringResource(R.string.ai_recommendations)) },
               description = { Text(stringResource(R.string.ai_recommendations_desc)) },
               trailingContent = {
@@ -952,12 +971,32 @@ fun AiSettings(
               onClick = { aiRecommendations = !aiRecommendations }
             )
           )
+          add(
+            Material3SettingsItem(
+              icon = painterResource(R.drawable.tast),
+              tintIcon = false,
+              iconShape = androidx.compose.foundation.shape.CircleShape,
+              title = { Text("Create from Taste") },
+              description = { Text("Daily update of a playlist from your taste history") },
+              trailingContent = {
+                Switch(checked = createFromTasteDaily, onCheckedChange = { createFromTasteDaily = it })
+              },
+              onClick = { createFromTasteDaily = !createFromTasteDaily }
+            )
+          )
         }
     )
 
     if (showRefreshDialog) {
       echo.music.iad1tya.ui.component.RefreshAiRecommendationDialog(
         onDismiss = { showRefreshDialog = false }
+      )
+    }
+
+    if (showTasteGenerationDialog) {
+      echo.music.iad1tya.ui.component.CreateFromTasteDialog(
+        onDismiss = { showTasteGenerationDialog = false },
+        onPlaylistCreated = { showTasteGenerationDialog = false }
       )
     }
 

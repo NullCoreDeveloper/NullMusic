@@ -56,6 +56,7 @@ import java.text.Collator
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Locale
+import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -258,6 +259,8 @@ interface DatabaseDao {
     previewSize: Int = 3,
   ): Flow<List<Song>>
 
+  // Room rereads relation queries after resetting the statement. Keep the randomized selection
+  // deterministic for that statement, otherwise its relation map can lack IDs from the second pass.
   @Transaction
   @Query(
     """
@@ -283,14 +286,17 @@ interface DatabaseDao {
                          SELECT id
                          FROM (SELECT id
                                FROM song
-                               ORDER BY RANDOM()
+                               ORDER BY ((rowid * :randomSeed) & 2147483647), id
                                LIMIT 10))
           AND song.hideFromQuickPicks = 0
-        ORDER BY RANDOM()
+        ORDER BY ((song.rowid * :randomSeed) & 2147483647), song.id
         LIMIT 100
     """,
   )
-  fun quickPicks(now: Long = System.currentTimeMillis()): Flow<List<Song>>
+  fun quickPicks(
+    now: Long = System.currentTimeMillis(),
+    randomSeed: Int = Random.nextInt(1, Int.MAX_VALUE) or 1,
+  ): Flow<List<Song>>
 
   @Transaction
   @Query(
@@ -584,11 +590,14 @@ interface DatabaseDao {
                  JOIN song on song.id = t.eid
         WHERE 0.2 * t.oldPlayTime > t.newPlayTime
           AND song.hideFromQuickPicks = 0
-        ORDER BY RANDOM()
+        ORDER BY ((song.rowid * :randomSeed) & 2147483647), song.id
         LIMIT 100
     """
   )
-  fun forgottenFavorites(now: Long = System.currentTimeMillis()): Flow<List<Song>>
+  fun forgottenFavorites(
+    now: Long = System.currentTimeMillis(),
+    randomSeed: Int = Random.nextInt(1, Int.MAX_VALUE) or 1,
+  ): Flow<List<Song>>
 
   @Transaction
   @Query(

@@ -4,6 +4,8 @@
     "Local Taste Engine (Slice 2): Multi-source Last.fm recommendation pipeline (similar tracks, similar artists, top genres) with 1-hour taste snapshot caching and additive scoring bonuses",
     "Local Taste Engine (Slice 3): Genre awareness with additive scoring bonus (+1.0), YouTube taste signals extraction, cross-screen generation status synchronization, and 'From Taste' quick action"
   ],
-  "bug_fixes": [],
+  "bug_fixes": [
+    "Prevent missing song-ID map crashes in Quick Picks and Forgotten Favorites by keeping randomized Room relation queries stable across statement resets"
+  ],
   "contributors": []
 }

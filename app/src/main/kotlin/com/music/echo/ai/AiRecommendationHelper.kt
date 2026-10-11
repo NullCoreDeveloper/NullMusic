@@ -33,7 +33,7 @@ object AiRecommendationHelper {
       .writeTimeout(30, TimeUnit.SECONDS)
       .build()
 
-  private const val PLAYLIST_NAME = "From your taste by Echo Music"
+  private const val PLAYLIST_NAME = "From your taste by NullMusic"
 
   suspend fun generateRecommendations(context: Context, onLog: (suspend (String) -> Unit)? = null) =
     withContext(Dispatchers.IO) {

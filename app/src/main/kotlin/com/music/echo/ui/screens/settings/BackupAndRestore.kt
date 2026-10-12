@@ -163,10 +163,11 @@ fun BackupAndRestore(
                   icon = painterResource(R.drawable.backup),
                   onClick = {
                     val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-                    backupLauncher.launch(
+                    backupLauncher.launchSafely(
                       "${context.getString(R.string.app_name)}_${
                                             LocalDateTime.now().format(formatter)
-                                        }.backup"
+                                        }.backup",
+                      context
                     )
                   }
                 ),
@@ -196,24 +197,27 @@ fun BackupAndRestore(
                 Material3SettingsItem(
                   title = { Text("Import from local file") },
                   icon = painterResource(R.drawable.restore),
-                  onClick = { restoreLauncher.launch(arrayOf("application/octet-stream")) }
+                  onClick = {
+                    restoreLauncher.launchSafely(arrayOf("application/octet-stream"), context)
+                  }
                 ),
                 Material3SettingsItem(
                   title = { Text("Import 'm3u' Playlist") },
                   icon = painterResource(R.drawable.playlist_add),
-                  onClick = { importM3uLauncherOnline.launch(arrayOf("audio/*")) }
+                  onClick = { importM3uLauncherOnline.launchSafely(arrayOf("audio/*"), context) }
                 ),
                 Material3SettingsItem(
                   title = { Text("Import 'csv' Playlist") },
                   icon = painterResource(R.drawable.playlist_add),
                   onClick = {
-                    importPlaylistFromCsv.launch(
+                    importPlaylistFromCsv.launchSafely(
                       arrayOf(
                         "text/csv",
                         "text/comma-separated-values",
                         "application/csv",
                         "text/plain"
-                      )
+                      ),
+                      context
                     )
                   }
                 )

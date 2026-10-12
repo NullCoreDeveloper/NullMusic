@@ -113,7 +113,7 @@ fun EqScreen(
     profiles = state.profiles,
     activeProfileId = state.activeProfileId,
     onProfileSelected = { viewModel.selectProfile(it) },
-    onImportCustomEQ = { filePickerLauncher.launch("text/plain") },
+    onImportCustomEQ = { filePickerLauncher.launchSafely("text/plain", context) },
     onOpenSystemEqualizer = {
       playerConnection?.let { connection ->
         val intent =

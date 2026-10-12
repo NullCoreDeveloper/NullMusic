@@ -3,8 +3,6 @@
 package iad1tya.echo.music.ui.screens.settings
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -105,66 +103,35 @@ fun StorageSettings(
   val exportDirectoryLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
       if (uri != null) {
-        context.contentResolver.takePersistableUriPermission(
-          uri,
-          Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
-        )
-        onExportDirectoryUriChange(uri.toString())
-      }
-    }
-
-  val isPickerSupported =
-    remember(context) {
-      when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> true
-        else -> {
-          val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-          context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null
+        try {
+          context.contentResolver.takePersistableUriPermission(
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+          )
+        } catch (e: SecurityException) {
+          Timber.w(e, "Unable to persist export directory permission")
+          Toast.makeText(context, R.string.system_picker_unavailable, Toast.LENGTH_LONG).show()
+          return@rememberLauncherForActivityResult
         }
-      }.also { supported ->
-        Timber.d("OPEN_DOCUMENT_TREE supported: $supported (API ${Build.VERSION.SDK_INT})")
+        onExportDirectoryUriChange(uri.toString())
       }
     }
 
   val pickerNotAvailableMsg = stringResource(R.string.picker_not_available)
   val exportDirUnavailableMsg = stringResource(R.string.export_directory_unavailable)
 
-  val launchExportPicker: () -> Unit =
-    remember(
-      isPickerSupported,
-      exportDirectoryLauncher,
-      onExportDirectoryUriChange,
-      pickerNotAvailableMsg,
-      exportDirUnavailableMsg
-    ) {
-      {
-        if (isPickerSupported) {
-          try {
-            exportDirectoryLauncher.launch(null)
-          } catch (e: android.content.ActivityNotFoundException) {
-            Timber.e(e, "Document picker launch failed despite resolveActivity check")
-            val fallbackDir = context.getExternalFilesDir(null)
-            if (fallbackDir != null) {
-              onExportDirectoryUriChange(fallbackDir.toUri().toString())
-              Toast.makeText(context, pickerNotAvailableMsg, Toast.LENGTH_LONG).show()
-            } else {
-              Timber.e("getExternalFilesDir returned null on catch block")
-              Toast.makeText(context, exportDirUnavailableMsg, Toast.LENGTH_LONG).show()
-            }
-          }
-        } else {
-          Timber.w("OPEN_DOCUMENT_TREE not supported on this device, using fallback")
-          val fallbackDir = context.getExternalFilesDir(null)
-          if (fallbackDir != null) {
-            onExportDirectoryUriChange(fallbackDir.toUri().toString())
-            Toast.makeText(context, pickerNotAvailableMsg, Toast.LENGTH_LONG).show()
-          } else {
-            Timber.e("getExternalFilesDir returned null on else block")
-            Toast.makeText(context, exportDirUnavailableMsg, Toast.LENGTH_LONG).show()
-          }
-        }
+  val launchExportPicker: () -> Unit = {
+    exportDirectoryLauncher.launchSafely(null) {
+      val fallbackDir = context.getExternalFilesDir(null)
+      if (fallbackDir != null) {
+        onExportDirectoryUriChange(fallbackDir.toUri().toString())
+        Toast.makeText(context, pickerNotAvailableMsg, Toast.LENGTH_LONG).show()
+      } else {
+        Timber.e("getExternalFilesDir returned null after picker launch failure")
+        Toast.makeText(context, exportDirUnavailableMsg, Toast.LENGTH_LONG).show()
       }
     }
+  }
   var exportPickerAutoOpened by remember { mutableStateOf(false) }
   LaunchedEffect(autoOpenExportPicker) {
     if (autoOpenExportPicker && !exportPickerAutoOpened) {

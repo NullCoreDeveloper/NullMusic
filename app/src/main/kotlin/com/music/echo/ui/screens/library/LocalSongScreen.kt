@@ -320,10 +320,10 @@ fun LocalSongScreen(
       onFilterModeChange = { onFilterModeNameChange(it.name) },
       excludedFolders = excludedFolders,
       onExcludedFoldersChange = onExcludedFoldersChange,
-      onAddExcludedFolder = { excludedFolderPickerLauncher.launch(null) },
+      onAddExcludedFolder = { excludedFolderPickerLauncher.launchSafely(null, context) },
       includedFolders = includedFolders,
       onIncludedFoldersChange = onIncludedFoldersChange,
-      onAddIncludedFolder = { includedFolderPickerLauncher.launch(null) },
+      onAddIncludedFolder = { includedFolderPickerLauncher.launchSafely(null, context) },
       sheetState = scanSheetState,
       onDismiss = { showScanSheet = false },
       onPrimaryAction = {

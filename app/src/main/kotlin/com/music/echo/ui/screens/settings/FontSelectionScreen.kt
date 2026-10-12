@@ -47,6 +47,7 @@ import echo.music.iad1tya.ui.theme.GoogleSansFontFamily
 import echo.music.iad1tya.ui.theme.OutfitFontFamily
 import echo.music.iad1tya.ui.theme.PlusJakartaSansFontFamily
 import echo.music.iad1tya.ui.theme.SansFlexFontFamily
+import echo.music.iad1tya.utils.launchSafely
 import echo.music.iad1tya.utils.rememberPreference
 import java.io.File
 import java.io.FileOutputStream
@@ -284,7 +285,7 @@ fun FontSelectionScreen(
                 )
               },
               trailingContent = {
-                TextButton(onClick = { fontPickerLauncher.launch("*/*") }) {
+                TextButton(onClick = { fontPickerLauncher.launchSafely("*/*", context) }) {
                   Text(stringResource(R.string.import_custom_font))
                 }
               },
@@ -293,10 +294,10 @@ fun FontSelectionScreen(
                   if (customFontPath.isNotEmpty() && File(customFontPath).exists()) {
                     onSelectedFontChange(AppFont.CUSTOM.value)
                   } else {
-                    fontPickerLauncher.launch("*/*")
+                    fontPickerLauncher.launchSafely("*/*", context)
                   }
                 } else {
-                  fontPickerLauncher.launch("*/*")
+                  fontPickerLauncher.launchSafely("*/*", context)
                 }
               }
             )

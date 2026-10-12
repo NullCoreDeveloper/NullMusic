@@ -200,6 +200,7 @@ import echo.music.iad1tya.ui.menu.SelectionSongMenu
 import echo.music.iad1tya.ui.menu.SongMenu
 import echo.music.iad1tya.ui.screens.settings.DarkMode
 import echo.music.iad1tya.ui.utils.backToMain
+import echo.music.iad1tya.utils.launchSafely
 import echo.music.iad1tya.utils.listItemShape
 import echo.music.iad1tya.utils.makeTimeString
 import echo.music.iad1tya.utils.rememberEnumPreference
@@ -562,7 +563,9 @@ fun LocalPlaylistScreen(
                 onShowRemoveDownloadDialog = { showRemoveDownloadDialog = true },
                 onshowDeletePlaylistDialog = { showDeletePlaylistDialog = true },
                 onStartSearch = { isSearching = true },
-                onExport = { exportCsvLauncher.launch("${playlist.playlist.name}_export.csv") },
+                onExport = {
+                  exportCsvLauncher.launchSafely("${playlist.playlist.name}_export.csv", context)
+                },
                 snackbarHostState = snackbarHostState,
                 modifier = Modifier.animateItem()
               )
@@ -1096,8 +1099,9 @@ fun LocalPlaylistHeader(
         onDismiss = { showEditNoteDialog = false },
         onConfirm = {
           showEditNoteDialog = false
-          pickLauncher.launch(
-            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+          pickLauncher.launchSafely(
+            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly),
+            context
           )
         },
         onCancel = { showEditNoteDialog = false }
@@ -1160,10 +1164,11 @@ fun LocalPlaylistHeader(
                     menuState.show({
                       CustomThumbnailMenu(
                         onEdit = {
-                          pickLauncher.launch(
+                          pickLauncher.launchSafely(
                             PickVisualMediaRequest(
                               mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
+                            ),
+                            context
                           )
                         },
                         onRemove = {
@@ -1228,10 +1233,11 @@ fun LocalPlaylistHeader(
                     menuState.show({
                       CustomThumbnailMenu(
                         onEdit = {
-                          pickLauncher.launch(
+                          pickLauncher.launchSafely(
                             PickVisualMediaRequest(
                               mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
+                            ),
+                            context
                           )
                         },
                         onRemove = {

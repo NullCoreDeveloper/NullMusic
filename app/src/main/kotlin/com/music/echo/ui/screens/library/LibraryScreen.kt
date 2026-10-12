@@ -248,9 +248,9 @@ fun LibraryScreen(navController: NavController) {
       autoFocus = true,
       onDismiss = { showYoutubeImportDialog = false },
       onDone = { finalUrl ->
-        val listId = Regex("[?&]list=([a-zA-Z0-9_-]+)").find(finalUrl)?.groupValues?.get(1)
-        if (listId != null) {
-          navController.navigate("online_playlist/$listId")
+        val route = onlinePlaylistRoute(onlinePlaylistIdFromUrl(finalUrl))
+        if (route != null) {
+          navController.navigate(route)
         } else {
           android.widget.Toast.makeText(
               context,

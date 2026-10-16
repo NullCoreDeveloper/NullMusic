@@ -620,7 +620,7 @@
     <string name="playback_progress">Progression de la lecture</string>
     <string name="widget_playing_on">Lecture sur</string>
     <string name="widget_this_phone">Ce téléphone</string>
-    <string name="widget_echo_music">Echo Music</string>
+    <string name="widget_echo_music">NullMusic</string>
     <string name="widget_queue">File d\'attente</string>
     <string name="widget_cast">Caster</string>
     <string name="widget_options">Plus d\'options</string>
@@ -734,7 +734,7 @@
     <string name="ai_lyrics_translation">Espace IA (AI Hub)</string>
     <string name="contribute_to_lossless">Contribuer à Lossless Music</string>
     <string name="lossless_music_hub">Hub Musique Lossless</string>
-    <string name="lossless_desc">Ajoutez de l\'audio haute fidélité sans perte (.flac) à l\'écosystème Echo Music. Taille max : 99 Mo.</string>
+    <string name="lossless_desc">Ajoutez de l\'audio haute fidélité sans perte (.flac) à l\'écosystème NullMusic. Taille max : 99 Mo.</string>
     <string name="login_with_github">Se connecter avec GitHub</string>
     <string name="lossless_audio_file">Fichier audio Lossless</string>
     <string name="choose_file">Choisir un fichier .flac (Max 99 Mo)</string>
@@ -948,7 +948,7 @@
 
     <string name="perm_required">Requis</string>
     <string name="perm_permissions">Autorisations</string>
-    <string name="perm_intro_text">Ces autorisations sont nécessaires pour que echomusic fonctionne correctement. Veuillez les accorder pour continuer.</string>
+    <string name="perm_intro_text">Ces autorisations sont nécessaires pour que nullmusic fonctionne correctement. Veuillez les accorder pour continuer.</string>
 
     <string name="perm_notif_title">Notifications</string>
     <string name="perm_notif_desc">Sachez immédiatement quand votre musique est lue et contrôlez-la depuis la barre de notification.</string>
@@ -958,7 +958,7 @@
 
     <string name="feat_discover">Découvrir</string>
     <string name="feat_features">Fonctionnalités</string>
-    <string name="feat_intro">Explorez tout ce que echomusic a à offrir pour votre expérience musicale.</string>
+    <string name="feat_intro">Explorez tout ce que nullmusic a à offrir pour votre expérience musicale.</string>
 
     <string name="feat_lyrics_title">Paroles intelligentes</string>
     <string name="feat_lyrics_desc">Profitez de paroles synchronisées mot à mot pour des millions de chansons.</string>
@@ -982,7 +982,7 @@
     <string name="welcome_update_status">À jour</string>
     <string name="welcome_update_intro">Assurez-vous de disposer des dernières fonctionnalités et améliorations de sécurité.</string>
     <string name="welcome_checking_updates">Vérification des mises à jour…</string>
-    <string name="welcome_up_to_date">echomusic est à jour !</string>
+    <string name="welcome_up_to_date">nullmusic est à jour !</string>
     <string name="welcome_update_available">Une nouvelle version est disponible : %s</string>
     <string name="welcome_everything_ready">Tout est maintenant à jour</string>
     <string name="commits_title">Commits</string>

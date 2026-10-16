@@ -406,12 +406,8 @@
     <string name="listen_together_smart_resync">Resynchronisation intelligente du réseau</string>
     <string name="listen_together_smart_resync_desc">Reprendre automatiquement la connexion avec l\'hôte après une perte de connexion</string>
     <!-- Bottom navigation -->
-    <string name="music">Musique</string>
     <!-- Search -->
-    <string name="filter_local">Local</string>
     <!-- Dialog -->
-    <string name="hide_status_bar_on_fullscreen">Masquer la barre d’état en plein écran</string>
-    <string name="hide_status_bar_on_fullscreen_desc">Masquer la barre d’état lorsque le mode plein écran des paroles est actif</string>
     <!-- Settings -->
     <string name="show_audio_quality_badge">Afficher l’indicateur de qualité audio</string>
     <string name="apple_music">Apple Music</string>
@@ -442,13 +438,6 @@
     <string name="spotify_account">Compte Spotify</string>
     <string name="spotify_waiting_for_login">En attente de la connexion Spotify</string>
     <string name="export_directory_unavailable">Unable to access an export directory on this device.</string>
-    <string name="loading">Chargement en cours</string>
-    <string name="added_to_playlist">Ajouté à %s</string>
-    <string name="more_options">Plus d\'options</string>
-    <string name="picker_not_available">Le sélecteur de documents n\'est pas disponible sur cet appareil. Le répertoire d\'exportation par défaut de l\'application est utilisé.</string>
-    <string name="export_as_csv">Exporter au format CSV</string>
-    <string name="export_playlist_desc">Exporter les titres d\'une playlist vers un fichier CSV</string>
-    <string name="export_successful">La playlist a été exportée avec succès</string>
     <string name="activity_history">Résumé de l\'écoute</string>
     <string name="total_listening_time">Durée totale d\'écoute</string>
     <string name="unique_songs">Titres uniques</string>
@@ -456,30 +445,11 @@
     <string name="unique_albums">Albums uniques</string>
     <string name="selected_period">Période sélectionnée</string>
     <string name="hours_minutes_format">%1$dh %2$dm</string>
-    <string name="default_open_tab">Onglet ouvert par défaut</string>
-    <string name="grid_cell_size">Taille des grilles</string>
-    <string name="small">Petite</string>
-    <string name="big">Grande</string>
 
-    <string name="content">Contenu</string>
-    <string name="action_logout">Se déconnecter</string>
-    <string name="action_login">Se connecter</string>
-    <string name="login">Connexion</string>
-    <string name="show_audio_quality_badge">Afficher le badge de qualité musicale</string>
-    <string name="not_logged_in">Non connecté</string>
-    <string name="login_failed">Échec de la connexion</string>
 
-    <string name="content_language">Langue par défaut du contenu</string>
-    <string name="content_country">Pays par défaut du contenu</string>
     <string name="content_sponsor_block">SponsorBlock (Saut automatique)</string>
     <string name="content_sponsor_block_desc">Masquer et sauter automatiquement les contenus sponsorisés, intros et sections non musicales dans les vidéos</string>
-    <string name="system_default">Par défaut du système</string>
-    <string name="enable_proxy">Activer le proxy</string>
-    <string name="proxy_type">Type de proxy</string>
-    <string name="proxy_url">URL du proxy</string>
-    <string name="restart_to_take_effect">Redémarrer pour appliquer les modifications</string>
 
-    <string name="player_and_audio">Lecteur et audio</string>
     <string name="setting_desc_account">Gérer la connexion et les intégrations</string>
     <string name="setting_desc_ai">Paroles et traductions générées par IA</string>
     <string name="setting_desc_appearance">Thèmes, couleurs et disposition de l\'interface</string>
@@ -493,126 +463,18 @@
     <string name="setting_desc_about">Informations sur l\'application et licences</string>
     <string name="setting_desc_settings_main">Préférences et configurations de l\'application</string>
 
-    <string name="network_ip_version">Version IP réseau</string>
-    <string name="audio_quality">Qualité musicale</string>
-    <string name="ip_version_auto">Automatique</string>
-    <string name="ip_version_ipv4">IPv4 forcé</string>
-    <string name="ip_version_ipv6">IPv6 forcé</string>
-    <string name="audio_quality_auto">Auto</string>
-    <string name="audio_quality_high">Haute</string>
-    <string name="audio_quality_low">Basse</string>
-    <string name="audio_quality_lossless">Musique sans perte (Lossless)</string>
-    <string name="queue">File d\'attente</string>
-    <string name="persistent_queue">File d\'attente persistante</string>
-    <string name="persistent_queue_desc">Restaurez votre dernière file d\'attente au démarrage de l\'application</string>
-    <string name="auto_load_more">Charger automatiquement d\'autres titres</string>
-    <string name="auto_load_more_desc">Ajouter automatiquement plus de chansons lorsque la fin de la file est atteinte, si possible</string>
-    <string name="skip_silence">Sauter les silences</string>
-    <string name="audio_normalization">Normalisation audio</string>
-    <string name="auto_skip_next_on_error">Passer automatiquement au titre suivant en cas d\'erreur</string>
-    <string name="auto_skip_next_on_error_desc">Assure la continuité de votre expérience d\'écoute</string>
-    <string name="stop_music_on_task_clear">Arrêter la musique à la fermeture de l\'application</string>
-    <string name="equalizer">Égaliseur</string>
 
-    <string name="storage">Stockage</string>
-    <string name="cache">Cache</string>
-    <string name="image_cache">Cache d\'images</string>
-    <string name="song_cache">Cache de chansons</string>
-    <string name="max_cache_size">Taille maximale du cache</string>
-    <string name="unlimited">Illimité</string>
-    <string name="clear_all_downloads">Effacer tous les téléchargements</string>
-    <string name="max_image_cache_size">Taille max. du cache d\'images</string>
-    <string name="clear_image_cache">Vider le cache d\'images</string>
-    <string name="max_song_cache_size">Taille max. du cache de chansons</string>
-    <string name="clear_song_cache">Vider le cache de chansons</string>
-    <string name="size_used">%s utilisé</string>
 
-    <string name="clear_downloaded_updates">Effacer les mises à jour téléchargées</string>
-    <string name="clear_downloaded_updates_desc">Supprimer les fichiers APK téléchargés pour libérer de l\'espace</string>
 
-        <string name="privacy">Confidentialité</string>
-    <string name="listen_history">Historique d\'écoute</string>
-    <string name="pause_listen_history">Suspendre l\'historique d\'écoute</string>
-    <string name="clear_listen_history">Effacer l\'historique d\'écoute</string>
-    <string name="clear_listen_history_confirm">Voulez-vous vraiment effacer tout l\'historique d\'écoute ?</string>
-    <string name="search_history">Historique de recherche</string>
-    <string name="pause_search_history">Suspendre l\'historique de recherche</string>
-    <string name="clear_search_history">Effacer l\'historique de recherche</string>
-    <string name="clear_search_history_confirm">Voulez-vous vraiment effacer tout l\'historique de recherche ?</string>
-    <string name="use_login_for_browse">Utiliser le compte connecté pour la navigation</string>
-    <string name="use_login_for_browse_desc">Peut influencer le contenu affiché (par exemple, afficher des albums réservés aux abonnés Premium)</string>
-    <string name="disable_screenshot">Désactiver les captures d\'écran</string>
-    <string name="disable_screenshot_desc">Lorsque cette option est activée, les captures d\'écran et l\'aperçu dans les applications récentes sont désactivés.</string>
-    <string name="enable_lrclib">Activer le fournisseur de paroles LrcLib</string>
-    <string name="enable_kugou">Activer le fournisseur de paroles KuGou</string>
-    <string name="hide_explicit">Masquer le contenu explicite</string>
 
-    <string name="backup_restore">Sauvegarde et restauration</string>
-    <string name="action_backup">Sauvegarder</string>
-    <string name="action_restore">Restaurer</string>
-    <string name="imported_playlist">Playlist importée</string>
-    <string name="backup_create_success">Sauvegarde créée avec succès</string>
-    <string name="backup_create_failed">Impossible de créer la sauvegarde</string>
-    <string name="restore_failed">Échec de la restauration de la sauvegarde</string>
 
-    <string name="discord_integration">Intégration Discord</string>
-    <string name="discord_information">echomusic utilise la bibliothèque KizzyRPC pour définir le statut de votre compte Discord. Cela implique l\'utilisation de la passerelle Discord, ce qui peut être considéré comme une violation des CGU de Discord. Cependant, aucun bannissement de compte n\'a été signalé pour cette raison. À utiliser à vos propres risques.\nechomusic ne fera qu\'extraire votre jeton et tout le reste est stocké localement.</string>
-    <string name="dismiss">Ignorer</string>
-    <string name="options">Options</string>
-    <string name="preview">Aperçu</string>
-    <string name="enable_discord_rpc">Activer Rich Presence</string>
 
-    <string name="about">À propos</string>
-    <string name="app_version">Version de l\'application</string>
 
-    <string name="new_version_available">Nouvelle version disponible</string>
-    <string name="translation_models">Modèles de traduction</string>
-    <string name="clear_translation_models">Effacer les modèles de traduction</string>
-    <string name="bluetooth_permission_required">L\'autorisation Bluetooth est requise pour détecter les appareils audio.</string>
-    <string name="streaming_to">Diffusion vers</string>
-    <string name="this_phone">Ce téléphone</string>
-    <string name="wired_headphones">Casque filaire</string>
-    <string name="hdmi">HDMI</string>
-    <string name="phone_speaker">Haut-parleur du téléphone</string>
-    <string name="audio_quality_title">Qualité musicale</string>
-    <string name="battery_content_desc">Niveau de batterie</string>
-    <string name="done">Terminé</string>
-    <string name="audio_devices">Appareils audio</string>
-    <string name="bluetooth_headphones">Casque Bluetooth</string>
-    <string name="license">Licence Publique Générale GNU v3.0</string>
-    <string name="standard_lyrics_blur">Flou standard des paroles</string>
-    <string name="listen_together_smart_resync">Resynchronisation réseau intelligente</string>
-    <string name="listen_together_smart_resync_desc">Rattraper automatiquement la lecture de l\'hôte après une perte de connexion</string>
-    <string name="spotify_import_title">Importer depuis Spotify</string>
-    <string name="spotify_import_desc">Connectez Spotify, choisissez des playlists et dupliquez-les dans vos playlists locales Echo Music.</string>
-    <string name="spotify_connect">Connecter Spotify</string>
-    <string name="spotify_refresh">Actualiser la bibliothèque Spotify</string>
-    <string name="spotify_select_sources">Sélectionner les playlists Spotify</string>
     <string name="spotify_import_by_link">Importer une playlist par lien</string>
     <string name="spotify_import_by_link_desc">Collez le lien d\'une playlist Spotify pour l\'importer, même si elle ne vous appartient pas</string>
     <string name="spotify_import_by_link_hint">https://open.spotify.com/playlist/…</string>
     <string name="spotify_add">Ajouter</string>
     <string name="spotify_invalid_playlist_link">Ce lien ne semble pas être un lien de playlist Spotify valide. Utilisez un format tel que https://open.spotify.com/playlist/…</string>
-    <string name="spotify_import_selected">Importer la sélection</string>
-    <string name="spotify_selected_count">%1$d sélectionnés</string>
-    <string name="spotify_available_count">%1$d sources disponibles</string>
-    <string name="spotify_connected_as">Connecté en tant que %1$s</string>
-    <string name="spotify_not_connected">Spotify n\'est pas connecté</string>
-    <string name="spotify_liked_songs">Titres likés Spotify</string>
-    <string name="spotify_liked_songs_desc">Titres enregistrés dans votre bibliothèque Spotify</string>
-    <string name="spotify_track_count">%1$d titres</string>
-    <string name="spotify_login_title">Connexion Spotify</string>
-    <string name="spotify_loading_library">Chargement de la bibliothèque Spotify</string>
-    <string name="spotify_no_sources">Aucune playlist Spotify trouvée</string>
-    <string name="spotify_import_in_progress">Importation des playlists Spotify en cours</string>
-    <string name="spotify_import_progress_step">%1$s • %2$d/%3$d sources • %4$d/%5$d titres</string>
-    <string name="spotify_import_complete">Importation Spotify terminée</string>
-    <string name="spotify_import_summary">%1$d sources • %2$d importés • %3$d échoués</string>
-    <string name="spotify_source_summary">%1$s : %2$d/%3$d importés</string>
-    <string name="spotify_select_all">Tout sélectionner</string>
-    <string name="spotify_clear_selection">Effacer</string>
-    <string name="spotify_account">Compte Spotify</string>
-    <string name="spotify_waiting_for_login">En attente de connexion à Spotify</string>
     <string name="service_uptime">Disponibilité des services</string>
     <string name="service_uptime_desc">Vérifier l\'état des fournisseurs de musique</string>
     <string name="music_providers">Fournisseurs de musique</string>
@@ -729,22 +591,7 @@
     <string name="ai_recommendations">Recommandations par IA</string>
     <string name="ai_recommendations_desc">Mise à jour quotidienne d\'une playlist personnalisée selon vos goûts</string>
     <string name="ai_recommendations_refresh">Actualiser les recommandations</string>
-    <string name="modify_with_ai">Modifier avec l\'IA</string>
-    <string name="modify_with_ai_desc">Modifier une playlist à l\'aide d\'instructions générées par l\'IA</string>
-    <string name="ai_modify_prompt_hint">Par exemple : supprimer les chansons tristes, ajouter quelques tubes des années 90</string>
     <string name="stream_client">Client de streaming</string>
-    <string name="setting_desc_account">Gérer les identifiants de connexion et les intégrations</string>
-    <string name="setting_desc_ai">Paroles et traductions générées par l\'IA</string>
-    <string name="setting_desc_appearance">Thèmes, couleurs et mise en page de l\'interface utilisateur</string>
-    <string name="setting_desc_player">Lecture, qualité et égaliseur</string>
-    <string name="setting_desc_listen_together">Synchroniser la lecture avec ses amis</string>
-    <string name="setting_desc_content">Langue, région et prestataires</string>
-    <string name="setting_desc_privacy">Historique et suivi</string>
-    <string name="setting_desc_storage">Cache et téléchargements</string>
-    <string name="setting_desc_backup">Exporter et importer des données</string>
-    <string name="setting_desc_update">Vérifiez les nouvelles versions</string>
-    <string name="setting_desc_about">Informations sur l\'application et licences</string>
-    <string name="setting_desc_settings_main">Préférences et paramètres de l\'application</string>
     <string name="about_desc">Gérer À propos Paramètres</string>
     <string name="account_desc">Gérer les paramètres du compte</string>
     <string name="action_exported_desc">Gérer les paramètres exportés</string>

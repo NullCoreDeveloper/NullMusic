@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Bengali (বাংলা) Localization for Echo Music
+  Bengali (বাংলা) Localization for NullMusic
   Complete 100% Coverage: 825 Strings & 14 Plurals
   Fully compliant with bangla-localization standards
 -->
@@ -373,70 +373,12 @@
     <string name="new_version_available">নতুন সংস্করণ উপলভ্য</string>
     <string name="translation_models">অনুবাদ মডেল</string>
     <string name="clear_translation_models">অনুবাদ মডেল মুছুন</string>
-    <string name="forgotten_favorites">ভুলে যাওয়া প্রিয় গান</string>
-    <string name="keep_listening">শুনতে থাকুন</string>
-    <string name="your_youtube_playlists">আপনার YouTube প্লেলিস্ট</string>
-    <string name="similar_to">এর মতো</string>
-    <string name="library_song_empty">লাইব্রেরির গান এখানে দেখা যাবে</string>
-    <string name="library_artist_empty">লাইব্রেরির শিল্পীরা এখানে দেখা যাবে</string>
-    <string name="library_album_empty">লাইব্রেরির অ্যালবাম এখানে দেখা যাবে</string>
-    <string name="library_playlist_empty">আপনার প্লেলিস্ট এখানে দেখা যাবে</string>
-    <string name="other_versions">অন্যান্য সংস্করণ</string>
-    <string name="remove_download_playlist_confirm">আপনি কি সত্যিই ডাউনলোড করা গানের স্টোরেজ থেকে \"%s\" প্লেলিস্টের সব গান সরাতে চান?</string>
-    <string name="delete_playlist_confirm">আপনি কি সত্যিই \"%s\" প্লেলিস্টটি মুছে ফেলতে চান?</string>
-    <string name="add_all_to_library">সব লাইব্রেরিতে যোগ করুন</string>
-    <string name="remove_all_from_library">লাইব্রেরি থেকে সব সরান</string>
-    <string name="remove_from_playlist">প্লেলিস্ট থেকে সরান</string>
-    <string name="remove_from_queue">সারি থেকে সরান</string>
-    <string name="tempo_and_pitch">টেম্পো ও পিচ</string>
-    <string name="duplicates">অনুলিপি</string>
-    <string name="skip_duplicates">অনুলিপি এড়িয়ে যান</string>
-    <string name="add_anyway">তবুও যোগ করুন</string>
-    <string name="duplicates_description_single">গানটি ইতিমধ্যে আপনার প্লেলিস্টে রয়েছে</string>
-    <string name="duplicates_description_multiple">%dটি গান ইতিমধ্যে আপনার প্লেলিস্টে রয়েছে</string>
-    <string name="action_like_all">সব পছন্দ করুন</string>
-    <string name="action_remove_like_all">সব পছন্দ সরান</string>
-    <string name="theme">থিম</string>
-    <string name="player">প্লেয়ার</string>
-    <string name="player_text_alignment">প্লেয়ারের লেখার সারিবদ্ধতা</string>
-    <string name="sided">পার্শ্ববর্তী</string>
-    <string name="player_slider_style">প্লেয়ার স্লাইডারের ধরন</string>
-    <string name="default_">ডিফল্ট</string>
-    <string name="squiggly">ঢেউখেলানো</string>
-    <string name="misc">বিবিধ</string>
-    <string name="grid_cell_size">গ্রিড সেলের আকার</string>
-    <string name="small">ছোট</string>
-    <string name="big">বড়</string>
-    <string name="action_logout">লগ আউট করুন</string>
-    <string name="action_login">লগ ইন করুন</string>
-    <string name="not_logged_in">লগ ইন করা নেই</string>
-    <string name="login_failed">লগইন ব্যর্থ হয়েছে</string>
-    <string name="queue">সারি</string>
-    <string name="persistent_queue_desc">অ্যাপ চালু হলে সর্বশেষ সারি পুনরুদ্ধার করুন</string>
-    <string name="auto_load_more">আরও গান স্বয়ংক্রিয়ভাবে লোড করুন</string>
-    <string name="auto_load_more_desc">সম্ভব হলে সারির শেষে পৌঁছালে স্বয়ংক্রিয়ভাবে আরও গান যোগ করুন</string>
-    <string name="auto_skip_next_on_error">ত্রুটি ঘটলে স্বয়ংক্রিয়ভাবে পরবর্তী গানে যান</string>
-    <string name="auto_skip_next_on_error_desc">নিরবচ্ছিন্ন প্লেব্যাক নিশ্চিত করুন</string>
-    <string name="stop_music_on_task_clear">টাস্ক সরালে সঙ্গীত বন্ধ করুন</string>
-    <string name="listen_history">শোনার ইতিহাস</string>
-    <string name="search_history">অনুসন্ধানের ইতিহাস</string>
-    <string name="use_login_for_browse">কনটেন্ট ব্রাউজ করতে লগইন ব্যবহার করুন</string>
-    <string name="use_login_for_browse_desc">এটি আপনার দেখা কনটেন্টকে প্রভাবিত করতে পারে। যেমন, Premium অ্যাকাউন্ট দিয়ে লগইন করলে শুধু Premium ব্যবহারকারীদের জন্য থাকা অ্যালবামও দেখা যাবে</string>
-    <string name="disable_screenshot">স্ক্রিনশট নিষ্ক্রিয় করুন</string>
-    <string name="disable_screenshot_desc">যখন এই বিকল্পটি চালু থাকে, তখন স্ক্রিনশট এবং রিসেন্টস-এ অ্যাপের ভিউ নিষ্ক্রিয় থাকে।</string>
-    <string name="enable_lrclib">LrcLib গানের লিরিক্স প্রদানকারী সক্রিয় করুন</string>
-    <string name="hide_explicit">স্পষ্ট বিষয়বস্তু লুকান</string>
     <string name="discord_integration">ডিসকর্ড ইন্টিগ্রেশন</string>
     <string name="discord_information">nullmusic আপনার Discord অ্যাকাউন্টের স্ট্যাটাস সেট করার জন্য KizzyRPC লাইব্রেরি ব্যবহার করে। এর মধ্যে Discord Gateway সংযোগ ব্যবহার করা হয়, যা Discord-এর পরিষেবার শর্তাবলীর (TOS) লঙ্ঘন হিসেবে বিবেচিত হতে পারে। তবে, এই কারণে ব্যবহারকারীর অ্যাকাউন্ট সাসপেন্ড হওয়ার কোনো পরিচিত ঘটনা নেই। ব্যবহার আপনার নিজের ঝুঁকিতে করুন।\n\nnullmusic শুধুমাত্র আপনার টোকেন সংগ্রহ করবে, এবং বাকী সবকিছু স্থানীয়ভাবে সংরক্ষিত থাকবে।</string>
     <string name="dismiss">বাতিল করুন</string>
     <string name="options">বিকল্পসমূহ</string>
     <string name="preview">প্রিভিউ</string>
     <string name="enable_discord_rpc">Rich Presence চালু করুন</string>
-    <string name="about">সম্পর্কে</string>
-    <string name="app_version">অ্যাপের সংস্করণ</string>
-    <string name="new_version_available">নতুন সংস্করণ উপলভ্য</string>
-    <string name="translation_models">অনুবাদ মডেল</string>
-    <string name="clear_translation_models">অনুবাদ মডেল পরিষ্কার করুন</string>
     <string name="bluetooth_permission_required">অডিও ডিভাইস শনাক্ত করতে Bluetooth অনুমতি প্রয়োজন।</string>
     <string name="streaming_to">এতে স্ট্রিম করা হচ্ছে</string>
     <string name="this_phone">এই ফোন</string>
@@ -650,7 +592,7 @@
     <string name="display_density_desc">ডিসপ্লে ঘনত্ব সেটিংস পরিচালনা করুন</string>
     <string name="download_quality_title_desc">ডাউনলোড কোয়ালিটি সেটিংস পরিচালনা করুন</string>
     <string name="downloaded_songs_desc">ডাউনলোড করা গান সেটিংস পরিচালনা করুন</string>
-    <string name="echomusic_1_desc">Vivi Music (ফ্লুইড) সেটিংস পরিচালনা করুন</string>
+    <string name="nullmusic_1_desc">Vivi Music (ফ্লুইড) সেটিংস পরিচালনা করুন</string>
     <string name="enable_desc">চালু বা বন্ধ করুন</string>
     <string name="enable_authentication_desc">অথেনটিকেশন চালু বা বন্ধ করুন</string>
     <string name="enable_dynamic_theme_desc">ডায়নামিক থিম চালু বা বন্ধ করুন</string>

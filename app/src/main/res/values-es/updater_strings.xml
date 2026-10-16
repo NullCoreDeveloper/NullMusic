@@ -20,7 +20,7 @@
     <string name="installing_system_update">Instalando actualización\ndel sistema…</string>
     <string name="making_update_ready">Preparando la actualización, esto puede tardar un momento</string>
     <string name="your_app_getting_better">Tu aplicación está mejorando aún más…</string>
-    <string name="update_includes_features">Esta actualización incluye nuevas funciones y lo último de Echo Music %1$s para mejorar tu experiencia. Más información en %2$s.</string>
+    <string name="update_includes_features">Esta actualización incluye nuevas funciones y lo último de NullMusic %1$s para mejorar tu experiencia. Más información en %2$s.</string>
     <string name="whats_new">¿Qué hay de nuevo?</string>
     <string name="update_available">Actualizar</string>
     <string name="checking_for_updates">Buscando actualizaciones…</string>
@@ -35,7 +35,7 @@
     <string name="mobile_network_warning">Descargar actualizaciones mediante datos móviles o en roaming puede generar cargos adicionales.</string>
     <string name="update_size">Tamaño de la actualización: %1$s MB</string>
     <string name="check_internet_connection">Comprueba tu conexión a internet e inténtalo de nuevo.</string>
-    <string name="echo_music_version">Echo Music versión %1$s</string>
+    <string name="echo_music_version">NullMusic versión %1$s</string>
     <string name="last_checked">Última comprobación: %1$s</string>
     <string name="install">Instalar</string>
     <string name="check_for_update">Buscar actualización</string>
@@ -52,7 +52,7 @@
     <string name="later">Más tarde</string>
 
 
-    <string name="echo_music_title">Echo Music</string>
+    <string name="echo_music_title">NullMusic</string>
     <string name="developer_section">DESARROLLADOR</string>
     <string name="collaborator_section">COLABORADOR</string>
     <string name="app_info_section">INFORMACIÓN DE LA APP</string>

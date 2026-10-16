@@ -2717,6 +2717,26 @@ fun BottomSheetPlayer(
             fadeOut()
       ) {
         Column {
+          if (showSeekButtons) {
+            SeekButtons(
+              enabled =
+                !isListenTogetherGuest &&
+                  (if (isCasting) castDuration > 0
+                  else playerConnection.player.isCurrentMediaItemSeekable),
+              color = TextBackgroundColor,
+              onSeek = { offsetMs ->
+                val currentPosition =
+                  if (isCasting) castPosition else playerConnection.player.currentPosition
+                val currentDuration =
+                  if (isCasting) castDuration else playerConnection.player.duration
+                playerConnection.seekTo(
+                  echo.music.iad1tya.playback.seekButtonTarget(
+                    currentPosition, currentDuration, offsetMs
+                  )
+                )
+              }
+            )
+          }
           if (useNewPlayerDesign) {
             Row(
               horizontalArrangement = Arrangement.Center,

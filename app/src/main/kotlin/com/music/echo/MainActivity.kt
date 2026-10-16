@@ -744,7 +744,8 @@ class MainActivity : ComponentActivity() {
 
         val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
 
-        val showRail = isLandscape && !inSearchScreen && currentRoute != "ambient_mode"
+        val showRail =
+          isLandscape && !inSearchScreen && currentRoute != "ambient_mode" && currentRoute != "music_flow"
 
         val navPadding =
           if (shouldShowNavigationBar && !showRail) {
@@ -1647,6 +1648,7 @@ class MainActivity : ComponentActivity() {
                   currentRoute != "update" &&
                   currentRoute != "listen_together/chat" &&
                   currentRoute != "ambient_mode" &&
+                  currentRoute != "music_flow" &&
                   currentRoute != "uptime" &&
                   currentRoute?.startsWith("settings") != true
               ) {
@@ -1773,6 +1775,7 @@ class MainActivity : ComponentActivity() {
                   currentRoute != "update" &&
                     currentRoute != "listen_together/chat" &&
                     currentRoute != "ambient_mode" &&
+                    currentRoute != "music_flow" &&
                     currentRoute != "uptime" &&
                     currentRoute?.startsWith("settings") != true
                 ) {
@@ -2379,3 +2382,4 @@ val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No Downl
 val LocalSyncUtils = staticCompositionLocalOf<SyncUtils> { error("No SyncUtils provided") }
 val LocalListenTogetherManager = staticCompositionLocalOf<iad1tya.echo.music.listentogether.ListenTogetherManager?> { null }
 val LocalIsPlayerExpanded = compositionLocalOf { false }
+val LocalExpandPlayer = staticCompositionLocalOf<() -> Unit> { {} }

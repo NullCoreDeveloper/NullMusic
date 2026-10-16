@@ -68,6 +68,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -165,6 +166,7 @@ import iad1tya.echo.music.viewmodels.HomeViewModel
 import kotlin.math.min
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import iad1tya.echo.music.viewmodels.DailyDiscoverItem
@@ -182,7 +184,7 @@ sealed class HomeSection(val id: String, val baseWeight: Int) {
 
   data object AiRecommendations : HomeSection("ai_recommendations", 95)
 
-  data object QuickPicks : HomeSection("quick_picks", 90)
+  data object HeroCarousel : HomeSection("hero_carousel", 90)
 
   data object DailyDiscover : HomeSection("daily_discover", 80)
 
@@ -577,6 +579,7 @@ fun HomeScreen(
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
   val quickPicks by viewModel.quickPicks.collectAsState()
+  val heroSongs by viewModel.heroSongs.collectAsState()
   val aiRecommendedPlaylist by viewModel.aiRecommendedPlaylist.collectAsState()
   val forgottenFavorites by viewModel.forgottenFavorites.collectAsState()
   val keepListening by viewModel.keepListening.collectAsState()
@@ -606,6 +609,7 @@ fun HomeScreen(
   val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
   val (randomizeHomeOrder) = rememberPreference(RandomizeHomeOrderKey, true)
   val (showSpeedDial) = rememberPreference(ShowSpeedDialKey, true)
+  val (musicFlowEnabled) = rememberPreference(MusicFlowEnabledKey, true)
 
   val isLoggedIn = remember(innerTubeCookie) { "SAPISID" in parseCookieString(innerTubeCookie) }
   val url = if (isLoggedIn) accountImageUrl else null
@@ -794,7 +798,7 @@ fun HomeScreen(
       randomizeHomeOrder,
       randomSeed,
       speedDialItems,
-      quickPicks,
+      heroSongs,
       dailyDiscover,
       keepListening,
       accountPlaylists,
@@ -810,7 +814,7 @@ fun HomeScreen(
       if (showSpeedDial && speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
       if (aiRecommendedPlaylist != null && aiRecommendedPlaylist!!.second.isNotEmpty())
         list.add(HomeSection.AiRecommendations)
-      if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
+      if (heroSongs.isNotEmpty()) list.add(HomeSection.HeroCarousel)
       if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
       if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
       if (keepListening?.isNotEmpty() == true) list.add(HomeSection.KeepListening)
@@ -831,7 +835,7 @@ fun HomeScreen(
 
           val base =
             when (section) {
-              HomeSection.QuickPicks -> 10000
+              HomeSection.HeroCarousel -> 10000
               is HomeSection.HomePageSection -> 9000 - (section.index * 10)
               HomeSection.SpeedDial,
               HomeSection.DailyDiscover -> 500
@@ -844,7 +848,7 @@ fun HomeScreen(
 
           val modifier =
             when (section) {
-              HomeSection.QuickPicks -> 0
+              HomeSection.HeroCarousel -> 0
               HomeSection.SpeedDial,
               HomeSection.DailyDiscover -> sectionRandom.nextInt(-200, 400)
               HomeSection.KeepListening,
@@ -858,7 +862,7 @@ fun HomeScreen(
       } else {
         val defaultOrder =
           mapOf(
-            HomeSection.QuickPicks to 1000,
+            HomeSection.HeroCarousel to 1000,
             HomeSection.SpeedDial to 100,
             HomeSection.FromTheCommunity to 80,
             HomeSection.DailyDiscover to 70,
@@ -1921,6 +1925,15 @@ fun HomeScreen(
           )
         }
 
+        if (musicFlowEnabled && selectedChip == null) {
+          item(key = "music_flow_entry") {
+            MusicFlowEntryCard(
+              onClick = { navController.navigate("music_flow") },
+              modifier = Modifier.animateItem(),
+            )
+          }
+        }
+
         if (isLoading && homePage?.chips.isNullOrEmpty()) {
           item(key = "chips_shimmer") {
             ShimmerHost {
@@ -2165,21 +2178,26 @@ fun HomeScreen(
                 }
               }
             }
-            HomeSection.QuickPicks -> {
-              quickPicks
-                ?.takeIf { it.isNotEmpty() }
-                ?.let { quickPicks ->
-                  item(key = "quick_picks_list") {
-                    val distinctQuickPicks = quickPicks.distinctBy { it.id }
+            HomeSection.HeroCarousel -> {
+              heroSongs
+                .takeIf { it.isNotEmpty() }
+                ?.let { songs ->
+                  item(key = "hero_carousel") {
                     val configuration = LocalConfiguration.current
                     val heroWidth = configuration.screenWidthDp.dp - 32.dp
 
-                    val carouselState = rememberCarouselState { distinctQuickPicks.size }
-                    LaunchedEffect(carouselState) {
+                    val currentSongs by rememberUpdatedState(songs)
+                    val carouselState = rememberCarouselState { currentSongs.size }
+                    val songIds = remember(songs) { songs.map { it.id } }
+                    LaunchedEffect(carouselState, songIds) {
+                      if (carouselState.currentItem >= currentSongs.size) {
+                        carouselState.scrollToItem(0)
+                      }
                       while (true) {
-                        kotlinx.coroutines.delay(5000)
-                        if (distinctQuickPicks.isNotEmpty() && !carouselState.isScrollInProgress) {
-                          val nextIndex = (carouselState.currentItem + 1) % distinctQuickPicks.size
+                        delay(5000)
+                        val size = currentSongs.size
+                        if (size > 1 && !carouselState.isScrollInProgress) {
+                          val nextIndex = (carouselState.currentItem + 1) % size
                           carouselState.animateScrollToItem(nextIndex)
                         }
                       }
@@ -2192,10 +2210,11 @@ fun HomeScreen(
                       contentPadding = PaddingValues(horizontal = 16.dp),
                       modifier = Modifier.fillMaxWidth().height(360.dp).animateItem()
                     ) { index ->
-                      val originalSong = distinctQuickPicks[index]
-                      val song by
-                        database.song(originalSong.id).collectAsState(initial = originalSong)
-                      val isActive = song!!.id == mediaMetadata?.id
+                      val originalSong = songs.getOrNull(index) ?: return@HorizontalCenteredHeroCarousel
+                      val localSong by
+                        database.song(originalSong.id).collectAsState(initial = null)
+                      val song = localSong?.toMediaMetadata() ?: originalSong.toMediaMetadata()
+                      val isActive = song.id == mediaMetadata?.id
 
                       Box(
                         modifier =
@@ -2210,17 +2229,27 @@ fun HomeScreen(
                               onClick = {
                                 if (isActive) {
                                   playerConnection.togglePlayPause()
+                                } else if (localSong?.song?.isLocal == true) {
+                                  playerConnection.playQueue(
+                                    ListQueue(title = song.title, items = listOf(song.toMediaItem()))
+                                  )
                                 } else {
                                   playerConnection.playQueue(
-                                    YouTubeQueue.radio(song!!.toMediaMetadata())
+                                    YouTubeQueue.radio(song)
                                   )
                                 }
                               },
                               onLongClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 menuState.show {
-                                  SongMenu(
-                                    originalSong = song!!,
+                                  localSong?.let { savedSong ->
+                                    SongMenu(
+                                      originalSong = savedSong,
+                                      navController = navController,
+                                      onDismiss = menuState::dismiss
+                                    )
+                                  } ?: YouTubeSongMenu(
+                                    song = originalSong,
                                     navController = navController,
                                     onDismiss = menuState::dismiss
                                   )
@@ -2230,8 +2259,8 @@ fun HomeScreen(
                       ) {
                         AsyncImage(
                           model =
-                            coil3.request.ImageRequest.Builder(LocalContext.current)
-                              .data(song!!.thumbnailUrl)
+                            ImageRequest.Builder(LocalContext.current)
+                              .data(localSong?.thumbnailUrl ?: song.thumbnailUrl)
                               .crossfade(true)
                               .build(),
                           contentDescription = null,
@@ -2274,14 +2303,14 @@ fun HomeScreen(
 
                         Column(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)) {
                           Text(
-                            text = song!!.title,
+                            text = song.title,
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                             color = Color.White,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                           )
                           Text(
-                            text = song!!.artists.joinToString { it.name },
+                            text = song.artists.joinToString { it.name },
                             style = MaterialTheme.typography.titleMedium,
                             color = Color.White.copy(alpha = 0.8f),
                             maxLines = 1,

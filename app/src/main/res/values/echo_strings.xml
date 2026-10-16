@@ -426,6 +426,7 @@
     <string name="export_completed">Export completed</string>
     <string name="export_failed">Export failed: %1$s</string>
     <string name="export_channel_name">Music export</string>
+    <string name="cancel_exports">Cancel exports</string>
     <string name="filter_exported">Exported</string>
     <string name="add_to_playlist_desc">Add to one of your playlists</string>
     <string name="refetch_desc">Refetching the stream from YouTube Music</string>

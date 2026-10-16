@@ -1273,6 +1273,8 @@ object LyricsUtils {
       .replace("&nbsp;", " ")
       .replace("&amp;", "&")
 
+  fun hasSyncedLyrics(lyrics: String): Boolean = parseLyrics(lyrics).any { it.time > 0L }
+
   fun parseLyrics(lyrics: String): List<LyricsEntry> {
 
     val unescapedLyrics =

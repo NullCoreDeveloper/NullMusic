@@ -5,6 +5,7 @@ package iad1tya.echo.music.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.music.echo.spotify.LoadSpotifyRecommendationsUseCase
 import com.music.innertube.YouTube
 import com.music.innertube.models.AlbumItem
 import com.music.innertube.models.Artist
@@ -40,6 +41,7 @@ import iad1tya.echo.music.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -47,13 +49,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withTimeoutOrNull
 
 data class DailyDiscoverItem(
   val seed: Song,
@@ -63,7 +73,7 @@ data class DailyDiscoverItem(
 
 data class CommunityPlaylistItem(val playlist: PlaylistItem, val songs: List<SongItem>)
 
-@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel
 @Inject
@@ -71,7 +81,7 @@ constructor(
   @ApplicationContext val context: Context,
   val database: MusicDatabase,
   val syncUtils: SyncUtils,
-  val loadSpotifyRecommendationsUseCase: com.music.echo.spotify.LoadSpotifyRecommendationsUseCase,
+  val loadSpotifyRecommendationsUseCase: LoadSpotifyRecommendationsUseCase,
 ) : ViewModel() {
   val isRefreshing = MutableStateFlow(false)
   val isLoading = MutableStateFlow(false)
@@ -81,7 +91,7 @@ constructor(
         it[QuickPicksKey].toEnum(QuickPicks.QUICK_PICKS)
     }.distinctUntilChanged()
 
-  val quickPicks = MutableStateFlow<List<Song>?>(null)
+  private val quickPicksSource = MutableStateFlow<List<Song>?>(null)
   val dailyDiscover = MutableStateFlow<List<DailyDiscoverItem>?>(null)
   val forgottenFavorites = MutableStateFlow<List<Song>?>(null)
   val keepListening = MutableStateFlow<List<LocalItem>?>(null)
@@ -92,6 +102,62 @@ constructor(
   val communityPlaylists = MutableStateFlow<List<CommunityPlaylistItem>?>(null)
   val selectedChip = MutableStateFlow<HomePage.Chip?>(null)
   private val previousHomePage = MutableStateFlow<HomePage?>(null)
+
+  private val carouselAccountSongs = MutableStateFlow<List<SongItem>>(emptyList())
+  private val accountPlaylistMutex = Mutex()
+  private val carouselRadioSongs = MutableStateFlow<List<SongItem>>(emptyList())
+  private val carouselShuffleSeed = MutableStateFlow(Random.nextInt())
+  private val carouselLibrary =
+    combine(database.carouselLibrarySongs(), carouselAccountSongs, carouselShuffleSeed) {
+        local, account, seed ->
+      local.map { it.toCarouselSong() }.shuffled(Random(seed)) to
+        account.shuffled(Random(seed))
+    }
+  private val carouselFilters =
+    combine(context.dataStore.data, database.hiddenFromQuickPicksSongIds()) { preferences, hidden ->
+      preferences to hidden.toSet()
+    }
+  val quickPicks: StateFlow<List<Song>?> =
+    combine(quickPicksSource, carouselFilters) { songs, filters ->
+      val (preferences, hidden) = filters
+      songs?.let {
+        filterQuickPickSongs(
+          it, hidden, preferences[BlockedArtistsKey].orEmpty(),
+          preferences[HideExplicitKey] ?: false, preferences[HideVideoSongsKey] ?: false,
+        )
+      }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+  private val carouselRecommendations =
+    combine(carouselRadioSongs, similarRecommendations, dailyDiscover, homePage) {
+        radio, similar, discover, home ->
+      (radio +
+          similar.orEmpty().flatMap { it.items }.filterIsInstance<SongItem>() +
+          discover.orEmpty().mapNotNull { it.recommendation as? SongItem } +
+          home?.sections.orEmpty().flatMap { it.items }.filterIsInstance<SongItem>())
+        .distinctBy { it.id }
+    }
+
+  val heroSongs: StateFlow<List<SongItem>> =
+    combine(
+        database.recentlyPlayedSongs(),
+        carouselLibrary,
+        carouselRecommendations,
+        carouselFilters,
+      ) { recent, library, recommendations, filters ->
+        val (preferences, hidden) = filters
+        selectHeroCarouselSongs(
+          recentlyPlayed = recent.map { it.toCarouselSong() },
+          library = library.first,
+          account = library.second,
+          excludedSongIds = hidden,
+          blockedArtists = preferences[BlockedArtistsKey] ?: emptySet(),
+          recommendations = recommendations,
+          hideExplicit = preferences[HideExplicitKey] ?: false,
+          hideVideoSongs = preferences[HideVideoSongsKey] ?: false,
+        )
+      }
+      .flowOn(Dispatchers.IO)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
   val aiRecommendedPlaylist =
     database
@@ -257,10 +323,6 @@ constructor(
     }
   }
 
-  private var lastProcessedCookie: String? = null
-
-  private var isProcessingAccountData = false
-
   private suspend fun getDailyDiscover() {
     val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
     val likedSongs = database.likedSongsByCreateDateAsc().first()
@@ -309,12 +371,18 @@ constructor(
   }
 
   private suspend fun getQuickPicks() {
-    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+    val preferences = context.dataStore.data.first()
+    val hideVideoSongs = preferences[HideVideoSongsKey] ?: false
+    val hidden = database.hiddenFromQuickPicksSongIds().first().toSet()
+    fun List<Song>.eligible() = filterQuickPickSongs(
+      this, hidden, preferences[BlockedArtistsKey].orEmpty(),
+      preferences[HideExplicitKey] ?: false, hideVideoSongs,
+    )
     when (quickPicksEnum.first()) {
       QuickPicks.QUICK_PICKS -> {
-        val relatedSongs = database.quickPicks().first().filterVideoSongs(hideVideoSongs)
+        val relatedSongs = database.quickPicks().first().eligible()
         val forgotten =
-          database.forgottenFavorites().first().filterVideoSongs(hideVideoSongs).take(8)
+          database.forgottenFavorites().first().eligible().take(8)
 
         val recentSong = database.events().first().firstOrNull()?.song
         val ytSimilarSongs = mutableListOf<Song>()
@@ -336,15 +404,16 @@ constructor(
         }
 
         val combined =
-          (relatedSongs + forgotten + ytSimilarSongs).distinctBy { it.id }.shuffled().take(20)
+          (relatedSongs + forgotten + ytSimilarSongs).eligible().shuffled().take(20)
 
-        quickPicks.value =
+        quickPicksSource.value =
           combined
             .ifEmpty { relatedSongs.shuffled().take(20) }
             .ifEmpty {
               database
-                .songs(echo.music.iad1tya.constants.SongSortType.CREATE_DATE, true)
+                .songs(SongSortType.CREATE_DATE, true)
                 .first()
+                .eligible()
                 .shuffled()
                 .take(20)
             }
@@ -352,20 +421,21 @@ constructor(
       QuickPicks.LAST_LISTEN -> {
         val song = database.events().first().firstOrNull()?.song
         if (song != null && database.hasRelatedSongs(song.id)) {
-          quickPicks.value =
+          quickPicksSource.value =
             database
               .getRelatedSongs(song.id)
               .first()
-              .filterVideoSongs(hideVideoSongs)
+              .eligible()
               .shuffled()
               .take(20)
         } else {
-          val fallbackSongs = database.quickPicks().first().filterVideoSongs(hideVideoSongs)
-          quickPicks.value =
+          val fallbackSongs = database.quickPicks().first().eligible()
+          quickPicksSource.value =
             fallbackSongs.shuffled().take(20).ifEmpty {
               database
-                .songs(echo.music.iad1tya.constants.SongSortType.CREATE_DATE, true)
+                .songs(SongSortType.CREATE_DATE, true)
                 .first()
+                .eligible()
                 .shuffled()
                 .take(20)
             }
@@ -625,6 +695,7 @@ constructor(
     val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
 
     coroutineScope {
+      launch(Dispatchers.IO) { loadCarouselRadioSongs() }
       launch(Dispatchers.IO) { getDailyDiscover() }
       launch(Dispatchers.IO) { getCommunityPlaylists() }
       launch(Dispatchers.IO) { loadSimilarRecommendations() }
@@ -755,11 +826,17 @@ constructor(
     }
   }
 
-  private suspend fun loadAccountPlaylists() {
+  private suspend fun loadAccountPlaylists() = accountPlaylistMutex.withLock {
+    fetchAccountPlaylists()
+  }
+
+  private suspend fun fetchAccountPlaylists() {
+    val cookie = YouTube.cookie ?: return
     val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
     YouTube.library("FEmusic_liked_playlists")
       .completed()
       .onSuccess {
+        if (YouTube.cookie != cookie) return@onSuccess
         accountPlaylists.value =
           it.items
             .filterIsInstance<PlaylistItem>()
@@ -767,10 +844,85 @@ constructor(
             .filterYoutubeShorts(hideYoutubeShorts)
       }
       .onFailure { reportException(it) }
+
+    if (YouTube.cookie != cookie) return
+    val playlists = accountPlaylists.value.orEmpty()
+    val semaphore = Semaphore(3)
+    val songs = coroutineScope {
+      val library = async {
+        val result = withTimeoutOrNull(15000) {
+          YouTube.library("FEmusic_liked_videos").completed().getOrNull()
+            ?.items.orEmpty().filterIsInstance<SongItem>()
+        }.orEmpty()
+        addCarouselAccountSongs(cookie, result)
+        result
+      }
+      val playlistSongs = (listOf("LM") + playlists.map { it.id })
+        .distinct()
+        .filterNot { it == "SE" || (hideYoutubeShorts && it.startsWith("SS")) }
+        .map { id ->
+          async {
+            semaphore.withPermit {
+              var firstSongs = emptyList<SongItem>()
+              withTimeoutOrNull(15000) {
+                val page = YouTube.playlist(id)
+                firstSongs = page.getOrNull()?.songs.orEmpty()
+                addCarouselAccountSongs(cookie, firstSongs)
+                val allSongs = page.completed().getOrNull()?.songs ?: firstSongs
+                addCarouselAccountSongs(cookie, allSongs)
+                allSongs
+              } ?: firstSongs
+            }
+          }
+        }
+        .awaitAll()
+      library.await() + playlistSongs.flatten()
+    }
+    if (YouTube.cookie == cookie) {
+      carouselAccountSongs.update { current -> (current + songs).distinctBy { it.id } }
+      if (carouselRadioSongs.value.isEmpty() && songs.isNotEmpty()) {
+        loadCarouselRadioSongs()
+      }
+    }
+  }
+
+  private fun addCarouselAccountSongs(cookie: String, songs: List<SongItem>) {
+    if (YouTube.cookie == cookie) {
+      carouselAccountSongs.update { current -> (current + songs).distinctBy { it.id } }
+    }
+  }
+
+  private suspend fun loadCarouselRadioSongs() {
+    val seeds =
+      selectHeroCarouselSongs(
+        recentlyPlayed = database.recentlyPlayedSongs().first()
+          .filterNot { it.song.isLocal }.map { it.toCarouselSong() },
+        library = database.carouselLibrarySongs().first()
+          .filterNot { it.song.isLocal }.map { it.toCarouselSong() },
+        account = carouselAccountSongs.value,
+        excludedSongIds = database.hiddenFromQuickPicksSongIds().first().toSet(),
+        blockedArtists = context.dataStore.get(BlockedArtistsKey, emptySet()),
+        recommendations = emptyList(),
+        hideExplicit = context.dataStore.get(HideExplicitKey, false),
+        hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false),
+        limit = 3,
+      )
+    carouselRadioSongs.value = coroutineScope {
+      seeds.map { seed ->
+        async {
+          withTimeoutOrNull(15000) {
+            val next = YouTube.next(WatchEndpoint(videoId = seed.id)).getOrNull()
+            val related = next?.relatedEndpoint?.let { YouTube.related(it).getOrNull()?.songs }
+            (related.orEmpty() + next?.items.orEmpty()).filterNot { it.id == seed.id }
+          }.orEmpty()
+        }
+      }.awaitAll().flatten().distinctBy { it.id }
+    }
   }
 
   fun refresh() {
     if (isRefreshing.value) return
+    carouselShuffleSeed.value = Random.nextInt()
     viewModelScope.launch(Dispatchers.IO) {
       try {
         isRefreshing.value = true
@@ -811,30 +963,23 @@ constructor(
             null
           })
         }
-        .collect { cookie ->
-          if (isProcessingAccountData) return@collect
-
-          lastProcessedCookie = cookie
-          isProcessingAccountData = true
-
-          try {
-            if (cookie != null && cookie.isNotEmpty()) {
-
-              YouTube.cookie = cookie
-
-              YouTube.accountInfo()
-                .onSuccess { info ->
-                  accountName.value = info.name
-                  accountImageUrl.value = info.thumbnailUrl
-                }
-                .onFailure { reportException(it) }
-            } else {
-              accountName.value = "Guest"
-              accountImageUrl.value = null
-              accountPlaylists.value = null
-            }
-          } finally {
-            isProcessingAccountData = false
+        .distinctUntilChanged()
+        .collectLatest { cookie ->
+          carouselAccountSongs.value = emptyList()
+          accountPlaylists.value = null
+          if (!cookie.isNullOrEmpty()) {
+            YouTube.cookie = cookie
+            YouTube.accountInfo()
+              .onSuccess { info ->
+                accountName.value = info.name
+                accountImageUrl.value = info.thumbnailUrl
+              }
+              .onFailure { reportException(it) }
+            loadAccountPlaylists()
+          } else {
+            YouTube.cookie = null
+            accountName.value = "Guest"
+            accountImageUrl.value = null
           }
         }
     }

@@ -151,6 +151,9 @@ fun PlayerSettings(
   val (enableGoogleCast, onEnableGoogleCastChange) =
     rememberPreference(key = EnableGoogleCastKey, defaultValue = true)
 
+  val (showSeekButtons, onShowSeekButtonsChange) =
+    rememberPreference(echo.music.iad1tya.constants.ShowSeekButtonsKey, defaultValue = false)
+
   val (seekExtraSeconds, onSeekExtraSeconds) =
     rememberPreference(SeekExtraSeconds, defaultValue = false)
 

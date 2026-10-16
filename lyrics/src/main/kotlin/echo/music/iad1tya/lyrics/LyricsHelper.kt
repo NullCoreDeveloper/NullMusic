@@ -10,8 +10,13 @@ import echo.music.iad1tya.playback.LyricsWithProvider
 import echo.music.iad1tya.utils.NetworkConnectivityObserver
 import echo.music.iad1tya.utils.dataStore
 import echo.music.iad1tya.utils.reportException
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -21,6 +26,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 class LyricsHelper
 @Inject
@@ -35,6 +41,8 @@ constructor(
   }
 
   private val cache = LruCache<String, List<LyricsResult>>(MAX_CACHE_SIZE)
+  private val inFlightRequests = ConcurrentHashMap<String, Deferred<LyricsWithProvider>>()
+  private val fetchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   private var currentLyricsJob: Job? = null
 
   suspend fun getLyrics(mediaMetadata: MediaMetadata): LyricsWithProvider {
@@ -56,100 +64,83 @@ constructor(
       return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
     }
 
+    // Shared fetches live in fetchScope, not the first caller's scope, so one caller being
+    // cancelled (e.g. collectLatest on a song switch) can't fail the others awaiting it.
+    val created =
+      fetchScope.async(start = CoroutineStart.LAZY) { fetchFirstSyncedLyrics(mediaMetadata) }
+    val existing = inFlightRequests.putIfAbsent(mediaMetadata.id, created)
+    val shared =
+      existing
+        ?: created.also {
+          it.invokeOnCompletion { inFlightRequests.remove(mediaMetadata.id, created) }
+          it.start()
+        }
+    if (existing != null) created.cancel()
+    return shared.await()
+  }
+
+  private suspend fun fetchFirstSyncedLyrics(mediaMetadata: MediaMetadata): LyricsWithProvider {
     val providers = resolveLyricsProviders()
     if (providers.isEmpty()) return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
 
-    val fetchFaster = context.dataStore.data.first()[FetchFasterLyricsKey] ?: false
-
     return coroutineScope {
-      if (fetchFaster) {
-        val channel = Channel<LyricsWithProvider?>(providers.size)
-        providers.forEach { provider ->
-          launch {
-            try {
-              val result =
-                provider.getLyrics(
-                  mediaMetadata.id,
-                  mediaMetadata.title,
-                  mediaMetadata.artists.joinToString { it.name },
-                  mediaMetadata.duration,
-                  mediaMetadata.album?.title,
-                )
-              result
-                .onSuccess { lyrics ->
-                  if (lyrics != LYRICS_NOT_FOUND && lyrics.isNotBlank()) {
-                    channel.send(LyricsWithProvider(lyrics, provider.name))
-                  } else {
-                    channel.send(null)
-                  }
-                }
-                .onFailure {
-                  reportException(it)
-                  channel.send(null)
-                }
-            } catch (e: Exception) {
-              reportException(e)
-              channel.send(null)
-            }
-          }
+      val channel = Channel<LyricsWithProvider?>(providers.size)
+      providers.forEach { provider ->
+        launch {
+          val lyrics = fetchLyricsFromProvider(provider, mediaMetadata)
+          val result =
+            lyrics
+              ?.takeIf { it != LYRICS_NOT_FOUND && it.isNotBlank() }
+              ?.let { LyricsWithProvider(it, provider.name) }
+          channel.send(result)
         }
-
-        var responses = 0
-        val receivedUnsynced = mutableListOf<LyricsWithProvider>()
-
-        while (responses < providers.size) {
-          val result = channel.receive()
-          responses++
-          if (result != null) {
-            val isSynced = result.lyrics?.trimStart()?.startsWith("[") == true
-            if (isSynced) {
-              coroutineContext.cancelChildren()
-              return@coroutineScope result
-            } else {
-              receivedUnsynced.add(result)
-            }
-          }
-        }
-        return@coroutineScope receivedUnsynced.firstOrNull()
-          ?: LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
-      } else {
-        val deferreds =
-          providers.associateWith { provider ->
-            async {
-              try {
-                provider
-                  .getLyrics(
-                    mediaMetadata.id,
-                    mediaMetadata.title,
-                    mediaMetadata.artists.joinToString { it.name },
-                    mediaMetadata.duration,
-                    mediaMetadata.album?.title,
-                  )
-                  .getOrNull()
-              } catch (e: Exception) {
-                reportException(e)
-                null
-              }
-            }
-          }
-
-        var bestUnsynced: LyricsWithProvider? = null
-        for (provider in providers) {
-          val result = deferreds[provider]?.await()
-          if (result != null && result != LYRICS_NOT_FOUND && result.isNotBlank()) {
-            val isSynced = result.trimStart().startsWith("[")
-            if (isSynced) {
-              coroutineContext.cancelChildren()
-              return@coroutineScope LyricsWithProvider(result, provider.name)
-            } else if (bestUnsynced == null) {
-              bestUnsynced = LyricsWithProvider(result, provider.name)
-            }
-          }
-        }
-        return@coroutineScope bestUnsynced ?: LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
       }
+
+      val receivedUnsynced = mutableListOf<LyricsWithProvider>()
+      repeat(providers.size) {
+        val result = channel.receive() ?: return@repeat
+        if (result.lyrics?.let(LyricsUtils::hasSyncedLyrics) == true) {
+          coroutineContext.cancelChildren()
+          cache.put(mediaMetadata.id, listOf(LyricsResult(result.providerName, result.lyrics.orEmpty())))
+          return@coroutineScope result
+        }
+        receivedUnsynced.add(result)
+      }
+
+      val best = receivedUnsynced.firstOrNull() ?: LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
+      if (best.lyrics != null && best.lyrics != LYRICS_NOT_FOUND) {
+        cache.put(mediaMetadata.id, listOf(LyricsResult(best.providerName, best.lyrics.orEmpty())))
+      }
+      best
     }
   }
+
+  private suspend fun fetchLyricsFromProvider(
+    provider: LyricsProvider,
+    mediaMetadata: MediaMetadata,
+  ): String? =
+    withTimeoutOrNull(PROVIDER_TIMEOUT_MS) {
+      try {
+        provider
+          .getLyrics(
+            mediaMetadata.id,
+            mediaMetadata.title,
+            mediaMetadata.artists.joinToString { it.name },
+            mediaMetadata.duration,
+            mediaMetadata.album?.title,
+          )
+          .getOrElse {
+            if (it is CancellationException) throw it
+            reportException(it)
+            null
+          }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        reportException(e)
+        null
+      }
+    }
 
   suspend fun getAllLyrics(
     mediaId: String,
@@ -212,7 +203,8 @@ constructor(
   }
 
   companion object {
-    private const val MAX_CACHE_SIZE = 3
+    private const val MAX_CACHE_SIZE = 20
+    private const val PROVIDER_TIMEOUT_MS = 5_000L
   }
 }
 

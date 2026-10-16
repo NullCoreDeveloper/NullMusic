@@ -198,8 +198,14 @@ fun AutoPlaylistScreen(
   }
 
   val (sortType, onSortTypeChange) =
-    rememberEnumPreference(SongSortTypeKey, SongSortType.CREATE_DATE)
-  val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
+    rememberEnumPreference(
+      if (playlistId == "downloaded") DownloadedSongSortTypeKey else SongSortTypeKey,
+      SongSortType.CREATE_DATE,
+    )
+  val (sortDescending, onSortDescendingChange) = rememberPreference(
+    if (playlistId == "downloaded") DownloadedSongSortDescendingKey else SongSortDescendingKey,
+    true,
+  )
 
   val downloadUtil = LocalDownloadUtil.current
   var downloadState by remember { mutableIntStateOf(Download.STATE_STOPPED) }

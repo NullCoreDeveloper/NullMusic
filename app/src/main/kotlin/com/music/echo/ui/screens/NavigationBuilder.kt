@@ -106,6 +106,8 @@ fun NavGraphBuilder.navigationBuilder(
 
   composable("ambient_mode") { AmbientModeScreen(navController) }
 
+  composable("music_flow") { MusicFlowScreen(navController) }
+
   composable("local_songs") { LocalSongScreen(navController) }
 
   composable("stats") { StatsScreen(navController) }
@@ -344,6 +346,7 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable("settings/appearance/theme") { ThemeScreen(navController) }
+  composable("settings/music_flow") { MusicFlowSettings(navController, scrollBehavior) }
   composable(
     route = "settings/appearance/haptics?highlightKey={highlightKey}",
     arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })

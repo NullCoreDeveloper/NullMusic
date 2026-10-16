@@ -157,6 +157,7 @@ enum class PlaybackEngine {
 }
 
 val PlaybackEngineKey = stringPreferencesKey("playbackEngine")
+val ShowSeekButtonsKey = booleanPreferencesKey("showSeekButtons")
 val PersistentQueueKey = booleanPreferencesKey("persistentQueue")
 val PersistentShuffleAcrossQueuesKey = booleanPreferencesKey("persistentShuffleAcrossQueues")
 val RememberShuffleAndRepeatKey = booleanPreferencesKey("rememberShuffleAndRepeat")
@@ -222,6 +223,8 @@ val ScrobbleDelaySecondsKey = intPreferencesKey("scrobbleDelaySeconds")
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
 val SongSortTypeKey = stringPreferencesKey("songSortType")
 val SongSortDescendingKey = booleanPreferencesKey("songSortDescending")
+val DownloadedSongSortTypeKey = stringPreferencesKey("downloadedSongSortType")
+val DownloadedSongSortDescendingKey = booleanPreferencesKey("downloadedSongSortDescending")
 val PlaylistSongSortTypeKey = stringPreferencesKey("playlistSongSortType")
 val PlaylistSongSortDescendingKey = booleanPreferencesKey("playlistSongSortDescending")
 val AutoPlaylistSongSortTypeKey = stringPreferencesKey("autoPlaylistSongSortType")
@@ -309,6 +312,14 @@ val ShowUploadedPlaylistKey = booleanPreferencesKey("show_uploaded_playlist")
 val EnablePlayerSwipeKey = booleanPreferencesKey("enable_player_swipe")
 val ShowSpeedDialKey = booleanPreferencesKey("showSpeedDial")
 val ShowCommentButtonKey = booleanPreferencesKey("show_comment_button")
+
+val MusicFlowEnabledKey = booleanPreferencesKey("music_flow_enabled")
+val MusicFlowAutoplayKey = booleanPreferencesKey("music_flow_autoplay")
+val MusicFlowAutoNextKey = booleanPreferencesKey("music_flow_auto_next")
+val MusicFlowAnimatedBackgroundKey = booleanPreferencesKey("music_flow_animated_background")
+val MusicFlowLyricsKey = booleanPreferencesKey("music_flow_lyrics")
+val MusicFlowCellularPrefetchKey = booleanPreferencesKey("music_flow_cellular_prefetch")
+val MusicFlowHideRecentKey = booleanPreferencesKey("music_flow_hide_recent")
 
 enum class LibraryViewType {
   LIST,

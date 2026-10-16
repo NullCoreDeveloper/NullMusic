@@ -5,7 +5,6 @@ package iad1tya.echo.music.playback
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
-import androidx.core.net.toUri
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.CacheDataSource
@@ -52,7 +51,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.Executors
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -265,16 +266,16 @@ constructor(
       val mediaId = dataSpec.key ?: error("No media id")
 
       songUrlCache["${mediaId}_${downloadQuality.name}"]
-        ?.takeIf { it.second > System.currentTimeMillis() }
+        ?.takeIf { it.expiresAtMs > System.currentTimeMillis() }
         ?.let {
-          return@Factory dataSpec.withUri(it.first.toUri())
+          return@Factory it.resolve(dataSpec)
         }
 
       val playbackData =
         runBlocking(Dispatchers.IO) {
             YTPlayerUtils.playerResponseForPlayback(
               videoId = mediaId,
-              audioQuality = echo.music.iad1tya.constants.AudioQuality.OPUS,
+              audioQuality = AudioQuality.OPUS,
               connectivityManager = connectivityManager
             )
           }
@@ -330,7 +331,7 @@ constructor(
                 if (res != null && res != LyricsEntity.LYRICS_NOT_FOUND && res.isNotBlank()) {
                   foundLyrics = res
                   foundProvider = provider.name
-                  if (res.trimStart().startsWith("[")) {
+                  if (LyricsUtils.hasSyncedLyrics(res)) {
                     break // Synced lyrics, stop searching
                   }
                 }
@@ -389,11 +390,9 @@ constructor(
         }
       }
 
-      val streamUrl = playbackData.streamUrl
-
-      songUrlCache["${mediaId}_${downloadQuality.name}"] =
-        streamUrl to playbackData.streamExpiresInSeconds * 1000L
-      dataSpec.withUri(streamUrl.toUri())
+      val stream = ResolvedStream.from(playbackData)
+      songUrlCache["${mediaId}_${downloadQuality.name}"] = stream
+      stream.resolve(dataSpec)
     }
 
   val downloadNotificationHelper =
@@ -424,7 +423,9 @@ constructor(
               scope.launch {
                 when (download.state) {
                   Download.STATE_COMPLETED -> {
-                    database.updateDownloadedInfo(download.request.id, true, LocalDateTime.now())
+                    val timestamp = if (download.updateTimeMs > 0) download.updateTimeMs else System.currentTimeMillis()
+                    val downloadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
+                    database.updateDownloadedInfo(download.request.id, true, downloadDate)
                   }
                   Download.STATE_FAILED,
                   Download.STATE_STOPPED,
@@ -447,6 +448,16 @@ constructor(
       }
     }
     downloads.value = result
+
+    scope.launch(Dispatchers.IO) {
+      result.values.forEach { download ->
+        if (download.state == Download.STATE_COMPLETED) {
+          val timestamp = if (download.updateTimeMs > 0) download.updateTimeMs else System.currentTimeMillis()
+          val downloadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
+          database.updateDownloadedInfo(download.request.id, true, downloadDate)
+        }
+      }
+    }
 
     // Wi-Fi-only downloads: DownloadManager pauses queued downloads whenever the
     // active requirements aren't met, so flipping this pref mid-download stops it

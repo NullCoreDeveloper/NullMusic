@@ -100,6 +100,7 @@ fun StorageSettings(
       key = ExportDirectoryUriKey,
       defaultValue = "",
     )
+  val exportingSongIds by rememberPreference(ExportingSongIdsKey, "")
   val exportDirectoryLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
       if (uri != null) {
@@ -560,6 +561,19 @@ fun StorageSettings(
           )
         )
     )
+
+    if (exportingSongIds.isNotBlank()) {
+      Spacer(modifier = Modifier.height(16.dp))
+      Material3SettingsGroup(
+        scrollState = scrollState,
+        items = listOf(Material3SettingsItem(
+          icon = painterResource(R.drawable.close),
+          title = { Text(stringResource(R.string.cancel_exports)) },
+          description = { Text(stringResource(R.string.exporting)) },
+          onClick = { AudioExportService.cancelAll(context) },
+        )),
+      )
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
 

@@ -1,5 +1,6 @@
 package com.music.innertube
 
+import com.music.echo.metadata.cleaner.ApiText
 import com.music.innertube.models.AccountInfo
 import com.music.innertube.models.AlbumItem
 import com.music.innertube.models.Artist
@@ -343,7 +344,7 @@ object YouTube {
     val response = innerTube.browse(WEB_REMIX, browseId, setLogin = true).body<BrowseResponse>()
 
     fun mapRuns(runs: List<Run>?): List<Run>? =
-      runs?.map { run -> Run(text = run.text, navigationEndpoint = run.navigationEndpoint) }
+      runs?.map { run -> Run(text = ApiText.clean(run.text), navigationEndpoint = run.navigationEndpoint) }
 
     val descriptionRuns =
       sequence {
@@ -410,12 +411,12 @@ object YouTube {
         AlbumItem(
           browseId = browseId,
           playlistId = playlistId,
-          title = response.header.musicDetailHeaderRenderer.title.runs?.firstOrNull()?.text!!,
+          title = response.header.musicDetailHeaderRenderer.title.runs?.firstOrNull()?.text?.let(ApiText::clean)!!,
           artists =
             response.header.musicDetailHeaderRenderer.subtitle.runs
               ?.filter { it.navigationEndpoint != null }
               ?.map {
-                Artist(name = it.text, id = it.navigationEndpoint?.browseEndpoint?.browseId)
+                Artist(name = ApiText.clean(it.text), id = it.navigationEndpoint?.browseEndpoint?.browseId)
               },
           year =
             response.header.musicDetailHeaderRenderer.subtitle.runs
@@ -473,7 +474,7 @@ object YouTube {
               ?.title
               ?.runs
               ?.firstOrNull()
-              ?.text!!,
+              ?.text?.let(ApiText::clean)!!,
           artists =
             response.contents.twoColumnBrowseResultsRenderer.tabs
               .firstOrNull()
@@ -487,7 +488,7 @@ object YouTube {
               ?.runs
               ?.oddElements()
               ?.map {
-                Artist(name = it.text, id = it.navigationEndpoint?.browseEndpoint?.browseId)
+                Artist(name = ApiText.clean(it.text), id = it.navigationEndpoint?.browseEndpoint?.browseId)
               }!!,
           year =
             response.contents.twoColumnBrowseResultsRenderer.tabs
@@ -629,7 +630,7 @@ object YouTube {
     val response = innerTube.browse(WEB_REMIX, browseId).body<BrowseResponse>()
 
     fun mapRuns(runs: List<Run>?): List<Run>? =
-      runs?.map { run -> Run(text = run.text, navigationEndpoint = run.navigationEndpoint) }
+      runs?.map { run -> Run(text = ApiText.clean(run.text), navigationEndpoint = run.navigationEndpoint) }
 
     val descriptionRuns =
       response.contents
@@ -647,9 +648,9 @@ object YouTube {
         ArtistItem(
           id = browseId,
           title =
-            response.header?.musicImmersiveHeaderRenderer?.title?.runs?.firstOrNull()?.text
-              ?: response.header?.musicVisualHeaderRenderer?.title?.runs?.firstOrNull()?.text
-              ?: response.header?.musicHeaderRenderer?.title?.runs?.firstOrNull()?.text!!,
+            response.header?.musicImmersiveHeaderRenderer?.title?.runs?.firstOrNull()?.text?.let(ApiText::clean)
+              ?: response.header?.musicVisualHeaderRenderer?.title?.runs?.firstOrNull()?.text?.let(ApiText::clean)
+              ?: response.header?.musicHeaderRenderer?.title?.runs?.firstOrNull()?.text?.let(ApiText::clean)!!,
           thumbnail =
             response.header
               ?.musicImmersiveHeaderRenderer
@@ -828,7 +829,7 @@ object YouTube {
       }
       else -> {
         ArtistItemsPage(
-          title = response.header?.musicHeaderRenderer?.title?.runs?.firstOrNull()?.text ?: "",
+          title = response.header?.musicHeaderRenderer?.title?.runs?.firstOrNull()?.text?.let(ApiText::clean) ?: "",
           items =
             musicPlaylistShelfRenderer?.contents?.getItems()?.mapNotNull {
               ArtistItemsPage.fromMusicResponsiveListItemRenderer(it)
@@ -935,10 +936,10 @@ object YouTube {
       playlist =
         PlaylistItem(
           id = playlistId,
-          title = header?.title?.runs?.firstOrNull()?.text ?: "",
+          title = header?.title?.runs?.firstOrNull()?.text?.let(ApiText::clean) ?: "",
           author =
             header?.straplineTextOne?.runs?.firstOrNull()?.let {
-              Artist(name = it.text, id = it.navigationEndpoint?.browseEndpoint?.browseId)
+              Artist(name = ApiText.clean(it.text), id = it.navigationEndpoint?.browseEndpoint?.browseId)
             },
           songCountText = header?.secondSubtitle?.runs?.firstOrNull()?.text,
           thumbnail =
@@ -1613,14 +1614,14 @@ object YouTube {
               ?: return null
 
           val titleRun = firstColumn.runs?.firstOrNull() ?: return null
-          val title = titleRun.text.takeIf { it.isNotBlank() } ?: return null
+          val title = titleRun.text.takeIf { it.isNotBlank() }?.let(ApiText::clean) ?: return null
 
           val artists =
             secondColumn.runs?.mapNotNull { run ->
               run.text
                 .takeIf { it.isNotBlank() }
                 ?.let { name ->
-                  Artist(name = name, id = run.navigationEndpoint?.browseEndpoint?.browseId)
+                  Artist(name = ApiText.clean(name), id = run.navigationEndpoint?.browseEndpoint?.browseId)
                 }
             } ?: emptyList()
 
@@ -1657,11 +1658,11 @@ object YouTube {
           val subtitle = renderer.subtitle?.runs ?: return null
           SongItem(
             id = renderer.navigationEndpoint.watchEndpoint?.videoId ?: return null,
-            title = renderer.title.runs?.firstOrNull()?.text ?: return null,
+            title = renderer.title.runs?.firstOrNull()?.text?.let(ApiText::clean) ?: return null,
             artists =
               subtitle.mapNotNull {
                 it.navigationEndpoint?.browseEndpoint?.browseId?.let { id ->
-                  Artist(name = it.text, id = id)
+                  Artist(name = ApiText.clean(it.text), id = id)
                 }
               },
             thumbnail =
@@ -1684,11 +1685,11 @@ object YouTube {
                 ?.playNavigationEndpoint
                 ?.watchPlaylistEndpoint
                 ?.playlistId ?: return null,
-            title = renderer.title.runs?.firstOrNull()?.text ?: return null,
+            title = renderer.title.runs?.firstOrNull()?.text?.let(ApiText::clean) ?: return null,
             artists =
               renderer.subtitle?.runs?.oddElements()?.drop(1)?.mapNotNull {
                 it.navigationEndpoint?.browseEndpoint?.browseId?.let { id ->
-                  Artist(name = it.text, id = id)
+                  Artist(name = ApiText.clean(it.text), id = id)
                 }
               },
             year = renderer.subtitle?.runs?.lastOrNull()?.text?.toIntOrNull(),
@@ -2470,7 +2471,7 @@ object YouTube {
                         runs =
                           listOf(
                             com.music.innertube.models.Run(
-                              text = payload.author?.displayName ?: "Unknown",
+                              text = ApiText.clean(payload.author?.displayName ?: "Unknown"),
                               navigationEndpoint = null
                             )
                           )
@@ -2491,7 +2492,7 @@ object YouTube {
                         runs =
                           listOf(
                             com.music.innertube.models.Run(
-                              text = payload.properties?.content?.content ?: "",
+                              text = ApiText.clean(payload.properties?.content?.content ?: ""),
                               navigationEndpoint = null
                             )
                           )
@@ -2625,7 +2626,7 @@ object YouTube {
                 runs =
                   listOf(
                     com.music.innertube.models.Run(
-                      text = payload.author?.displayName ?: "Unknown",
+                      text = ApiText.clean(payload.author?.displayName ?: "Unknown"),
                       navigationEndpoint = null
                     )
                   )
@@ -2646,7 +2647,7 @@ object YouTube {
                 runs =
                   listOf(
                     com.music.innertube.models.Run(
-                      text = payload.properties?.content?.content ?: "",
+                      text = ApiText.clean(payload.properties?.content?.content ?: ""),
                       navigationEndpoint = null
                     )
                   )

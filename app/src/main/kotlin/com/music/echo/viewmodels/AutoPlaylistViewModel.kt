@@ -41,6 +41,9 @@ constructor(
   private val syncUtils: SyncUtils,
 ) : ViewModel() {
   val playlist = savedStateHandle.get<String>("playlist")!!
+  private val sortTypeKey = if (playlist == "downloaded") DownloadedSongSortTypeKey else SongSortTypeKey
+  private val sortDescendingKey =
+    if (playlist == "downloaded") DownloadedSongSortDescendingKey else SongSortDescendingKey
 
   private val _isRefreshing = MutableStateFlow(false)
   val isRefreshing = _isRefreshing.asStateFlow()

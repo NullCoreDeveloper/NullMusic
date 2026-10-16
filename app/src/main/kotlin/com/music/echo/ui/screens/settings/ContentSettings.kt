@@ -658,7 +658,7 @@ fun ContentSettings(
       items =
         listOf(
           Material3SettingsItem(
-            isHighlighted = false,
+            isHighlighted = (highlightKey == "Blocked Artists"),
             title = { Text("Blocked Artists") },
             description = { Text("Manage hidden artists") },
             customIcon = { Icon(Icons.Default.Block, null) },

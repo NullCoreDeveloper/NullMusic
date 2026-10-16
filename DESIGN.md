@@ -124,6 +124,18 @@ Before adding a brand new UI component, always check `ui/component/` to see if a
 **Key Rule:** When working on UI, **look at the existing screens** (like the original Listen Together or Settings screens) and copy their specific visual style, spacing, and modifier chains. Do NOT refactor existing screens to match standard Material 3 unless explicitly requested. Our custom aesthetic takes precedence over M3 guidelines.
 
 
+## Music Flow
+
+Vertical swipe discovery, laid out like a Resso-style "For You" page (interaction pattern only — no copied assets).
+
+*   **Full-bleed artwork:** Black base, the artwork blurred (`blur(80.dp)` on API 31+) as a tinted backdrop, and the sharp artwork as a centred square with 24dp side padding and 24dp rounded corners. A page-wide scrim darkens the top (0.45) and bottom (0.8 → 0.95) for text contrast. Muted Canvas replaces the square on the active playing page only.
+*   **Lyrics first:** Under the transparent top bar, the current synced line in `headlineMedium` ExtraBold white, the next line in `titleLarge` at 45% white. The pair advances at the next lyric timestamp with a 280ms upward slide/fade (24dp incoming travel, 12dp outgoing travel, 180ms outgoing fade) and smooth height changes; backward seeks reverse the slide. Reduced motion disables transitions. Position is sampled every 50ms, including paused seeks, with the saved per-song timing offset applied. Intros and timestamped instrumental gaps keep the upcoming line dimmed until its timestamp. Hidden when no synced lyrics exist.
+*   **Metadata:** Bottom-left title (`headlineSmall`, bold), artist (`titleMedium`, 75% white) followed by an outlined "View artist" pill (1dp 40% white border, 24dp radius).
+*   **Action row:** Icon-only 48dp touch targets with spoken labels — like, lyrics, share on the left; download, add to playlist, more on the right. No counts (we have no real numbers to show). Disabled actions drop to 35% alpha.
+*   **Playback:** A 56dp play glyph at 65% white appears centered inside the album artwork only while playback is paused, with a transparent 72dp touch target and no filled button background. The glyph hides while playing; tapping the target toggles the shared player. The 2dp progress line with an 8dp white thumb stays at the bottom, with 16dp bottom spacing. Tapping anywhere on the page also toggles playback; double-tap likes; long-press opens `YouTubeSongMenu`.
+*   **Chrome:** Top bar is just back, "Music Flow" and an overflow (Previous/Next for people who cannot swipe, Open player, Restore previous queue, feedback, Settings). Previous/Next are also TalkBack custom actions on the pager. A translucent status pill (`White 14%`, 24dp radius) reports loading, casting/Listen Together blocks and "playing elsewhere".
+*   **Home entry:** `MusicFlowEntryCard` follows the card rule above — `surfaceVariant.copy(alpha = 0.3f)`, 24dp corners, flat — with an inverted (onSurface) circular icon.
+
 ## Ambient Mode Canvas
 
 Ambient Mode may layer muted Canvas video artwork inside the existing album-art square. Keep the original square size, rounded clipping, and interaction surface unchanged; Canvas is a non-interactive visual layer above the normal album art and follows playback state. The existing glow background remains separate underneath the screen.

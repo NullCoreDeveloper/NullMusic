@@ -3,7 +3,7 @@
 <!-- Upstream InnerTune strings -->
 <!-- Do not add new features here -->
 <!-- Try to re-use strings here, but be careful on its usage e.g. verb vs noun -->
-<!-- "InnerTune" is replaced with "echomusic" -->
+<!-- "InnerTune" is replaced with "nullmusic" -->
 <!-- Translators: Do not modify this file for translations, use InnerTune's Weblate instead. -->
 
 <resources>
@@ -369,45 +369,22 @@
     <string name="translation_models">Modelos de traducción</string>
     <string name="clear_translation_models">Borrar modelos de traducción</string>
     <string name="listen_history">Historial de reproducciones</string>
-    <string name="your_youtube_playlists">Sus listas de reproducción de YouTube</string>
-    <string name="remove_all_from_library">Quitar todo de la biblioteca</string>
     <string name="search_history">Historial de búsqueda</string>
     <string name="disable_screenshot">Desactivar captura de pantalla</string>
     <string name="auto_load_more">Cargar automáticamente más canciones</string>
     <string name="disable_screenshot_desc">Cuando esta opción está activada, las capturas de pantalla y la vista de la aplicación en Recientes estará deshabilitada.</string>
     <string name="auto_load_more_desc">Añade automáticamente más canciones cuando llegues al final de la cola, si es posible</string>
-    <string name="other_versions">Otras versiones</string>
-    <string name="add_all_to_library">Añadir todo a la biblioteca</string>
     <string name="use_login_for_browse">Utilice el inicio de sesión para ver el contenido</string>
     <string name="use_login_for_browse_desc">Esto puede influir en el contenido que ve y, por ejemplo, muestra álbumes exclusivos si ha iniciado sesión con una cuenta Premium</string>
     <string name="action_login">Acceder</string>
     <!-- Bottom navigation -->
-    <string name="music">Música</string>
     <!-- Search -->
-    <string name="filter_local">Local</string>
     <!-- Album screen -->
-    <string name="album_description_placeholder">Esta es una descripción de marcador de posición para el álbum. ¡Disfruta escuchando las pistas de abajo!</string>
     <!-- Playlist -->
     <string name="you_might_also_like">Listas relacionadas</string>
     <!-- Button -->
-    <string name="shuffle_content_desc">Aleatorio</string>
-    <string name="shuffle_label">Aleatorio</string>
-    <string name="pause">Pausa</string>
     <!-- Menu -->
-    <string name="saving">Guardando</string>
-    <string name="saved">Guardado</string>
-    <string name="start_an_radio">Radio</string>
-    <string name="add_to_an_playlist">Añadir</string>
-    <string name="more_label">Más</string>
-    <string name="releases_for_you">Nuevos lanzamientos para ti</string>
     <!-- Dialog -->
-    <string name="hide_status_bar_on_fullscreen">Ocultar la barra de estado en pantalla completa</string>
-    <string name="hide_status_bar_on_fullscreen_desc">Oculta la barra de estado cuando el modo de pantalla completa de la letra está activo</string>
-    <string name="lyrics_swipe_to_change_song">Desliza para cambiar de canción</string>
-    <string name="lyrics_swipe_to_change_song_desc">Desliza a la izquierda o derecha en la sección del artista y el nombre de la canción en la letra a pantalla completa para cambiar de canción</string>
-    <string name="lyrics_thumbnail_play_pause">Mostrar reproducir/pausa en la miniatura</string>
-    <string name="lyrics_thumbnail_play_pause_desc">Muestra un botón de reproducir/pausa superpuesto en la miniatura de la canción en la letra a pantalla completa</string>
-    <string name="picker_not_available">El selector de documentos no está disponible en este dispositivo. Se utilizará el directorio de exportación predeterminado de la aplicación.</string>
     <!-- Plurals -->
     <plurals name="n_apk_found">
         <item quantity="one">%d APK encontrado</item>
@@ -420,25 +397,7 @@
     <string name="theme_mode">Modo de tema</string>
     <string name="color_palette">Paleta de colores</string>
     <string name="use_system_colors">Usar colores del sistema</string>
-    <string name="enable_dynamic_theme">Activar tema dinámico</string>
-    <string name="dark_theme">Tema oscuro</string>
-    <string name="dark_theme_on">Activado</string>
-    <string name="dark_theme_off">Desactivado</string>
-    <string name="dark_theme_follow_system">Seguir al sistema</string>
-    <string name="pure_black">Negro puro</string>
-    <string name="customize_navigation_tabs">Personalizar pestañas de navegación</string>
-    <string name="player">Reproductor</string>
-    <string name="player_text_alignment">Alineación del texto en el reproductor</string>
-    <string name="lyrics_text_position">Posición del texto de la letra</string>
-    <string name="sided">A un lado</string>
-    <string name="left">Izquierda</string>
-    <string name="center">Centro</string>
-    <string name="right">Derecha</string>
-    <string name="player_slider_style">Estilo de la barra de progreso</string>
-    <string name="default_">Predeterminado</string>
     <string name="apple_music">Apple Music</string>
-    <string name="squiggly">Ondulado</string>
-    <string name="misc">Varios</string>
     <string name="haptics">Respuesta háptica</string>
     <string name="haptics_desc">Configura la vibración y respuesta táctil</string>
 
@@ -465,30 +424,12 @@
     <string name="unique_albums">Álbumes únicos</string>
     <string name="selected_period">Periodo seleccionado</string>
     <string name="hours_minutes_format">%1$dh %2$dm</string>
-    <string name="default_open_tab">Pestaña inicial predeterminada</string>
-    <string name="grid_cell_size">Tamaño de cuadrícula</string>
-    <string name="small">Pequeño</string>
-    <string name="big">Grande</string>
 
-    <string name="content">Contenido</string>
-    <string name="action_logout">Cerrar sesión</string>
-    <string name="action_login">Iniciar sesión</string>
-    <string name="login">Iniciar sesión</string>
     <string name="show_audio_quality_badge">Mostrar insignia de calidad de audio</string>
-    <string name="not_logged_in">No has iniciado sesión</string>
-    <string name="login_failed">Error al iniciar sesión</string>
 
-    <string name="content_language">Idioma del contenido predeterminado</string>
-    <string name="content_country">País del contenido predeterminado</string>
     <string name="content_sponsor_block">SponsorBlock (Salto automático)</string>
     <string name="content_sponsor_block_desc">Omite automáticamente patrocinios, intros y secciones sin música en los videos</string>
-    <string name="system_default">Predeterminado del sistema</string>
-    <string name="enable_proxy">Activar proxy</string>
-    <string name="proxy_type">Tipo de proxy</string>
-    <string name="proxy_url">URL del proxy</string>
-    <string name="restart_to_take_effect">Reinicia para aplicar los cambios</string>
 
-    <string name="player_and_audio">Reproductor y audio</string>
     <string name="setting_desc_account">Gestiona el inicio de sesión e integraciones</string>
     <string name="setting_desc_ai">Letras y traducciones impulsadas por IA</string>
     <string name="setting_desc_appearance">Temas, colores y diseño de interfaz</string>
@@ -503,80 +444,19 @@
     <string name="setting_desc_settings_main">Preferencias y configuración de la aplicación</string>
 
     <string name="network_ip_version">Versión de IP de red</string>
-    <string name="audio_quality">Calidad de audio</string>
     <string name="ip_version_auto">Automática</string>
     <string name="ip_version_ipv4">Forzar IPv4</string>
     <string name="ip_version_ipv6">Forzar IPv6</string>
-    <string name="audio_quality_auto">Automática</string>
-    <string name="audio_quality_high">Alta</string>
-    <string name="audio_quality_low">Baja</string>
     <string name="audio_quality_lossless">Audio Lossless (Sin pérdida)</string>
-    <string name="queue">Cola</string>
-    <string name="persistent_queue">Cola persistente</string>
-    <string name="persistent_queue_desc">Restaura tu última cola de reproducción al iniciar la aplicación</string>
-    <string name="auto_load_more">Cargar más canciones automáticamente</string>
-    <string name="auto_load_more_desc">Añade más canciones automáticamente al llegar al final de la cola, si es posible</string>
-    <string name="skip_silence">Omitir silencios</string>
-    <string name="audio_normalization">Normalización de audio</string>
-    <string name="auto_skip_next_on_error">Saltar a la siguiente canción en caso de error</string>
-    <string name="auto_skip_next_on_error_desc">Garantiza una experiencia de reproducción continua sin interrupciones</string>
-    <string name="stop_music_on_task_clear">Detener la música al cerrar la app de recientes</string>
-    <string name="equalizer">Ecualizador</string>
 
-    <string name="storage">Almacenamiento</string>
-    <string name="cache">Caché</string>
-    <string name="image_cache">Caché de imágenes</string>
-    <string name="song_cache">Caché de canciones</string>
-    <string name="max_cache_size">Tamaño máximo de caché</string>
-    <string name="unlimited">Ilimitado</string>
-    <string name="clear_all_downloads">Borrar todas las descargas</string>
-    <string name="max_image_cache_size">Tamaño máximo de caché de imágenes</string>
-    <string name="clear_image_cache">Borrar caché de imágenes</string>
-    <string name="max_song_cache_size">Tamaño máximo de caché de canciones</string>
-    <string name="clear_song_cache">Borrar caché de canciones</string>
-    <string name="size_used">%s en uso</string>
 
     <string name="clear_downloaded_updates">Borrar actualizaciones descargadas</string>
     <string name="clear_downloaded_updates_desc">Elimina los archivos APK descargados para liberar espacio</string>
 
-    <string name="privacy">Privacidad</string>
-    <string name="listen_history">Historial de reproducción</string>
-    <string name="pause_listen_history">Pausar historial de reproducción</string>
-    <string name="clear_listen_history">Borrar historial de reproducción</string>
-    <string name="clear_listen_history_confirm">¿Seguro que quieres borrar todo el historial de reproducción?</string>
-    <string name="search_history">Historial de búsqueda</string>
-    <string name="pause_search_history">Pausar historial de búsqueda</string>
-    <string name="clear_search_history">Borrar historial de búsqueda</string>
-    <string name="clear_search_history_confirm">¿Seguro que quieres borrar todo el historial de búsqueda?</string>
-    <string name="use_login_for_browse">Usar cuenta al explorar contenido</string>
-    <string name="use_login_for_browse_desc">Influye en el contenido que ves y permite mostrar, por ejemplo, álbumes exclusivos si iniciaste sesión con una cuenta Premium</string>
-    <string name="disable_screenshot">Desactivar capturas de pantalla</string>
-    <string name="disable_screenshot_desc">Al activar esta opción, se bloquean las capturas de pantalla y la vista previa de la app en Recientes.</string>
-    <string name="enable_lrclib">Activar proveedor de letras LrcLib</string>
-    <string name="enable_kugou">Activar proveedor de letras KuGou</string>
-    <string name="hide_explicit">Ocultar contenido explícito</string>
 
-    <string name="backup_restore">Copia de seguridad y restauración</string>
-    <string name="action_backup">Crear copia</string>
-    <string name="action_restore">Restaurar</string>
-    <string name="imported_playlist">Lista de reproducción importada</string>
-    <string name="backup_create_success">Copia de seguridad creada correctamente</string>
-    <string name="backup_create_failed">No se pudo crear la copia de seguridad</string>
-    <string name="restore_failed">Error al restaurar la copia de seguridad</string>
 
-    <string name="discord_integration">Integración con Discord</string>
-    <string name="discord_information">echomusic utiliza la biblioteca KizzyRPC para actualizar el estado de tu cuenta de Discord. Esto implica conectarse a Discord Gateway, lo cual podría considerarse una infracción de los Términos de Servicio de Discord. Sin embargo, no se conocen casos de cuentas suspendidas por este motivo. Úsalo bajo tu propia responsabilidad.\n\nechomusic solo extraerá tu token y todo lo demás se guarda localmente.</string>
-    <string name="dismiss">Descartar</string>
-    <string name="options">Opciones</string>
-    <string name="preview">Vista previa</string>
-    <string name="enable_discord_rpc">Activar Rich Presence</string>
 
-    <string name="about">Acerca de</string>
-    <string name="app_version">Versión de la aplicación</string>
 
-    <string name="new_version_available">Nueva versión disponible</string>
-    <string name="translation_models">Modelos de traducción</string>
-    <string name="clear_translation_models">Borrar modelos de traducción</string>
     <string name="bluetooth_permission_required">Se requiere permiso de Bluetooth para detectar dispositivos de audio.</string>
     <string name="streaming_to">Transmitiendo a</string>
     <string name="this_phone">Este teléfono</string>
@@ -713,21 +593,6 @@
     <string name="ai_recommendations">Recomendaciones con IA</string>
     <string name="ai_recommendations_desc">Actualización diaria de una lista personalizada según tus gustos</string>
     <string name="ai_recommendations_refresh">Actualizar recomendaciones</string>
-    <string name="modify_with_ai">Modificar con IA</string>
-    <string name="modify_with_ai_desc">Modificar lista de reproducción usando instrucciones de IA</string>
-    <string name="ai_modify_prompt_hint">p. ej.: \"Quita las canciones tristes y añade hits de los 90\'s\"</string>
-    <string name="setting_desc_account">Administrar inicio de sesión e integraciones</string>
-    <string name="setting_desc_ai">Letras y traducciones impulsadas por IA</string>
-    <string name="setting_desc_appearance">Temas, colores y diseño de interfaz</string>
-    <string name="setting_desc_player">Reproducción, calidad y ecualizador</string>
-    <string name="setting_desc_listen_together">Sincronizar reproducción con amigos</string>
-    <string name="setting_desc_content">Idioma, región y proveedores</string>
-    <string name="setting_desc_privacy">Historial y seguimiento</string>
-    <string name="setting_desc_storage">Caché y descargas</string>
-    <string name="setting_desc_backup">Exportar e importar datos</string>
-    <string name="setting_desc_update">Buscar nuevas versiones</string>
-    <string name="setting_desc_about">Información de la aplicación y licencias</string>
-    <string name="setting_desc_settings_main">Preferencias y configuraciones de la aplicación</string>
     <string name="about_desc">Administrar la configuración de «Acerca de»</string>
     <string name="account_desc">Administrar la configuración de la cuenta</string>
     <string name="action_exported_desc">Administrar la configuración de exportación</string>

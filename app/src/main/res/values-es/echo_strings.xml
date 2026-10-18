@@ -109,8 +109,8 @@
     <string name="thumbnail_corner_radius_desc">Cambia el radio de las esquinas de la miniatura del álbum</string>
     <string name="crop_album_art">Recortar portada del álbum</string>
     <string name="crop_album_art_desc">Fuerza una relación de aspecto cuadrada recortando las miniaturas de video</string>
-    <string name="echomusic_canvas">Canvas</string>
-    <string name="echomusic_canvas_desc">Muestra portadas de álbumes animadas cuando estén disponibles</string>
+    <string name="nullmusic_canvas">Canvas</string>
+    <string name="nullmusic_canvas_desc">Muestra portadas de álbumes animadas cuando estén disponibles</string>
     <string name="show_album_canvas">Mostrar Canvas del álbum</string>
     <string name="show_album_canvas_desc">Muestra un fondo animado (Canvas) en la vista del álbum</string>
     <string name="rotating_thumbnail">Portada giratoria</string>
@@ -394,21 +394,13 @@
     <string name="enable_scrobbling">Activar scrobbling</string>
     <string name="lastfm_now_playing">Enviar estado \"Reproduciendo ahora\"</string>
     <string name="last_fm_send_likes">Sincronizar Me gusta</string>
-    <string name="last_fm_send_likes_description">Marca o desmarca las canciones como favoritas en Last.fm cuando les das o quitas el Me gusta en echomusic</string>
+    <string name="last_fm_send_likes_description">Marca o desmarca las canciones como favoritas en Last.fm cuando les das o quitas el Me gusta en nullmusic</string>
     <string name="logging_in">Iniciando sesión…</string>
 
     <string name="scrobbling_configuration">Configuración de scrobbling</string>
     <string name="scrobble_min_track_duration">Scrobble a canciones más largas que</string>
     <string name="scrobble_delay_percent">Porcentaje de retraso de Scrobble</string>
     <string name="scrobble_delay_minutes">Minutos de retraso de Scrobble</string>
-    <string name="swipe_song_to_remove">Deslizar la canción para quitarla de la lista de reproducción</string>
-    <string name="last_fm_send_likes">Enviar Me gusta/No me gusta</string>
-    <string name="last_fm_send_likes_description">Marcar como Me gusta o No me gusta las canciones en Last.fm cuando aparecen marcadas como Me gusta o No me gusta en nullmusic</string>
-    <string name="primary_color_style">Color primario</string>
-    <string name="tertiary_color_style">Color terciario</string>
-    <string name="auto_scroll">Volver a sincronizar</string>
-    <string name="google_cast">Transmitir con Google Cast</string>
-    <string name="google_cast_description">Habilitar la transmisión de audio a Chromecast y otros dispositivos compatibles con Cast</string>
     <string name="hide_video_songs">Ocultar canciones de vídeo</string>
     <string name="details_desc">Ver la información de la canción</string>
     <string name="edit_desc">Cambiar el título o el artista</string>
@@ -457,7 +449,7 @@
     <string name="karaoke">Karaoke</string>
     <string name="apple_music_style">Apple Music</string>
     <string name="apple_music_style_letter">Apple Music V2 (Letra por letra)</string>
-    <string name="echomusic_1">Vivi Music (Fluido)</string>
+    <string name="nullmusic_1">Vivi Music (Fluido)</string>
     <string name="apple_music_lyrics_blur">Desenfoque de letras estilo Apple Music</string>
     <string name="apple_music_lyrics_blur_desc">Desenfoca las líneas inactivas de la letra para resaltar la línea actual</string>
     <string name="lyrics_v2_fluid">Letras V2 (Fluido)</string>
@@ -487,14 +479,14 @@
     <string name="wrapped_total_artists_subtitle">artistas diferentes</string>
     <string name="wrapped_total_songs_title">Escuchaste</string>
     <string name="wrapped_total_songs_subtitle">canciones diferentes</string>
-    <string name="wrapped_intro_title">echomusic</string>
+    <string name="wrapped_intro_title">nullmusic</string>
     <string name="wrapped_intro_subtitle">es hora de ver lo que has estado escuchando</string>
     <string name="wrapped_intro_button">¡vamos!</string>
     <string name="wrapped_end_thanks">¡Gracias por escuchar con nullmusic!</string>
     <string name="wrapped_end_create_playlist">Crea tu lista de reproducción Recap</string>
     <string name="wrapped_end_creating_playlist">Creando...</string>
     <string name="wrapped_end_playlist_saved">Lista guardada</string>
-    <string name="wrapped_logo_content_description">Logo de echomusic</string>
+    <string name="wrapped_logo_content_description">Logo de nullmusic</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">¡TU WRAPPED ESTÁ LISTO!</string>
     <string name="wrapped_ready_subtitle">Es hora de ver lo que más te gustó este año.</string>
@@ -582,44 +574,6 @@
     <string name="copied_artist">Artista copiado</string>
     <string name="error_playing">Error al reproducir</string>
     <string name="failed_to_parse_proxy">Error al analizar la URL del proxy.</string>
-    <string name="lyrics_glow_effect">Habilitar efecto de brillo de la letra</string>
-    <string name="lyrics_glow_effect_desc">Añadir animación de brillo y efecto de rebote a la letra activa</string>
-    <string name="fade">Difuminar</string>
-    <string name="glow">Brillar</string>
-    <string name="slide">Deslizar</string>
-    <string name="karaoke">Karaoke</string>
-    <string name="apple_music_style">Estilo Apple Music</string>
-    <string name="wrapped_intro_title">nullmusic</string>
-    <string name="wrapped_logo_content_description">Logo de nullmusic</string>
-    <string name="wrapped_year">2025</string>
-    <string name="show_artist_description">Mostrar descripción del artista</string>
-    <string name="show_artist_subscriber_count">Ver numero de suscriptores</string>
-    <string name="show_artist_monthly_listeners">Ver oyentes mensuales</string>
-    <string name="lyrics_offset">Desfase de la letra</string>
-    <string name="about_artist">Acerca de</string>
-    <string name="show_more">Mostrar más</string>
-    <string name="show_less">Mostrar menos</string>
-    <string name="artist_page_settings">Página del Artista</string>
-    <string name="enable_wavy_slider">Habilitar control deslizante ondulado</string>
-    <string name="wavy">Ondulado</string>
-    <string name="enable_simpmusic">Habilitar letras de SimpMusic</string>
-    <string name="enable_simpmusic_desc">Utiliza el proveedor SimpMusic Lyrics para sincronizar las letras</string>
-    <string name="skip_silence_desc">Avanzar rápidamente por las partes silenciosas de las canciones</string>
-    <string name="skip_silence_instant">Saltar el silencio al instante</string>
-    <string name="skip_silence_instant_desc">Salta hacia adelante durante los momentos de silencio en lugar de acelerar la reproducción</string>
-    <string name="remember_shuffle_and_repeat">Recuerda mezclar y repetir</string>
-    <string name="remember_shuffle_and_repeat_desc">Recuerda el modo aleatorio y repetir al reiniciar la aplicación</string>
-    <string name="pause_music_when_media_is_muted">Pausar la música cuando se silencia el medio</string>
-    <string name="equalizer_header">Ecualizador</string>
-    <string name="no_profiles">Sin perfiles de ecualizador</string>
-    <string name="import_profile">Importar perfil</string>
-    <string name="system_equalizer">Ecualizador del sistema</string>
-    <string name="eq_disabled">Deshabilitado</string>
-    <string name="delete_profile_desc">Eliminar Perfil</string>
-    <string name="delete_profile_confirmation">¿Está seguro de que desea eliminar %1$s? Esta acción no se puede deshacer.</string>
-    <string name="error_file_read">No se pudo leer el archivo</string>
-    <string name="error_file_open">No se pudo abrir el archivo: %1$s</string>
-    <string name="import_error_title">Error de Importación</string>
     <string name="album_art">Portada del álbum</string>
     <string name="no_song_playing">No se reproduce ninguna canción</string>
     <string name="tap_to_open">Toca para abrir nullmusic</string>
@@ -628,7 +582,7 @@
     <string name="next">Siguiente</string>
     <string name="like">Me gusta</string>
     <string name="not_playing">No hay ninguna canción sonando</string>
-    <string name="tap_to_play">Toca para abrir echomusic</string>
+    <string name="tap_to_play">Toca para abrir nullmusic</string>
     <string name="widget_description">Widget del reproductor de música con controles de reproducción</string>
     <string name="queue_widget_description">Reproductor de música con vista previa de la cola</string>
     <string name="turntable_widget_description">Widget circular de música con controles de reproducción y Me gusta</string>
@@ -657,7 +611,7 @@
     <string name="playback_progress">Progreso de reproducción</string>
     <string name="widget_playing_on">Reproduciendo en</string>
     <string name="widget_this_phone">Este teléfono</string>
-    <string name="widget_echo_music">Echo Music</string>
+    <string name="widget_echo_music">NullMusic</string>
     <string name="widget_queue">Cola</string>
     <string name="widget_cast">Transmitir</string>
     <string name="widget_options">Más opciones</string>
@@ -778,7 +732,7 @@
     <string name="ai_lyrics_translation">Centro de IA (AI Hub)</string>
     <string name="contribute_to_lossless">Contribuir a música Lossless</string>
     <string name="lossless_music_hub">Centro de música Lossless</string>
-    <string name="lossless_desc">Añade audio .flac sin pérdida de alta fidelidad al ecosistema de Echo Music. Tamaño máximo: 99 MB.</string>
+    <string name="lossless_desc">Añade audio .flac sin pérdida de alta fidelidad al ecosistema de NullMusic. Tamaño máximo: 99 MB.</string>
     <string name="login_with_github">Iniciar sesión con GitHub</string>
     <string name="lossless_audio_file">Archivo de audio Lossless</string>
     <string name="choose_file">Elegir archivo .flac (Máx. 99 MB)</string>
@@ -873,54 +827,6 @@
     <string name="cd_dark_mode">Modo oscuro</string>
     <string name="cd_system_mode">Modo del sistema</string>
     <string name="cd_palette_item">Paleta %1$s</string>
-    <string name="not_playing">No hay canción en reproducción</string>
-    <string name="tap_to_play">Toca para abrir nullmusic</string>
-    <string name="widget_music_player">Reproductor de música</string>
-    <string name="widget_turntable">Tocadiscos</string>
-    <string name="listen_together_choose_server">Elegir servidor</string>
-    <string name="listen_together_custom_server">Servidor personalizado</string>
-    <string name="listen_together_use_custom_server">Usar servidor personalizado</string>
-    <string name="listen_together_auto_approval">Aprobar automáticamente solicitudes de conexión</string>
-    <string name="listen_together_auto_approval_desc">Aprobar automáticamente solicitudes de conexión en lugar de revisarlas manualmente</string>
-    <string name="listen_together_sync_volume">Sincronizar volumen del anfitrión</string>
-    <string name="listen_together_sync_volume_desc">Los invitados siguen el nivel de volumen del anfitrión</string>
-    <string name="transfer_host">Transferir anfitrión</string>
-    <string name="copy_code">Copiar código</string>
-    <string name="kick_user_desc">Eliminar a esta persona de la sesión</string>
-    <string name="permanently_kick_user">Bloquear permanentemente</string>
-    <string name="permanently_kick_user_desc">Bloquear las solicitudes de unión de esta persona y ocultar sus sugerencias</string>
-    <string name="transfer_ownership">Transferir propiedad</string>
-    <string name="transfer_ownership_desc">Convertir a esta persona en el anfitrión de la sala</string>
-    <string name="manage_user">Administrar usuario</string>
-    <string name="listen_together_blocked_users">Usuarios bloqueados</string>
-    <string name="listen_together_blocked_users_count">%d usuario(s) bloqueado(s)</string>
-    <string name="listen_together_no_blocked_users">No hay usuarios bloqueados</string>
-    <string name="unblock">Desbloquear</string>
-    <string name="user_blocked_by_host">Usuario bloqueado por el anfitrión</string>
-    <string name="together">Juntos</string>
-    <string name="reconnect">Reconectar</string>
-    <string name="enter_room_code">Ingresar código de sala</string>
-    <string name="listen_together_settings_desc">Configurar servidor, nombre de usuario y más</string>
-    <string name="ai_lyrics_translation">Traducción de letras con IA</string>
-    <string name="ai_translating_lyrics">Traduciendo letras...</string>
-    <string name="ai_lyrics_translated">Letras traducidas</string>
-    <string name="ai_provider">Proveedor</string>
-    <string name="ai_base_url">URL base</string>
-    <string name="ai_api_key">Clave API</string>
-    <string name="ai_model">Modelo</string>
-    <string name="ai_translation_mode">Modo de traducción</string>
-    <string name="ai_target_language">Idioma de destino</string>
-    <string name="ai_setup_guide">Credenciales de API</string>
-    <string name="ai_translation_literal">Traducción</string>
-    <string name="ai_translation_transcribed">Transcrito</string>
-    <string name="ai_api_key_required">Clave API requerida</string>
-    <string name="ai_error_api_key_required">Clave API obligatoria</string>
-    <string name="ai_error_no_lyrics">No hay letras para traducir</string>
-    <string name="ai_error_lyrics_empty">Las letras están vacías</string>
-    <string name="ai_error_language_required">El idioma de destino es obligatorio</string>
-    <string name="ai_error_unexpected">Resultado de traducción inesperado</string>
-    <string name="ai_error_unknown">Error desconocido ocurrido</string>
-    <string name="ai_error_translation_failed">Error de traducción</string>
     <string name="play_all">Reproducir todo</string>
     <string name="enable_high_refresh_rate">Activar alta tasa de refresco</string>
     <string name="enable_high_refresh_rate_desc">Fuerza a la pantalla a funcionar a la frecuencia de actualización más alta compatible (p. ej., 120 Hz)</string>
@@ -942,7 +848,6 @@
     <string name="delete_from_history">Eliminar del historial</string>
     <string name="re_listen">Volver a escuchar</string>
     <string name="hold_to_recognize">Mantén pulsado el icono de búsqueda para identificar música</string>
-    <string name="play_on_app">Reproducir en Echo Music</string>
     <string name="recognized_track">Pista identificada</string>
 
     <!-- CSV Import Strings -->
@@ -952,10 +857,7 @@
     <string name="song_title_column">Columna del título de la canción</string>
     <string name="youtube_url_column">Columna de URL de YouTube (Opcional)</string>
     <string name="continue_action">Continuar</string>
-    <string name="importing_csv">Importando CSV</string>
-    <string name="recently_converted">Convertidos recientemente</string>
     <string name="column_label">Col %d</string>
-    <string name="csv_import_failed">Error al importar el archivo CSV</string>
     <string name="csv_preview_failed">Error al previsualizar el archivo CSV</string>
 
     <!-- Discord Integration Redesign -->
@@ -1043,7 +945,7 @@
 
     <string name="perm_required">Obligatorios</string>
     <string name="perm_permissions">Permisos</string>
-    <string name="perm_intro_text">Estos permisos son necesarios para que echomusic funcione correctamente. Concédelos para continuar.</string>
+    <string name="perm_intro_text">Estos permisos son necesarios para que nullmusic funcione correctamente. Concédelos para continuar.</string>
 
     <string name="perm_notif_title">Notificaciones</string>
     <string name="perm_notif_desc">Sabe al instante qué está sonando y controla tu música desde la barra de notificaciones.</string>
@@ -1053,7 +955,7 @@
 
     <string name="feat_discover">Descubre</string>
     <string name="feat_features">Funciones</string>
-    <string name="feat_intro">Explora todo lo que echomusic tiene para ofrecer en tu experiencia musical.</string>
+    <string name="feat_intro">Explora todo lo que nullmusic tiene para ofrecer en tu experiencia musical.</string>
 
     <string name="feat_lyrics_title">Letras inteligentes</string>
     <string name="feat_lyrics_desc">Disfruta de letras sincronizadas palabra por palabra para millones de canciones.</string>
@@ -1077,7 +979,7 @@
     <string name="welcome_update_status">Actualizado</string>
     <string name="welcome_update_intro">Nos aseguramos de que tengas las últimas funciones y mejoras de seguridad.</string>
     <string name="welcome_checking_updates">Buscando actualizaciones…</string>
-    <string name="welcome_up_to_date">¡echomusic está actualizado!</string>
+    <string name="welcome_up_to_date">¡nullmusic está actualizado!</string>
     <string name="welcome_update_available">Nueva versión disponible: %s</string>
     <string name="welcome_everything_ready">Todo está listo y actualizado</string>
     <string name="commits_title">Commits</string>

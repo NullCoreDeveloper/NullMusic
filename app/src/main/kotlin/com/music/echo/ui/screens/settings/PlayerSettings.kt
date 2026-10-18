@@ -184,6 +184,8 @@ fun PlayerSettings(
   val (pauseOnMute, onPauseOnMuteChange) = rememberPreference(PauseOnMute, defaultValue = false)
   val (resumeOnBluetoothConnect, onResumeOnBluetoothConnectChange) =
     rememberPreference(ResumeOnBluetoothConnectKey, defaultValue = false)
+  val (autoplayOnAutomotiveConnect, onAutoplayOnAutomotiveConnectChange) =
+    rememberPreference(AutoplayOnAutomotiveConnectKey, defaultValue = false)
   val (keepScreenOn, onKeepScreenOnChange) = rememberPreference(KeepScreenOn, defaultValue = false)
   val (historyDuration, onHistoryDurationChange) =
     rememberPreference(HistoryDuration, defaultValue = 1f)
@@ -1562,6 +1564,29 @@ fun PlayerSettings(
               )
             },
             onClick = { onResumeOnBluetoothConnectChange(!resumeOnBluetoothConnect) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.autoplay_on_automotive_connect)),
+            icon = painterResource(R.drawable.auto_play),
+            title = { Text(stringResource(R.string.autoplay_on_automotive_connect)) },
+            description = { Text(stringResource(R.string.autoplay_on_automotive_connect_desc)) },
+            trailingContent = {
+              Switch(
+                checked = autoplayOnAutomotiveConnect,
+                onCheckedChange = onAutoplayOnAutomotiveConnectChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        id = if (autoplayOnAutomotiveConnect) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onAutoplayOnAutomotiveConnectChange(!autoplayOnAutomotiveConnect) }
           ),
           Material3SettingsItem(
             isHighlighted =

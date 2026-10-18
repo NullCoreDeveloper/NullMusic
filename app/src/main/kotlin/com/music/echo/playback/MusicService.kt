@@ -6533,10 +6533,32 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       val playbackData =
         runBlocking(Dispatchers.IO) {
             val dbSong = database.song(mediaId).firstOrNull()
-            val mediaMetadata = trackedMediaItem?.mediaMetadata
-            val knownTitle = dbSong?.song?.title ?: mediaMetadata?.title?.toString()
-            val knownArtist = dbSong?.artists?.joinToString { it.name }?.replace(" - Topic", "") ?: mediaMetadata?.artist?.toString()
+            // Use metadata of the item actually being resolved, not the global
+            // trackedMediaItem: ExoPlayer resolves N+1 while trackedMediaItem is
+            // still N, which used to search/addon-resolve the wrong song and cache
+            // its URL under N+1 (same audio repeated, metadata correct).
+            // Player getters must run on the application (main) thread.
+            val queueItem = runCatching {
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    player.findNextMediaItemById(mediaId)
+                        ?: player.mediaItems.find { it.mediaId == mediaId }
+                }
+            }.getOrNull()
+            val queueMeta = queueItem?.metadata
+            val queueMediaMetadata = queueItem?.mediaMetadata
+            // Last resort only when it really is the same track.
+            val trackedMeta = trackedMediaItem?.takeIf { it.mediaId == mediaId }?.mediaMetadata
+            val knownTitle = dbSong?.song?.title
+                ?: queueMeta?.title?.takeIf { it.isNotBlank() }
+                ?: queueMediaMetadata?.title?.toString()?.takeIf { it.isNotBlank() }
+                ?: trackedMeta?.title?.toString()
+            val knownArtist = dbSong?.artists?.joinToString { it.name }?.replace(" - Topic", "")
+                ?: queueMeta?.artists?.joinToString(", ") { it.name }?.takeIf { it.isNotBlank() }
+                ?: queueMediaMetadata?.artist?.toString()?.takeIf { it.isNotBlank() }
+                ?: trackedMeta?.artist?.toString()
             val knownDuration = dbSong?.song?.duration?.let { if (it > 0) it * 1000L else null }
+                ?: queueMeta?.duration?.takeIf { it > 0 }?.times(1000L)
+                ?: trackedDurationMs.takeIf { trackedMediaItem?.mediaId == mediaId && it > 0 }
 
             val extStream = extensionManager.resolveStream(knownTitle, knownArtist, knownDuration, mediaId)
             Timber.tag("MusicService").e("ADDON STREAM RESULT: url=${extStream?.url} format=${extStream?.format} quality=${extStream?.quality} audioQuality=${extStream?.audioQuality}")
@@ -7957,6 +7979,8 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     const val ALBUM = "album"
     const val PLAYLIST = "playlist"
     const val YOUTUBE_PLAYLIST = "youtube_playlist"
+    const val HOME = "home"
+    const val HOME_SECTION = "home_section"
     const val SEARCH = "search"
     const val SHUFFLE_ACTION = "__shuffle__"
 
@@ -8019,6 +8043,65 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           ) {
             Timber.tag(TAG).d("Preloading stream for $mediaId")
             kotlin.runCatching {
+              // Addon items must not go through YouTube prefetch: the old code
+              // cached a YouTube (or failed) result under the addon mediaId and
+              // raced with the on-demand addon resolve. Preload the addon URL only.
+              if (mediaId.startsWith("addon_")) {
+                val queueItem = runCatching {
+                  kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    player.findNextMediaItemById(mediaId)
+                      ?: player.mediaItems.find { it.mediaId == mediaId }
+                  }
+                }.getOrNull()
+                val queueMeta = queueItem?.metadata
+                val queueMediaMetadata = queueItem?.mediaMetadata
+                val dbSongForAddon = database.song(mediaId).firstOrNull()
+                val addonTitle = dbSongForAddon?.song?.title
+                  ?: queueMeta?.title?.takeIf { it.isNotBlank() }
+                  ?: queueMediaMetadata?.title?.toString()?.takeIf { it.isNotBlank() }
+                val addonArtist = dbSongForAddon?.artists?.joinToString(", ") { artist -> artist.name }?.replace(" - Topic", "")
+                  ?: queueMeta?.artists?.joinToString(", ") { it.name }?.takeIf { it.isNotBlank() }
+                  ?: queueMediaMetadata?.artist?.toString()?.takeIf { it.isNotBlank() }
+                val addonDuration = dbSongForAddon?.song?.duration?.let { if (it > 0) it * 1000L else null }
+                  ?: queueMeta?.duration?.takeIf { it > 0 }?.times(1000L)
+                val extStream = extensionManager.resolveStream(addonTitle, addonArtist, addonDuration, mediaId)
+                if (extStream != null) {
+                  val flac = extStream.format.contains("flac", ignoreCase = true)
+                  val playback = PlaybackData(
+                    audioConfig = null,
+                    videoDetails = null,
+                    playbackTracking = null,
+                    format = PlayerResponse.StreamingData.Format(
+                      itag = 0,
+                      url = extStream.url,
+                      mimeType = if (flac) "audio/flac" else "audio/mpeg",
+                      bitrate = if (flac) 1411000 else 320000,
+                      width = null,
+                      height = null,
+                      contentLength = null,
+                      quality = extStream.quality,
+                      fps = null,
+                      qualityLabel = null,
+                      averageBitrate = if (flac) 1411000 else 320000,
+                      audioQuality = "AUDIO_QUALITY_LOSSLESS",
+                      approxDurationMs = null,
+                      audioSampleRate = if (flac) 44100 else 48000,
+                      audioChannels = 2,
+                      loudnessDb = null,
+                      lastModified = null,
+                      signatureCipher = null,
+                      cipher = null,
+                      audioTrack = null
+                    ),
+                    streamUrl = extStream.url,
+                    streamExpiresInSeconds = 3600,
+                    headers = mapOf()
+                  )
+                  songUrlCache["${mediaId}_${audioQuality.name}"] = ResolvedStream.from(playback)
+                  Timber.tag(TAG).d("Preloaded addon stream for $mediaId")
+                }
+                return@runCatching
+              }
               val dbSong = database.song(mediaId).firstOrNull()
               val knownArtist =
                 dbSong

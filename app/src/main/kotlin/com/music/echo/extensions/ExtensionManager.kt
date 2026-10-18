@@ -1,6 +1,7 @@
 package com.music.echo.extensions
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.music.innertube.models.Artist
@@ -20,6 +21,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 
 @Serializable
 data class AddonEndpoint(
@@ -93,14 +95,96 @@ class ExtensionManager @Inject constructor(
         }
     }
 
+    private fun baseUrlFor(addon: AddonEndpoint): String =
+        if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
+
+    private fun encodeQuery(value: String): String =
+        URLEncoder.encode(value, "UTF-8")
+
+    /**
+     * Robust addon-track parsing. The public track id itself is base64url and
+     * contains `_`/`-`, so a naive split("_") breaks. Match by addon id prefix.
+     */
+    private fun findAddonForFullId(
+        fullId: String,
+        addons: List<AddonEndpoint>
+    ): Pair<AddonEndpoint, String>? {
+        if (!fullId.startsWith("addon_")) return null
+        val rest = fullId.removePrefix("addon_")
+        // Longest addon-id match first so similar prefixes don't collide.
+        for (addon in addons.sortedByDescending { it.id.length }) {
+            if (rest == addon.id) return addon to ""
+            if (rest.startsWith(addon.id + "_")) {
+                return addon to rest.removePrefix(addon.id + "_")
+            }
+        }
+        return null
+    }
+
+    private fun normalizeForMatch(value: String): String =
+        value.lowercase()
+            .replace(Regex("[\\p{Punct}]"), " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+
+    /**
+     * Strict replacement match. The old code returned the first addon result
+     * when nothing matched, so track N+1 played track N audio. Now null means
+     * "no usable replacement" and the caller falls back to YouTube.
+     */
+    private fun selectBestMatch(
+        tracks: List<AddonTrack>,
+        title: String,
+        artist: String,
+        durationMs: Long?
+    ): AddonTrack? {
+        if (tracks.isEmpty()) return null
+        val wantTitle = normalizeForMatch(title)
+        if (wantTitle.isBlank()) return null
+        val artistTokens = normalizeForMatch(artist)
+            .split(" ", ",", "&", "/", ";", "+")
+            .map { it.trim() }
+            .filter { it.length >= 2 }
+            .toSet()
+        var best: AddonTrack? = null
+        var bestScore = 0
+        for (track in tracks) {
+            if (track.id.isBlank() || track.title.isBlank()) continue
+            val gotTitle = normalizeForMatch(track.title)
+            if (gotTitle.isBlank()) continue
+            val titleOk = gotTitle.contains(wantTitle) || wantTitle.contains(gotTitle)
+            if (!titleOk) continue
+            var score = 2
+            val gotArtist = normalizeForMatch(track.artist)
+            if (artistTokens.isNotEmpty() && gotArtist.isNotBlank()) {
+                val artistOk = artistTokens.any { gotArtist.contains(it) }
+                if (artistOk) score += 2
+            } else {
+                // No artist info to compare: don't penalize, don't reward.
+                score += 1
+            }
+            if (durationMs != null && durationMs > 0 && track.duration != null && track.duration > 0) {
+                val diffMs = kotlin.math.abs(track.duration * 1000L - durationMs)
+                if (diffMs <= 15_000L) score += 1
+            } else {
+                score += 1
+            }
+            if (score > bestScore) {
+                bestScore = score
+                best = track
+            }
+        }
+        return best
+    }
+
     suspend fun search(query: String): List<SongItem> = withContext(Dispatchers.IO) {
         val addons = getAddons().filter { it.enabled }
         val results = mutableListOf<SongItem>()
         
         for (addon in addons) {
             try {
-                val baseUrl = if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
-                val searchUrl = "${baseUrl.removeSuffix("/")}/search?q=${query.replace(" ", "%20")}"
+                val baseUrl = baseUrlFor(addon)
+                val searchUrl = "${baseUrl.removeSuffix("/")}/search?q=${encodeQuery(query)}"
                 val request = Request.Builder().url(searchUrl).build()
                 val response = httpClient.newCall(request).execute()
                 val body = response.body?.string()
@@ -126,18 +210,16 @@ class ExtensionManager @Inject constructor(
     }
 
     suspend fun getStreamUrl(fullId: String): String? = withContext(Dispatchers.IO) {
-        // fullId format: addon_{addonId}_{trackId}
-        if (!fullId.startsWith("addon_")) return@withContext null
-        val parts = fullId.split("_", limit = 3)
-        if (parts.size < 3) return@withContext null
-        val addonId = parts[1]
-        val trackId = parts[2]
-        
-        val addon = getAddons().find { it.id == addonId } ?: return@withContext null
+        // fullId format: addon_{addonId}_{trackId}; trackId itself may contain "_".
+        val addons = getAddons().filter { it.enabled }
+        val (addon, trackId) = findAddonForFullId(fullId, addons) ?: return@withContext null
+        if (trackId.isBlank()) return@withContext null
         
         try {
-            val baseUrl = if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
-            val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream?id=${trackId}"
+            val baseUrl = baseUrlFor(addon)
+            // BitChord contract is /stream/:id (path param), not /stream?id=.
+            // Encoded as a single path segment so ? # / in ids can't split the URL.
+            val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/${Uri.encode(trackId)}?quality=LOSSLESS"
             val request = Request.Builder().url(streamUrlReq).build()
             val response = httpClient.newCall(request).execute()
             val body = response.body?.string()
@@ -154,22 +236,17 @@ class ExtensionManager @Inject constructor(
 
     suspend fun resolveStream(title: String?, artist: String?, duration: Long?, videoId: String): AddonStreamResponse? = withContext(Dispatchers.IO) {
         if (videoId.startsWith("addon_")) {
-            val parts = videoId.split("_", limit = 3)
-            if (parts.size == 3) {
-                val addonId = parts[1]
-                val trackId = parts[2]
-                val addons = getAddons().filter { it.enabled }
-                val targetAddon = addons.find { it.id == addonId }
-                if (targetAddon != null) {
-                    val baseUrl = if (targetAddon.url.startsWith("http")) targetAddon.url else "https://" + targetAddon.url
-                    val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/$trackId?quality=LOSSLESS"
-                    val streamReq = Request.Builder().url(streamUrlReq).build()
-                    val streamRes = httpClient.newCall(streamReq).execute()
-                    val streamBody = streamRes.body?.string()
-                    if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
-                        return@withContext json.decodeFromString<AddonStreamResponse>(streamBody)
-                    }
-                }
+            val addons = getAddons().filter { it.enabled }
+            val (targetAddon, trackId) = findAddonForFullId(videoId, addons)
+                ?: return@withContext null
+            if (trackId.isBlank()) return@withContext null
+            val baseUrl = baseUrlFor(targetAddon)
+            val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/${Uri.encode(trackId)}?quality=LOSSLESS"
+            val streamReq = Request.Builder().url(streamUrlReq).build()
+            val streamRes = httpClient.newCall(streamReq).execute()
+            val streamBody = streamRes.body?.string()
+            if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
+                return@withContext json.decodeFromString<AddonStreamResponse>(streamBody)
             }
             return@withContext null
         }
@@ -181,8 +258,8 @@ class ExtensionManager @Inject constructor(
         for (addon in addons) {
             try {
                 android.util.Log.e("ExtensionManager", "Searching addon ${addon.url} for $title $artist")
-                val baseUrl = if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
-                val searchUrl = "${baseUrl.removeSuffix("/")}/search?q=${query.replace(" ", "%20")}"
+                val baseUrl = baseUrlFor(addon)
+                val searchUrl = "${baseUrl.removeSuffix("/")}/search?q=${encodeQuery(query)}"
                 val request = Request.Builder().url(searchUrl).build()
                 val response = httpClient.newCall(request).execute()
                 val body = response.body?.string()
@@ -190,25 +267,25 @@ class ExtensionManager @Inject constructor(
                 if (response.isSuccessful && !body.isNullOrEmpty()) {
                     val addonResponse: AddonSearchResponse = json.decodeFromString(body)
                     val addonResults = addonResponse.tracks
-                    // Very basic Matcher:
-                    val match = addonResults.firstOrNull { 
-                        it.title.contains(title, ignoreCase = true) 
-                    } ?: addonResults.firstOrNull()
+                    // Strict match: never fall back to an unrelated first result.
+                    // Returning null lets the player use YouTube instead of wrong audio.
+                    val match = selectBestMatch(addonResults, title, artist, duration)
+                    if (match == null) {
+                        android.util.Log.e("ExtensionManager", "No reliable addon match for $title - $artist, skipping replacement")
+                        continue
+                    }
                     
-                    if (match != null) {
-                        android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
-                        val baseUrl = if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
-                        val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/${match.id}?quality=LOSSLESS"
-                        val streamReq = Request.Builder().url(streamUrlReq).build()
-                        val streamRes = httpClient.newCall(streamReq).execute()
-                        val streamBody = streamRes.body?.string()
-                        if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
-                            android.util.Log.e("ExtensionManager", "Stream response: $streamBody")
-                            val streamData: AddonStreamResponse = json.decodeFromString(streamBody)
-                            return@withContext streamData
-                        } else {
-                            android.util.Log.e("ExtensionManager", "Stream request failed: ${streamRes.code} ${streamRes.message}")
-                        }
+                    android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
+                    val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/${Uri.encode(match.id)}?quality=LOSSLESS"
+                    val streamReq = Request.Builder().url(streamUrlReq).build()
+                    val streamRes = httpClient.newCall(streamReq).execute()
+                    val streamBody = streamRes.body?.string()
+                    if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
+                        android.util.Log.e("ExtensionManager", "Stream response: $streamBody")
+                        val streamData: AddonStreamResponse = json.decodeFromString(streamBody)
+                        return@withContext streamData
+                    } else {
+                        android.util.Log.e("ExtensionManager", "Stream request failed: ${streamRes.code} ${streamRes.message}")
                     }
                 }
             } catch (e: Exception) {

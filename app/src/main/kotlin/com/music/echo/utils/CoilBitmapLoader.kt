@@ -27,6 +27,15 @@ class CoilBitmapLoader(
 
   override fun supportsMimeType(mimeType: String): Boolean = mimeType.startsWith("image/")
 
+  /**
+   * Preferred decode size for artwork handed to clients.
+   *
+   * Automotive renders the same item at several sizes (full-screen card, reduced
+   * player, dashboard thumbnail) and asks for the biggest one, so keeping this
+   * above the largest common request avoids a re-fetch for smaller surfaces.
+   */
+  private val targetSize = 1024
+
   private fun createFallbackBitmap(): Bitmap = createBitmap(64, 64)
 
   private fun Bitmap.copyIfNeeded(): Bitmap {
@@ -54,7 +63,12 @@ class CoilBitmapLoader(
 
   override fun loadBitmap(uri: Uri): ListenableFuture<Bitmap> =
     scope.future(Dispatchers.IO) {
-      val request = ImageRequest.Builder(context).data(uri).size(512).allowHardware(false).build()
+      val request =
+        ImageRequest.Builder(context)
+          .data(uri)
+          .size(targetSize)
+          .allowHardware(false)
+          .build()
 
       var result = context.imageLoader.execute(request)
 
@@ -66,7 +80,11 @@ class CoilBitmapLoader(
 
       when (result) {
         is ErrorResult -> {
-          createFallbackBitmap()
+          // Surface the failure as an exception instead of a blank 64x64: callers
+          // (notably Media3's artwork plumbing) treat a failed future as "no
+          // artwork yet" and can retry, while a blank bitmap is cached and
+          // displayed as a broken cover for the rest of the session.
+          throw result.throwable
         }
         is SuccessResult -> {
           try {

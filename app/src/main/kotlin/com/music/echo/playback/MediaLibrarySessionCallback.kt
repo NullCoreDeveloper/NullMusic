@@ -28,6 +28,8 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import com.music.innertube.YouTube
+import com.music.innertube.models.AlbumItem
+import com.music.innertube.models.ArtistItem
 import com.music.innertube.models.PlaylistItem
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.filterExplicit
@@ -640,11 +642,29 @@ constructor(
             }
         }
 
-      LibraryResult.ofItemList(
-        children.paginate(page, pageSize),
-        params.withContentStyleHints(isAutomotive),
-      )
+      val paged = children.paginate(page, pageSize)
+      // Automotive surfaces render the same item at wildly different sizes and
+      // cannot fetch artwork themselves, so resolve it here and ship it with the
+      // item; otherwise covers only appear when the app is alive and warm.
+      val result =
+        if (isAutomotive) {
+          withAutomotiveArtwork(paged)
+        } else {
+          paged
+        }
+      LibraryResult.ofItemList(result, params.withContentStyleHints(isAutomotive))
     }
+  }
+
+  /**
+   * Resolves the artwork referenced by each item's `artworkUri` and embeds it in
+   * the item metadata. [MediaItem.mediaMetadata.artworkUri] is the single source
+   * of truth, so this works for local songs, YT items and Home shelves alike.
+   */
+  private suspend fun withAutomotiveArtwork(items: List<MediaItem>): List<MediaItem> {
+    if (items.isEmpty()) return items
+    val artUrls = items.map { it.mediaMetadata.artworkUri?.toString() }
+    return AutomotiveArtwork.attachAll(context, items, artUrls)
   }
 
   private fun isAutomotiveBrowser(browser: MediaSession.ControllerInfo): Boolean =
@@ -659,7 +679,9 @@ constructor(
   ): ListenableFuture<LibraryResult<MediaItem>> {
     val isAutomotive = isAutomotiveBrowser(browser)
     return scope.future(Dispatchers.IO) {
-      getMediaItem(mediaId, isAutomotive)?.let { LibraryResult.ofItem(it, null) }
+      getMediaItem(mediaId, isAutomotive)
+        ?.let { item -> if (isAutomotive) withAutomotiveArtwork(listOf(item)).first() else item }
+        ?.let { LibraryResult.ofItem(it, null) }
         ?: LibraryResult.ofError(SessionError.ERROR_UNKNOWN)
     }
   }
@@ -1456,12 +1478,20 @@ constructor(
           context.dataStore.get(HideVideoSongsKey, false) ||
             context.dataStore.get(echo.music.iad1tya.constants.DataSaverEnabledKey, false)
         ) ?: return emptyList()
-      home.sections.mapIndexed { index, section ->
+      home.sections.mapIndexedNotNull { index, section ->
+        val artwork = sectionArtwork(section)
+        // A shelf whose children homeSectionSongs() cannot render (album-only,
+        // artist-only, ...) is a dead end on Automotive: it opens to nothing.
+        // Artwork alone does not make a shelf browsable, so require usable
+        // children instead of artwork.
+        if (section.items.none { it is SongItem || it is PlaylistItem }) {
+          return@mapIndexedNotNull null
+        }
         browsableMediaItem(
           "${MusicService.HOME_SECTION}/$index",
           section.title,
           section.label ?: "${section.items.size} items",
-          section.thumbnail?.toUri(),
+          artwork?.toUri(),
           MediaMetadata.MEDIA_TYPE_FOLDER_MIXED,
           singleItemStyle = MediaConstants.EXTRAS_VALUE_CONTENT_STYLE_GRID_ITEM,
         )
@@ -1471,6 +1501,21 @@ constructor(
       emptyList()
     }
   }
+
+  /**
+   * Header thumbnail when present, otherwise the first item's artwork. Home
+   * shelves commonly ship without a header thumbnail, which is why Auto showed
+   * a warning icon instead of a cover.
+   */
+  private fun sectionArtwork(section: HomePage.Section): String? =
+    section.thumbnail
+      ?: when (val first = section.items.firstOrNull()) {
+        is SongItem -> first.thumbnail
+        is PlaylistItem -> first.thumbnail
+        is AlbumItem -> first.thumbnail
+        is ArtistItem -> first.thumbnail
+        else -> null
+      }
 
   private suspend fun homeSectionSongs(sectionIndex: Int, parentId: String): List<MediaItem> {
     return try {

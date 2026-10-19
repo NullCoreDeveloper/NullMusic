@@ -131,6 +131,12 @@ class ExtensionManager @Inject constructor(
      * Strict replacement match. The old code returned the first addon result
      * when nothing matched, so track N+1 played track N audio. Now null means
      * "no usable replacement" and the caller falls back to YouTube.
+     *
+     * Comparison is token based in both directions so catalogue naming variants
+     * still match ("Portami" vs "Portami via / Fabrizio Moro", "Live", deluxe
+     * suffixes, feature credits), while a genuinely different song does not:
+     * every token of the shorter side must be covered by the longer one.
+     * Duration is only used to break ties, never to reject.
      */
     private fun selectBestMatch(
         tracks: List<AddonTrack>,
@@ -141,33 +147,35 @@ class ExtensionManager @Inject constructor(
         if (tracks.isEmpty()) return null
         val wantTitle = normalizeForMatch(title)
         if (wantTitle.isBlank()) return null
+        val wantTokens = wantTitle.split(" ").filter { it.isNotBlank() }
         val artistTokens = normalizeForMatch(artist)
             .split(" ", ",", "&", "/", ";", "+")
             .map { it.trim() }
             .filter { it.length >= 2 }
             .toSet()
         var best: AddonTrack? = null
-        var bestScore = 0
+        var bestScore = Int.MIN_VALUE
         for (track in tracks) {
             if (track.id.isBlank() || track.title.isBlank()) continue
             val gotTitle = normalizeForMatch(track.title)
             if (gotTitle.isBlank()) continue
-            val titleOk = gotTitle.contains(wantTitle) || wantTitle.contains(gotTitle)
-            if (!titleOk) continue
-            var score = 2
+            val gotTokens = gotTitle.split(" ").filter { it.isNotBlank() }
+            val covered =
+                gotTokens.count { got -> wantTokens.any { want -> got.contains(want) || want.contains(got) } }
+            val total = maxOf(gotTokens.size, wantTokens.size)
+            // Require every token of the shorter side to be covered, and at
+            // least half of the longer side so shared words alone don't qualify.
+            val coverage = covered.toFloat() / total
+            if (coverage < 0.5f) continue
+            // Full coverage of the catalogue title is the strongest signal.
+            var score = (coverage * 100).toInt()
             val gotArtist = normalizeForMatch(track.artist)
             if (artistTokens.isNotEmpty() && gotArtist.isNotBlank()) {
-                val artistOk = artistTokens.any { gotArtist.contains(it) }
-                if (artistOk) score += 2
-            } else {
-                // No artist info to compare: don't penalize, don't reward.
-                score += 1
+                if (artistTokens.any { gotArtist.contains(it) }) score += 40
             }
             if (durationMs != null && durationMs > 0 && track.duration != null && track.duration > 0) {
                 val diffMs = kotlin.math.abs(track.duration * 1000L - durationMs)
-                if (diffMs <= 15_000L) score += 1
-            } else {
-                score += 1
+                if (diffMs <= 8_000L) score += 10
             }
             if (score > bestScore) {
                 bestScore = score
@@ -256,42 +264,63 @@ class ExtensionManager @Inject constructor(
         
         val query = "$title $artist"
         for (addon in addons) {
-            try {
-                android.util.Log.e("ExtensionManager", "Searching addon ${addon.url} for $title $artist")
-                val baseUrl = baseUrlFor(addon)
-                val searchUrl = "${baseUrl.removeSuffix("/")}/search?q=${encodeQuery(query)}"
-                val request = Request.Builder().url(searchUrl).build()
-                val response = httpClient.newCall(request).execute()
-                val body = response.body?.string()
-                
-                if (response.isSuccessful && !body.isNullOrEmpty()) {
-                    val addonResponse: AddonSearchResponse = json.decodeFromString(body)
-                    val addonResults = addonResponse.tracks
-                    // Strict match: never fall back to an unrelated first result.
-                    // Returning null lets the player use YouTube instead of wrong audio.
-                    val match = selectBestMatch(addonResults, title, artist, duration)
-                    if (match == null) {
-                        android.util.Log.e("ExtensionManager", "No reliable addon match for $title - $artist, skipping replacement")
-                        continue
-                    }
-                    
-                    android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
-                    val streamUrlReq = "${baseUrl.removeSuffix("/")}/stream/${Uri.encode(match.id)}?quality=LOSSLESS"
-                    val streamReq = Request.Builder().url(streamUrlReq).build()
-                    val streamRes = httpClient.newCall(streamReq).execute()
-                    val streamBody = streamRes.body?.string()
-                    if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
-                        android.util.Log.e("ExtensionManager", "Stream response: $streamBody")
-                        val streamData: AddonStreamResponse = json.decodeFromString(streamBody)
-                        return@withContext streamData
-                    } else {
-                        android.util.Log.e("ExtensionManager", "Stream request failed: ${streamRes.code} ${streamRes.message}")
-                    }
+            val baseUrl = baseUrlFor(addon)
+            // The BitChord contract also exposes isolated source prefixes (/a, /b, /c).
+            // Those can 502 when one upstream is cold or down, while the root
+            // provider races all backends, so fall back to it before giving up
+            // and letting playback drop to YouTube (Opus).
+            val searchBases = buildList {
+                add(baseUrl)
+                BASE_ALTERNATIVES.forEach { alternative ->
+                    val candidate = baseUrl.substringBefore("/a").substringBefore("/b")
+                        .substringBefore("/c").removeSuffix("/") + alternative
+                    if (candidate != baseUrl && candidate !in this) add(candidate)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }
+            for (searchBase in searchBases) {
+                try {
+                    android.util.Log.e("ExtensionManager", "Searching addon $searchBase for $title $artist")
+                    val searchUrl = "${searchBase.removeSuffix("/")}/search?q=${encodeQuery(query)}"
+                    val request = Request.Builder().url(searchUrl).build()
+                    val response = httpClient.newCall(request).execute()
+                    val body = response.body?.string()
+                    
+                    if (response.isSuccessful && !body.isNullOrEmpty()) {
+                        val addonResponse: AddonSearchResponse = json.decodeFromString(body)
+                        val addonResults = addonResponse.tracks
+                        // Strict match: never fall back to an unrelated first result.
+                        // Returning null lets the player use YouTube instead of wrong audio.
+                        val match = selectBestMatch(addonResults, title, artist, duration)
+                        if (match == null) {
+                            android.util.Log.e("ExtensionManager", "No reliable addon match for $title - $artist on $searchBase")
+                            continue
+                        }
+                        
+                        android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
+                        val streamUrlReq = "${searchBase.removeSuffix("/")}/stream/${Uri.encode(match.id)}?quality=LOSSLESS"
+                        val streamReq = Request.Builder().url(streamUrlReq).build()
+                        val streamRes = httpClient.newCall(streamReq).execute()
+                        val streamBody = streamRes.body?.string()
+                        if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
+                            android.util.Log.e("ExtensionManager", "Stream response: $streamBody")
+                            val streamData: AddonStreamResponse = json.decodeFromString(streamBody)
+                            return@withContext streamData
+                        } else {
+                            android.util.Log.e("ExtensionManager", "Stream request failed: ${streamRes.code} ${streamRes.message}")
+                        }
+                    } else {
+                        android.util.Log.e("ExtensionManager", "Search failed: ${response.code} from $searchBase")
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("ExtensionManager", "Addon request failed for $searchBase", e)
+                }
             }
         }
         null
+    }
+
+    private companion object {
+        /** Isolated BitChord source prefixes tried when the configured one fails. */
+        val BASE_ALTERNATIVES = listOf("", "/c", "/a")
     }
 }

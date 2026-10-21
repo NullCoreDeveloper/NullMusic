@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.annotation.DrawableRes
 import androidx.core.net.toUri
 import androidx.media3.common.C
@@ -58,6 +59,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class MediaLibrarySessionCallback
@@ -72,6 +75,20 @@ constructor(
   var toggleLike: () -> Unit = {}
   var toggleStartRadio: () -> Unit = {}
   var toggleLibrary: () -> Unit = {}
+
+  /**
+   * Invoked when an automotive controller connects. Used to embed the artwork of
+   * the item already playing, which otherwise never goes through a media-item
+   * transition while the car is connected.
+   */
+  var onAutomotiveConnected: () -> Unit = {}
+
+  /** Cached YouTube Home snapshot (see [youtubeHome]) and when it was fetched. */
+  private var cachedHome: HomePage? = null
+  private var cachedHomeAtMs = 0L
+
+  /** Serializes the Home snapshot refresh so concurrent misses cannot race. */
+  private val homeMutex = Mutex()
 
   /**
    * Package names [MediaSession.isAutomotiveController] and
@@ -156,6 +173,12 @@ constructor(
       } else {
         connectionResult.availableSessionCommands
       }
+
+    // The reported package name alone is not verified; require the UID check
+    // so an arbitrary controller cannot trigger the artwork refresh.
+    if (isVerifiedAutomotiveController(controller)) {
+      onAutomotiveConnected()
+    }
 
     return MediaSession.ConnectionResult.accept(
       availableSessionCommands,
@@ -661,6 +684,11 @@ constructor(
    * the item metadata. [MediaItem.mediaMetadata.artworkUri] is the single source
    * of truth, so this works for local songs, YT items and Home shelves alike.
    */
+  private suspend fun withAutomotiveArtworkIfNeeded(
+    isAutomotive: Boolean,
+    items: List<MediaItem>
+  ): List<MediaItem> = if (isAutomotive) withAutomotiveArtwork(items) else items
+
   private suspend fun withAutomotiveArtwork(items: List<MediaItem>): List<MediaItem> {
     if (items.isEmpty()) return items
     val artUrls = items.map { it.mediaMetadata.artworkUri?.toString() }
@@ -1465,14 +1493,50 @@ constructor(
     }
 
   /**
+   * One Home snapshot per [HOME_CACHE_TTL_MS], shared by every automotive browse
+   * call.
+   *
+   * YouTube's Home feed is personalized per request: two consecutive fetches can
+   * return different shelves, or the same shelves in a different order. The tree
+   * is built from indices into that list, so a rotating feed made shelves such as
+   * "Mixtape per te" appear and disappear between visits — replaced by a
+   * different shelf — and could even point an existing node at another shelf's
+   * children. Serving a cached snapshot keeps the section set and its indices
+   * stable for the whole browsing session.
+   *
+   * The refresh is serialized by [homeMutex] because `onGetChildren` and
+   * `onSetMediaItems` run on independent IO coroutines: without it, two
+   * concurrent misses could install two different snapshots. The TTL uses
+   * [SystemClock.elapsedRealtime] so a wall-clock adjustment cannot expire the
+   * cache early and swap the snapshot mid-browse.
+   */
+  private suspend fun youtubeHome(): HomePage? = homeMutex.withLock {
+    val now = SystemClock.elapsedRealtime()
+    cachedHome?.let { if (now - cachedHomeAtMs < HOME_CACHE_TTL_MS) return@withLock it }
+    val fetched =
+      try {
+        YouTube.home().getOrNull()
+      } catch (e: Exception) {
+        reportException(e)
+        null
+      }
+    if (fetched != null) {
+      cachedHome = fetched
+      cachedHomeAtMs = now
+      fetched
+    } else {
+      cachedHome
+    }
+  }
+
+  /**
    * YouTube Home sections (Quick picks, Keep listening, charts...) as browsable
    * Auto nodes. Previously Auto only showed local Songs/Artists/Albums/Playlists,
    * so YT-generated playlists and recommendations were invisible.
    */
   private suspend fun homeSections(): List<MediaItem> {
     return try {
-      val home = YouTube.home()
-        .getOrNull()
+      val home = youtubeHome()
         ?.filterExplicit(context.dataStore.get(HideExplicitKey, false))
         ?.filterVideoSongs(
           context.dataStore.get(HideVideoSongsKey, false) ||
@@ -1519,7 +1583,7 @@ constructor(
 
   private suspend fun homeSectionSongs(sectionIndex: Int, parentId: String): List<MediaItem> {
     return try {
-      val home = YouTube.home().getOrNull() ?: return emptyList()
+      val home = youtubeHome() ?: return emptyList()
       val section = home.sections.getOrNull(sectionIndex) ?: return emptyList()
       val hideExplicit = context.dataStore.get(HideExplicitKey, false)
       val hideVideos = context.dataStore.get(HideVideoSongsKey, false) ||
@@ -1547,8 +1611,7 @@ constructor(
 
   private suspend fun suggestedHomeSongs(): List<MediaItem> {
     return try {
-      val home = YouTube.home()
-        .getOrNull()
+      val home = youtubeHome()
         ?.filterExplicit(context.dataStore.get(HideExplicitKey, false))
         ?.filterVideoSongs(
           context.dataStore.get(HideVideoSongsKey, false) ||
@@ -1609,7 +1672,7 @@ constructor(
     }
     val index = sectionId.toIntOrNull() ?: return null
     return try {
-      val item = YouTube.home().getOrNull()
+      val item = youtubeHome()
         ?.sections?.getOrNull(index)
         ?.items?.filterIsInstance<SongItem>()
         ?.firstOrNull { it.id == songId } ?: return null
@@ -1808,5 +1871,14 @@ constructor(
     if (fromIndex >= size) return emptyList()
 
     return subList(fromIndex.toInt(), minOf(fromIndex.toInt() + pageSize, size))
+  }
+
+  private companion object {
+    /**
+     * How long a YouTube Home snapshot is reused for automotive browse calls.
+     * Long enough that a section set and its indices stay put while the user
+     * navigates, short enough that new recommendations still arrive.
+     */
+    const val HOME_CACHE_TTL_MS = 5 * 60 * 1000L
   }
 }

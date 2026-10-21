@@ -60,7 +60,16 @@ data class AddonStreamResponse(
 class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val httpClient = OkHttpClient()
+    /**
+     * Addon requests run inside the player's blocking resolve path, so a
+     * configured-but-unreachable host must fail fast instead of stacking several
+     * default 10s timeouts per base and delaying the YouTube fallback.
+     */
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
+        .callTimeout(12, java.util.concurrent.TimeUnit.SECONDS)
+        .build()
     private val ADDONS_KEY = stringPreferencesKey("extensions_addons_list")
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -132,11 +141,23 @@ class ExtensionManager @Inject constructor(
      * when nothing matched, so track N+1 played track N audio. Now null means
      * "no usable replacement" and the caller falls back to YouTube.
      *
-     * Comparison is token based in both directions so catalogue naming variants
-     * still match ("Portami" vs "Portami via / Fabrizio Moro", "Live", deluxe
-     * suffixes, feature credits), while a genuinely different song does not:
-     * every token of the shorter side must be covered by the longer one.
-     * Duration is only used to break ties, never to reject.
+     * Three gates must pass before a catalogue track can replace the requested
+     * one:
+     *  - the base titles (title without version qualifiers/credits) must cover
+     *    each other, so catalogue variants such as "Portami" vs "Portami via /
+     *    Fabrizio Moro" still match;
+     *  - any version qualifier the request carries ("remix", "live",
+     *    "instrumental", ...) must also appear in the candidate, so the plain
+     *    original is never substituted for a requested remix (and vice versa is
+     *    still allowed, just scored lower);
+     *  - when both sides name an artist, they must share an artist token. Artist
+     *    agreement is a gate, not a bonus: this is what stops a same-titled song
+     *    by a different artist from being matched.
+     *
+     * Plain substring containment is deliberately not used: "Yes" is a substring
+     * of "Yesterday". A token pair matches only when one is a prefix of the other
+     * and the shorter is at least [MIN_TOKEN_MATCH_LEN] characters. Duration only
+     * breaks ties among otherwise equivalent candidates.
      */
     private fun selectBestMatch(
         tracks: List<AddonTrack>,
@@ -145,37 +166,44 @@ class ExtensionManager @Inject constructor(
         durationMs: Long?
     ): AddonTrack? {
         if (tracks.isEmpty()) return null
-        val wantTitle = normalizeForMatch(title)
-        if (wantTitle.isBlank()) return null
-        val wantTokens = wantTitle.split(" ").filter { it.isNotBlank() }
-        val artistTokens = normalizeForMatch(artist)
-            .split(" ", ",", "&", "/", ";", "+")
-            .map { it.trim() }
-            .filter { it.length >= 2 }
-            .toSet()
+        val wantTokens = tokenize(title)
+        if (wantTokens.isEmpty()) return null
+        val wantQualifiers = wantTokens.filter { it in QUALIFIER_TOKENS }.toSet()
+        val wantBase = wantTokens.filterNot { it in QUALIFIER_TOKENS || it in CREDIT_TOKENS }
+        if (wantBase.isEmpty()) return null
+        val artistTokens = tokenize(artist)
+
         var best: AddonTrack? = null
         var bestScore = Int.MIN_VALUE
         for (track in tracks) {
             if (track.id.isBlank() || track.title.isBlank()) continue
-            val gotTitle = normalizeForMatch(track.title)
-            if (gotTitle.isBlank()) continue
-            val gotTokens = gotTitle.split(" ").filter { it.isNotBlank() }
-            val covered =
-                gotTokens.count { got -> wantTokens.any { want -> got.contains(want) || want.contains(got) } }
-            val total = maxOf(gotTokens.size, wantTokens.size)
-            // Require every token of the shorter side to be covered, and at
-            // least half of the longer side so shared words alone don't qualify.
-            val coverage = covered.toFloat() / total
-            if (coverage < 0.5f) continue
-            // Full coverage of the catalogue title is the strongest signal.
-            var score = (coverage * 100).toInt()
-            val gotArtist = normalizeForMatch(track.artist)
-            if (artistTokens.isNotEmpty() && gotArtist.isNotBlank()) {
-                if (artistTokens.any { gotArtist.contains(it) }) score += 40
+            val gotTokens = tokenize(track.title)
+            if (gotTokens.isEmpty()) continue
+            val gotQualifiers = gotTokens.filter { it in QUALIFIER_TOKENS }.toSet()
+            val gotBase = gotTokens.filterNot { it in QUALIFIER_TOKENS || it in CREDIT_TOKENS }
+            if (gotBase.isEmpty()) continue
+            if (!coversAllTokens(gotBase, wantBase)) continue
+            // A qualifier the user asked for must exist in the candidate: a remix
+            // request must not be silently served the plain original.
+            if (!wantQualifiers.all { wanted -> gotQualifiers.any { tokensMatch(it, wanted) } }) {
+                continue
             }
+            val artistMatched = artistMatches(artistTokens, tokenize(track.artist))
+            // Never substitute a different artist when both sides name one.
+            if (artistTokens.isNotEmpty() && !artistMatched) continue
+
+            // Exact base agreement is the strongest signal; partial coverage is
+            // tolerated for catalogue variants but ranks below it.
+            var score =
+                if (gotBase == wantBase) 100
+                else (gotBase.count { got -> wantBase.any { tokensMatch(got, it) } }
+                    .toFloat() / maxOf(gotBase.size, wantBase.size) * 60).toInt()
+            if (artistMatched) score += 60
+            if (gotQualifiers == wantQualifiers) score += 20
+            else if (wantQualifiers.isEmpty()) score -= gotQualifiers.size * 5
             if (durationMs != null && durationMs > 0 && track.duration != null && track.duration > 0) {
                 val diffMs = kotlin.math.abs(track.duration * 1000L - durationMs)
-                if (diffMs <= 8_000L) score += 10
+                if (diffMs <= 8_000L) score += 10 else if (diffMs <= 20_000L) score += 3
             }
             if (score > bestScore) {
                 bestScore = score
@@ -183,6 +211,54 @@ class ExtensionManager @Inject constructor(
             }
         }
         return best
+    }
+
+    /** Normalizes then splits a value into matchable word tokens. */
+    private fun tokenize(value: String): List<String> =
+        normalizeForMatch(value).split(" ").filter { it.isNotBlank() }
+
+    /**
+     * True when the requested artist and the catalogue artist share at least one
+     * significant token exactly. Generic function/credit markers ("the", "and",
+     * "feat", ...) are ignored, otherwise "The Fray" and "The Band" would both
+     * match on "the" and a same-titled song by another artist would pass. The
+     * remaining tokens keep a 2-character minimum so meaningful short names such
+     * as "dj", "mc", "lil" and "los" still match.
+     */
+    private fun artistMatches(want: List<String>, got: List<String>): Boolean {
+        val wantSig = want.filter { it.length >= 2 && it !in ARTIST_STOP_TOKENS }
+        val gotSig = got.filter { it.length >= 2 && it !in ARTIST_STOP_TOKENS }
+        if (wantSig.isEmpty() || gotSig.isEmpty()) return false
+        return wantSig.any { it in gotSig }
+    }
+
+    /**
+     * True when every token of the shorter list is matched by a token of the
+     * longer one. Extra words on the longer side are tolerated so catalogue
+     * decorations ("Portami via /") do not prevent a match, but a token of the
+     * shorter side with no counterpart does.
+     */
+    private fun coversAllTokens(shorter: List<String>, longer: List<String>): Boolean {
+        if (shorter.isEmpty() || longer.isEmpty()) return false
+        val (fewer, more) = if (shorter.size <= longer.size) shorter to longer else longer to shorter
+        return fewer.all { token -> more.any { tokensMatch(token, it) } }
+    }
+
+    /**
+     * Token match: equality, or a short inflection-style prefix ("love" vs
+     * "lover", "run" vs "running"). A prefix must be at least
+     * [MIN_TOKEN_MATCH_LEN] characters *and* the longer token may exceed it by at
+     * most [MAX_PREFIX_SUFFIX_LEN] characters. The length minimum alone was not
+     * enough: a three-character prefix like "yes" still matched "yesterday", so
+     * the suffix bound is what actually rejects unrelated words.
+     */
+    private fun tokensMatch(a: String, b: String): Boolean {
+        if (a == b) return true
+        val shorter = if (a.length <= b.length) a else b
+        val longer = if (a.length <= b.length) b else a
+        if (shorter.length < MIN_TOKEN_MATCH_LEN) return false
+        return longer.startsWith(shorter) &&
+          longer.length - shorter.length <= MAX_PREFIX_SUFFIX_LEN
     }
 
     suspend fun search(query: String): List<SongItem> = withContext(Dispatchers.IO) {
@@ -242,6 +318,12 @@ class ExtensionManager @Inject constructor(
         null
     }
 
+    /**
+     * Resolves a playable addon stream for the track identified by [videoId] when
+     * it is an addon id, otherwise searches every enabled addon for a strict title
+     * and artist match. Returns null when nothing reliable is found so the caller
+     * falls back to YouTube rather than playing unrelated audio.
+     */
     suspend fun resolveStream(title: String?, artist: String?, duration: Long?, videoId: String): AddonStreamResponse? = withContext(Dispatchers.IO) {
         if (videoId.startsWith("addon_")) {
             val addons = getAddons().filter { it.enabled }
@@ -271,56 +353,167 @@ class ExtensionManager @Inject constructor(
             // and letting playback drop to YouTube (Opus).
             val searchBases = buildList {
                 add(baseUrl)
+                val hostRoot = stripSourcePrefix(baseUrl)
                 BASE_ALTERNATIVES.forEach { alternative ->
-                    val candidate = baseUrl.substringBefore("/a").substringBefore("/b")
-                        .substringBefore("/c").removeSuffix("/") + alternative
+                    val candidate = hostRoot + alternative
                     if (candidate != baseUrl && candidate !in this) add(candidate)
                 }
             }
             for (searchBase in searchBases) {
-                try {
-                    android.util.Log.e("ExtensionManager", "Searching addon $searchBase for $title $artist")
-                    val searchUrl = "${searchBase.removeSuffix("/")}/search?q=${encodeQuery(query)}"
-                    val request = Request.Builder().url(searchUrl).build()
-                    val response = httpClient.newCall(request).execute()
-                    val body = response.body?.string()
-                    
-                    if (response.isSuccessful && !body.isNullOrEmpty()) {
-                        val addonResponse: AddonSearchResponse = json.decodeFromString(body)
-                        val addonResults = addonResponse.tracks
-                        // Strict match: never fall back to an unrelated first result.
-                        // Returning null lets the player use YouTube instead of wrong audio.
-                        val match = selectBestMatch(addonResults, title, artist, duration)
-                        if (match == null) {
-                            android.util.Log.e("ExtensionManager", "No reliable addon match for $title - $artist on $searchBase")
-                            continue
+                android.util.Log.e("ExtensionManager", "Searching addon $searchBase for $title $artist")
+                val searchUrl = "${searchBase.removeSuffix("/")}/search?q=${encodeQuery(query)}"
+                // The connection-specific boundary: only a failure to reach the
+                // host (DNS, refused, connect timeout) is host-wide. A reachable
+                // base that fails while reading or parsing its body can still be
+                // rescued by trying the next base, so those are handled below.
+                val searchResponse = try {
+                    httpClient.newCall(Request.Builder().url(searchUrl).build()).execute()
+                } catch (e: Exception) {
+                    if (isHostUnreachable(e)) {
+                        android.util.Log.e("ExtensionManager", "Addon connection failed for $searchBase", e)
+                        break
+                    }
+                    android.util.Log.e("ExtensionManager", "Addon request failed for $searchBase", e)
+                    continue
+                }
+
+                val match = try {
+                    searchResponse.use { response ->
+                        val body = response.body?.string()
+                        if (!response.isSuccessful || body.isNullOrEmpty()) {
+                            android.util.Log.e("ExtensionManager", "Search failed: ${response.code} from $searchBase")
+                            null
+                        } else {
+                            // Strict match: never fall back to an unrelated first result.
+                            // Returning null lets the player use YouTube instead of wrong audio.
+                            selectBestMatch(
+                                json.decodeFromString<AddonSearchResponse>(body).tracks,
+                                title,
+                                artist,
+                                duration,
+                            )
                         }
-                        
-                        android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
-                        val streamUrlReq = "${searchBase.removeSuffix("/")}/stream/${Uri.encode(match.id)}?quality=LOSSLESS"
-                        val streamReq = Request.Builder().url(streamUrlReq).build()
-                        val streamRes = httpClient.newCall(streamReq).execute()
+                    }
+                } catch (e: Exception) {
+                    // Body read or JSON parse failure on a reachable host is not
+                    // host-wide, so keep trying the other bases instead of giving up.
+                    android.util.Log.e("ExtensionManager", "Addon response failed for $searchBase", e)
+                    null
+                }
+
+                if (match == null) {
+                    android.util.Log.e("ExtensionManager", "No reliable addon match for $title - $artist on $searchBase")
+                    continue
+                }
+
+                android.util.Log.e("ExtensionManager", "Matched track: ${match.title} by ${match.artist}. Fetching stream...")
+                val streamUrlReq = "${searchBase.removeSuffix("/")}/stream/${Uri.encode(match.id)}?quality=LOSSLESS"
+                val streamResponse = try {
+                    httpClient.newCall(Request.Builder().url(streamUrlReq).build()).execute()
+                } catch (e: Exception) {
+                    if (isHostUnreachable(e)) {
+                        // A connection-level failure applies to every base on the same
+                        // host, so retrying the other prefixes only adds timeouts
+                        // before playback can fall back. Stop here.
+                        android.util.Log.e("ExtensionManager", "Addon stream connection failed for $searchBase", e)
+                        break
+                    }
+                    android.util.Log.e("ExtensionManager", "Addon stream request failed for $searchBase", e)
+                    continue
+                }
+                val streamData = try {
+                    streamResponse.use { streamRes ->
                         val streamBody = streamRes.body?.string()
                         if (streamRes.isSuccessful && !streamBody.isNullOrEmpty()) {
                             android.util.Log.e("ExtensionManager", "Stream response: $streamBody")
-                            val streamData: AddonStreamResponse = json.decodeFromString(streamBody)
-                            return@withContext streamData
+                            json.decodeFromString<AddonStreamResponse>(streamBody)
                         } else {
                             android.util.Log.e("ExtensionManager", "Stream request failed: ${streamRes.code} ${streamRes.message}")
+                            null
                         }
-                    } else {
-                        android.util.Log.e("ExtensionManager", "Search failed: ${response.code} from $searchBase")
                     }
                 } catch (e: Exception) {
-                    android.util.Log.e("ExtensionManager", "Addon request failed for $searchBase", e)
+                    android.util.Log.e("ExtensionManager", "Addon stream response failed for $searchBase", e)
+                    null
                 }
+
+                if (streamData != null) return@withContext streamData
             }
         }
         null
     }
 
+    /**
+     * True when [e], thrown by `Call.execute()`, means the host itself could not be
+     * reached (DNS, refused, no route, connect timeout). Only these apply to every
+     * base on the same host; read timeouts, TLS and protocol errors come from a
+     * reachable server and may not affect the other prefixes.
+     */
+    private fun isHostUnreachable(e: Exception): Boolean = when (e) {
+        is java.net.UnknownHostException,
+        is java.net.ConnectException,
+        is java.net.NoRouteToHostException -> true
+        // OkHttp reports a connect timeout as SocketTimeoutException("connect timed out"),
+        // the same type as a read timeout, so tell them apart by message.
+        is java.net.SocketTimeoutException -> e.message?.contains("connect", ignoreCase = true) == true
+        else -> false
+    }
+
+    /**
+     * Removes a trailing BitChord source prefix ("/a", "/b", "/c") from a base URL.
+     *
+     * Only the last path segment is considered: a plain substring search would
+     * also match inside the scheme ("https://host" contains "/a" in "//a…"), which
+     * truncated the URL to "https:/" and produced unusable candidates.
+     */
+    private fun stripSourcePrefix(baseUrl: String): String {
+        val trimmed = baseUrl.removeSuffix("/")
+        val lastSlash = trimmed.lastIndexOf('/')
+        if (lastSlash < 0) return trimmed
+        val schemeEnd = trimmed.indexOf("://")
+        // Do not treat the scheme separator as a path segment boundary.
+        if (schemeEnd >= 0 && lastSlash <= schemeEnd + 2) return trimmed
+        val lastSegment = trimmed.substring(lastSlash + 1)
+        return if (SOURCE_PREFIXES.contains(lastSegment)) {
+            trimmed.substring(0, lastSlash)
+        } else {
+            trimmed
+        }
+    }
+
     private companion object {
         /** Isolated BitChord source prefixes tried when the configured one fails. */
         val BASE_ALTERNATIVES = listOf("", "/c", "/a")
+        val SOURCE_PREFIXES = setOf("a", "b", "c")
+        /** Shortest token pair accepted as a title match, so "yes" != "yesterday". */
+        const val MIN_TOKEN_MATCH_LEN = 3
+
+        /**
+         * Longest suffix a longer token may have over a shorter prefix token for
+         * the pair to still count as the same word ("love"/"lover" = 1,
+         * "run"/"running" = 4). Bounds "yes" vs "yesterday" (6) out.
+         */
+        const val MAX_PREFIX_SUFFIX_LEN = 4
+
+        /**
+         * Tokens that describe a specific rendition of a song. Unless the user
+         * requested the same qualifier, a candidate carrying it is not the same
+         * audio, so the request must not be satisfied by a different version.
+         */
+        val QUALIFIER_TOKENS = setOf(
+            "remix", "rmx", "remaster", "remastered", "live", "instrumental",
+            "acoustic", "extended", "radio", "edit", "demo", "deluxe", "version",
+            "sped", "slowed", "reverb", "cover", "karaoke", "mix", "unplugged",
+        )
+
+        /** Credit markers that decorate a title without changing the song. */
+        val CREDIT_TOKENS = setOf("feat", "ft", "featuring", "prod")
+
+        /**
+         * Tokens that are too generic to prove two artists are the same. Excluded
+         * from the artist gate so "The Fray" cannot match "The Band" on "the".
+         */
+        val ARTIST_STOP_TOKENS =
+            setOf("the", "and", "of", "with", "feat", "ft", "featuring", "prod", "vs")
     }
 }

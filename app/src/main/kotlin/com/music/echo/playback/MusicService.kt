@@ -249,6 +249,9 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
   private var trackedAccumulatedPlayMs: Long = 0L
   private var trackedPlayStartTs: Long = 0L
 
+  /** Resolves and embeds the current cover; cancelled when the track changes. */
+  private var currentArtworkJob: Job? = null
+
   private lateinit var audioManager: AudioManager
   // Wi-Fi Lock: Prevents modern Wi-Fi 6/7 routers from putting the Wi-Fi chip into
   // low-power sleep mode while music is actively streaming in the background.
@@ -1535,6 +1538,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       toggleLike = ::toggleLike
       toggleStartRadio = ::toggleStartRadio
       toggleLibrary = ::toggleLibrary
+      onAutomotiveConnected = { refreshCurrentItemArtwork(player.currentMediaItem) }
     }
     mediaSession =
       MediaLibrarySession.Builder(this, player, mediaLibrarySessionCallback)
@@ -5477,6 +5481,54 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     if (dataStore.get(PersistentQueueKey, true)) {
       saveQueueToDisk()
     }
+
+    refreshCurrentItemArtwork(mediaItem)
+  }
+
+  /**
+   * Embeds the cover bytes in the item that is currently playing.
+   *
+   * Android Auto and the Automotive OS cluster receive the current item's
+   * [MediaMetadata] and resolve its artwork themselves. When only
+   * [MediaMetadata.artworkUri] is present, that means a second fetch from another
+   * process/surface: the dashboard and the compact Auto layouts often fail it or
+   * race the URL, and fall back to the app icon, even though the phone UI (which
+   * uses Coil directly) shows the cover. [MediaMetadata.artworkData] needs no
+   * fetch, so every consumer can decode the same bytes immediately.
+   *
+   * The load happens off the playback path and the item is replaced only if it is
+   * still the current one; a failed load leaves the track untouched.
+   */
+  private fun refreshCurrentItemArtwork(mediaItem: MediaItem?) {
+    if (mediaItem == null || mediaItem.mediaMetadata.artworkData != null) return
+    val artUrl =
+      mediaItem.mediaMetadata.artworkUri?.toString()
+        ?: mediaItem.metadata?.thumbnailUrl
+        ?: return
+    val mediaId = mediaItem.mediaId
+    currentArtworkJob?.cancel()
+    currentArtworkJob =
+      scope.launch(Dispatchers.IO) {
+        val data = AutomotiveArtwork.loadForPlayback(this@MusicService, artUrl) ?: return@launch
+        withContext(Dispatchers.Main) {
+          if (!::player.isInitialized) return@withContext
+          val current = player.currentMediaItem ?: return@withContext
+          if (current.mediaId != mediaId || current.mediaMetadata.artworkData != null) {
+            return@withContext
+          }
+          val index = player.currentMediaItemIndex
+          if (index == C.INDEX_UNSET) return@withContext
+          player.replaceMediaItem(
+            index,
+            current
+              .buildUpon()
+              .setMediaMetadata(
+                current.mediaMetadata.buildUpon().setArtworkData(data).build()
+              )
+              .build()
+          )
+        }
+      }
   }
 
   override fun onPlaybackStateChanged(
@@ -7840,6 +7892,9 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     // the outgoing (soon-to-be-released) session, so the incoming track plays
     // without normalization/EQ.
     currentMediaMetadata.value = player.currentMetadata
+    // Same reason: no transition fires for the incoming player, so embed its
+    // cover bytes here or the crossfaded track stays URI-only on Auto.
+    refreshCurrentItemArtwork(player.currentMediaItem)
     val oldSessionId = fadingPlayer?.audioSessionId
     // Keep the current enhancer (still bound to the outgoing session) alive and attached
     // through the fade instead of releasing it, so the outgoing track stays normalized

@@ -15,9 +15,11 @@ import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.google.common.util.concurrent.ListenableFuture
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.guava.future
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class CoilBitmapLoader(
@@ -35,6 +37,14 @@ class CoilBitmapLoader(
    * above the largest common request avoids a re-fetch for smaller surfaces.
    */
   private val targetSize = 1024
+
+  /**
+   * Media3 updates the legacy metadata once this future completes. A stuck
+   * request would leave Android Auto and the cluster on the app icon forever, so
+   * fail after a bounded wait and let the caller fall back (or retry on the next
+   * transition).
+   */
+  private val timeoutMs = 6_000L
 
   private fun createFallbackBitmap(): Bitmap = createBitmap(64, 64)
 
@@ -70,12 +80,16 @@ class CoilBitmapLoader(
           .allowHardware(false)
           .build()
 
-      var result = context.imageLoader.execute(request)
+      var result =
+        withTimeoutOrNull(timeoutMs) { context.imageLoader.execute(request) }
+          ?: throw IOException("Timed out loading artwork from $uri")
 
       if (result is ErrorResult) {
         val cacheRequest =
           request.newBuilder().networkCachePolicy(coil3.request.CachePolicy.READ_ONLY).build()
-        result = context.imageLoader.execute(cacheRequest)
+        result =
+          withTimeoutOrNull(timeoutMs) { context.imageLoader.execute(cacheRequest) }
+            ?: throw IOException("Timed out loading artwork from $uri")
       }
 
       when (result) {

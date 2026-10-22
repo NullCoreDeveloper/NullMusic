@@ -911,11 +911,19 @@ object Spotify {
    * duration_ms).
    */
   private fun parseGqlTrackDurationMs(trackData: JsonObject): Int {
+    // Direct or nested trackDuration/duration objects
+    trackData.obj("trackDuration")?.int("totalMilliseconds")?.let { if (it > 0) return it }
     trackData.obj("duration")?.int("totalMilliseconds")?.let { if (it > 0) return it }
+    trackData.obj("track")?.obj("trackDuration")?.int("totalMilliseconds")?.let { if (it > 0) return it }
+    trackData.obj("track")?.obj("duration")?.int("totalMilliseconds")?.let { if (it > 0) return it }
+    // Flat milliseconds fields
     trackData.int("durationMs")?.let { if (it > 0) return it }
     trackData.int("duration_ms")?.let { if (it > 0) return it }
+    trackData.obj("track")?.int("duration_ms")?.let { if (it > 0) return it }
+    trackData.obj("track")?.int("durationMs")?.let { if (it > 0) return it }
     // Some APIs return duration in seconds
     trackData.int("duration")?.let { sec -> if (sec > 0) return sec * 1000 }
+    trackData.obj("track")?.int("duration")?.let { sec -> if (sec > 0) return sec * 1000 }
     return 0
   }
 

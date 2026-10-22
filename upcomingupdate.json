@@ -16,7 +16,10 @@
     "Music Flow: show the translucent play icon on album artwork only while paused, hide it during playback, and keep direct tap playback control",
     "Music Flow: synchronize lyrics to playback and saved timing offsets, follow paused seeks and song changes, preserve instrumental gaps, and animate line changes with a smooth slide and fade",
     "Music Flow: automatically scroll long song titles and artist names",
-    "Lyrics: time out stalled providers so other lyrics sources can be tried"
+    "Lyrics: time out stalled providers so other lyrics sources can be tried",
+    "Android Auto: deliver artwork as signed content URIs, cache cluster covers, stabilize Home shelves across reconnects, and fall back to hqdefault when maxresdefault 404s (#677)",
+    "Playback: fix downloaded track playback mismatch when filtering explicit/video songs, and recognize completed offline downloads when contentLength is unset (#666, #674)",
+    "Playlists: allow removing duplicate songs from a playlist directly from the 'Add to playlist' dialog and fix premature dialog dismissal (#655, #675)"
   ],
   "contributors": []
 }

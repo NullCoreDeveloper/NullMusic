@@ -407,6 +407,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <!-- Covers for Android Auto / Automotive OS / the cluster, which only load
+             content:// artwork. Serves only URIs signed by AutomotiveArtwork. -->
+        <provider
+            android:name=".utils.AutomotiveArtworkProvider"
+            android:authorities="${applicationId}.artwork"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
         <provider
             android:name="com.dpi.DensityScaler"
             android:authorities="${applicationId}.com.dpi.DensityScaler"

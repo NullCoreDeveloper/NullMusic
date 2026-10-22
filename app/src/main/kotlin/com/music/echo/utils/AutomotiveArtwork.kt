@@ -1,13 +1,13 @@
 package echo.music.iad1tya.utils
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Base64
 import android.util.LruCache
-import android.util.Size
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.session.MediaConstants
 import coil3.imageLoader
 import coil3.request.CachePolicy
 import coil3.request.ErrorResult
@@ -16,226 +16,228 @@ import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.toBitmap
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.security.MessageDigest
+import java.security.SecureRandom
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 /**
- * Artwork delivery for Android Auto / Automotive OS browse trees.
+ * Artwork delivery for Android Auto, Automotive OS and the instrument cluster.
  *
- * The automotive client renders covers at very different sizes depending on the
- * surface: a one-third-width row, an expanded player taking most of the screen,
- * and the dashboard thumbnail. Media3 hands the same [MediaItem] to all of them,
- * and the item only carried an HTTP `artworkUri`. Whether a cover appeared then
- * depended on whether the app happened to be alive and Coil's cache happened to
- * be warm, which is why covers only showed up once the app had been opened and
- * behaved erratically between surfaces.
+ * Those surfaces live in other processes and load artwork themselves from the
+ * icon / album-art URI that Media3 forwards. Android Auto only resolves local
+ * `content://` and `android.resource://` URIs there; an `https://` cover URL is
+ * ignored. Embedding the bytes in each item worked only for a bounded number of
+ * items per page and only when the load finished in time, so covers appeared on
+ * one surface (the full-screen player had the bitmap) and not on another (the
+ * cluster, the one-third layout, later list pages read the URI).
  *
- * This resolves the artwork while serving the browse request and embeds it as
- * compressed [MediaMetadata.artworkData], which is the artwork payload Media3
- * 1.7.x forwards to controllers, so every automotive surface gets the same
- * image without re-fetching it.
+ * [contentUriFor] maps every remote cover to a signed `content://` URI served by
+ * [AutomotiveArtworkProvider], which fetches it through Coil on demand and keeps
+ * it in a small file cache. Every surface can then resolve every cover, at any
+ * time, at the size it needs.
  */
 object AutomotiveArtwork {
 
   private const val TAG = "AutomotiveArtwork"
 
-  /** Largest surface (expanded player); keeps the IPC payload well under the limit. */
-  private const val ARTWORK_SIZE_PX = 512
+  /** Served through the provider: no parcel limit, so allow the large player. */
+  private const val PROVIDER_SIZE_PX = 1024
 
-  /** Keep onGetChildren responsive: after this the item is served without art. */
-  private const val LOAD_TIMEOUT_MS = 3000L
+  /** The provider blocks a binder thread of the caller, so bound it. */
+  private const val PROVIDER_LOAD_TIMEOUT_MS = 10_000L
 
-  /** Upper bound for all artwork loads of one browse response. */
-  private const val BATCH_TIMEOUT_MS = 4000L
+  private const val PROVIDER_JPEG_QUALITY = 90
 
-  /**
-   * Now-playing artwork is not on a browse-response critical path: the player can
-   * keep streaming while the cover resolves and update the metadata afterwards.
-   * A cold cover fetch can easily exceed the browse budget, so allow a bit more.
-   */
-  private const val PLAYBACK_LOAD_TIMEOUT_MS = 8000L
+  private const val PATH_ART = "art"
+  private const val CACHE_DIR = "automotive_artwork"
+  private const val MAX_CACHE_DIR_BYTES = 64L * 1024 * 1024
+  private const val TRIMMED_CACHE_DIR_BYTES = 48L * 1024 * 1024
 
-  private const val JPEG_QUALITY = 80
+  private const val PREFS = "automotive_artwork"
+  private const val PREF_SECRET = "uri_secret"
 
-  /**
-   * Browsers may request a whole library in one call (`pageSize = Int.MAX_VALUE`).
-   * Each cover is a load plus a JPEG encode, so an unbounded batch can exhaust the
-   * app process on a large library, and the resulting parcel can exceed Media3's
-   * 256 KiB browse payload limit, which silently truncates the list.
-   */
-  private const val MAX_ITEMS_PER_RESPONSE = 60
+  /** Mapping is called for every browse item and metadata read; keep it cheap. */
+  private val contentUriCache = LruCache<String, Uri>(1024)
 
-  /** Total embedded artwork bytes per browse response; keeps the parcel bounded. */
-  private const val MAX_TOTAL_BYTES = 160 * 1024
+  @Volatile private var secret: ByteArray? = null
 
-  /** Concurrent decodes, so a cold cache does not fire hundreds of requests at once. */
-  private const val MAX_CONCURRENT_LOADS = 4
+  fun authority(context: Context): String = "${context.packageName}.artwork"
 
   /**
-   * Decoded-and-compressed covers keyed by source URL. The dashboard/cockpit and
-   * the phone UI request the same tracks independently; without this, each
-   * surface re-decodes from scratch and a surface that arrives with a cold Coil
-   * cache (or after the [LOAD_TIMEOUT_MS] window) got no artwork at all. Once any
-   * surface resolves a cover, every later request is served from memory.
+   * The provider URI for a remote (`http`/`https`) cover, or [uri] itself for any
+   * other scheme (`android.resource`, `content`, `file`) and for null.
    */
-  private const val MAX_CACHE_BYTES = 8 * 1024 * 1024
-
-  private val artworkCache =
-    object : LruCache<String, ByteArray>(MAX_CACHE_BYTES) {
-      override fun sizeOf(key: String, value: ByteArray): Int = value.size
-    }
-
-  /**
-   * Attaches artwork to [item] when [artUrl] resolves within [LOAD_TIMEOUT_MS].
-   * Never throws and never fails a browse request: artwork is cosmetic.
-   */
-  suspend fun attach(context: Context, item: MediaItem, artUrl: String?): MediaItem {
-    val url = artUrl?.takeIf { it.isNotBlank() } ?: return item
-    if (hasArtwork(item)) return item
-    val data = loadArtworkData(context, url) ?: return item
-    return withArtworkData(item, data)
+  fun contentUriFor(context: Context, uri: Uri?): Uri? {
+    if (uri == null) return null
+    val scheme = uri.scheme?.lowercase()
+    if (scheme != "http" && scheme != "https") return uri
+    val url = uri.toString()
+    contentUriCache.get(url)?.let { return it }
+    val mapped =
+      Uri.Builder()
+        .scheme(ContentResolver.SCHEME_CONTENT)
+        .authority(authority(context))
+        .appendPath(PATH_ART)
+        .appendPath(Base64.encodeToString(url.toByteArray(), BASE64_FLAGS))
+        .appendPath(sign(context, url))
+        .build()
+    contentUriCache.put(url, mapped)
+    return mapped
   }
 
-  /** Batch variant sharing one timeout across all items of a browse page. */
-  suspend fun attachAll(context: Context, items: List<MediaItem>, artUrls: List<String?>): List<MediaItem> {
-    if (items.isEmpty()) return items
-    val pending = items.indices.filter { i ->
-      artUrls.getOrNull(i)?.isNotBlank() == true && !hasArtwork(items[i])
-    }
-    if (pending.isEmpty()) return items
-    // Bounded batch: cap how many items are touched and how many bytes end up in
-    // the parcel, so a huge unpaginated request cannot stall or truncate browsing.
-    val budgeted = pending.take(MAX_ITEMS_PER_RESPONSE)
-    val loaded = arrayOfNulls<ByteArray>(budgeted.size)
-    // Each chunk can take up to LOAD_TIMEOUT_MS, so bound the whole batch too or a
-    // large page keeps the browse response pending for tens of seconds. Covers that
-    // resolved before the deadline are kept; the rest are served URI-only.
-    withTimeoutOrNull(BATCH_TIMEOUT_MS) {
-      coroutineScope {
-        budgeted.indices
-          .chunked(MAX_CONCURRENT_LOADS)
-          // Await each chunk before starting the next: collecting every chunk's
-          // deferreds first would start all loads at once and defeat the cap.
-          .forEach { chunk ->
-            chunk
-              .map { slot ->
-                async(Dispatchers.IO) {
-                  loaded[slot] = loadArtworkData(context, artUrls[budgeted[slot]].orEmpty())
-                }
-              }
-              .awaitAll()
-          }
+  /**
+   * The remote URL behind a URI built by [contentUriFor], or null when [uri] is
+   * not one or its signature does not match. The provider is exported, so the
+   * signature is what keeps it from fetching URLs chosen by another app.
+   */
+  fun originalUrl(context: Context, uri: Uri): String? {
+    if (uri.scheme != ContentResolver.SCHEME_CONTENT || uri.authority != authority(context)) return null
+    val segments = uri.pathSegments
+    if (segments.size != 3 || segments[0] != PATH_ART) return null
+    val url =
+      try {
+        String(Base64.decode(segments[1], BASE64_FLAGS))
+      } catch (e: IllegalArgumentException) {
+        return null
       }
-    }
-    val result = items.toMutableList()
-    var spent = 0
-    budgeted.forEachIndexed { slot, index ->
-      val data = loaded[slot] ?: return@forEachIndexed
-      if (spent + data.size > MAX_TOTAL_BYTES) return@forEachIndexed
-      spent += data.size
-      result[index] = withArtworkData(result[index], data)
-    }
-    return result
+    if (!url.startsWith("https://") && !url.startsWith("http://")) return null
+    val expected = sign(context, url).toByteArray()
+    return url.takeIf { MessageDigest.isEqual(expected, segments[2].toByteArray()) }
+  }
+
+  fun MediaMetadata.withAutomotiveArtworkUri(context: Context): MediaMetadata {
+    val mapped = contentUriFor(context, artworkUri)
+    return if (mapped == artworkUri) this else buildUpon().setArtworkUri(mapped).build()
+  }
+
+  fun MediaItem.withAutomotiveArtworkUri(context: Context): MediaItem {
+    val metadata = mediaMetadata.withAutomotiveArtworkUri(context)
+    return if (metadata === mediaMetadata) this else buildUpon().setMediaMetadata(metadata).build()
   }
 
   /**
-   * Resolves the compressed cover for the item that is currently playing.
-   *
-   * Unlike [attach] this is not bounded by the browse-response budget: the caller
-   * updates the player metadata when the bytes are ready. The result is cached in
-   * the same [artworkCache] used by the browse tree, so browsing a list and then
-   * playing one of its items usually resolves without another network request.
-   *
-   * Returns null when the URL is blank, the load fails, or it exceeds
-   * [PLAYBACK_LOAD_TIMEOUT_MS]; callers keep the item unchanged in that case.
+   * The cached cover file for [url], fetching and storing it first when needed.
+   * Blocking: called from [AutomotiveArtworkProvider.openFile] on a binder thread.
    */
-  suspend fun loadForPlayback(context: Context, artUrl: String?): ByteArray? {
-    val url = artUrl?.takeIf { it.isNotBlank() } ?: return null
-    return loadArtworkData(context, url, PLAYBACK_LOAD_TIMEOUT_MS)
-  }
-
-  /** Size the controller asked for, defaulting to a sensible cover size. */
-  fun requestedArtSize(params: androidx.media3.session.MediaLibraryService.LibraryParams?): Size {
-    val hint =
-      params?.extras?.let {
-        if (it.containsKey(MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS)) {
-          it.getInt(MediaConstants.EXTRAS_KEY_MEDIA_ART_SIZE_PIXELS)
-        } else {
-          null
-        }
-      }
-    return if (hint != null && hint > 0) Size(hint, hint) else Size(ARTWORK_SIZE_PX, ARTWORK_SIZE_PX)
-  }
-
-  private fun hasArtwork(item: MediaItem): Boolean = item.mediaMetadata.artworkData != null
-
-  private fun withArtworkData(item: MediaItem, data: ByteArray): MediaItem =
-    item.buildUpon()
-      .setMediaMetadata(
-        item.mediaMetadata.buildUpon()
-          .setArtworkData(data)
-          .build()
-      )
-      .build()
-
-  /**
-   * Loads and compresses the cover at [artUrl], consulting the in-memory
-   * [artworkCache] first and storing the result on success. Returns null on
-   * timeout or failure; callers treat artwork as cosmetic and never fail because
-   * of it.
-   */
-  private suspend fun loadArtworkData(
-    context: Context,
-    artUrl: String,
-    timeoutMs: Long = LOAD_TIMEOUT_MS,
-  ): ByteArray? {
-    if (artUrl.isBlank()) return null
-    artworkCache.get(artUrl)?.let { return it }
+  fun artworkFile(context: Context, url: String): File? {
+    val dir = File(context.cacheDir, CACHE_DIR).apply { mkdirs() }
+    val file = File(dir, sha256Hex(url) + ".jpg")
+    if (file.length() > 0) {
+      file.setLastModified(System.currentTimeMillis())
+      return file
+    }
     val data =
-      withTimeoutOrNull(timeoutMs) {
-        try {
-          val request =
-            ImageRequest.Builder(context)
-              .data(Uri.parse(artUrl))
-              .size(ARTWORK_SIZE_PX, ARTWORK_SIZE_PX)
-              .allowHardware(false)
-              .build()
-          var result = context.imageLoader.execute(request)
-          if (result is ErrorResult) {
-            // Retry from Coil's disk cache only: never hold a browse response on the network.
-            result = context.imageLoader.execute(request.newBuilder().networkCachePolicy(CachePolicy.READ_ONLY).build())
-          }
-          when (result) {
-            // Bitmap.compress can take a long time; keep it off the caller's
-            // thread (the playback path calls this from Dispatchers.Main).
-            is SuccessResult -> withContext(Dispatchers.Default) { compress(result.image.toBitmap()) }
-            is ErrorResult -> null
-          }
-        } catch (e: Exception) {
-          Timber.tag(TAG).w(e, "Artwork load failed")
-          null
-        }
+      runBlocking {
+        fetchJpeg(context, url, PROVIDER_SIZE_PX, PROVIDER_JPEG_QUALITY, PROVIDER_LOAD_TIMEOUT_MS)
       } ?: return null
-    artworkCache.put(artUrl, data)
-    return data
+    // Write then rename, so a concurrent reader never sees a partial file.
+    val tmp = File(dir, "${file.name}.${Thread.currentThread().id}.tmp")
+    try {
+      tmp.writeBytes(data)
+      if (!tmp.renameTo(file)) tmp.delete()
+    } catch (e: Exception) {
+      Timber.tag(TAG).w(e, "Could not store artwork")
+      tmp.delete()
+    }
+    trimCacheDir(dir)
+    return file.takeIf { it.length() > 0 }
   }
 
-  private fun compress(bitmap: Bitmap): ByteArray? =
+  private suspend fun fetchJpeg(
+    context: Context,
+    url: String,
+    sizePx: Int,
+    quality: Int,
+    timeoutMs: Long,
+  ): ByteArray? =
+    withTimeoutOrNull(timeoutMs) {
+      try {
+        val request =
+          ImageRequest.Builder(context)
+            .data(Uri.parse(url))
+            .size(sizePx, sizePx)
+            .allowHardware(false)
+            .build()
+        var result = context.imageLoader.execute(request)
+        if (result is ErrorResult) {
+          // Offline or flaky network: a cover Coil already has on disk still works.
+          result =
+            context.imageLoader.execute(
+              request.newBuilder().networkCachePolicy(CachePolicy.READ_ONLY).build()
+            )
+        }
+        when (result) {
+          // Bitmap.compress can take a long time; keep it off the caller's thread.
+          is SuccessResult ->
+            withContext(Dispatchers.Default) { compress(result.image.toBitmap(), quality) }
+          is ErrorResult -> {
+            Timber.tag(TAG).w(result.throwable, "Artwork load failed for %s", url)
+            null
+          }
+        }
+      } catch (e: Exception) {
+        if (e is kotlinx.coroutines.CancellationException) throw e
+        Timber.tag(TAG).w(e, "Artwork load failed for %s", url)
+        null
+      }
+    }
+
+  private fun compress(bitmap: Bitmap, quality: Int): ByteArray? =
     try {
       ByteArrayOutputStream().use { out ->
-        if (bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)) {
-          out.toByteArray()
-        } else {
-          null
-        }
+        if (bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)) out.toByteArray() else null
       }
     } catch (e: Exception) {
       Timber.tag(TAG).w(e, "Artwork compression failed")
       null
     }
+
+  private fun trimCacheDir(dir: File) {
+    val files = dir.listFiles()?.filter { it.isFile } ?: return
+    var total = files.sumOf { it.length() }
+    if (total <= MAX_CACHE_DIR_BYTES) return
+    for (file in files.sortedBy { it.lastModified() }) {
+      if (total <= TRIMMED_CACHE_DIR_BYTES) break
+      val size = file.length()
+      if (file.delete()) total -= size
+    }
+  }
+
+  /**
+   * Per-install key, persisted so URIs stay valid across process restarts:
+   * the head unit may keep showing (and re-requesting) items it browsed earlier.
+   */
+  private fun secret(context: Context): ByteArray =
+    secret
+      ?: synchronized(this) {
+        secret
+          ?: run {
+            val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            prefs.getString(PREF_SECRET, null)?.let { Base64.decode(it, Base64.NO_WRAP) }
+              ?: ByteArray(32).also {
+                SecureRandom().nextBytes(it)
+                prefs.edit().putString(PREF_SECRET, Base64.encodeToString(it, Base64.NO_WRAP)).commit()
+              }
+          }.also { secret = it }
+      }
+
+  private fun sign(context: Context, url: String): String {
+    val mac = Mac.getInstance("HmacSHA256")
+    mac.init(SecretKeySpec(secret(context), "HmacSHA256"))
+    return mac.doFinal(url.toByteArray()).take(16).toHex()
+  }
+
+  private fun sha256Hex(value: String): String =
+    MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).toList().toHex()
+
+  private fun List<Byte>.toHex(): String = joinToString("") { "%02x".format(it) }
+
+  private const val BASE64_FLAGS = Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
 }

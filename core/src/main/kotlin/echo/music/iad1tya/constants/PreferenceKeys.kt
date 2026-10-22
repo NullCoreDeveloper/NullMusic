@@ -123,10 +123,25 @@ val SelectedYtmPlaylistsKey = stringPreferencesKey("selectedYtmPlaylists")
 
 val ShowAudioFallbackToastKey = booleanPreferencesKey("show_audio_fallback_toast")
 val AudioQualityKey = stringPreferencesKey("audioQuality")
+val AudioQualityWifiKey = stringPreferencesKey("audioQualityWifi")
+val AudioQualityCellularKey = stringPreferencesKey("audioQualityCellular")
 val IpVersionKey = stringPreferencesKey("ipVersion")
 
-enum class AudioQuality {
-  OPUS,
+enum class AudioQuality(
+  val maxKbps: Int,
+  val label: String,
+  val detail: String,
+  val hourly: String,
+) {
+  AUTO(Int.MAX_VALUE, "Auto", "Adaptive based on connection", "Variable"),
+  LOW(64, "Low", "~64 kbps · data saver", "29 MB/hr"),
+  MEDIUM(160, "Medium", "Standard · ~160 kbps Opus", "77 MB/hr"),
+  HIGH(320, "High", "Addon high bitrate, YouTube fallback", "144 MB/hr"),
+  LOSSLESS(Int.MAX_VALUE, "Lossless", "Addons bit-exact FLAC/ALAC, YouTube fallback", "300+ MB/hr"),
+  OPUS(160, "Opus", "Standard ~160 kbps Opus", "77 MB/hr");
+
+  fun permitsLossless(): Boolean = this == LOSSLESS || this == AUTO
+  fun permitsHigh(): Boolean = this == LOSSLESS || this == AUTO || this == HIGH
 }
 
 val DownloadQualityKey = stringPreferencesKey("downloadQuality")

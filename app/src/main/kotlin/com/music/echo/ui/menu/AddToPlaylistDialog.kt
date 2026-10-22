@@ -205,28 +205,27 @@ fun AddToPlaylistDialog(
           modifier =
             Modifier.clickable {
               selectedPlaylist = playlist
-              coroutineScope.launch(Dispatchers.IO) {
-                if (songIds == null) {
-                  songIds = onGetSong(playlist)
-                }
-                duplicates = database.playlistDuplicates(playlist.id, songIds!!)
-                if (duplicates.isNotEmpty()) {
+              coroutineScope.launch {
+                val ids = songIds ?: withContext(Dispatchers.IO) { onGetSong(playlist) }
+                songIds = ids
+                val dupes = withContext(Dispatchers.IO) { database.playlistDuplicates(playlist.id, ids) }
+                duplicates = dupes
+                if (dupes.isNotEmpty()) {
                   showDuplicateDialog = true
                 } else {
                   onDismiss()
-                  database.addSongToPlaylist(playlist, songIds!!)
-
-                  playlist.playlist.browseId?.let { plist ->
-                    songIds?.forEach { YouTube.addToPlaylist(plist, it) }
+                  withContext(Dispatchers.IO) {
+                    database.addSongToPlaylist(playlist, ids)
+                    playlist.playlist.browseId?.let { plist ->
+                      ids.forEach { YouTube.addToPlaylist(plist, it) }
+                    }
                   }
-                  withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.added_to_playlist, playlist.playlist.name),
-                        Toast.LENGTH_SHORT
-                      )
-                      .show()
-                  }
+                  Toast.makeText(
+                      context,
+                      context.getString(R.string.added_to_playlist, playlist.playlist.name),
+                      Toast.LENGTH_SHORT
+                    )
+                    .show()
                 }
               }
             }
@@ -251,15 +250,68 @@ fun AddToPlaylistDialog(
           onClick = {
             showDuplicateDialog = false
             onDismiss()
-            database.transaction {
-              addSongToPlaylist(selectedPlaylist!!, songIds!!.filter { !duplicates.contains(it) })
+            val targetPlaylist = selectedPlaylist ?: return@TextButton
+            val toRemoveSongIds = duplicates.toSet()
+            coroutineScope.launch(Dispatchers.IO) {
+              val maps = database.playlistSongMaps(targetPlaylist.id, 0)
+                .filter { it.songId in toRemoveSongIds }
+              database.transaction {
+                maps.forEach { map ->
+                  move(map.playlistId, map.position, Int.MAX_VALUE)
+                  delete(map.copy(position = Int.MAX_VALUE))
+                }
+              }
+              targetPlaylist.playlist.browseId?.let { browseId ->
+                maps.forEach { map ->
+                  map.setVideoId?.let { setVideoId ->
+                    YouTube.removeFromPlaylist(browseId, map.songId, setVideoId)
+                  }
+                }
+              }
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    context.getString(
+                      R.string.removed_song_from_playlist,
+                      targetPlaylist.playlist.name
+                    ),
+                    Toast.LENGTH_SHORT
+                  )
+                  .show()
+              }
             }
-            Toast.makeText(
-                context,
-                context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name),
-                Toast.LENGTH_SHORT
-              )
-              .show()
+          }
+        ) {
+          Text(
+            text = stringResource(R.string.remove_from_playlist),
+            color = MaterialTheme.colorScheme.error
+          )
+        }
+
+        TextButton(
+          onClick = {
+            showDuplicateDialog = false
+            onDismiss()
+            val targetPlaylist = selectedPlaylist ?: return@TextButton
+            val nonDuplicates = songIds.orEmpty().filter { !duplicates.contains(it) }
+            coroutineScope.launch(Dispatchers.IO) {
+              if (nonDuplicates.isNotEmpty()) {
+                database.transaction {
+                  addSongToPlaylist(targetPlaylist, nonDuplicates)
+                }
+                targetPlaylist.playlist.browseId?.let { plist ->
+                  nonDuplicates.forEach { YouTube.addToPlaylist(plist, it) }
+                }
+              }
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.added_to_playlist, targetPlaylist.playlist.name),
+                    Toast.LENGTH_SHORT
+                  )
+                  .show()
+              }
+            }
           }
         ) {
           Text(stringResource(R.string.skip_duplicates))
@@ -269,13 +321,22 @@ fun AddToPlaylistDialog(
           onClick = {
             showDuplicateDialog = false
             onDismiss()
-            database.transaction { addSongToPlaylist(selectedPlaylist!!, songIds!!) }
-            Toast.makeText(
-                context,
-                context.getString(R.string.added_to_playlist, selectedPlaylist!!.playlist.name),
-                Toast.LENGTH_SHORT
-              )
-              .show()
+            val targetPlaylist = selectedPlaylist ?: return@TextButton
+            val allIds = songIds.orEmpty()
+            coroutineScope.launch(Dispatchers.IO) {
+              database.transaction { addSongToPlaylist(targetPlaylist, allIds) }
+              targetPlaylist.playlist.browseId?.let { plist ->
+                allIds.forEach { YouTube.addToPlaylist(plist, it) }
+              }
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.added_to_playlist, targetPlaylist.playlist.name),
+                    Toast.LENGTH_SHORT
+                  )
+                  .show()
+              }
+            }
           }
         ) {
           Text(stringResource(R.string.add_anyway))

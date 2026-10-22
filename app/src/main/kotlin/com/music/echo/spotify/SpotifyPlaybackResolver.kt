@@ -16,6 +16,33 @@ class SpotifyPlaybackResolver @Inject constructor() {
     }
     private val resolutionSemaphore = Semaphore(3)
 
+    suspend fun resolveTrack(
+        track: SpotifyTrack,
+        hideExplicit: Boolean = false
+    ): SongItem? = try {
+        resolutionSemaphore.withPermit {
+            val cachedSong = synchronized(trackCache) { trackCache[track.id] }
+            if (cachedSong != null) {
+                return@withPermit cachedSong
+            }
+
+            val query = "${track.name} ${track.artists.firstOrNull()?.name.orEmpty()}"
+            val searchResult = YouTube.search(query, com.music.innertube.YouTube.SearchFilter.FILTER_SONG).getOrNull()
+            val firstSong = searchResult?.items?.filterIsInstance<SongItem>()?.firstOrNull {
+                !hideExplicit || !it.explicit
+            }
+
+            if (firstSong != null) {
+                synchronized(trackCache) { trackCache[track.id] = firstSong }
+            }
+            firstSong
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    fun getCached(trackId: String): SongItem? = synchronized(trackCache) { trackCache[trackId] }
+
     suspend fun resolveAndFilter(
         tracks: List<SpotifyTrack>,
         hideExplicit: Boolean

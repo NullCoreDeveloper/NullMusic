@@ -85,14 +85,10 @@ Open the project in Android Studio or build from the command line.
 
 **For GMS variants (with Google Cast):**
 ```bash
-# FOSS Debug build
-./gradlew assembleUniversalFossDebug
-
-# GMS Debug build
+# Debug build
 ./gradlew assembleUniversalGmsDebug
 
-# Release builds (requires signing configuration)
-./gradlew assembleUniversalFossRelease
+# Release build (requires signing configuration)
 ./gradlew assembleUniversalGmsRelease
 ```
 

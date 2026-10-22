@@ -45,6 +45,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,6 +66,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -91,6 +93,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -136,6 +139,7 @@ fun LocalSongScreen(
   navController: NavController,
   onBack: () -> Unit = { navController.navigateUp() },
   isEmbedded: Boolean = false,
+  filterContent: (@Composable () -> Unit)? = null,
   viewModel: LocalSongsViewModel = hiltViewModel(),
 ) {
   val context = LocalContext.current
@@ -336,75 +340,179 @@ fun LocalSongScreen(
     )
   }
 
-  val topPadding =
-    if (isEmbedded) {
-      LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateTopPadding()
-    } else {
-      0.dp
-    }
-
-  Scaffold(
-    modifier =
-      Modifier.fillMaxSize()
-        .padding(top = topPadding)
-        .nestedScroll(scrollBehavior.nestedScrollConnection),
-    containerColor = MaterialTheme.colorScheme.surface,
-    topBar = {
-      AnimatedContent(
-        targetState = inSelectMode to isSearchActive,
-        transitionSpec = {
-          fadeIn(spring(stiffness = Spring.StiffnessMediumLow)) togetherWith
-            fadeOut(spring(stiffness = Spring.StiffnessMediumLow))
-        },
-        label = "localSongTopBar",
-      ) { (isSelecting, searching) ->
-        if (isSelecting) {
-          TopAppBar(
-            title = {
-              Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
-            },
-            navigationIcon = {
-              IconButton(onClick = onExitSelectionMode) {
-                Icon(
-                  painter = painterResource(R.drawable.close),
-                  contentDescription = null,
-                )
-              }
-            },
-            actions = {
-              Checkbox(
-                checked = selection.size == visibleSongs.size && selection.isNotEmpty(),
-                onCheckedChange = {
-                  if (selection.size == visibleSongs.size) {
-                    selection.clear()
-                  } else {
-                    selection.clear()
-                    selection.addAll(visibleSongs.map { it.id })
-                  }
-                }
+  val topBarContent = @Composable {
+    AnimatedContent(
+      targetState = inSelectMode to isSearchActive,
+      transitionSpec = {
+        fadeIn(spring(stiffness = Spring.StiffnessMediumLow)) togetherWith
+          fadeOut(spring(stiffness = Spring.StiffnessMediumLow))
+      },
+      label = "localSongTopBar",
+    ) { (isSelecting, searching) ->
+      if (isSelecting) {
+        TopAppBar(
+          title = {
+            Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
+          },
+          navigationIcon = {
+            IconButton(onClick = onExitSelectionMode) {
+              Icon(
+                painter = painterResource(R.drawable.close),
+                contentDescription = null,
               )
-              IconButton(
-                enabled = selection.isNotEmpty(),
-                onClick = {
-                  menuState.show {
-                    SelectionSongMenu(
-                      songSelection = selection.mapNotNull { id -> songs.find { it.id == id } },
-                      onDismiss = menuState::dismiss,
-                      clearAction = onExitSelectionMode
-                    )
-                  }
+            }
+          },
+          actions = {
+            Checkbox(
+              checked = selection.size == visibleSongs.size && selection.isNotEmpty(),
+              onCheckedChange = {
+                if (selection.size == visibleSongs.size) {
+                  selection.clear()
+                } else {
+                  selection.clear()
+                  selection.addAll(visibleSongs.map { it.id })
                 }
-              ) {
-                Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
               }
-            },
-            colors =
-              TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
-              ),
-            windowInsets = if (isEmbedded) WindowInsets(0.dp) else TopAppBarDefaults.windowInsets
+            )
+            IconButton(
+              enabled = selection.isNotEmpty(),
+              onClick = {
+                menuState.show {
+                  SelectionSongMenu(
+                    songSelection = selection.mapNotNull { id -> songs.find { it.id == id } },
+                    onDismiss = menuState::dismiss,
+                    clearAction = onExitSelectionMode
+                  )
+                }
+              }
+            ) {
+              Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
+            }
+          },
+          colors =
+            TopAppBarDefaults.topAppBarColors(
+              containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
+            ),
+          windowInsets = TopAppBarDefaults.windowInsets,
+        )
+      } else if (searching) {
+        SearchBar(
+          inputField = {
+            SearchBarDefaults.InputField(
+              query = query,
+              onQueryChange = { query = it },
+              onSearch = { isSearchActive = false },
+              expanded = false,
+              onExpandedChange = {},
+              placeholder = { Text(text = stringResource(R.string.search_library)) },
+              leadingIcon = {
+                IconButton(
+                  onClick = {
+                    query = ""
+                    isSearchActive = false
+                  },
+                ) {
+                  Icon(
+                    painter = painterResource(R.drawable.arrow_back),
+                    contentDescription = stringResource(R.string.back_button_desc),
+                  )
+                }
+              },
+              trailingIcon =
+                if (query.isNotEmpty()) {
+                  {
+                    IconButton(onClick = { query = "" }) {
+                      Icon(
+                        painter = painterResource(R.drawable.close),
+                        contentDescription = stringResource(R.string.close),
+                      )
+                    }
+                  }
+                } else {
+                  null
+                },
+            )
+          },
+          expanded = false,
+          onExpandedChange = {},
+          modifier =
+            Modifier.fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .padding(top = 8.dp, bottom = 4.dp),
+          windowInsets = SearchBarDefaults.windowInsets,
+        ) {}
+      } else {
+        LargeTopAppBar(
+          title = {
+            Text(
+              text = stringResource(R.string.local_history),
+              fontWeight = FontWeight.Bold,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+            )
+          },
+          navigationIcon = {
+            IconButton(onClick = onBack) {
+              Icon(
+                painter = painterResource(R.drawable.arrow_back),
+                contentDescription = null,
+              )
+            }
+          },
+          actions = {
+            IconButton(onClick = { isSearchActive = true }) {
+              Icon(
+                painter = painterResource(R.drawable.search),
+                contentDescription = stringResource(R.string.search),
+              )
+            }
+            IconButton(onClick = { showScanSheet = true }) {
+              Icon(
+                painter = painterResource(R.drawable.settings),
+                contentDescription = stringResource(R.string.settings),
+              )
+            }
+          },
+          colors =
+            TopAppBarDefaults.largeTopAppBarColors(
+              containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f),
+              scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
+            ),
+          scrollBehavior = scrollBehavior,
+          windowInsets = TopAppBarDefaults.windowInsets,
+        )
+      }
+    }
+  }
+
+  val mainContent = @Composable { paddingValues: PaddingValues ->
+    LazyColumn(
+      state = listState,
+      modifier = Modifier.fillMaxSize().padding(paddingValues),
+      contentPadding =
+        if (isEmbedded) {
+          LocalPlayerAwareWindowInsets.current.asPaddingValues()
+        } else {
+          PaddingValues(
+            top = 12.dp,
+            bottom = bottomContentPadding,
           )
-        } else if (searching) {
+        },
+    ) {
+      if (isEmbedded && filterContent != null) {
+        item(
+          key = "filter",
+          contentType = CONTENT_TYPE_HEADER,
+        ) {
+          filterContent()
+        }
+      }
+
+      if (isEmbedded && isSearchActive) {
+        item(
+          key = "embedded_search",
+          contentType = CONTENT_TYPE_HEADER,
+        ) {
           SearchBar(
             inputField = {
               SearchBarDefaults.InputField(
@@ -448,61 +556,11 @@ fun LocalSongScreen(
               Modifier.fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp, bottom = 4.dp),
-            windowInsets = if (isEmbedded) WindowInsets(0.dp) else SearchBarDefaults.windowInsets,
+            windowInsets = WindowInsets(0.dp),
           ) {}
-        } else {
-          LargeTopAppBar(
-            title = {
-              Text(
-                text = stringResource(R.string.local_history),
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-              )
-            },
-            navigationIcon = {
-              IconButton(onClick = onBack) {
-                Icon(
-                  painter = painterResource(R.drawable.arrow_back),
-                  contentDescription = null,
-                )
-              }
-            },
-            actions = {
-              IconButton(onClick = { isSearchActive = true }) {
-                Icon(
-                  painter = painterResource(R.drawable.search),
-                  contentDescription = stringResource(R.string.search),
-                )
-              }
-              IconButton(onClick = { showScanSheet = true }) {
-                Icon(
-                  painter = painterResource(R.drawable.settings),
-                  contentDescription = stringResource(R.string.settings),
-                )
-              }
-            },
-            colors =
-              TopAppBarDefaults.largeTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f),
-                scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
-              ),
-            scrollBehavior = scrollBehavior,
-            windowInsets = if (isEmbedded) WindowInsets(0.dp) else TopAppBarDefaults.windowInsets,
-          )
         }
       }
-    },
-  ) { paddingValues ->
-    LazyColumn(
-      state = listState,
-      modifier = Modifier.fillMaxSize().padding(paddingValues),
-      contentPadding =
-        PaddingValues(
-          top = 12.dp,
-          bottom = bottomContentPadding,
-        ),
-    ) {
+
       item(
         key = "controls",
         contentType = CONTENT_TYPE_HEADER,
@@ -513,6 +571,8 @@ fun LocalSongScreen(
           visibleSongCount = visibleSongs.size,
           onSortTypeChange = { onSortTypeNameChange(it.name) },
           onSortDescendingChange = onSortDescendingChange,
+          onSearchClick = if (isEmbedded) { { isSearchActive = !isSearchActive } } else null,
+          onScanClick = if (isEmbedded) { { showScanSheet = true } } else null,
         )
       }
 
@@ -521,7 +581,19 @@ fun LocalSongScreen(
           key = "empty",
           contentType = CONTENT_TYPE_HEADER,
         ) {
-          LocalSongEmptyState(query = query)
+          LocalSongEmptyState(
+            query = query,
+            scanState = scanState,
+            hasStoragePermission = hasStoragePermission,
+            onScan = {
+              if (hasStoragePermission) {
+                viewModel.scanDevice(scanConfig)
+              } else {
+                permissionLauncher.launch(storagePermission)
+              }
+            },
+            onConfigureFolders = { showScanSheet = true },
+          )
         }
       } else {
 
@@ -612,6 +684,75 @@ fun LocalSongScreen(
       }
     }
   }
+
+  if (isEmbedded) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      mainContent(PaddingValues(0.dp))
+
+      androidx.compose.animation.AnimatedVisibility(
+        visible = inSelectMode,
+        enter = androidx.compose.animation.fadeIn(),
+        exit = androidx.compose.animation.fadeOut(),
+        modifier = Modifier.align(Alignment.TopCenter),
+      ) {
+        TopAppBar(
+          title = {
+            Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
+          },
+          navigationIcon = {
+            IconButton(onClick = onExitSelectionMode) {
+              Icon(
+                painter = painterResource(R.drawable.close),
+                contentDescription = null,
+              )
+            }
+          },
+          actions = {
+            Checkbox(
+              checked = selection.size == visibleSongs.size && selection.isNotEmpty(),
+              onCheckedChange = {
+                if (selection.size == visibleSongs.size) {
+                  selection.clear()
+                } else {
+                  selection.clear()
+                  selection.addAll(visibleSongs.map { it.id })
+                }
+              }
+            )
+            IconButton(
+              enabled = selection.isNotEmpty(),
+              onClick = {
+                menuState.show {
+                  SelectionSongMenu(
+                    songSelection = selection.mapNotNull { id -> songs.find { it.id == id } },
+                    onDismiss = menuState::dismiss,
+                    clearAction = onExitSelectionMode
+                  )
+                }
+              }
+            ) {
+              Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
+            }
+          },
+          colors =
+            TopAppBarDefaults.topAppBarColors(
+              containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
+            ),
+          windowInsets = WindowInsets(0.dp),
+        )
+      }
+    }
+  } else {
+    Scaffold(
+      modifier =
+        Modifier.fillMaxSize()
+          .nestedScroll(scrollBehavior.nestedScrollConnection),
+      containerColor = MaterialTheme.colorScheme.surface,
+      topBar = topBarContent,
+    ) { paddingValues ->
+      mainContent(paddingValues)
+    }
+  }
 }
 
 @Composable
@@ -652,10 +793,12 @@ private fun LocalSongControlsCard(
   visibleSongCount: Int,
   onSortTypeChange: (LocalSongSortType) -> Unit,
   onSortDescendingChange: (Boolean) -> Unit,
+  onSearchClick: (() -> Unit)? = null,
+  onScanClick: (() -> Unit)? = null,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp, vertical = 8.dp),
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
   ) {
     SortHeader(
       sortType = sortType,
@@ -678,51 +821,132 @@ private fun LocalSongControlsCard(
       text = pluralStringResource(R.plurals.n_song, visibleSongCount, visibleSongCount),
       style = MaterialTheme.typography.titleSmall,
       color = MaterialTheme.colorScheme.secondary,
+      modifier = Modifier.padding(end = 4.dp),
     )
+
+    if (onSearchClick != null) {
+      IconButton(onClick = onSearchClick, modifier = Modifier.size(36.dp)) {
+        Icon(
+          painter = painterResource(R.drawable.search),
+          contentDescription = stringResource(R.string.search),
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
+
+    if (onScanClick != null) {
+      IconButton(onClick = onScanClick, modifier = Modifier.size(36.dp)) {
+        Icon(
+          painter = painterResource(R.drawable.tune),
+          contentDescription = stringResource(R.string.local_songs_scan_title),
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
   }
 }
 
 @Composable
 private fun LocalSongEmptyState(
   query: String,
+  scanState: LocalSongsScanState,
+  hasStoragePermission: Boolean,
+  onScan: () -> Unit,
+  onConfigureFolders: () -> Unit,
 ) {
-  Surface(
-    shape = AbsoluteSmoothCornerShape(28.dp, 60),
-    color = MaterialTheme.colorScheme.surfaceContainerLow,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 24.dp, vertical = 40.dp),
   ) {
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-      modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
-    ) {
-      Icon(
-        painter =
-          painterResource(if (query.isBlank()) R.drawable.music_note else R.drawable.search),
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(28.dp),
-      )
-      Text(
-        text =
-          if (query.isBlank()) {
-            stringResource(R.string.local_songs_empty_title)
+    Icon(
+      painter = painterResource(
+        if (query.isNotBlank()) R.drawable.search else R.drawable.music_note
+      ),
+      contentDescription = null,
+      tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+      modifier = Modifier.size(56.dp),
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Text(
+      text = if (query.isBlank()) {
+        stringResource(R.string.local_songs_empty_title)
+      } else {
+        stringResource(R.string.local_songs_no_matches_title)
+      },
+      style = MaterialTheme.typography.titleMedium,
+      fontWeight = FontWeight.Bold,
+      color = MaterialTheme.colorScheme.onSurface,
+      textAlign = TextAlign.Center,
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Text(
+      text = if (query.isBlank()) {
+        stringResource(R.string.local_songs_empty_desc)
+      } else {
+        stringResource(R.string.local_songs_no_matches_desc)
+      },
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center,
+    )
+
+    if (query.isBlank()) {
+      Spacer(modifier = Modifier.height(20.dp))
+
+      Button(
+        onClick = onScan,
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.primary,
+          contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+      ) {
+        Icon(
+          painter = painterResource(
+            if (scanState.isScanning) R.drawable.sync else R.drawable.search
+          ),
+          contentDescription = null,
+          modifier = Modifier.size(18.dp),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+          text = if (scanState.isScanning) {
+            stringResource(R.string.scanning_device)
+          } else if (!hasStoragePermission) {
+            "Grant Storage Access"
           } else {
-            stringResource(R.string.local_songs_no_matches_title)
+            stringResource(R.string.scan_device)
           },
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
-      )
-      Text(
-        text =
-          if (query.isBlank()) {
-            stringResource(R.string.local_songs_empty_desc)
-          } else {
-            stringResource(R.string.local_songs_no_matches_desc)
-          },
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
+          fontWeight = FontWeight.SemiBold,
+        )
+      }
+
+      Spacer(modifier = Modifier.height(6.dp))
+
+      TextButton(
+        onClick = onConfigureFolders,
+      ) {
+        Icon(
+          painter = painterResource(R.drawable.tune),
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+          text = stringResource(R.string.local_songs_scan_filters_title),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.primary,
+        )
+      }
     }
   }
 }

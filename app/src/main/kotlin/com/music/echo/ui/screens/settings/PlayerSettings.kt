@@ -93,6 +93,16 @@ fun PlayerSettings(
 
   val (audioQuality, onAudioQualityChange) =
     rememberEnumPreference(AudioQualityKey, defaultValue = AudioQuality.OPUS)
+  val (audioQualityWifi, onAudioQualityWifiChange) =
+    rememberEnumPreference(
+      echo.music.iad1tya.constants.AudioQualityWifiKey,
+      defaultValue = AudioQuality.LOSSLESS
+    )
+  val (audioQualityCellular, onAudioQualityCellularChange) =
+    rememberEnumPreference(
+      echo.music.iad1tya.constants.AudioQualityCellularKey,
+      defaultValue = AudioQuality.MEDIUM
+    )
 
   val (crossfadeEnabled, onCrossfadeEnabledChange) =
     rememberPreference(CrossfadeEnabledKey, defaultValue = false)
@@ -190,7 +200,8 @@ fun PlayerSettings(
   val (historyDuration, onHistoryDurationChange) =
     rememberPreference(HistoryDuration, defaultValue = 1f)
 
-  var showAudioQualityDialog by remember { mutableStateOf(false) }
+  var showAudioQualityWifiDialog by remember { mutableStateOf(false) }
+  var showAudioQualityCellularDialog by remember { mutableStateOf(false) }
   var showDownloadQualityDialog by remember { mutableStateOf(false) }
   var showPlaybackEngineDialog by remember { mutableStateOf(false) }
 
@@ -206,23 +217,43 @@ fun PlayerSettings(
       defaultValue = echo.music.iad1tya.constants.DownloadQuality.YOUTUBE
     )
 
-  if (showAudioQualityDialog) {
+  if (showAudioQualityWifiDialog) {
     EnumDialog(
-      onDismiss = { showAudioQualityDialog = false },
+      onDismiss = { showAudioQualityWifiDialog = false },
       onSelect = {
-        onAudioQualityChange(it)
-        showAudioQualityDialog = false
+        onAudioQualityWifiChange(it)
+        showAudioQualityWifiDialog = false
       },
-      title = stringResource(R.string.audio_quality),
-      current = audioQuality,
-      values = listOf(AudioQuality.OPUS),
-      valueText = {
-        when (it) {
-          AudioQuality.OPUS -> "Opus"
-          else -> ""
-        }
+      title = stringResource(R.string.audio_quality_wifi),
+      current = audioQualityWifi,
+      values = listOf(
+        AudioQuality.LOSSLESS,
+        AudioQuality.HIGH,
+        AudioQuality.MEDIUM,
+        AudioQuality.LOW,
+      ),
+      valueText = { it.label },
+      valueDescription = { "${it.detail} (${it.hourly})" }
+    )
+  }
+
+  if (showAudioQualityCellularDialog) {
+    EnumDialog(
+      onDismiss = { showAudioQualityCellularDialog = false },
+      onSelect = {
+        onAudioQualityCellularChange(it)
+        showAudioQualityCellularDialog = false
       },
-      valueDescription = { "" }
+      title = stringResource(R.string.audio_quality_cellular),
+      current = audioQualityCellular,
+      values = listOf(
+        AudioQuality.MEDIUM,
+        AudioQuality.LOW,
+        AudioQuality.HIGH,
+        AudioQuality.LOSSLESS,
+      ),
+      valueText = { it.label },
+      valueDescription = { "${it.detail} (${it.hourly})" }
     )
   }
 

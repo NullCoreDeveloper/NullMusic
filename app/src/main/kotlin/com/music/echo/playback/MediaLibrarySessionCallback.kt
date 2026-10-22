@@ -6,6 +6,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import java.security.MessageDigest
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.annotation.DrawableRes
@@ -58,9 +59,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class MediaLibrarySessionCallback
@@ -86,6 +89,16 @@ constructor(
   /** Cached YouTube Home snapshot (see [youtubeHome]) and when it was fetched. */
   private var cachedHome: HomePage? = null
   private var cachedHomeAtMs = 0L
+
+  /** Disk copy of [cachedHome], so the shelves survive process restarts. */
+  private val homeStore by lazy { AutoHomeSnapshotStore(context) }
+  /** Account the cached snapshot belongs to (see [homeAccountKey]); null until first use. */
+  private var homeAccount: String? = null
+  /** True while [cachedHome] is the restored copy and still needs a fresh fetch. */
+  private var cachedHomeFromDisk = false
+  /** Wall-clock time each shelf was last returned by YouTube, by [homeSectionKey]. */
+  private var homeLastSeenMs: Map<String, Long> = emptyMap()
+  private val homeRefreshing = java.util.concurrent.atomic.AtomicBoolean(false)
 
   /** Serializes the Home snapshot refresh so concurrent misses cannot race. */
   private val homeMutex = Mutex()
@@ -178,6 +191,9 @@ constructor(
     // so an arbitrary controller cannot trigger the artwork refresh.
     if (isVerifiedAutomotiveController(controller)) {
       onAutomotiveConnected()
+    }
+    if (isAutomotiveBrowser(controller)) {
+      prefetchHome()
     }
 
     return MediaSession.ConnectionResult.accept(
@@ -599,9 +615,8 @@ constructor(
             when {
               parentId == MusicService.HOME_SECTION ||
                 parentId.startsWith("${MusicService.HOME_SECTION}/") -> {
-                val index = parentId.removePrefix(MusicService.HOME_SECTION)
-                  .removePrefix("/").toIntOrNull() ?: 0
-                listOf(shuffleMediaItem(parentId)) + homeSectionSongs(index, parentId)
+                val sectionId = parentId.removePrefix(MusicService.HOME_SECTION).removePrefix("/")
+                listOf(shuffleMediaItem(parentId)) + homeSectionSongs(sectionId, parentId)
               }
               parentId.startsWith("${MusicService.ARTIST}/") ->
                 database
@@ -666,34 +681,26 @@ constructor(
         }
 
       val paged = children.paginate(page, pageSize)
-      // Automotive surfaces render the same item at wildly different sizes and
-      // cannot fetch artwork themselves, so resolve it here and ship it with the
-      // item; otherwise covers only appear when the app is alive and warm.
-      val result =
-        if (isAutomotive) {
-          withAutomotiveArtwork(paged)
-        } else {
-          paged
-        }
-      LibraryResult.ofItemList(result, params.withContentStyleHints(isAutomotive))
+      LibraryResult.ofItemList(
+        withAutomotiveArtworkIfNeeded(isAutomotive, paged),
+        params.withContentStyleHints(isAutomotive),
+      )
     }
   }
 
   /**
-   * Resolves the artwork referenced by each item's `artworkUri` and embeds it in
-   * the item metadata. [MediaItem.mediaMetadata.artworkUri] is the single source
-   * of truth, so this works for local songs, YT items and Home shelves alike.
+   * Points each item's artwork at [AutomotiveArtworkProvider][echo.music.iad1tya.utils.AutomotiveArtworkProvider].
+   * Android Auto ignores `https://` icon URIs, and embedding the bytes only fit
+   * a bounded part of each page, so covers were missing on later items and on
+   * some surfaces. A `content://` URI lets every surface load every cover lazily.
    */
-  private suspend fun withAutomotiveArtworkIfNeeded(
+  private fun withAutomotiveArtworkIfNeeded(
     isAutomotive: Boolean,
     items: List<MediaItem>
   ): List<MediaItem> = if (isAutomotive) withAutomotiveArtwork(items) else items
 
-  private suspend fun withAutomotiveArtwork(items: List<MediaItem>): List<MediaItem> {
-    if (items.isEmpty()) return items
-    val artUrls = items.map { it.mediaMetadata.artworkUri?.toString() }
-    return AutomotiveArtwork.attachAll(context, items, artUrls)
-  }
+  private fun withAutomotiveArtwork(items: List<MediaItem>): List<MediaItem> =
+    items.map { it.withAutomotiveArtworkUri(context) }
 
   private fun isAutomotiveBrowser(browser: MediaSession.ControllerInfo): Boolean =
     browser.packageName == "com.google.android.projection.gearhead" ||
@@ -1176,7 +1183,7 @@ constructor(
         }
 
         LibraryResult.ofItemList(
-          searchResults.paginate(page, pageSize),
+          withAutomotiveArtworkIfNeeded(isAutomotive, searchResults.paginate(page, pageSize)),
           params.withContentStyleHints(isAutomotive)
         )
       } catch (e: Exception) {
@@ -1302,10 +1309,9 @@ constructor(
           val parentId = mediaItems.firstOrNull()?.mediaId?.removeSuffix("/$songId")
             ?: "${MusicService.HOME_SECTION}/$sectionId"
           // Drop the shuffle marker itself: it is a command, not a playable queue item.
-          val songs = homeSectionSongs(
-            sectionId.toIntOrNull() ?: 0,
-            parentId
-          ).filter { it.mediaMetadata.isPlayable == true && !it.mediaId.endsWith(MusicService.SHUFFLE_ACTION) }
+          val sectionSongs =
+            if (sectionId == SUGGESTED_SECTION_ID) suggestedHomeSongs() else homeSectionSongs(sectionId, parentId)
+          val songs = sectionSongs.filter { it.mediaMetadata.isPlayable == true && !it.mediaId.endsWith(MusicService.SHUFFLE_ACTION) }
           if (songs.isEmpty()) return@future defaultResult
           val playable = songs.map { song ->
             val id = song.mediaId.substringAfterLast("/")
@@ -1497,36 +1503,198 @@ constructor(
    * call.
    *
    * YouTube's Home feed is personalized per request: two consecutive fetches can
-   * return different shelves, or the same shelves in a different order. The tree
-   * is built from indices into that list, so a rotating feed made shelves such as
-   * "Mixtape per te" appear and disappear between visits — replaced by a
-   * different shelf — and could even point an existing node at another shelf's
-   * children. Serving a cached snapshot keeps the section set and its indices
-   * stable for the whole browsing session.
+   * return different shelves, or the same shelves in a different order, which
+   * made shelves such as "Mixtape per te" appear and disappear between visits.
+   * Every fetch is therefore merged into one snapshot ([mergeHomeSnapshots])
+   * that is also persisted ([AutoHomeSnapshotStore]), so the set of shelves and
+   * their order survive both refreshes and process restarts.
    *
    * The refresh is serialized by [homeMutex] because `onGetChildren` and
    * `onSetMediaItems` run on independent IO coroutines: without it, two
    * concurrent misses could install two different snapshots. The TTL uses
-   * [SystemClock.elapsedRealtime] so a wall-clock adjustment cannot expire the
-   * cache early and swap the snapshot mid-browse.
+   * [SystemClock.elapsedRealtime] so a wall-clock adjustment cannot expire it.
    */
-  private suspend fun youtubeHome(): HomePage? = homeMutex.withLock {
-    val now = SystemClock.elapsedRealtime()
-    cachedHome?.let { if (now - cachedHomeAtMs < HOME_CACHE_TTL_MS) return@withLock it }
-    val fetched =
+  private suspend fun youtubeHome(): HomePage? {
+    val account = homeAccountKey()
+    val (home, isFresh) =
+      homeMutex.withLock {
+        useHomeAccount(account)
+        cachedHome to isCachedHomeFresh()
+      }
+    if (isFresh) return home
+    // A stale snapshot (restored from disk, or past its TTL) is served right
+    // away so Auto never waits on several Home pages; the refresh only adds
+    // shelves or updates their content, positions stay put.
+    if (home != null) {
+      refreshHomeInBackground()
+      return home
+    }
+    return refreshHome()
+  }
+
+  /**
+   * Identifies the signed-in account, so one account's personalized shelves are
+   * never shown to another. Read from DataStore rather than [YouTube.dataSyncId],
+   * which is still unset for a moment after a cold start.
+   */
+  private fun homeAccountKey(): String =
+    MessageDigest.getInstance("SHA-256")
+      .digest(context.dataStore.get(DataSyncIdKey, "").toByteArray())
+      .joinToString("") { "%02x".format(it) }
+
+  /**
+   * Makes [cachedHome] belong to [account]: on first use, or after a sign-out or
+   * account switch inside this process, the snapshot is replaced by the one
+   * stored for [account] (if any). Callers hold [homeMutex].
+   */
+  private fun useHomeAccount(account: String) {
+    if (homeAccount == account) return
+    homeAccount = account
+    cachedHome = null
+    cachedHomeAtMs = 0L
+    cachedHomeFromDisk = false
+    homeLastSeenMs = emptyMap()
+    val snapshot = homeStore.load(account) ?: return
+    // The age limit applies to the restored copy too, or a shelf could outlive
+    // it whenever the refresh keeps failing.
+    val wallNow = System.currentTimeMillis()
+    val sections =
+      snapshot.sections.filter {
+        wallNow - (snapshot.lastSeenMs[homeSectionKey(it)] ?: 0L) < HOME_SECTION_MAX_AGE_MS
+      }
+    if (sections.isEmpty()) return
+    val keptKeys = sections.map(::homeSectionKey).toSet()
+    cachedHome = HomePage(chips = null, sections = sections)
+    homeLastSeenMs = snapshot.lastSeenMs.filterKeys { it in keptKeys }
+    cachedHomeFromDisk = true
+  }
+
+  private fun isCachedHomeFresh(): Boolean =
+    cachedHome != null &&
+      !cachedHomeFromDisk &&
+      SystemClock.elapsedRealtime() - cachedHomeAtMs < HOME_CACHE_TTL_MS
+
+  private fun refreshHomeInBackground() {
+    if (!homeRefreshing.compareAndSet(false, true)) return
+    scope.launch(Dispatchers.IO) {
       try {
-        YouTube.home().getOrNull()
+        refreshHome()
+      } finally {
+        homeRefreshing.set(false)
+      }
+    }
+  }
+
+  /**
+   * Fetches Home, merges it into the snapshot and persists the result.
+   *
+   * [homeMutex] is held only to check freshness and to install the result, not
+   * during the network fetch, so browse calls keep getting the stale snapshot
+   * immediately while a refresh is running.
+   */
+  private suspend fun refreshHome(): HomePage? {
+    val account = homeAccountKey()
+    homeMutex.withLock {
+      useHomeAccount(account)
+      if (isCachedHomeFresh()) return cachedHome
+    }
+    val fetched = fetchFullHome()
+    return homeMutex.withLock {
+      useHomeAccount(account)
+      if (fetched == null || fetched.sections.isEmpty()) {
+        // Offline or YouTube failing: the restored snapshot still gives Auto its shelves.
+        return@withLock cachedHome
+      }
+      // Another caller may have installed a fresh snapshot during the fetch.
+      if (isCachedHomeFresh()) return@withLock cachedHome
+      val wallNow = System.currentTimeMillis()
+      val lastSeen = homeLastSeenMs.toMutableMap()
+      fetched.sections.forEach { lastSeen[homeSectionKey(it)] = wallNow }
+      // Keep shelves YouTube has not returned for a while from piling up forever.
+      val merged =
+        mergeHomeSnapshots(cachedHome, fetched).let { page ->
+          page.copy(
+            sections =
+              page.sections.filter {
+                wallNow - (lastSeen[homeSectionKey(it)] ?: wallNow) < HOME_SECTION_MAX_AGE_MS
+              }
+          )
+        }
+      val keptKeys = merged.sections.map(::homeSectionKey).toSet()
+      homeLastSeenMs = lastSeen.filterKeys { it in keptKeys }
+      cachedHome = merged
+      cachedHomeAtMs = SystemClock.elapsedRealtime()
+      cachedHomeFromDisk = false
+      homeStore.save(account, merged.sections, ::homeSectionKey, homeLastSeenMs)
+      merged
+    }
+  }
+
+  /**
+   * The first Home page plus its continuations.
+   *
+   * `YouTube.home()` returns only the first batch of shelves; the rest (often
+   * including "Mixtape per te" / "Mixed for you") arrive through continuations,
+   * and which shelves land in the first batch varies per request. Serving only
+   * the first page made shelves swap in and out between visits.
+   */
+  private suspend fun fetchFullHome(): HomePage? {
+    // Bounded, or a stalled connection would keep the refresh (and the
+    // homeRefreshing flag) active forever.
+    val first =
+      try {
+        withTimeoutOrNull(HOME_FIRST_PAGE_TIMEOUT_MS) { YouTube.home().getOrNull() }
       } catch (e: Exception) {
         reportException(e)
         null
+      } ?: return null
+    val sections = first.sections.toMutableList()
+    var continuation = first.continuation
+    withTimeoutOrNull(HOME_CONTINUATION_TIMEOUT_MS) {
+      var pages = 1
+      while (continuation != null && pages < HOME_MAX_PAGES) {
+        val next = YouTube.home(continuation).getOrNull() ?: break
+        sections += next.sections
+        continuation = next.continuation
+        pages++
       }
-    if (fetched != null) {
-      cachedHome = fetched
-      cachedHomeAtMs = now
-      fetched
-    } else {
-      cachedHome
     }
+    return first.copy(sections = sections.distinctBy(::homeSectionKey), continuation = null)
+  }
+
+  /**
+   * Keeps every shelf seen during this process alive and in a stable position:
+   * shelves already shown keep their slot (with fresh content when the new fetch
+   * has them), new shelves are appended, and a shelf missing from one fetch is
+   * not dropped. Auto then always shows the same full set of categories.
+   */
+  private fun mergeHomeSnapshots(previous: HomePage?, fresh: HomePage): HomePage {
+    if (previous == null) return fresh
+    val freshByKey = fresh.sections.associateBy(::homeSectionKey)
+    val previousKeys = previous.sections.map(::homeSectionKey).toSet()
+    val sections =
+      previous.sections.map { freshByKey[homeSectionKey(it)] ?: it } +
+        fresh.sections.filter { homeSectionKey(it) !in previousKeys }
+    return fresh.copy(sections = sections)
+  }
+
+  /**
+   * Stable id of a shelf inside the Auto tree. It used to be the shelf's index in
+   * the feed, which pointed at a different shelf as soon as the feed changed.
+   * Encoded, so a "/" in a title cannot split the media id.
+   */
+  private fun homeSectionKey(section: HomePage.Section): String = Uri.encode(section.title.trim())
+
+  /** Resolves a shelf by [homeSectionKey], or by index for ids from older builds. */
+  private suspend fun homeSection(sectionId: String): HomePage.Section? {
+    val sections = youtubeHome()?.sections ?: return null
+    return sections.firstOrNull { homeSectionKey(it) == sectionId }
+      ?: sectionId.toIntOrNull()?.let { sections.getOrNull(it) }
+  }
+
+  /** Fetches Home ahead of the first browse so Auto does not wait for every page. */
+  private fun prefetchHome() {
+    scope.launch(Dispatchers.IO) { youtubeHome() }
   }
 
   /**
@@ -1542,17 +1710,17 @@ constructor(
           context.dataStore.get(HideVideoSongsKey, false) ||
             context.dataStore.get(echo.music.iad1tya.constants.DataSaverEnabledKey, false)
         ) ?: return emptyList()
-      home.sections.mapIndexedNotNull { index, section ->
+      home.sections.mapNotNull { section ->
         val artwork = sectionArtwork(section)
         // A shelf whose children homeSectionSongs() cannot render (album-only,
         // artist-only, ...) is a dead end on Automotive: it opens to nothing.
         // Artwork alone does not make a shelf browsable, so require usable
         // children instead of artwork.
         if (section.items.none { it is SongItem || it is PlaylistItem }) {
-          return@mapIndexedNotNull null
+          return@mapNotNull null
         }
         browsableMediaItem(
-          "${MusicService.HOME_SECTION}/$index",
+          "${MusicService.HOME_SECTION}/${homeSectionKey(section)}",
           section.title,
           section.label ?: "${section.items.size} items",
           artwork?.toUri(),
@@ -1581,10 +1749,9 @@ constructor(
         else -> null
       }
 
-  private suspend fun homeSectionSongs(sectionIndex: Int, parentId: String): List<MediaItem> {
+  private suspend fun homeSectionSongs(sectionId: String, parentId: String): List<MediaItem> {
     return try {
-      val home = youtubeHome() ?: return emptyList()
-      val section = home.sections.getOrNull(sectionIndex) ?: return emptyList()
+      val section = homeSection(sectionId) ?: return emptyList()
       val hideExplicit = context.dataStore.get(HideExplicitKey, false)
       val hideVideos = context.dataStore.get(HideVideoSongsKey, false) ||
         context.dataStore.get(echo.music.iad1tya.constants.DataSaverEnabledKey, false)
@@ -1622,7 +1789,7 @@ constructor(
         try { database.query { insert(item.toMediaMetadata()) } } catch (_: Exception) {}
       }
       listOf(shuffleMediaItem(MusicService.HOME)) +
-        songs.map { it.toMediaItem("${MusicService.HOME_SECTION}/suggested") }
+        songs.map { it.toMediaItem("${MusicService.HOME_SECTION}/$SUGGESTED_SECTION_ID") }
     } catch (e: Exception) {
       reportException(e)
       emptyList()
@@ -1666,14 +1833,12 @@ constructor(
     songId: String,
     parentId: String,
   ): MediaItem? {
-    if (sectionId == "suggested") {
+    if (sectionId == SUGGESTED_SECTION_ID) {
       return suggestedHomeSongs()
         .firstOrNull { it.mediaId.endsWith("/$songId") }
     }
-    val index = sectionId.toIntOrNull() ?: return null
     return try {
-      val item = youtubeHome()
-        ?.sections?.getOrNull(index)
+      val item = homeSection(sectionId)
         ?.items?.filterIsInstance<SongItem>()
         ?.firstOrNull { it.id == songId } ?: return null
       try { database.query { insert(item.toMediaMetadata()) } } catch (_: Exception) {}
@@ -1875,10 +2040,15 @@ constructor(
 
   private companion object {
     /**
-     * How long a YouTube Home snapshot is reused for automotive browse calls.
-     * Long enough that a section set and its indices stay put while the user
-     * navigates, short enough that new recommendations still arrive.
+     * How long a YouTube Home snapshot is reused for automotive browse calls
+     * before it is refreshed (and merged, see [mergeHomeSnapshots]).
      */
     const val HOME_CACHE_TTL_MS = 5 * 60 * 1000L
+    const val HOME_MAX_PAGES = 6
+    const val HOME_FIRST_PAGE_TIMEOUT_MS = 10_000L
+    /** A shelf YouTube has not returned for this long is dropped from the snapshot. */
+    const val HOME_SECTION_MAX_AGE_MS = 14L * 24 * 60 * 60 * 1000
+    const val HOME_CONTINUATION_TIMEOUT_MS = 12_000L
+    const val SUGGESTED_SECTION_ID = "suggested"
   }
 }

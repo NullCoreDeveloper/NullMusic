@@ -371,6 +371,10 @@
 
     <string name="network_ip_version">Network IP Version</string>
     <string name="audio_quality">Music Quality</string>
+    <string name="audio_quality_wifi">Wi-Fi Audio Quality</string>
+    <string name="audio_quality_wifi_desc">Streaming quality ceiling on Wi-Fi</string>
+    <string name="audio_quality_cellular">Cellular Audio Quality</string>
+    <string name="audio_quality_cellular_desc">Streaming quality ceiling on mobile data or metered networks</string>
     <string name="ip_version_auto">Automatic</string>
     <string name="ip_version_ipv4">Forced IPv4</string>
     <string name="ip_version_ipv6">Forced IPv6</string>
@@ -489,6 +493,14 @@
     <string name="spotify_clear_selection">Clear</string>
     <string name="spotify_account">Spotify account</string>
     <string name="spotify_waiting_for_login">Waiting for Spotify login</string>
+    <string name="filter_spotify">Spotify</string>
+    <string name="spotify_live_library">Live Spotify Library</string>
+    <string name="spotify_live_desc">Stream your Liked Songs and playlists directly without duplicating them into your local database.</string>
+    <string name="spotify_connect_account">Connect Spotify Account</string>
+    <string name="spotify_view_all_tracks">View All Tracks</string>
+    <string name="spotify_resolving_stream">Resolving stream…</string>
+    <string name="spotify_playlists_title">Your Playlists</string>
+    <string name="spotify_no_playlists_found">No Spotify playlists found in your library.</string>
     <string name="service_uptime">Service Uptime</string>
     <string name="service_uptime_desc">Check the status of music providers</string>
     <string name="music_providers">Music Providers</string>

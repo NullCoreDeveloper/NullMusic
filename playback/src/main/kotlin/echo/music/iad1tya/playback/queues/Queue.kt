@@ -19,19 +19,23 @@ interface Queue {
     val mediaItemIndex: Int,
     val position: Long = 0L,
   ) {
-    fun filterExplicit(enabled: Boolean = true) =
-      if (enabled) {
-        withFilteredItems(items.filterExplicit())
+    fun filterExplicit(enabled: Boolean = true): Status {
+      val currentMediaId = items.getOrNull(mediaItemIndex)?.mediaId
+      return if (enabled) {
+        withFilteredItems(items.filterExplicit(true, keepMediaId = currentMediaId))
       } else {
         this
       }
+    }
 
-    fun filterVideoSongs(disableVideos: Boolean = false) =
-      if (disableVideos) {
-        withFilteredItems(items.filterVideoSongs(true))
+    fun filterVideoSongs(disableVideos: Boolean = false): Status {
+      val currentMediaId = items.getOrNull(mediaItemIndex)?.mediaId
+      return if (disableVideos) {
+        withFilteredItems(items.filterVideoSongs(true, keepMediaId = currentMediaId))
       } else {
         this
       }
+    }
 
     /**
      * Re-points [mediaItemIndex] at the item it originally selected (matched by mediaId) after
@@ -67,16 +71,16 @@ interface Queue {
   }
 }
 
-fun List<MediaItem>.filterExplicit(enabled: Boolean = true) =
+fun List<MediaItem>.filterExplicit(enabled: Boolean = true, keepMediaId: String? = null) =
   if (enabled) {
-    filterNot { it.metadata?.explicit == true }
+    filterNot { it.mediaId != keepMediaId && it.metadata?.explicit == true }
   } else {
     this
   }
 
-fun List<MediaItem>.filterVideoSongs(disableVideos: Boolean = false) =
+fun List<MediaItem>.filterVideoSongs(disableVideos: Boolean = false, keepMediaId: String? = null) =
   if (disableVideos) {
-    filterNot { it.metadata?.isVideoSong == true }
+    filterNot { it.mediaId != keepMediaId && it.metadata?.isVideoSong == true }
   } else {
     this
   }

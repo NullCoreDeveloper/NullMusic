@@ -356,6 +356,7 @@ class App : Application(), SingletonImageLoader.Factory {
       .apply {
         crossfade(true)
         allowHardware(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        components { add(YouTubeThumbnailFallbackInterceptor()) }
 
         memoryCache { MemoryCache.Builder().maxSizePercent(context, 0.25).build() }
         if (cacheSize == 0) {

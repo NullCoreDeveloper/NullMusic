@@ -1,6 +1,7 @@
 package echo.music.iad1tya.ui.component.musicflow
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,20 +34,24 @@ fun MusicFlowEntryCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .padding(horizontal = 16.dp, vertical = 6.dp)
         .clip(RoundedCornerShape(24.dp))
-        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
         .clickable(role = Role.Button, onClickLabel = stringResource(R.string.music_flow_open), onClick = onClick)
         .padding(horizontal = 16.dp, vertical = 14.dp),
   ) {
     Box(
       contentAlignment = Alignment.Center,
-      modifier = Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurface),
+      modifier =
+        Modifier.size(44.dp)
+          .clip(CircleShape)
+          .background(MaterialTheme.colorScheme.primary),
     ) {
       Icon(
         painter = painterResource(R.drawable.swipe),
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.surface,
+        tint = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.size(22.dp),
       )
     }
@@ -65,7 +70,7 @@ fun MusicFlowEntryCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
       )
     }
     Icon(
-      painter = painterResource(R.drawable.arrow_upward),
+      painter = painterResource(R.drawable.arrow_forward),
       contentDescription = null,
       tint = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.size(20.dp),

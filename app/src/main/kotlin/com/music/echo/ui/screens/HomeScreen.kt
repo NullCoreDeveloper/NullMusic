@@ -609,7 +609,6 @@ fun HomeScreen(
   val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
   val (randomizeHomeOrder) = rememberPreference(RandomizeHomeOrderKey, true)
   val (showSpeedDial) = rememberPreference(ShowSpeedDialKey, true)
-  val (musicFlowEnabled) = rememberPreference(MusicFlowEnabledKey, true)
 
   val isLoggedIn = remember(innerTubeCookie) { "SAPISID" in parseCookieString(innerTubeCookie) }
   val url = if (isLoggedIn) accountImageUrl else null
@@ -1923,15 +1922,6 @@ fun HomeScreen(
             currentValue = selectedChip,
             onValueUpdate = { viewModel.toggleChip(it) }
           )
-        }
-
-        if (musicFlowEnabled && selectedChip == null) {
-          item(key = "music_flow_entry") {
-            MusicFlowEntryCard(
-              onClick = { navController.navigate("music_flow") },
-              modifier = Modifier.animateItem(),
-            )
-          }
         }
 
         if (isLoading && homePage?.chips.isNullOrEmpty()) {

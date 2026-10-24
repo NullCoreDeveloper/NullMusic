@@ -686,6 +686,8 @@ class MainActivity : ComponentActivity() {
           }
         val (useNewMiniPlayerDesign) =
           rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
+        val (musicFlowEnabled) =
+          rememberPreference(MusicFlowEnabledKey, defaultValue = true)
         val defaultOpenTab = remember {
           dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
         }
@@ -1724,6 +1726,12 @@ class MainActivity : ComponentActivity() {
                       FloatingNavigationToolbar(
                         items = navigationItems,
                         pureBlack = pureBlack,
+                        onMusicFlowClick =
+                          if (musicFlowEnabled) {
+                            { navController.navigate("music_flow") { launchSingleTop = true } }
+                          } else null,
+                        musicFlowIconRes = R.drawable.swipe,
+                        musicFlowContentDescription = stringResource(R.string.music_flow),
                         onShuffleClick = onShuffleClick,
                         shuffleEnabled = shuffleEnabled,
                         shuffleIconRes = R.drawable.shuffle,
@@ -1864,6 +1872,12 @@ class MainActivity : ComponentActivity() {
                   onSearchLongClick = onRailSearchLongClick,
                   onMusicRecognitionClick = onMusicRecognitionClick,
                   musicRecognitionContentDescription = stringResource(R.string.recognition),
+                  onMusicFlowClick =
+                    if (musicFlowEnabled) {
+                      { navController.navigate("music_flow") { launchSingleTop = true } }
+                    } else null,
+                  musicFlowIconRes = R.drawable.swipe,
+                  musicFlowContentDescription = stringResource(R.string.music_flow),
                   onShuffleClick = onShuffleClick,
                   shuffleEnabled = shuffleEnabled,
                   shuffleIconRes = R.drawable.shuffle,

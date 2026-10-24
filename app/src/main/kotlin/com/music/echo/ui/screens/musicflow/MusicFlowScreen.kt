@@ -11,6 +11,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,9 +24,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +47,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,12 +57,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -95,6 +102,7 @@ import echo.music.iad1tya.ui.component.LocalMenuState
 import echo.music.iad1tya.ui.component.musicflow.MusicFlowPage
 import echo.music.iad1tya.ui.component.musicflow.MusicFlowPageActions
 import echo.music.iad1tya.ui.component.musicflow.MusicFlowPagePlaceholder
+import echo.music.iad1tya.ui.component.musicflow.MusicFlowTopMenu
 import echo.music.iad1tya.ui.menu.AddToPlaylistDialog
 import echo.music.iad1tya.ui.menu.YouTubeSongMenu
 import echo.music.iad1tya.ui.player.InlineLyricsView
@@ -140,9 +148,14 @@ fun MusicFlowScreen(
   }
 
   var progress by remember(currentMediaId) { mutableFloatStateOf(0f) }
+  var positionMs by remember(currentMediaId) { mutableLongStateOf(0L) }
+  var durationMs by remember(currentMediaId) { mutableLongStateOf(0L) }
+
   LaunchedEffect(playerConnection, currentMediaId) {
     while (isActive) {
       val (position, duration) = playerConnection.positionAndDuration()
+      positionMs = position
+      durationMs = duration
       progress = if (duration > 0) position.toFloat() / duration else 0f
       delay(POSITION_POLL_MS)
     }
@@ -212,6 +225,9 @@ fun MusicFlowScreen(
               val librarySong by database.song(item.songId).collectAsState(initial = null)
               val download by downloadUtil.getDownload(item.songId).collectAsState(initial = null)
               val isCurrent = item.songId == currentMediaId
+              val currentLyricsText = if (isCurrent) currentLyrics?.lyrics else null
+              val songDuration = remember(item.song.duration) { (item.song.duration ?: 0) * 1000L }
+
               MusicFlowPage(
                 item = item,
                 isCurrentPlayback = isCurrent,
@@ -221,7 +237,10 @@ fun MusicFlowScreen(
                 showCanvas = showCanvas && page == state.selectedIndex,
                 lyricsAvailable = isCurrent && lyricsReady,
                 showLyrics = isCurrent && preferences.lyrics,
+                lyricsText = currentLyricsText,
                 progress = { progress },
+                position = { if (isCurrent) positionMs else 0L },
+                duration = { if (isCurrent && durationMs > 0) durationMs else songDuration },
                 actions =
                   MusicFlowPageActions(
                     onTogglePlay = viewModel::togglePlayPause,
@@ -232,7 +251,12 @@ fun MusicFlowScreen(
                     onDownload = { toggleDownload(context, database, item.song, download?.state) },
                     onMore = {
                       menuState.show {
-                        YouTubeSongMenu(song = item.song, navController = navController, onDismiss = menuState::dismiss)
+                        YouTubeSongMenu(
+                          song = item.song,
+                          navController = navController,
+                          onDismiss = menuState::dismiss,
+                          showSongHeader = false,
+                        )
                       }
                     },
                     onArtist = { navController.navigate("artist/$it") },
@@ -243,6 +267,8 @@ fun MusicFlowScreen(
                         playerConnection.seekTo((duration * fraction).toLong())
                       }
                     },
+                    onPrevious = viewModel::previous,
+                    onNext = viewModel::next,
                   ),
               )
             }
@@ -301,17 +327,32 @@ fun MusicFlowScreen(
       Box(
         modifier =
           Modifier.fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.92f))
+            .background(Color.Black.copy(alpha = 0.94f))
             .windowInsetsPadding(WindowInsets.safeDrawing)
       ) {
         InlineLyricsView(
           mediaMetadata = mediaMetadata,
           showLyrics = true,
-          modifier = Modifier.fillMaxSize().padding(top = 64.dp, start = 16.dp, end = 16.dp),
+          modifier = Modifier.fillMaxSize().padding(top = 64.dp, start = 16.dp, end = 16.dp, bottom = 24.dp),
           positionProvider = { playerConnection.player.currentPosition },
         )
-        IconButton(onClick = { lyricsExpanded = false }, modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)) {
-          Icon(painterResource(R.drawable.close), contentDescription = stringResource(R.string.close), tint = Color.White)
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier =
+            Modifier.align(Alignment.TopEnd)
+              .padding(16.dp)
+              .size(40.dp)
+              .clip(CircleShape)
+              .background(Color.White.copy(alpha = 0.12f))
+              .border(1.dp, Color.White.copy(alpha = 0.18f), CircleShape)
+              .clickable(role = Role.Button, onClickLabel = stringResource(R.string.close)) { lyricsExpanded = false },
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.close),
+            contentDescription = stringResource(R.string.close),
+            tint = Color.White,
+            modifier = Modifier.size(20.dp),
+          )
         }
       }
     }
@@ -349,68 +390,118 @@ private fun TopBar(
   onSkip: () -> Unit,
   hasPlaybackError: Boolean,
 ) {
-  var menuExpanded by remember { mutableStateOf(false) }
-  Column(modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-      IconButton(onClick = onBack) {
-        Icon(painterResource(R.drawable.arrow_back), contentDescription = stringResource(R.string.back_button_desc), tint = Color.White)
-      }
-      Column(modifier = Modifier.weight(1f)) {
-        Text(
-          text = stringResource(R.string.music_flow),
-          style = MaterialTheme.typography.titleMedium,
-          fontWeight = FontWeight.Bold,
-          color = Color.White,
+  val menuState = LocalMenuState.current
+  Box(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(
+          Brush.verticalGradient(
+            0f to Color.Black.copy(alpha = 0.85f),
+            0.65f to Color.Black.copy(alpha = 0.40f),
+            1f to Color.Transparent,
+          )
         )
-        if (state.isOfflineFeed) {
+        .windowInsetsPadding(WindowInsets.safeDrawing)
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier =
+            Modifier.size(40.dp)
+              .clip(CircleShape)
+              .background(Color.White.copy(alpha = 0.10f))
+              .border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape)
+              .clickable(role = Role.Button, onClickLabel = stringResource(R.string.back_button_desc), onClick = onBack),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.arrow_back),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(20.dp),
+          )
+        }
+
+        Spacer(Modifier.width(14.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
           Text(
-            text = stringResource(R.string.music_flow_offline_banner),
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White.copy(alpha = 0.6f),
+            text = stringResource(R.string.music_flow),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+          )
+          if (state.isOfflineFeed) {
+            Text(
+              text = stringResource(R.string.music_flow_offline_banner),
+              style = MaterialTheme.typography.labelSmall,
+              color = Color.White.copy(alpha = 0.65f),
+            )
+          }
+        }
+
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier =
+            Modifier.size(40.dp)
+              .clip(CircleShape)
+              .background(Color.White.copy(alpha = 0.10f))
+              .border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape)
+              .clickable(
+                role = Role.Button,
+                onClickLabel = stringResource(R.string.more_options),
+                onClick = {
+                  menuState.show {
+                    MusicFlowTopMenu(
+                      state = state,
+                      selectedItem = selectedItem,
+                      onPrevious = onPrevious,
+                      onNext = onNext,
+                      onOpenPlayer = onOpenPlayer,
+                      onRestoreQueue = onRestoreQueue,
+                      onNotInterested = onNotInterested,
+                      onLessLikeThis = onLessLikeThis,
+                      onSettings = onSettings,
+                      onDismiss = menuState::dismiss,
+                    )
+                  }
+                },
+              ),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.more_vert),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(20.dp),
           )
         }
       }
-      Box {
-        IconButton(onClick = { menuExpanded = true }) {
-          Icon(painterResource(R.drawable.more_vert), contentDescription = stringResource(R.string.more_options), tint = Color.White)
-        }
-        DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-          if (state.selectedIndex > 0) {
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_previous)) }, onClick = { menuExpanded = false; onPrevious() })
-          }
-          if (state.selectedIndex < state.items.lastIndex) {
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_next)) }, onClick = { menuExpanded = false; onNext() })
-          }
-          DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_open_player)) }, onClick = { menuExpanded = false; onOpenPlayer() })
-          if (state.canRestorePreviousQueue) {
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_restore_queue)) }, onClick = { menuExpanded = false; onRestoreQueue() })
-          }
-          selectedItem?.let { item ->
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_not_interested)) }, onClick = { menuExpanded = false; onNotInterested(item, false) })
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_less_like_this)) }, onClick = { menuExpanded = false; onLessLikeThis(item) })
-            DropdownMenuItem(text = { Text(stringResource(R.string.music_flow_never_recommend)) }, onClick = { menuExpanded = false; onNotInterested(item, true) })
-          }
-          DropdownMenuItem(text = { Text(stringResource(R.string.settings)) }, onClick = { menuExpanded = false; onSettings() })
-        }
-      }
-    }
 
-    val status = statusMessage(state.playbackStatus, hasPlaybackError)
-    AnimatedVisibility(visible = status != null, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier =
-          Modifier.padding(top = 4.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(Color.White.copy(alpha = 0.14f))
-            .clickable(enabled = state.playbackStatus == MusicFlowPlaybackStatus.ExternalOverride && !hasPlaybackError, onClick = onStatusAction)
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-      ) {
-        Text(text = status.orEmpty(), style = MaterialTheme.typography.labelLarge, color = Color.White)
-        if (hasPlaybackError) {
-          TextButton(onClick = onRetryPlayback) { Text(stringResource(R.string.retry), color = Color.White) }
-          TextButton(onClick = onSkip) { Text(stringResource(R.string.music_flow_skip), color = Color.White) }
+      val status = statusMessage(state.playbackStatus, hasPlaybackError)
+      AnimatedVisibility(visible = status != null, modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 6.dp)) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          modifier =
+            Modifier.clip(RoundedCornerShape(24.dp))
+              .background(Color.White.copy(alpha = 0.16f))
+              .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(24.dp))
+              .clickable(
+                enabled = state.playbackStatus == MusicFlowPlaybackStatus.ExternalOverride && !hasPlaybackError,
+                onClick = onStatusAction,
+              )
+              .padding(horizontal = 16.dp, vertical = 6.dp),
+        ) {
+          Text(text = status.orEmpty(), style = MaterialTheme.typography.labelMedium, color = Color.White)
+          if (hasPlaybackError) {
+            TextButton(onClick = onRetryPlayback) { Text(stringResource(R.string.retry), color = Color.White) }
+            TextButton(onClick = onSkip) { Text(stringResource(R.string.music_flow_skip), color = Color.White) }
+          }
         }
       }
     }

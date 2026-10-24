@@ -56,6 +56,13 @@ data class AddonStreamResponse(
     val codec: String? = null
 )
 
+@Serializable
+data class AddonManifest(
+    val id: String = "",
+    val name: String = "",
+    val version: String = ""
+)
+
 @Singleton
 class ExtensionManager @Inject constructor(
     @ApplicationContext private val context: Context
@@ -66,25 +73,83 @@ class ExtensionManager @Inject constructor(
      * default 10s timeouts per base and delaying the YouTube fallback.
      */
     private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
-        .callTimeout(12, java.util.concurrent.TimeUnit.SECONDS)
+        .connectTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+        .callTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .fastFallback(true)
+        .dns(object : okhttp3.Dns {
+            override fun lookup(hostname: String): List<java.net.InetAddress> {
+                val system = try {
+                    okhttp3.Dns.SYSTEM.lookup(hostname)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                if (hostname.endsWith(".vercel.app", ignoreCase = true)) {
+                    val vercelIps = listOfNotNull(
+                        runCatching { java.net.InetAddress.getByName("76.76.21.21") }.getOrNull(),
+                        runCatching { java.net.InetAddress.getByName("76.76.21.22") }.getOrNull()
+                    )
+                    return (vercelIps + system).distinct()
+                }
+                return system.ifEmpty { okhttp3.Dns.SYSTEM.lookup(hostname) }
+            }
+        })
         .build()
     private val ADDONS_KEY = stringPreferencesKey("extensions_addons_list")
     private val json = Json { ignoreUnknownKeys = true }
 
+    fun sanitizeUrl(url: String): String {
+        var u = url.trim()
+        if (!u.startsWith("http://") && !u.startsWith("https://")) {
+            u = "https://$u"
+        }
+        u = u.removeSuffix("/")
+        if (u.endsWith("/manifest.json", ignoreCase = true)) {
+            u = u.substringBeforeLast("/manifest.json")
+        }
+        return u.removeSuffix("/")
+    }
+
     suspend fun getAddons(): List<AddonEndpoint> {
         val jsonStr = context.dataStore.data.map { it[ADDONS_KEY] }.first() ?: "[]"
         return try {
-            json.decodeFromString(jsonStr)
+            json.decodeFromString<List<AddonEndpoint>>(jsonStr).map {
+                it.copy(url = sanitizeUrl(it.url))
+            }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
+    suspend fun hasEnabledAddons(): Boolean = getAddons().any { it.enabled }
+
+    suspend fun fetchAddonName(baseUrl: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val manifestUrl = "${baseUrl.removeSuffix("/")}/manifest.json"
+            val request = Request.Builder().url(manifestUrl).build()
+            val response = httpClient.newCall(request).execute()
+            response.use { res ->
+                val body = res.body?.string()
+                if (res.isSuccessful && !body.isNullOrEmpty()) {
+                    val manifest = json.decodeFromString<AddonManifest>(body)
+                    if (manifest.name.isNotBlank()) return@withContext manifest.name
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("ExtensionManager", "Could not fetch manifest for $baseUrl: ${e.message}")
+        }
+        null
+    }
+
     suspend fun addAddon(endpoint: AddonEndpoint) {
+        val sanitizedUrl = sanitizeUrl(endpoint.url)
+        val resolvedName = if (endpoint.name.isBlank()) {
+            fetchAddonName(sanitizedUrl) ?: "Custom Addon"
+        } else {
+            endpoint.name
+        }
         val current = getAddons().toMutableList()
-        current.add(endpoint)
+        current.add(endpoint.copy(name = resolvedName, url = sanitizedUrl))
         context.dataStore.edit {
             it[ADDONS_KEY] = json.encodeToString(current)
         }
@@ -104,8 +169,7 @@ class ExtensionManager @Inject constructor(
         }
     }
 
-    private fun baseUrlFor(addon: AddonEndpoint): String =
-        if (addon.url.startsWith("http")) addon.url else "https://" + addon.url
+    private fun baseUrlFor(addon: AddonEndpoint): String = sanitizeUrl(addon.url)
 
     private fun encodeQuery(value: String): String =
         URLEncoder.encode(value, "UTF-8")
@@ -318,6 +382,16 @@ class ExtensionManager @Inject constructor(
         null
     }
 
+    private fun cleanTitleForSearch(title: String): String {
+        return title
+            .replace(Regex("(?i)\\s*\\((feat\\.|ft\\.|featuring)\\s+[^)]+\\)"), "")
+            .replace(Regex("(?i)\\s*\\[(feat\\.|ft\\.|featuring)\\s+[^]]+\\]"), "")
+            .replace(Regex("(?i)\\s*-\\s*(official\\s+video|official\\s+audio|audio|video|lyric\\s+video)", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("(?i)\\s*\\((official\\s+video|official\\s+audio|audio|video|lyrics?)\\)", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("(?i)\\s*\\[(official\\s+video|official\\s+audio|audio|video|lyrics?)\\]", RegexOption.IGNORE_CASE), "")
+            .trim()
+    }
+
     /**
      * Resolves a playable addon stream for the track identified by [videoId] when
      * it is an addon id, otherwise searches every enabled addon for a strict title
@@ -344,7 +418,14 @@ class ExtensionManager @Inject constructor(
         val addons = getAddons().filter { it.enabled }
         if (addons.isEmpty()) return@withContext null
         
-        val query = "$title $artist"
+        val cleanTitle = cleanTitleForSearch(title)
+        val primaryArtist = artist.split(",", "&", "•", ";", "/").firstOrNull()?.trim() ?: artist
+        val candidateQueries = buildList {
+            val q1 = "$cleanTitle $primaryArtist".trim()
+            add(q1)
+            val q2 = "$title $artist".trim()
+            if (q2 != q1) add(q2)
+        }
         for (addon in addons) {
             val baseUrl = baseUrlFor(addon)
             // The BitChord contract also exposes isolated source prefixes (/a, /b, /c).
@@ -354,51 +435,53 @@ class ExtensionManager @Inject constructor(
             val searchBases = buildList {
                 add(baseUrl)
                 val hostRoot = stripSourcePrefix(baseUrl)
-                BASE_ALTERNATIVES.forEach { alternative ->
-                    val candidate = hostRoot + alternative
-                    if (candidate != baseUrl && candidate !in this) add(candidate)
+                if (hostRoot != null) {
+                    BASE_ALTERNATIVES.forEach { alternative ->
+                        val candidate = hostRoot + alternative
+                        if (candidate != baseUrl && candidate !in this) add(candidate)
+                    }
                 }
             }
             for (searchBase in searchBases) {
-                android.util.Log.e("ExtensionManager", "Searching addon $searchBase for $title $artist")
-                val searchUrl = "${searchBase.removeSuffix("/")}/search?q=${encodeQuery(query)}"
-                // The connection-specific boundary: only a failure to reach the
-                // host (DNS, refused, connect timeout) is host-wide. A reachable
-                // base that fails while reading or parsing its body can still be
-                // rescued by trying the next base, so those are handled below.
-                val searchResponse = try {
-                    httpClient.newCall(Request.Builder().url(searchUrl).build()).execute()
-                } catch (e: Exception) {
-                    if (isHostUnreachable(e)) {
-                        android.util.Log.e("ExtensionManager", "Addon connection failed for $searchBase", e)
+                var match: AddonTrack? = null
+                for (query in candidateQueries) {
+                    android.util.Log.e("ExtensionManager", "Searching addon $searchBase for $query")
+                    val searchUrl = "${searchBase.removeSuffix("/")}/search?q=${encodeQuery(query)}"
+                    val searchResponse = try {
+                        httpClient.newCall(Request.Builder().url(searchUrl).build()).execute()
+                    } catch (e: Exception) {
+                        if (isHostUnreachable(e)) {
+                            android.util.Log.e("ExtensionManager", "Addon connection failed for $searchBase", e)
+                            break
+                        }
+                        android.util.Log.e("ExtensionManager", "Addon request failed for $searchBase", e)
+                        continue
+                    }
+
+                    val currentMatch = try {
+                        searchResponse.use { response ->
+                            val body = response.body?.string()
+                            if (!response.isSuccessful || body.isNullOrEmpty()) {
+                                android.util.Log.e("ExtensionManager", "Search failed: ${response.code} from $searchBase")
+                                null
+                            } else {
+                                selectBestMatch(
+                                    json.decodeFromString<AddonSearchResponse>(body).tracks,
+                                    title,
+                                    artist,
+                                    duration,
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("ExtensionManager", "Addon response failed for $searchBase", e)
+                        null
+                    }
+
+                    if (currentMatch != null) {
+                        match = currentMatch
                         break
                     }
-                    android.util.Log.e("ExtensionManager", "Addon request failed for $searchBase", e)
-                    continue
-                }
-
-                val match = try {
-                    searchResponse.use { response ->
-                        val body = response.body?.string()
-                        if (!response.isSuccessful || body.isNullOrEmpty()) {
-                            android.util.Log.e("ExtensionManager", "Search failed: ${response.code} from $searchBase")
-                            null
-                        } else {
-                            // Strict match: never fall back to an unrelated first result.
-                            // Returning null lets the player use YouTube instead of wrong audio.
-                            selectBestMatch(
-                                json.decodeFromString<AddonSearchResponse>(body).tracks,
-                                title,
-                                artist,
-                                duration,
-                            )
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Body read or JSON parse failure on a reachable host is not
-                    // host-wide, so keep trying the other bases instead of giving up.
-                    android.util.Log.e("ExtensionManager", "Addon response failed for $searchBase", e)
-                    null
                 }
 
                 if (match == null) {
@@ -466,18 +549,18 @@ class ExtensionManager @Inject constructor(
      * also match inside the scheme ("https://host" contains "/a" in "//a…"), which
      * truncated the URL to "https:/" and produced unusable candidates.
      */
-    private fun stripSourcePrefix(baseUrl: String): String {
+    private fun stripSourcePrefix(baseUrl: String): String? {
         val trimmed = baseUrl.removeSuffix("/")
         val lastSlash = trimmed.lastIndexOf('/')
-        if (lastSlash < 0) return trimmed
+        if (lastSlash < 0) return null
         val schemeEnd = trimmed.indexOf("://")
         // Do not treat the scheme separator as a path segment boundary.
-        if (schemeEnd >= 0 && lastSlash <= schemeEnd + 2) return trimmed
+        if (schemeEnd >= 0 && lastSlash <= schemeEnd + 2) return null
         val lastSegment = trimmed.substring(lastSlash + 1)
         return if (SOURCE_PREFIXES.contains(lastSegment)) {
             trimmed.substring(0, lastSlash)
         } else {
-            trimmed
+            null
         }
     }
 

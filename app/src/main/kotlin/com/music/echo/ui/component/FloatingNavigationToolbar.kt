@@ -86,6 +86,9 @@ fun FloatingNavigationToolbar(
   onFabClick: (() -> Unit)? = null,
   fabIconRes: Int? = null,
   fabContentDescription: String = "",
+  onMusicFlowClick: (() -> Unit)? = null,
+  musicFlowIconRes: Int? = R.drawable.swipe,
+  musicFlowContentDescription: String = "",
   onShuffleClick: (() -> Unit)? = null,
   shuffleEnabled: Boolean = false,
   shuffleIconRes: Int? = null,
@@ -137,7 +140,7 @@ fun FloatingNavigationToolbar(
       )
 
   val hasOverflowMenu =
-    (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null
+    onMusicFlowClick != null || (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null
   val hasFabAction = onFabClick != null && fabIconRes != null
 
   Box(
@@ -161,6 +164,9 @@ fun FloatingNavigationToolbar(
         isSelected = isSelected,
         onItemClick = onItemClick,
         hasOverflowMenu = hasOverflowMenu,
+        onMusicFlowClick = onMusicFlowClick,
+        musicFlowIconRes = musicFlowIconRes,
+        musicFlowContentDescription = musicFlowContentDescription,
         onShuffleClick = onShuffleClick,
         shuffleEnabled = shuffleEnabled,
         shuffleIconRes = shuffleIconRes,
@@ -187,6 +193,9 @@ private fun ToolbarItemsContainer(
   isSelected: (Screens) -> Boolean,
   onItemClick: (Screens, Boolean) -> Unit,
   hasOverflowMenu: Boolean = false,
+  onMusicFlowClick: (() -> Unit)? = null,
+  musicFlowIconRes: Int? = null,
+  musicFlowContentDescription: String = "",
   onShuffleClick: (() -> Unit)? = null,
   shuffleEnabled: Boolean = false,
   shuffleIconRes: Int? = null,
@@ -269,6 +278,9 @@ private fun ToolbarItemsContainer(
       if (hasOverflowMenu) {
         FloatingToolbarOverflowMenuButton(
           pureBlack = pureBlack,
+          onMusicFlowClick = onMusicFlowClick,
+          musicFlowIconRes = musicFlowIconRes,
+          musicFlowContentDescription = musicFlowContentDescription,
           onShuffleClick = onShuffleClick,
           shuffleEnabled = shuffleEnabled,
           shuffleIconRes = shuffleIconRes,
@@ -292,6 +304,9 @@ private fun ToolbarItemsContainer(
 @Composable
 fun FloatingToolbarOverflowMenuButton(
   pureBlack: Boolean,
+  onMusicFlowClick: (() -> Unit)? = null,
+  musicFlowIconRes: Int? = null,
+  musicFlowContentDescription: String = "",
   onShuffleClick: (() -> Unit)?,
   shuffleEnabled: Boolean,
   shuffleIconRes: Int?,
@@ -338,6 +353,27 @@ fun FloatingToolbarOverflowMenuButton(
             compact = true,
             items =
               buildList {
+                if (onMusicFlowClick != null && musicFlowIconRes != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = {
+                        Text(
+                          if (musicFlowContentDescription.isNotEmpty()) musicFlowContentDescription
+                          else stringResource(R.string.music_flow)
+                        )
+                      },
+                      icon = painterResource(musicFlowIconRes),
+                      onClick = {
+                        scope.launch {
+                          sheetState.hide()
+                          showSheet = false
+                          onMusicFlowClick()
+                        }
+                      }
+                    )
+                  )
+                }
+
                 if (onShuffleClick != null && shuffleIconRes != null) {
                   add(
                     Material3SettingsItem(
@@ -370,14 +406,11 @@ fun FloatingToolbarOverflowMenuButton(
                       tintIcon = false,
                       iconShape = androidx.compose.foundation.shape.CircleShape,
                       onClick = {
-                        scope
-                          .launch { sheetState.hide() }
-                          .invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                              showSheet = false
-                              onAiHubClick()
-                            }
-                          }
+                        scope.launch {
+                          sheetState.hide()
+                          showSheet = false
+                          onAiHubClick()
+                        }
                       }
                     )
                   )

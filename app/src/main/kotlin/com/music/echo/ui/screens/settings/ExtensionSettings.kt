@@ -27,9 +27,11 @@ import com.music.echo.extensions.AddonEndpoint
 import com.music.echo.extensions.ExtensionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import echo.music.iad1tya.R
+import echo.music.iad1tya.constants.PreferExtensionAudioKey
 import echo.music.iad1tya.ui.component.Material3SettingsGroup
 import echo.music.iad1tya.ui.component.Material3SettingsItem
 import echo.music.iad1tya.ui.utils.backToMain
+import echo.music.iad1tya.utils.rememberPreference
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -90,6 +92,8 @@ fun ExtensionSettingsScreen(
 ) {
     val addons by viewModel.addons.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    val (preferExtensionAudio, onPreferExtensionAudioChange) =
+        rememberPreference(key = PreferExtensionAudioKey, defaultValue = true)
     val scrollState = rememberScrollState()
 
     Column(
@@ -99,6 +103,27 @@ fun ExtensionSettingsScreen(
             .padding(horizontal = 16.dp)
     ) {
         Spacer(Modifier.windowInsetsPadding(echo.music.iad1tya.LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
+        Spacer(Modifier.height(16.dp))
+
+        Material3SettingsGroup(
+            title = "Playback Priority",
+            items = listOf(
+                Material3SettingsItem(
+                    title = { Text("Prefer Extension Audio") },
+                    description = { Text("Always search extensions first before YouTube Music (Lossless/High Quality)") },
+                    icon = painterResource(R.drawable.ic_apple_lossless),
+                    trailingContent = {
+                        Switch(
+                            checked = preferExtensionAudio,
+                            onCheckedChange = onPreferExtensionAudioChange,
+                            modifier = Modifier.scale(0.8f)
+                        )
+                    },
+                    onClick = { onPreferExtensionAudioChange(!preferExtensionAudio) }
+                )
+            )
+        )
+
         Spacer(Modifier.height(16.dp))
 
         if (addons.isNotEmpty()) {
@@ -187,9 +212,9 @@ fun ExtensionSettingsScreen(
                 },
                 onDismiss = { showDialog = false },
                 onDoneMultiple = { inputs ->
-                    val finalName = inputs.getOrNull(0) ?: ""
-                    val finalUrl = inputs.getOrNull(1) ?: ""
-                    if (finalName.isNotBlank() && finalUrl.isNotBlank()) {
+                    val finalName = inputs.getOrNull(0)?.trim() ?: ""
+                    val finalUrl = inputs.getOrNull(1)?.trim() ?: ""
+                    if (finalUrl.isNotBlank()) {
                         viewModel.addAddon(finalName, finalUrl)
                         showDialog = false
                     }

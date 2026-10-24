@@ -96,7 +96,8 @@ fun YouTubeSongMenu(
   song: SongItem,
   navController: NavController,
   onDismiss: () -> Unit,
-  onHistoryRemoved: () -> Unit = {}
+  onHistoryRemoved: () -> Unit = {},
+  showSongHeader: Boolean = true,
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
@@ -608,70 +609,72 @@ fun YouTubeSongMenu(
     }
   }
 
-  ListItem(
-    headlineContent = {
-      Text(
-        text = song.title,
-        modifier = Modifier.basicMarquee(),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    },
-    supportingContent = {
-      Text(
-        text =
-          joinByBullet(
-            song.artists.joinToString { it.name },
-            song.duration?.let { makeTimeString(it * 1000L) },
+  if (showSongHeader) {
+    ListItem(
+      headlineContent = {
+        Text(
+          text = song.title,
+          modifier = Modifier.basicMarquee(),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+        )
+      },
+      supportingContent = {
+        Text(
+          text =
+            joinByBullet(
+              song.artists.joinToString { it.name },
+              song.duration?.let { makeTimeString(it * 1000L) },
+            )
+        )
+      },
+      leadingContent = {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier.size(ListThumbnailSize).clip(RoundedCornerShape(ThumbnailCornerRadius))
+        ) {
+          AsyncImage(
+            model = song.thumbnail,
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(ThumbnailCornerRadius))
           )
-      )
-    },
-    leadingContent = {
-      Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.size(ListThumbnailSize).clip(RoundedCornerShape(ThumbnailCornerRadius))
-      ) {
-        AsyncImage(
-          model = song.thumbnail,
-          contentDescription = null,
-          modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(ThumbnailCornerRadius))
-        )
-      }
-    },
-    trailingContent = {
-      IconButton(
-        onClick = {
-          database.transaction {
-            librarySong.let { librarySong ->
-              val s: SongEntity
-              if (librarySong == null) {
-                insert(song.toMediaMetadata(), SongEntity::toggleLike)
-                s = song.toMediaMetadata().toSongEntity().let(SongEntity::toggleLike)
-              } else {
-                s = librarySong.song.toggleLike()
-                update(s)
+        }
+      },
+      trailingContent = {
+        IconButton(
+          onClick = {
+            database.transaction {
+              librarySong.let { librarySong ->
+                val s: SongEntity
+                if (librarySong == null) {
+                  insert(song.toMediaMetadata(), SongEntity::toggleLike)
+                  s = song.toMediaMetadata().toSongEntity().let(SongEntity::toggleLike)
+                } else {
+                  s = librarySong.song.toggleLike()
+                  update(s)
+                }
+                syncUtils.likeSong(s)
               }
-              syncUtils.likeSong(s)
             }
-          }
-        },
-      ) {
-        Icon(
-          painter =
-            painterResource(
-              if (librarySong?.song?.liked == true) R.drawable.favorite
-              else R.drawable.favorite_border
-            ),
-          tint =
-            if (librarySong?.song?.liked == true) MaterialTheme.colorScheme.error
-            else LocalContentColor.current,
-          contentDescription = null,
-        )
-      }
-    },
-  )
+          },
+        ) {
+          Icon(
+            painter =
+              painterResource(
+                if (librarySong?.song?.liked == true) R.drawable.favorite
+                else R.drawable.favorite_border
+              ),
+            tint =
+              if (librarySong?.song?.liked == true) MaterialTheme.colorScheme.error
+              else LocalContentColor.current,
+            contentDescription = null,
+          )
+        }
+      },
+    )
 
-  Spacer(modifier = Modifier.height(12.dp))
+    Spacer(modifier = Modifier.height(12.dp))
+  }
 
   val bottomSheetPageState = LocalBottomSheetPageState.current
   val configuration = LocalConfiguration.current

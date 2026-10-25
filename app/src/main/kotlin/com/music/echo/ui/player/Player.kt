@@ -40,6 +40,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -85,6 +86,7 @@ import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -1604,6 +1606,43 @@ fun BottomSheetPlayer(
                 onSwipeLeft = { playerConnection.seekToNext() }
               )
         ) {
+          if (musicFlowEnabled) {
+            Surface(
+              onClick = {
+                navController.navigate("music_flow") { launchSingleTop = true }
+                state.collapseSoft()
+              },
+              shape = CircleShape,
+              color = TextBackgroundColor.copy(alpha = 0.12f),
+              contentColor = TextBackgroundColor,
+              border = BorderStroke(1.dp, TextBackgroundColor.copy(alpha = 0.2f)),
+              modifier = Modifier.padding(bottom = 6.dp)
+            ) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+              ) {
+                Icon(
+                  painter = painterResource(R.drawable.swipe),
+                  contentDescription = null,
+                  tint = TextBackgroundColor,
+                  modifier = Modifier.size(13.dp)
+                )
+                Spacer(Modifier.width(5.dp))
+                Text(
+                  text = stringResource(R.string.music_flow),
+                  style =
+                    MaterialTheme.typography.labelSmall.copy(
+                      fontWeight = FontWeight.SemiBold,
+                      fontSize = 11.5.sp,
+                      letterSpacing = 0.2.sp
+                    ),
+                  color = TextBackgroundColor
+                )
+              }
+            }
+          }
+
           AnimatedContent(
             targetState = mediaMetadata.title,
             transitionSpec = { fadeIn() togetherWith fadeOut() },

@@ -748,7 +748,7 @@ class MainActivity : ComponentActivity() {
         val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
 
         val showRail =
-          isLandscape && !inSearchScreen && currentRoute != "ambient_mode" && currentRoute != "music_flow"
+          isLandscape && !inSearchScreen && currentRoute != "ambient_mode" && currentRoute != "music_flow" && currentRoute != "wrapped"
 
         val navPadding =
           if (shouldShowNavigationBar && !showRail) {
@@ -1653,6 +1653,7 @@ class MainActivity : ComponentActivity() {
                   currentRoute != "ambient_mode" &&
                   currentRoute != "music_flow" &&
                   currentRoute != "uptime" &&
+                  currentRoute != "wrapped" &&
                   currentRoute?.startsWith("settings") != true
               ) {
                 Box {
@@ -1743,6 +1744,9 @@ class MainActivity : ComponentActivity() {
                         },
                         aiHubIconRes = R.drawable.ai_pfp,
                         aiHubContentDescription = stringResource(R.string.ai_lyrics_translation),
+                        onWrappedClick = {
+                          navController.navigate("wrapped") { launchSingleTop = true }
+                        },
                         onSearchLongClick = onRailSearchLongClick,
                         isSelected = { screen ->
                           currentRoute == screen.route ||
@@ -1788,6 +1792,7 @@ class MainActivity : ComponentActivity() {
                     currentRoute != "ambient_mode" &&
                     currentRoute != "music_flow" &&
                     currentRoute != "uptime" &&
+                    currentRoute != "wrapped" &&
                     currentRoute?.startsWith("settings") != true
                 ) {
                   BottomSheetPlayer(

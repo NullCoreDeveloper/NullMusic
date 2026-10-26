@@ -98,6 +98,7 @@ fun FloatingNavigationToolbar(
   onAiHubClick: (() -> Unit)? = null,
   aiHubIconRes: Int? = null,
   aiHubContentDescription: String = "",
+  onWrappedClick: (() -> Unit)? = null,
   scrollBehavior: FloatingToolbarScrollBehavior? = null,
   onSearchLongClick: (() -> Unit)? = null,
   isSelected: (Screens) -> Boolean,
@@ -140,7 +141,7 @@ fun FloatingNavigationToolbar(
       )
 
   val hasOverflowMenu =
-    onMusicFlowClick != null || (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null
+    onMusicFlowClick != null || (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null || onWrappedClick != null
   val hasFabAction = onFabClick != null && fabIconRes != null
 
   Box(
@@ -173,6 +174,7 @@ fun FloatingNavigationToolbar(
         onAiHubClick = onAiHubClick,
         aiHubIconRes = aiHubIconRes,
         aiHubContentDescription = aiHubContentDescription,
+        onWrappedClick = onWrappedClick,
         hasFabAction = hasFabAction,
         onFabClick = onFabClick,
         fabIconRes = fabIconRes,
@@ -202,6 +204,7 @@ private fun ToolbarItemsContainer(
   onAiHubClick: (() -> Unit)? = null,
   aiHubIconRes: Int? = null,
   aiHubContentDescription: String = "",
+  onWrappedClick: (() -> Unit)? = null,
   hasFabAction: Boolean = false,
   onFabClick: (() -> Unit)? = null,
   fabIconRes: Int? = null,
@@ -286,7 +289,8 @@ private fun ToolbarItemsContainer(
           shuffleIconRes = shuffleIconRes,
           onAiHubClick = onAiHubClick,
           aiHubIconRes = aiHubIconRes,
-          aiHubContentDescription = aiHubContentDescription
+          aiHubContentDescription = aiHubContentDescription,
+          onWrappedClick = onWrappedClick
         )
       } else if (hasFabAction && fabIconRes != null && onFabClick != null) {
         FloatingToolbarFabAction(
@@ -313,6 +317,7 @@ fun FloatingToolbarOverflowMenuButton(
   onAiHubClick: (() -> Unit)?,
   aiHubIconRes: Int?,
   aiHubContentDescription: String,
+  onWrappedClick: (() -> Unit)? = null,
 ) {
   var showSheet by rememberSaveable { mutableStateOf(false) }
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -410,6 +415,22 @@ fun FloatingToolbarOverflowMenuButton(
                           sheetState.hide()
                           showSheet = false
                           onAiHubClick()
+                        }
+                      }
+                    )
+                  )
+                }
+
+                if (onWrappedClick != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = { Text("Echo Wrapped") },
+                      icon = painterResource(R.drawable.star),
+                      onClick = {
+                        scope.launch {
+                          sheetState.hide()
+                          showSheet = false
+                          onWrappedClick()
                         }
                       }
                     )

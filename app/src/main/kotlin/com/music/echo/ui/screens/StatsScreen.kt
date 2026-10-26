@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -431,6 +433,13 @@ fun StatsScreen(
           },
           currentValue = indexChips,
           onValueUpdate = { viewModel.indexChips.value = it },
+        )
+      }
+
+      item(key = "echo_wrapped_banner") {
+        com.music.echo.ui.screens.wrapped.WrappedBannerCard(
+          onClick = { navController.navigate("wrapped") },
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
       }
 

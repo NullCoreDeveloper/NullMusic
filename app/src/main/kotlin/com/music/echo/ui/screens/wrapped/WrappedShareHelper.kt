@@ -187,7 +187,7 @@ object WrappedShareHelper {
       color = 0x24FFFFFF.toInt()
     }
 
-    // 2. Header: Echo Music Logo + Wordmark + 2026 WRAPPED
+    // 2. Header: NullMusic Logo + Wordmark + 2026 WRAPPED
     try {
       val logoDrawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_launcher_nobg)
       if (logoDrawable != null) {
@@ -208,7 +208,7 @@ object WrappedShareHelper {
       letterSpacing = -0.04f
       typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
-    canvas.drawText("Echo Music", marginX + 70f, 156f, wordmarkPaint)
+    canvas.drawText("NullMusic", marginX + 70f, 156f, wordmarkPaint)
 
     val yearPaint = Paint().apply {
       isAntiAlias = true
@@ -497,7 +497,7 @@ object WrappedShareHelper {
       typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
     canvas.drawText(
-      "CRAFTED WITH ECHO MUSIC • ${data.yearLabel} REPLAY • echomusic.app/wrapped",
+      "CRAFTED WITH ECHO MUSIC • ${data.yearLabel} REPLAY • nullmusic.app/wrapped",
       width / 2f,
       1750f,
       footerPaint

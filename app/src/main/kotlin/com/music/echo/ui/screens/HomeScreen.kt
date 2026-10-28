@@ -609,6 +609,7 @@ fun HomeScreen(
   val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
   val (randomizeHomeOrder) = rememberPreference(RandomizeHomeOrderKey, true)
   val (showSpeedDial) = rememberPreference(ShowSpeedDialKey, true)
+  val (isWrappedDismissed, onDismissWrapped) = rememberPreference(EchoWrappedBannerDismissedKey, defaultValue = false)
 
   val isLoggedIn = remember(innerTubeCookie) { "SAPISID" in parseCookieString(innerTubeCookie) }
   val url = if (isLoggedIn) accountImageUrl else null
@@ -1924,10 +1925,11 @@ fun HomeScreen(
           )
         }
 
-        if (selectedChip == null) {
+        if (selectedChip == null && !isWrappedDismissed) {
           item(key = "echo_wrapped_banner") {
             com.music.echo.ui.screens.wrapped.WrappedBannerCard(
               onClick = { navController.navigate("wrapped") },
+              onDismiss = { onDismissWrapped(true) },
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
             )
           }

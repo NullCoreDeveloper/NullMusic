@@ -77,6 +77,7 @@ fun StatsScreen(
   val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
   val context = LocalContext.current
+  val (isWrappedDismissed, onDismissWrapped) = rememberPreference(EchoWrappedBannerDismissedKey, defaultValue = false)
 
   val indexChips by viewModel.indexChips.collectAsState()
   val mostPlayedSongs by viewModel.mostPlayedSongs.collectAsState()
@@ -436,11 +437,14 @@ fun StatsScreen(
         )
       }
 
-      item(key = "echo_wrapped_banner") {
-        com.music.echo.ui.screens.wrapped.WrappedBannerCard(
-          onClick = { navController.navigate("wrapped") },
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+      if (!isWrappedDismissed) {
+        item(key = "echo_wrapped_banner") {
+          com.music.echo.ui.screens.wrapped.WrappedBannerCard(
+            onClick = { navController.navigate("wrapped") },
+            onDismiss = { onDismissWrapped(true) },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+          )
+        }
       }
 
       item(key = "mostPlayedSongs") {

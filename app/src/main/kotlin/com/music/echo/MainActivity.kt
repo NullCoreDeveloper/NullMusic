@@ -557,6 +557,7 @@ class MainActivity : ComponentActivity() {
 
     val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
     val pureBlack = remember(pureBlackEnabled, useDarkTheme) { pureBlackEnabled && useDarkTheme }
+    val isMonochrome by rememberPreference(IsMonochromeThemeKey, defaultValue = false)
 
     val (selectedThemeColorInt) =
       rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
@@ -613,6 +614,7 @@ class MainActivity : ComponentActivity() {
     nullmusicTheme(
       darkTheme = useDarkTheme,
       pureBlack = pureBlack,
+      isMonochrome = isMonochrome,
       themeColor = themeColor,
     ) {
       val hapticHelper = rememberHapticHelper()

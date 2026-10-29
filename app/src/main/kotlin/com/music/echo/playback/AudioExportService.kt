@@ -116,7 +116,7 @@ class AudioExportService : Service() {
       val playbackData =
         YTPlayerUtils.playerResponseForPlayback(
             videoId = songId,
-            audioQuality = AudioQuality.OPUS,
+            audioQuality = AudioQuality.AUTO,
             connectivityManager = connectivityManager,
           )
           .getOrThrow()

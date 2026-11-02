@@ -502,6 +502,14 @@
     <string name="spotify_clear_selection">Limpiar</string>
     <string name="spotify_account">Cuenta de Spotify</string>
     <string name="spotify_waiting_for_login">Esperando inicio de sesión en Spotify</string>
+    <string name="filter_spotify">Spotify</string>
+    <string name="spotify_live_library">Biblioteca de Spotify en directo</string>
+    <string name="spotify_live_desc">Reproduce tus canciones que te gustan y tus listas directamente, sin duplicarlas en tu base de datos local.</string>
+    <string name="spotify_connect_account">Conectar cuenta de Spotify</string>
+    <string name="spotify_view_all_tracks">Ver todas las canciones</string>
+    <string name="spotify_resolving_stream">Obteniendo la transmisión…</string>
+    <string name="spotify_playlists_title">Tus listas de reproducción</string>
+    <string name="spotify_no_playlists_found">No se encontraron listas de Spotify en tu biblioteca.</string>
     <string name="service_uptime">Estado de los servicios</string>
     <string name="service_uptime_desc">Comprueba la disponibilidad de los proveedores de música</string>
     <string name="music_providers">Proveedores de música</string>

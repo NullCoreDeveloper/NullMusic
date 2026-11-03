@@ -43,7 +43,7 @@ class ScrobbleManager(
     playTimeSeconds = 0
     scrobbled = false
 
-    if (!enableScrobbling || metadata == null || metadata.id.isLocalMediaId()) return
+    if (!enableScrobbling || metadata == null) return
 
     if (useNowPlaying && LastFM.isInitialized()) {
       scrobblingJob?.cancel()
@@ -133,8 +133,8 @@ class ScrobbleManager(
   }
 
   private fun doScrobble(metadata: MediaMetadata, durationInSeconds: Long) {
-    val artists = metadata.artists.joinToString(", ") { it.name }
-    if (artists.isEmpty() || metadata.id.isLocalMediaId() || !LastFM.isInitialized()) return
+    val artists = metadata.artists.joinToString(", ") { it.name }.ifEmpty { "Unknown Artist" }
+    if (metadata.title.isBlank() || !LastFM.isInitialized()) return
 
     val timestamp = System.currentTimeMillis() / 1000 - playTimeSeconds
 

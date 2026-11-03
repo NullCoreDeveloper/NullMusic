@@ -552,6 +552,15 @@ fun BottomSheetPlayer(
     playerConnection.service.addToQueueAutomix(automix[0], 0)
   }
 
+  val bluetoothTracker = remember(context) { BluetoothAudioTracker(context) }
+  DisposableEffect(bluetoothTracker) {
+    bluetoothTracker.start()
+    onDispose { bluetoothTracker.stop() }
+  }
+  val bluetoothTelemetry by bluetoothTracker.telemetry.collectAsState()
+
+  val dacDeviceState by (playerConnection.service.usbDacManager.activeDacFlow).collectAsState()
+
   val bluetoothDeviceName by
     produceState<String?>(initialValue = getConnectedBluetoothDeviceName(context)) {
       val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -2305,6 +2314,19 @@ fun BottomSheetPlayer(
             showCodecOnPlayer && (formatText.isNotEmpty() || isBuffering) ||
               isCrossfading ||
               mixCountdownActive
+
+          if (dacDeviceState is DacDeviceState.Connected) {
+            val connectedDac = dacDeviceState as DacDeviceState.Connected
+            val caps = connectedDac.capabilities
+            val bestRate = caps.supportedSampleRates.maxOrNull() ?: 96000
+            val bestBits = caps.supportedFormats.maxOfOrNull { it.bitDepth } ?: 24
+            BitPerfectBadge(
+              sampleRate = bestRate,
+              bitDepth = bestBits,
+              uacVersion = caps.uacVersion,
+            )
+          }
+
           if (sleepTimerEnabled || shouldShowCodecBox) {
             Box(
               modifier =
@@ -2785,7 +2807,24 @@ fun BottomSheetPlayer(
             fadeOut()
       ) {
         Column {
-          if (showSeekButtons) {
+          if (isEpisode) {
+            EpisodeControls(
+              enabled =
+                !isListenTogetherGuest &&
+                  (if (isCasting) castDuration > 0
+                  else playerConnection.player.isCurrentMediaItemSeekable),
+              color = TextBackgroundColor,
+              onSeek = { offsetMs ->
+                playerConnection.seekTo(
+                  echo.music.iad1tya.playback.seekButtonTarget(
+                    if (isCasting) castPosition else playerConnection.player.currentPosition,
+                    if (isCasting) castDuration else playerConnection.player.duration,
+                    offsetMs,
+                  )
+                )
+              },
+            )
+          } else if (showSeekButtons) {
             SeekButtons(
               enabled =
                 !isListenTogetherGuest &&
@@ -3156,13 +3195,22 @@ fun BottomSheetPlayer(
               if (bluetoothDeviceName != null) lastNonNullName = bluetoothDeviceName
             }
 
+            val hasBtConnection = bluetoothDeviceName != null || bluetoothTelemetry.isConnected
             AnimatedVisibility(
-              visible = !useNewPlayerDesign && bluetoothDeviceName != null,
+              visible = !useNewPlayerDesign && hasBtConnection,
               enter = fadeIn(tween(400)) + expandVertically(tween(400)),
               exit = fadeOut(tween(400)) + shrinkVertically(tween(400)),
               label = "BluetoothInfoVisibility"
             ) {
-              val nameToShow = bluetoothDeviceName ?: lastNonNullName
+              val nameToShow = when {
+                bluetoothTelemetry.isConnected && bluetoothTelemetry.hasNamedCodec -> {
+                  val baseName = bluetoothTelemetry.deviceName ?: bluetoothDeviceName ?: lastNonNullName ?: "Bluetooth Device"
+                  val rateStr = bluetoothTelemetry.sampleRateHz?.let { " / ${it / 1000}kHz" } ?: ""
+                  val bitsStr = bluetoothTelemetry.bitDepth?.let { " $it-bit" } ?: ""
+                  "$baseName • ${bluetoothTelemetry.codecName}$bitsStr$rateStr"
+                }
+                else -> bluetoothDeviceName ?: lastNonNullName ?: "Bluetooth Device"
+              }
               Column {
                 Spacer(Modifier.height(8.dp))
                 Row(
@@ -3180,7 +3228,7 @@ fun BottomSheetPlayer(
                         }
                       ),
                     contentDescription = null,
-                    tint = textButtonColor.copy(alpha = 0.7f),
+                    tint = if (bluetoothTelemetry.isHighRes) MaterialTheme.colorScheme.primary else textButtonColor.copy(alpha = 0.7f),
                     modifier =
                       Modifier.size(
                         when {
@@ -3192,9 +3240,9 @@ fun BottomSheetPlayer(
                   )
                   Spacer(Modifier.width(6.dp))
                   Text(
-                    text = nameToShow ?: "",
+                    text = nameToShow,
                     style = MaterialTheme.typography.labelSmall,
-                    color = textButtonColor.copy(alpha = 0.7f),
+                    color = if (bluetoothTelemetry.isHighRes) MaterialTheme.colorScheme.primary else textButtonColor.copy(alpha = 0.7f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                   )

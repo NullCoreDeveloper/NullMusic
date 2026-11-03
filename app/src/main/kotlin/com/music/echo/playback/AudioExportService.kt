@@ -1,17 +1,17 @@
 package iad1tya.echo.music.playback
 
-import android.app.Service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.IBinder
-import androidx.core.content.getSystemService
-import androidx.core.content.ContextCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.datastore.preferences.core.edit
 import androidx.documentfile.provider.DocumentFile
 import com.arthenica.ffmpegkit.FFmpegKit
@@ -25,17 +25,16 @@ import iad1tya.echo.music.utils.dataStore
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
@@ -47,9 +46,14 @@ class AudioExportService : Service() {
 
   override fun onCreate() {
     super.onCreate()
-    getSystemService<NotificationManager>()?.createNotificationChannel(
-      NotificationChannel(CHANNEL_ID, getString(R.string.export_channel_name), NotificationManager.IMPORTANCE_LOW)
-    )
+    getSystemService<NotificationManager>()
+      ?.createNotificationChannel(
+        NotificationChannel(
+          CHANNEL_ID,
+          getString(R.string.export_channel_name),
+          NotificationManager.IMPORTANCE_LOW,
+        )
+      )
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -69,17 +73,23 @@ class AudioExportService : Service() {
     val songArtist = intent.getStringExtra(EXTRA_SONG_ARTIST).orEmpty()
     val songAlbum = intent.getStringExtra(EXTRA_SONG_ALBUM).orEmpty()
     val artworkUrl = intent.getStringExtra(EXTRA_ARTWORK_URL).orEmpty()
-    val cancelIntent = PendingIntent.getService(
-      this, 0, Intent(this, AudioExportService::class.java).setAction(ACTION_CANCEL_ALL),
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    val cancelIntent =
+      PendingIntent.getService(
+        this,
+        0,
+        Intent(this, AudioExportService::class.java).setAction(ACTION_CANCEL_ALL),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+      )
+    startForeground(
+      NOTIFICATION_ID,
+      NotificationCompat.Builder(this, CHANNEL_ID)
+        .setSmallIcon(R.drawable.download)
+        .setContentTitle(getString(R.string.exporting))
+        .setContentText(songTitle)
+        .setOngoing(true)
+        .addAction(R.drawable.close, getString(R.string.cancel_exports), cancelIntent)
+        .build(),
     )
-    startForeground(NOTIFICATION_ID, NotificationCompat.Builder(this, CHANNEL_ID)
-      .setSmallIcon(R.drawable.download)
-      .setContentTitle(getString(R.string.exporting))
-      .setContentText(songTitle)
-      .setOngoing(true)
-      .addAction(R.drawable.close, getString(R.string.cancel_exports), cancelIntent)
-      .build())
 
     exports.submit(songId) {
       exportSong(
@@ -107,8 +117,10 @@ class AudioExportService : Service() {
     val tempFiles = mutableListOf<File>()
 
     try {
-      val tempSourceFile = File.createTempFile("export_source_", ".m4a", cacheDir).also(tempFiles::add)
-      val tempArtworkFile = File.createTempFile("export_cover_", ".jpg", cacheDir).also(tempFiles::add)
+      val tempSourceFile =
+        File.createTempFile("export_source_", ".m4a", cacheDir).also(tempFiles::add)
+      val tempArtworkFile =
+        File.createTempFile("export_cover_", ".jpg", cacheDir).also(tempFiles::add)
       val tempMp3File = File.createTempFile("export_result_", ".mp3", cacheDir).also(tempFiles::add)
       addExportingSongId(songId)
       val connectivityManager =
@@ -165,7 +177,9 @@ class AudioExportService : Service() {
     val totalLength = playbackData.format.contentLength ?: 10_000_000L
     val rangedUrl = "${playbackData.streamUrl}&range=0-$totalLength"
     val requestBuilder = Request.Builder().url(rangedUrl)
-    ResolvedStream.from(playbackData).headers.forEach { (name, value) -> requestBuilder.header(name, value) }
+    ResolvedStream.from(playbackData).headers.forEach { (name, value) ->
+      requestBuilder.header(name, value)
+    }
     val request = requestBuilder.build()
     var totalBytes = -1L
     var bytesWritten = 0L
@@ -201,16 +215,16 @@ class AudioExportService : Service() {
   private fun downloadArtwork(artworkUrl: String, destFile: File): Boolean {
     if (artworkUrl.isBlank()) return false
     return runCatching {
-        httpClient.newCall(Request.Builder().url(artworkUrl).build()).execute().use { response ->
-          if (!response.isSuccessful) return@use
-          response.body?.byteStream()?.use { input ->
-            destFile.outputStream().use { output ->
-              input.copyTo(output)
-              output.flush()
-            }
+      httpClient.newCall(Request.Builder().url(artworkUrl).build()).execute().use { response ->
+        if (!response.isSuccessful) return@use
+        response.body?.byteStream()?.use { input ->
+          destFile.outputStream().use { output ->
+            input.copyTo(output)
+            output.flush()
           }
         }
       }
+    }
       .isSuccess && destFile.length() > 0L
   }
 
@@ -223,8 +237,8 @@ class AudioExportService : Service() {
     year: Int?,
     artworkFile: File?,
   ) {
-    val command =
-      buildFfmpegCommand(
+    val args =
+      buildFfmpegArguments(
         inputPath = sourceFile.absolutePath,
         outputPath = outputFile.absolutePath,
         title = songTitle,
@@ -234,15 +248,18 @@ class AudioExportService : Service() {
         coverPath = artworkFile?.absolutePath,
       )
     suspendCancellableCoroutine<Unit> { continuation ->
-      val session = FFmpegKit.executeAsync(command) { completed ->
-        if (!continuation.isActive) return@executeAsync
-        val returnCode = completed.returnCode
-        if (returnCode != null && ReturnCode.isSuccess(returnCode) && outputFile.length() > 0L) {
-          continuation.resume(Unit)
-        } else {
-          continuation.resumeWithException(IllegalStateException("FFmpeg export failed: ${completed.output}"))
+      val session =
+        FFmpegKit.executeWithArgumentsAsync(args) { completed ->
+          if (!continuation.isActive) return@executeWithArgumentsAsync
+          val returnCode = completed.returnCode
+          if (returnCode != null && ReturnCode.isSuccess(returnCode) && outputFile.length() > 0L) {
+            continuation.resume(Unit)
+          } else {
+            continuation.resumeWithException(
+              IllegalStateException("FFmpeg export failed: ${completed.output}")
+            )
+          }
         }
-      }
       continuation.invokeOnCancellation { FFmpegKit.cancel(session.sessionId) }
     }
   }
@@ -260,7 +277,11 @@ class AudioExportService : Service() {
       try {
         stagedFile.outputStream().use { copyExport(sourceFile, it) }
         currentCoroutineContext().ensureActive()
-        Files.move(stagedFile.toPath(), File(folder, "$safeTitle.mp3").toPath(), StandardCopyOption.REPLACE_EXISTING)
+        Files.move(
+          stagedFile.toPath(),
+          File(folder, "$safeTitle.mp3").toPath(),
+          StandardCopyOption.REPLACE_EXISTING,
+        )
       } finally {
         stagedFile.delete()
       }
@@ -271,7 +292,9 @@ class AudioExportService : Service() {
         destinationDir.createFile("audio/mpeg", "$safeTitle.mp3")
           ?: error("Unable to create output file")
       try {
-        val output = contentResolver.openOutputStream(outputFile.uri, "w") ?: error("Export file is not writable")
+        val output =
+          contentResolver.openOutputStream(outputFile.uri, "w")
+            ?: error("Export file is not writable")
         output.use { copyExport(sourceFile, it) }
       } catch (e: Exception) {
         outputFile.delete()
@@ -412,7 +435,9 @@ class AudioExportService : Service() {
     private const val EXTRA_TARGET_DIRECTORY_URI = "extra_target_directory_uri"
 
     fun cancelAll(context: Context) {
-      context.startService(Intent(context, AudioExportService::class.java).setAction(ACTION_CANCEL_ALL))
+      context.startService(
+        Intent(context, AudioExportService::class.java).setAction(ACTION_CANCEL_ALL)
+      )
     }
 
     fun start(
@@ -518,7 +543,7 @@ class AudioExportService : Service() {
         "song_${System.currentTimeMillis()}"
       }
 
-    private fun buildFfmpegCommand(
+    private fun buildFfmpegArguments(
       inputPath: String,
       outputPath: String,
       title: String,
@@ -526,23 +551,45 @@ class AudioExportService : Service() {
       album: String,
       year: Int?,
       coverPath: String?,
-    ): String {
-      val escapedInput = inputPath.ffmpegEscape()
-      val escapedOutput = outputPath.ffmpegEscape()
-      val titleMeta = title.ffmpegEscape()
-      val artistMeta = artist.ffmpegEscape()
-      val albumMeta = album.ffmpegEscape()
-      val yearMeta = year?.toString()?.ffmpegEscape()
-      val dateFlags =
-        if (yearMeta != null) " -metadata date='$yearMeta' -metadata year='$yearMeta'" else ""
-      return if (coverPath != null) {
-        val escapedCover = coverPath.ffmpegEscape()
-        "-y -i '$escapedInput' -i '$escapedCover' -map 0:a -map 1:v -c:v mjpeg -disposition:v attached_pic -c:a libmp3lame -b:a 320k -id3v2_version 3 -metadata title='$titleMeta' -metadata artist='$artistMeta' -metadata album='$albumMeta'$dateFlags -metadata:s:v title='Album cover' -metadata:s:v comment='Cover (front)' '$escapedOutput'"
-      } else {
-        "-y -i '$escapedInput' -c:a libmp3lame -b:a 320k -id3v2_version 3 -metadata title='$titleMeta' -metadata artist='$artistMeta' -metadata album='$albumMeta'$dateFlags '$escapedOutput'"
+    ): Array<String> {
+      val args = mutableListOf("-y", "-i", inputPath)
+      if (coverPath != null) {
+        args.addAll(
+          listOf(
+            "-i",
+            coverPath,
+            "-map",
+            "0:a",
+            "-map",
+            "1:v",
+            "-c:v",
+            "mjpeg",
+            "-disposition:v",
+            "attached_pic",
+          )
+        )
       }
+      args.addAll(listOf("-c:a", "libmp3lame", "-b:a", "320k", "-id3v2_version", "3"))
+      args.addAll(
+        listOf(
+          "-metadata",
+          "title=$title",
+          "-metadata",
+          "artist=$artist",
+          "-metadata",
+          "album=$album",
+        )
+      )
+      if (year != null) {
+        args.addAll(listOf("-metadata", "date=$year", "-metadata", "year=$year"))
+      }
+      if (coverPath != null) {
+        args.addAll(
+          listOf("-metadata:s:v", "title=Album cover", "-metadata:s:v", "comment=Cover (front)")
+        )
+      }
+      args.add(outputPath)
+      return args.toTypedArray()
     }
-
-    private fun String.ffmpegEscape(): String = replace("'", "'\\''")
   }
 }

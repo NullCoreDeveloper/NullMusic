@@ -12,6 +12,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
@@ -171,8 +172,18 @@ fun NavGraphBuilder.navigationBuilder(
       listOf(
         navArgument("artistId") { type = NavType.StringType },
       ),
-  ) {
-    ArtistScreen(navController, scrollBehavior)
+  ) { backStackEntry ->
+    // A podcast episode's "artist" is its show (an MPSP browse id), which is a playlist.
+    val artistId = backStackEntry.arguments?.getString("artistId")
+    if (PodcastPage.isShowBrowseId(artistId)) {
+      LaunchedEffect(artistId) {
+        navController.navigate("online_playlist/${PodcastPage.showId(artistId!!)}") {
+          popUpTo(backStackEntry.destination.id) { inclusive = true }
+        }
+      }
+    } else {
+      ArtistScreen(navController, scrollBehavior)
+    }
   }
 
   composable(
@@ -348,6 +359,23 @@ fun NavGraphBuilder.navigationBuilder(
       navController,
       scrollBehavior,
       highlightKey = backStackEntry.arguments?.getString("highlightKey")
+    )
+  }
+
+  composable(
+    route = "settings/integrations?highlightKey={highlightKey}",
+    arguments =
+      listOf(
+        navArgument("highlightKey") {
+          type = NavType.StringType
+          nullable = true
+        }
+      )
+  ) { backStackEntry ->
+    AccountSettingsScreen(
+      navController,
+      scrollBehavior,
+      highlightKey = backStackEntry.arguments?.getString("highlightKey") ?: "Integrations"
     )
   }
 

@@ -619,6 +619,7 @@ fun AppearanceSettings(
           LibraryFilter.LIBRARY -> stringResource(R.string.filter_library)
           LibraryFilter.LOCAL -> stringResource(R.string.filter_local)
           LibraryFilter.SPOTIFY -> "Spotify"
+          LibraryFilter.PODCASTS -> stringResource(R.string.filter_podcasts)
         }
       }
     )
@@ -2927,6 +2928,7 @@ fun AppearanceSettings(
                   LibraryFilter.LIBRARY -> stringResource(R.string.filter_library)
                   LibraryFilter.LOCAL -> stringResource(R.string.filter_local)
                   LibraryFilter.SPOTIFY -> "Spotify"
+                  LibraryFilter.PODCASTS -> stringResource(R.string.filter_podcasts)
                 }
               )
             },

@@ -1905,6 +1905,18 @@ fun HomeScreen(
           )
         }
 
+      val episodesInProgress = rememberEpisodesInProgress(limit = 5)
+      val isPodcastPage =
+        homePage?.sections?.any { section ->
+          section.items.any { it is SongItem && it.isPodcastEpisode }
+        } == true
+      val podcastsViewModel: PodcastsViewModel = hiltViewModel()
+      val followedPodcasts by podcastsViewModel.podcasts.collectAsState()
+      val newEpisodes by podcastsViewModel.newEpisodes.collectAsState()
+      LaunchedEffect(isPodcastPage, followedPodcasts) {
+        if (isPodcastPage) podcastsViewModel.loadNewEpisodes()
+      }
+
       LazyColumn(
         state = lazylistState,
         modifier = Modifier.hapticScrollEdge(lazylistState),
@@ -1915,10 +1927,7 @@ fun HomeScreen(
             chips =
               homePage
                 ?.chips
-                ?.filter {
-                  !it.title.equals("Podcasts", ignoreCase = true) &&
-                    !it.title.equals("Uploaded", ignoreCase = true)
-                }
+                ?.filter { !it.title.equals("Uploaded", ignoreCase = true) }
                 ?.map { it to it.title } ?: emptyList(),
             currentValue = selectedChip,
             onValueUpdate = { viewModel.toggleChip(it) }
@@ -1933,6 +1942,16 @@ fun HomeScreen(
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
             )
           }
+        }
+
+        // The Podcast chip opens with the user's own podcasts; the music Home stays free of them.
+        if (selectedChip != null && isPodcastPage) {
+          podcastHome(
+            followed = followedPodcasts,
+            inProgress = episodesInProgress,
+            newEpisodes = newEpisodes,
+            navController = navController,
+          )
         }
 
         if (isLoading && homePage?.chips.isNullOrEmpty()) {

@@ -1743,7 +1743,7 @@ class MainActivity : ComponentActivity() {
                           if (musicFlowEnabled) {
                             { navController.navigate("music_flow") { launchSingleTop = true } }
                           } else null,
-                        musicFlowIconRes = R.drawable.swipe,
+                        musicFlowIconRes = R.drawable.swipe_vertical,
                         musicFlowContentDescription = stringResource(R.string.music_flow),
                         onShuffleClick = onShuffleClick,
                         shuffleEnabled = shuffleEnabled,
@@ -1893,7 +1893,7 @@ class MainActivity : ComponentActivity() {
                     if (musicFlowEnabled) {
                       { navController.navigate("music_flow") { launchSingleTop = true } }
                     } else null,
-                  musicFlowIconRes = R.drawable.swipe,
+                  musicFlowIconRes = R.drawable.swipe_vertical,
                   musicFlowContentDescription = stringResource(R.string.music_flow),
                   onShuffleClick = onShuffleClick,
                   shuffleEnabled = shuffleEnabled,

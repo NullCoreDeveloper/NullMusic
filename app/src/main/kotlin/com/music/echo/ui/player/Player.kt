@@ -748,6 +748,13 @@ fun BottomSheetPlayer(
     if (canvasFetchInFlight) return@LaunchedEffect
     canvasFetchInFlight = true
 
+    val playerDurationSec =
+      try {
+        playerConnection.player.duration.takeIf { it > 0 }?.div(1000L)
+      } catch (e: Exception) {
+        null
+      }
+
     withContext(Dispatchers.IO) {
       val storefront =
         Locale.getDefault().country.lowercase(Locale.ROOT).takeIf { it.length == 2 } ?: "us"
@@ -768,19 +775,29 @@ fun BottomSheetPlayer(
           ?: AppleMusicCanvasProvider.getBySongArtist(s, a, requestedAlbum, storefront)?.takeIf {
             !it.preferredAnimationUrl.isNullOrBlank()
           }
+          ?: echo.music.iad1tya.canvas.YouTubeVideoCanvasProvider.getCanvasForVideo(
+            videoId = item.id,
+            title = requestedTitle,
+            artist = requestedArtist,
+            durationSec = item.duration.toLong().takeIf { it > 0 } ?: playerDurationSec
+          )
 
       val validated =
-        fetched?.let { artwork ->
-          val localArtists = splitAndNormalizeArtists(requestedArtist)
-          val returnedArtists = splitAndNormalizeArtists(artwork.artist ?: "")
-          val artistMatches =
-            localArtists.isNotEmpty() &&
-              returnedArtists.isNotEmpty() &&
-              (localArtists.any { local ->
-                returnedArtists.any { it.equals(local, ignoreCase = true) }
-              })
+        if (fetched?.clipStartMs != null) {
+          fetched
+        } else {
+          fetched?.let { artwork ->
+            val localArtists = splitAndNormalizeArtists(requestedArtist)
+            val returnedArtists = splitAndNormalizeArtists(artwork.artist ?: "")
+            val artistMatches =
+              localArtists.isNotEmpty() &&
+                returnedArtists.isNotEmpty() &&
+                (localArtists.any { local ->
+                  returnedArtists.any { it.equals(local, ignoreCase = true) }
+                })
 
-          if (artistMatches) artwork else null
+            if (artistMatches) artwork else null
+          }
         }
 
       withContext(Dispatchers.Main) {
@@ -1306,7 +1323,7 @@ fun BottomSheetPlayer(
                   Box(
                     modifier =
                       Modifier.fillMaxWidth()
-                        .fillMaxHeight(0.65f)
+                        .fillMaxHeight(0.68f)
                         .alpha(clearArtworkAlpha)
                         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                         .drawWithContent {
@@ -1318,8 +1335,8 @@ fun BottomSheetPlayer(
                                 colorStops =
                                   arrayOf(
                                     0.00f to Color.Black,
-                                    0.75f to Color.Black,
-                                    0.92f to Color.Black.copy(alpha = 0.4f),
+                                    0.70f to Color.Black,
+                                    0.88f to Color.Black.copy(alpha = 0.4f),
                                     1.00f to Color.Transparent,
                                   )
                               ),
@@ -1339,9 +1356,12 @@ fun BottomSheetPlayer(
                     )
 
                     if (enableCanvas && canvasArtwork != null && showCanvas) {
-                      BackgroundVideoView(
-                        videoUrl = canvasArtwork?.animated ?: canvasArtwork?.videoUrl ?: "",
+                      CanvasArtworkPlayer(
+                        primaryUrl = canvasArtwork?.animated,
+                        fallbackUrl = canvasArtwork?.videoUrl,
                         isPlaying = isPlaying,
+                        clipStartMs = canvasArtwork?.clipStartMs,
+                        clipEndMs = canvasArtwork?.clipEndMs,
                         modifier = Modifier.fillMaxSize()
                       )
                     }
@@ -1632,7 +1652,7 @@ fun BottomSheetPlayer(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
               ) {
                 Icon(
-                  painter = painterResource(R.drawable.swipe),
+                  painter = painterResource(R.drawable.swipe_vertical),
                   contentDescription = null,
                   tint = TextBackgroundColor,
                   modifier = Modifier.size(13.dp)
@@ -2824,7 +2844,7 @@ fun BottomSheetPlayer(
                 )
               },
             )
-          } else if (showSeekButtons) {
+          } else if (showSeekButtons && !useNewPlayerDesign) {
             SeekButtons(
               enabled =
                 !isListenTogetherGuest &&
@@ -2845,44 +2865,82 @@ fun BottomSheetPlayer(
             )
           }
           if (useNewPlayerDesign) {
+            val seekButtonsEnabled =
+              !isListenTogetherGuest &&
+                (if (isCasting) castDuration > 0
+                else playerConnection.player.isCurrentMediaItemSeekable)
+            val seekBy: (Long) -> Unit = { offsetMs ->
+              val currentPosition =
+                if (isCasting) castPosition else playerConnection.player.currentPosition
+              val currentDuration =
+                if (isCasting) castDuration else playerConnection.player.duration
+              playerConnection.seekTo(
+                echo.music.iad1tya.playback.seekButtonTarget(
+                  currentPosition, currentDuration, offsetMs
+                )
+              )
+            }
+
+            val backInteractionSource = remember { MutableInteractionSource() }
+            val nextInteractionSource = remember { MutableInteractionSource() }
+            val playPauseInteractionSource = remember { MutableInteractionSource() }
+            val seekBackInteractionSource = remember { MutableInteractionSource() }
+            val seekForwardInteractionSource = remember { MutableInteractionSource() }
+
+            val isPlayPausePressed by playPauseInteractionSource.collectIsPressedAsState()
+            val isBackPressed by backInteractionSource.collectIsPressedAsState()
+            val isNextPressed by nextInteractionSource.collectIsPressedAsState()
+            val isSeekBackPressed by seekBackInteractionSource.collectIsPressedAsState()
+            val isSeekForwardPressed by seekForwardInteractionSource.collectIsPressedAsState()
+
+            val playPauseScale by
+              animateFloatAsState(
+                targetValue = if (isPlayPausePressed) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                label = "playPauseScale"
+              )
+
+            val backButtonScale by
+              animateFloatAsState(
+                targetValue = if (isBackPressed) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                label = "backButtonScale"
+              )
+
+            val nextButtonScale by
+              animateFloatAsState(
+                targetValue = if (isNextPressed) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                label = "nextButtonScale"
+              )
+
+            val seekBackScale by
+              animateFloatAsState(
+                targetValue = if (isSeekBackPressed) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                label = "seekBackScale"
+              )
+
+            val seekForwardScale by
+              animateFloatAsState(
+                targetValue = if (isSeekForwardPressed) 0.9f else 1f,
+                animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                label = "seekForwardScale"
+              )
+
+            val mainButtonSize = if (showSeekButtons) 58.dp else 88.dp
+            val mainButtonSquircle = RoundedCornerShape(if (showSeekButtons) 18.dp else 26.dp)
+            val seekButtonSquircle = RoundedCornerShape(15.dp)
+
             Row(
-              horizontalArrangement = Arrangement.Center,
+              horizontalArrangement = if (showSeekButtons) Arrangement.SpaceEvenly else Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.fillMaxWidth().padding(horizontal = PlayerHorizontalPadding)
+              modifier = Modifier.fillMaxWidth().padding(horizontal = if (showSeekButtons) 8.dp else PlayerHorizontalPadding)
             ) {
-              val backInteractionSource = remember { MutableInteractionSource() }
-              val nextInteractionSource = remember { MutableInteractionSource() }
-              val playPauseInteractionSource = remember { MutableInteractionSource() }
-
-              val isPlayPausePressed by playPauseInteractionSource.collectIsPressedAsState()
-              val isBackPressed by backInteractionSource.collectIsPressedAsState()
-              val isNextPressed by nextInteractionSource.collectIsPressedAsState()
-
-              val playPauseScale by
-                animateFloatAsState(
-                  targetValue = if (isPlayPausePressed) 0.9f else 1f,
-                  animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
-                  label = "playPauseScale"
-                )
-
-              val backButtonScale by
-                animateFloatAsState(
-                  targetValue = if (isBackPressed) 0.9f else 1f,
-                  animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
-                  label = "backButtonScale"
-                )
-
-              val nextButtonScale by
-                animateFloatAsState(
-                  targetValue = if (isNextPressed) 0.9f else 1f,
-                  animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
-                  label = "nextButtonScale"
-                )
-
               FilledIconButton(
                 onClick = playerConnection::seekToPrevious,
                 enabled = canSkipPrevious && !isListenTogetherGuest,
-                shape = CircleShape,
+                shape = mainButtonSquircle,
                 interactionSource = backInteractionSource,
                 colors =
                   IconButtonDefaults.filledIconButtonColors(
@@ -2890,7 +2948,7 @@ fun BottomSheetPlayer(
                     contentColor = sideButtonContentColor,
                   ),
                 modifier =
-                  Modifier.size(68.dp).graphicsLayer {
+                  Modifier.size(mainButtonSize).graphicsLayer {
                     scaleX = backButtonScale
                     scaleY = backButtonScale
                   }
@@ -2898,11 +2956,36 @@ fun BottomSheetPlayer(
                 Icon(
                   painter = painterResource(R.drawable.skip_previous),
                   contentDescription = null,
-                  modifier = Modifier.size(32.dp)
+                  modifier = Modifier.size(if (showSeekButtons) 28.dp else 36.dp)
                 )
               }
 
-              Spacer(modifier = Modifier.width(24.dp))
+              if (showSeekButtons) {
+                FilledIconButton(
+                  onClick = { seekBy(-10_000L) },
+                  enabled = seekButtonsEnabled,
+                  shape = seekButtonSquircle,
+                  interactionSource = seekBackInteractionSource,
+                  colors =
+                    IconButtonDefaults.filledIconButtonColors(
+                      containerColor = sideButtonContainerColor,
+                      contentColor = sideButtonContentColor,
+                    ),
+                  modifier =
+                    Modifier.size(48.dp).graphicsLayer {
+                      scaleX = seekBackScale
+                      scaleY = seekBackScale
+                    }
+                ) {
+                  Icon(
+                    painter = painterResource(R.drawable.ic_replay_10),
+                    contentDescription = stringResource(R.string.seek_back_ten_seconds),
+                    modifier = Modifier.size(24.dp)
+                  )
+                }
+              } else {
+                Spacer(modifier = Modifier.width(16.dp))
+              }
 
               val cookieIndent by
                 animateFloatAsState(
@@ -2944,7 +3027,7 @@ fun BottomSheetPlayer(
                   }
                 },
                 shape =
-                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else CircleShape,
+                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else mainButtonSquircle,
                 interactionSource = playPauseInteractionSource,
                 colors =
                   IconButtonDefaults.filledIconButtonColors(
@@ -2952,7 +3035,7 @@ fun BottomSheetPlayer(
                     contentColor = iconButtonColor,
                   ),
                 modifier =
-                  Modifier.size(84.dp).graphicsLayer {
+                  Modifier.size(mainButtonSize).graphicsLayer {
                     scaleX = playPauseScale
                     scaleY = playPauseScale
                   }
@@ -2978,17 +3061,42 @@ fun BottomSheetPlayer(
                         if (effectiveIsPlaying) stringResource(R.string.pause)
                         else stringResource(R.string.play)
                       },
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(if (showSeekButtons) 30.dp else 38.dp)
                   )
                 }
               }
 
-              Spacer(modifier = Modifier.width(24.dp))
+              if (showSeekButtons) {
+                FilledIconButton(
+                  onClick = { seekBy(10_000L) },
+                  enabled = seekButtonsEnabled,
+                  shape = seekButtonSquircle,
+                  interactionSource = seekForwardInteractionSource,
+                  colors =
+                    IconButtonDefaults.filledIconButtonColors(
+                      containerColor = sideButtonContainerColor,
+                      contentColor = sideButtonContentColor,
+                    ),
+                  modifier =
+                    Modifier.size(48.dp).graphicsLayer {
+                      scaleX = seekForwardScale
+                      scaleY = seekForwardScale
+                    }
+                ) {
+                  Icon(
+                    painter = painterResource(R.drawable.ic_forward_10),
+                    contentDescription = stringResource(R.string.seek_forward_ten_seconds),
+                    modifier = Modifier.size(24.dp)
+                  )
+                }
+              } else {
+                Spacer(modifier = Modifier.width(16.dp))
+              }
 
               FilledIconButton(
                 onClick = playerConnection::seekToNext,
                 enabled = canSkipNext && !isListenTogetherGuest,
-                shape = CircleShape,
+                shape = mainButtonSquircle,
                 interactionSource = nextInteractionSource,
                 colors =
                   IconButtonDefaults.filledIconButtonColors(
@@ -2996,7 +3104,7 @@ fun BottomSheetPlayer(
                     contentColor = sideButtonContentColor,
                   ),
                 modifier =
-                  Modifier.size(68.dp).graphicsLayer {
+                  Modifier.size(mainButtonSize).graphicsLayer {
                     scaleX = nextButtonScale
                     scaleY = nextButtonScale
                   }
@@ -3004,7 +3112,7 @@ fun BottomSheetPlayer(
                 Icon(
                   painter = painterResource(R.drawable.skip_next),
                   contentDescription = null,
-                  modifier = Modifier.size(32.dp)
+                  modifier = Modifier.size(if (showSeekButtons) 28.dp else 36.dp)
                 )
               }
             }

@@ -109,6 +109,16 @@ fun NavGraphBuilder.navigationBuilder(
 
   composable("music_flow") { MusicFlowScreen(navController) }
 
+  composable(
+    route = "podcast_video",
+    enterTransition = { fadeIn(tween(300)) },
+    exitTransition = { fadeOut(tween(300)) },
+    popEnterTransition = { fadeIn(tween(300)) },
+    popExitTransition = { fadeOut(tween(300)) },
+  ) {
+    echo.music.iad1tya.ui.screens.podcast.PodcastVideoScreen(navController)
+  }
+
   composable("local_songs") { LocalSongScreen(navController) }
 
   composable("stats") { StatsScreen(navController) }

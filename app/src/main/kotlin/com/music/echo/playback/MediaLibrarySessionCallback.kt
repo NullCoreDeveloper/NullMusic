@@ -1584,7 +1584,7 @@ constructor(
   }
 
   /**
-   * The request without "… on Echo Music": the assistant can leave the app's name, and the short
+   * The request without "… on NullMusic": the assistant can leave the app's name, and the short
    * word before it, in the text it passes. The name is the app's own label, so this needs no word
    * list; the word before it is dropped only when it is short, as prepositions are.
    */

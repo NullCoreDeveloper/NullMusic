@@ -104,6 +104,7 @@ import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.net.URLEncoder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -123,15 +124,16 @@ fun OnlineSearchResult(
   val coroutineScope = rememberCoroutineScope()
   val lazyListState = rememberLazyListState()
   val focusManager = LocalFocusManager.current
-  val focusRequester = remember { FocusRequester() }
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
 
   var isSearchFocused by remember { mutableStateOf(false) }
-
-  val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
+  var isInitialFocus by remember { mutableStateOf(true) }
 
   BackHandler(enabled = isSearchFocused) {
     isSearchFocused = false
-    focusManager.clearFocus()
+    focusManager.clearFocus(force = true)
+    keyboardController?.hide()
   }
 
   val encodedQuery = navController.currentBackStackEntry?.arguments?.getString("query") ?: ""
@@ -149,13 +151,12 @@ fun OnlineSearchResult(
       mutableStateOf(TextFieldValue(decodedQuery, TextRange(decodedQuery.length)))
     }
 
-  val keyboardController = LocalSoftwareKeyboardController.current
-
   val onSearch: (String) -> Unit = remember {
     { searchQuery ->
       if (searchQuery.isNotEmpty()) {
         isSearchFocused = false
-        focusManager.clearFocus()
+        isInitialFocus = true
+        focusManager.clearFocus(force = true)
         keyboardController?.hide()
 
         navController.navigate("search/${URLEncoder.encode(searchQuery.trim(), "UTF-8")}") {
@@ -172,7 +173,13 @@ fun OnlineSearchResult(
   }
 
   LaunchedEffect(decodedQuery) {
+    isSearchFocused = false
+    isInitialFocus = true
     query = TextFieldValue(decodedQuery, TextRange(decodedQuery.length))
+    focusManager.clearFocus(force = true)
+    keyboardController?.hide()
+    delay(400)
+    isInitialFocus = false
   }
 
   val searchFilter by viewModel.filter.collectAsState()
@@ -320,9 +327,8 @@ fun OnlineSearchResult(
       modifier =
         Modifier.fillMaxWidth()
           .padding(horizontal = 16.dp, vertical = 8.dp)
-          .focusRequester(focusRequester)
           .onFocusChanged { focusState ->
-            if (focusState.isFocused) {
+            if (focusState.isFocused && !isInitialFocus) {
               isSearchFocused = true
             }
           }
@@ -423,7 +429,8 @@ fun OnlineSearchResult(
           onSearch = onSearch,
           onDismiss = {
             isSearchFocused = false
-            focusManager.clearFocus()
+            focusManager.clearFocus(force = true)
+            keyboardController?.hide()
           },
           pureBlack = pureBlack
         )

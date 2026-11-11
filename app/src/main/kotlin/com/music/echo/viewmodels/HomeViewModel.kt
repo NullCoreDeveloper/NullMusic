@@ -768,7 +768,13 @@ constructor(
         val isMainHome = selectedChip.value == null
         val isPodcastChip = selectedChip.value?.title?.contains("podcast", ignoreCase = true) == true
         val newSections =
-          nextSections.sections.mapNotNull { section ->
+          (if (isMainHome) nextSections.sections
+          else
+            PodcastProgress.withoutContinueShelf(
+              nextSections.sections,
+              context.getString(R.string.continue_listening),
+            ))
+            .mapNotNull { section ->
             val filteredItems =
               section.items
                 .let { items ->
@@ -830,7 +836,11 @@ constructor(
       nextSections.copy(
         chips = homePage.value?.chips,
         sections =
-          nextSections.sections.mapNotNull { section ->
+          PodcastProgress.withoutContinueShelf(
+              nextSections.sections,
+              context.getString(R.string.continue_listening),
+            )
+            .mapNotNull { section ->
             val filteredItems =
               section.items
                 .let { items ->

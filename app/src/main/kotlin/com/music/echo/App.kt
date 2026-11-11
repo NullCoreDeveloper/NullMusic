@@ -12,6 +12,7 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.datastore.preferences.core.edit
+import androidx.work.Configuration
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -46,9 +47,17 @@ import okhttp3.Credentials
 import timber.log.Timber
 
 @HiltAndroidApp
-class App : Application(), SingletonImageLoader.Factory {
+class App : Application(), SingletonImageLoader.Factory, Configuration.Provider {
 
   @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
+
+  override val workManagerConfiguration: Configuration
+    get() =
+      Configuration.Builder()
+        .setMinimumLoggingLevel(
+          if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR
+        )
+        .build()
 
   override fun startForegroundService(service: Intent): android.content.ComponentName? {
     return try {
@@ -66,18 +75,23 @@ class App : Application(), SingletonImageLoader.Factory {
     }
   }
 
+  private fun getCurrentProcessName(): String? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      Application.getProcessName()
+    } else {
+      val pid = android.os.Process.myPid()
+      val manager = getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
+      manager?.runningAppProcesses?.firstOrNull { it.pid == pid }?.processName
+    }
+  }
+
   private fun isCrashProcess(): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      return Application.getProcessName() == "$packageName:crash"
-    }
-    val pid = android.os.Process.myPid()
-    val manager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
-    for (processInfo in manager.runningAppProcesses ?: emptyList()) {
-      if (processInfo.pid == pid) {
-        return processInfo.processName == "$packageName:crash"
-      }
-    }
-    return false
+    return getCurrentProcessName() == "$packageName:crash"
+  }
+
+  private fun isMainProcess(): Boolean {
+    val processName = getCurrentProcessName()
+    return processName == null || processName == packageName
   }
 
   override fun onCreate() {
@@ -91,6 +105,10 @@ class App : Application(), SingletonImageLoader.Factory {
     // Removed destructive database deletion to preserve user data
 
     CrashHandler.install(this)
+
+    if (!isMainProcess()) {
+      return
+    }
 
     AppContextHolder.initialize(this)
     NewEpisodesWorker.schedule(this)
@@ -357,7 +375,10 @@ class App : Application(), SingletonImageLoader.Factory {
       .apply {
         crossfade(true)
         allowHardware(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        components { add(YouTubeThumbnailFallbackInterceptor()) }
+        components {
+          add(YouTubeThumbnailFallbackInterceptor())
+          add(LocalAlbumArtFetcher.Factory())
+        }
 
         memoryCache { MemoryCache.Builder().maxSizePercent(context, 0.25).build() }
         if (cacheSize == 0) {

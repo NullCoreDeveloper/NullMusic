@@ -27,7 +27,7 @@ class GatewayClient {
   }
 
   private var httpClient: OkHttpClient? = null
-  private var wsSession: WebSocket? = null
+  @Volatile private var wsSession: WebSocket? = null
   private var processingJob: Job? = null
   private var heartbeatJob: Job? = null
   private var helloTimerJob: Job? = null
@@ -41,7 +41,7 @@ class GatewayClient {
   private var sessionState: GatewaySessionState? = null
   private var liveSeq = 0
   private var token = ""
-  private var closed = false
+  @Volatile private var closed = false
 
   var onReady: ((GatewayReadyEvent) -> Unit)? = null
   var onClose: ((GatewayCloseInfo) -> Unit)? = null
@@ -50,6 +50,9 @@ class GatewayClient {
 
   val latency: Int
     get() = ping
+
+  val isConnected: Boolean
+    get() = !closed && wsSession != null
 
   suspend fun connect(accessToken: String) {
     if (wsSession != null) throw IllegalStateException("GatewayClient already connected")
@@ -109,6 +112,9 @@ class GatewayClient {
             response: Response?,
           ) {
             response?.close()
+            scope.launch {
+              incomingChannel.send(GatewayFrame.Close(1006, t.message ?: "websocket failure"))
+            }
             onError?.invoke(t)
           }
         },
@@ -137,6 +143,7 @@ class GatewayClient {
                     Exception("Gateway closed before ready"),
                   )
                 }
+                break
               }
             }
           }

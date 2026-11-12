@@ -1097,7 +1097,7 @@
     <string name="prefer_extension_audio">Préférer l\'audio des extensions</string>
     <string name="prefer_extension_audio_summary">Rechercher dans les extensions avant YouTube Music</string>
     <string name="music_quality_title">Qualité musicale (320 kbps)</string>
-    <string name="music_quality_summary">Visitez 320kbps.echomusic.fun pour le guide de configuration</string>
+    <string name="music_quality_summary">Visitez 320kbps.nullmusic.fun pour le guide de configuration</string>
     <string name="add_custom_server">Ajouter un serveur personnalisé</string>
     <string name="add_custom_server_summary">Configurer un hôte de module personnalisé</string>
 </resources>

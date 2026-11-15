@@ -273,6 +273,12 @@ fun AppearanceSettings(
   val (gridItemSize, onGridItemSizeChange) =
     rememberEnumPreference(GridItemsSizeKey, defaultValue = GridItemSize.SMALL)
 
+  val (thumbnailCornerRadius, onThumbnailCornerRadiusChange) =
+    rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 3f)
+
+  var showSensitivityDialog by rememberSaveable { mutableStateOf(false) }
+  var showThumbnailCornerRadiusDialog by rememberSaveable { mutableStateOf(false) }
+
   val context = activity as Context
   val sharedPreferences = remember {
     context.getSharedPreferences("nullmusic_settings", Context.MODE_PRIVATE)
@@ -507,72 +513,43 @@ fun AppearanceSettings(
   }
 
   if (showPlayerButtonsStyleDialog) {
-    EnumDialog(
-      onDismiss = { showPlayerButtonsStyleDialog = false },
-      onSelect = {
-        onPlayerButtonsStyleChange(it)
-        showPlayerButtonsStyleDialog = false
-      },
-      title = stringResource(R.string.player_buttons_style),
+    PlayerButtonsStyleModal(
       current = playerButtonsStyle,
-      values = PlayerButtonsStyle.values().toList(),
-      valueText = {
-        when (it) {
-          PlayerButtonsStyle.DEFAULT -> stringResource(R.string.default_style)
-          PlayerButtonsStyle.PRIMARY -> stringResource(R.string.primary_color_style)
-          PlayerButtonsStyle.TERTIARY -> stringResource(R.string.tertiary_color_style)
-        }
-      }
+      availableStyles = PlayerButtonsStyle.values().toList(),
+      onSelect = onPlayerButtonsStyleChange,
+      onDismiss = { showPlayerButtonsStyleDialog = false },
+      backgroundStyle = playerBackground,
+      sliderStyle = sliderStyle,
+      isSquiggly = squigglySlider,
+      wavyPlayPause = wavyPlayPause,
+      thumbnailCornerRadius = thumbnailCornerRadius.dp,
+      cropAlbumArt = cropAlbumArt,
+      fontFamily = activeFontFamily,
     )
   }
 
   if (showPlayerBackgroundDialog) {
-    EnumDialog(
-      onDismiss = { showPlayerBackgroundDialog = false },
-      onSelect = {
-        onPlayerBackgroundChange(it)
-        showPlayerBackgroundDialog = false
-      },
-      title = stringResource(R.string.player_background_style),
+    PlayerBackgroundStyleModal(
       current = playerBackground,
-      values = availableBackgroundStyles,
-      valueText = {
-        when (it) {
-          PlayerBackgroundStyle.DEFAULT -> stringResource(R.string.follow_theme)
-          PlayerBackgroundStyle.GRADIENT -> stringResource(R.string.gradient)
-          PlayerBackgroundStyle.BLUR -> stringResource(R.string.player_background_blur)
-          PlayerBackgroundStyle.GLOW_ANIMATED -> stringResource(R.string.glow_animated)
-          PlayerBackgroundStyle.APPLE_MUSIC -> stringResource(R.string.apple_music)
-          PlayerBackgroundStyle.LIVE_MESH -> stringResource(R.string.live_mesh)
-          PlayerBackgroundStyle.LIQUID_GLASS ->
-            stringResource(R.string.player_background_liquid_glass)
-        }
-      }
+      availableStyles = availableBackgroundStyles,
+      onSelect = onPlayerBackgroundChange,
+      onDismiss = { showPlayerBackgroundDialog = false },
+      buttonStyle = playerButtonsStyle,
+      sliderStyle = sliderStyle,
+      isSquiggly = squigglySlider,
+      wavyPlayPause = wavyPlayPause,
+      thumbnailCornerRadius = thumbnailCornerRadius.dp,
+      cropAlbumArt = cropAlbumArt,
+      fontFamily = activeFontFamily,
     )
   }
 
   if (showMiniPlayerBackgroundDialog) {
-    EnumDialog(
-      onDismiss = { showMiniPlayerBackgroundDialog = false },
-      onSelect = {
-        onMiniPlayerBackgroundChange(it)
-        showMiniPlayerBackgroundDialog = false
-      },
-      title = stringResource(R.string.miniplayer_background_style),
+    MiniPlayerBackgroundStyleModal(
       current = miniPlayerBackground,
-      values = availableMiniPlayerBackgroundStyles,
-      valueText = {
-        when (it) {
-          PlayerBackgroundStyle.DEFAULT -> stringResource(R.string.follow_theme)
-          PlayerBackgroundStyle.GRADIENT -> stringResource(R.string.gradient)
-          PlayerBackgroundStyle.BLUR -> stringResource(R.string.player_background_blur)
-          PlayerBackgroundStyle.GLOW_ANIMATED -> stringResource(R.string.glow_animated)
-          PlayerBackgroundStyle.LIVE_MESH -> stringResource(R.string.live_mesh)
-          PlayerBackgroundStyle.LIQUID_GLASS ->
-            stringResource(R.string.player_background_liquid_glass)
-          else -> stringResource(R.string.unknown)
-        }
-      }
+      availableStyles = availableMiniPlayerBackgroundStyles,
+      onSelect = onMiniPlayerBackgroundChange,
+      onDismiss = { showMiniPlayerBackgroundDialog = false },
     )
   }
 
@@ -2250,14 +2227,6 @@ fun AppearanceSettings(
           )
         }
     )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    val (thumbnailCornerRadius, onThumbnailCornerRadiusChange) =
-      rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 3f)
-
-    var showSensitivityDialog by rememberSaveable { mutableStateOf(false) }
-    var showThumbnailCornerRadiusDialog by rememberSaveable { mutableStateOf(false) }
 
     Spacer(modifier = Modifier.height(16.dp))
 

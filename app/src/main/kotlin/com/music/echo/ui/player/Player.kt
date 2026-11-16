@@ -153,6 +153,7 @@ import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.datastore.preferences.core.edit
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -235,6 +236,7 @@ import iad1tya.echo.music.utils.rememberPreference
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -1613,6 +1615,67 @@ fun BottomSheetPlayer(
     },
   ) {
     val controlsContent: @Composable ColumnScope.(MediaMetadata) -> Unit = { mediaMetadata ->
+      val coroutineScope = rememberCoroutineScope()
+      val dislikedSongs by
+        rememberPreference(key = DislikedSongsKey, defaultValue = emptySet<String>())
+      val isDisliked =
+        remember(dislikedSongs, mediaMetadata.id) {
+          dislikedSongs.any { it.substringBefore("||") == mediaMetadata.id }
+        }
+      val onToggleDislike: () -> Unit = {
+        val id = mediaMetadata.id
+        val title = mediaMetadata.title
+        val artist = mediaMetadata.artists.firstOrNull()?.name.orEmpty()
+        val thumb = mediaMetadata.thumbnailUrl.orEmpty()
+        val entry = "$id||$title||$artist||$thumb"
+
+        coroutineScope.launch {
+          val current = context.dataStore.data.first()[DislikedSongsKey] ?: emptySet()
+          val isCurrentlyDisliked = current.any { it.substringBefore("||") == id }
+          if (isCurrentlyDisliked) {
+            val toRemove = current.filter { it.substringBefore("||") == id }.toSet()
+            context.dataStore.edit { prefs ->
+              val existing = prefs[DislikedSongsKey] ?: emptySet()
+              prefs[DislikedSongsKey] = existing - toRemove
+            }
+            val existingSong = database.song(id).firstOrNull()
+            if (existingSong != null) {
+              database.query {
+                update(existingSong.song.copy(hideFromQuickPicks = false))
+              }
+            }
+            Toast.makeText(context, "Removed from disliked songs", Toast.LENGTH_SHORT).show()
+          } else {
+            context.dataStore.edit { prefs ->
+              val existing = prefs[DislikedSongsKey] ?: emptySet()
+              prefs[DislikedSongsKey] = existing + entry
+            }
+            if (currentSong?.song?.liked == true) {
+              playerConnection.toggleLike()
+            }
+            val existingSong = database.song(id).firstOrNull()
+            if (existingSong != null) {
+              database.query {
+                update(existingSong.song.copy(hideFromQuickPicks = true, liked = false))
+              }
+            }
+            val matchingHistory =
+              database.searchHistory().firstOrNull().orEmpty().filter {
+                it.query.contains(title, ignoreCase = true) ||
+                  title.contains(it.query, ignoreCase = true)
+              }
+            if (matchingHistory.isNotEmpty()) {
+              database.query {
+                matchingHistory.forEach { delete(it) }
+              }
+            }
+            Toast.makeText(context, "Song disliked. Skipped to next track.", Toast.LENGTH_SHORT)
+              .show()
+            playerConnection.player.seekToNext()
+          }
+        }
+      }
+
       val playPauseRoundness by
         animateDpAsState(
           targetValue = if (isPlaying) 24.dp else 36.dp,
@@ -1999,21 +2062,51 @@ fun BottomSheetPlayer(
                   )
                 }
               } else {
-                FilledIconButton(
-                  onClick = playerConnection::toggleLike,
-                  shape = favShape,
-                  colors =
-                    IconButtonDefaults.filledIconButtonColors(
-                      containerColor = textButtonColor,
-                      contentColor = iconButtonColor,
-                    ),
-                  modifier = Modifier.size(42.dp),
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(6.dp),
+                  verticalAlignment = Alignment.CenterVertically,
                 ) {
-                  HeartBurstIcon(
-                    isLiked = currentSong?.song?.liked == true,
-                    iconSize = 24.dp,
-                    unlikedColor = iconButtonColor,
-                  )
+                  FilledIconButton(
+                    onClick = onToggleDislike,
+                    shape = middleShape,
+                    colors =
+                      IconButtonDefaults.filledIconButtonColors(
+                        containerColor =
+                          if (isDisliked)
+                            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f)
+                          else textButtonColor,
+                        contentColor =
+                          if (isDisliked) MaterialTheme.colorScheme.error else iconButtonColor,
+                      ),
+                    modifier = Modifier.size(42.dp),
+                  ) {
+                    Icon(
+                      painter =
+                        painterResource(
+                          if (isDisliked) R.drawable.thumb_down_filled else R.drawable.thumb_down
+                        ),
+                      contentDescription = "Dislike",
+                      tint = if (isDisliked) MaterialTheme.colorScheme.error else iconButtonColor,
+                      modifier = Modifier.size(22.dp),
+                    )
+                  }
+
+                  FilledIconButton(
+                    onClick = playerConnection::toggleLike,
+                    shape = favShape,
+                    colors =
+                      IconButtonDefaults.filledIconButtonColors(
+                        containerColor = textButtonColor,
+                        contentColor = iconButtonColor,
+                      ),
+                    modifier = Modifier.size(42.dp),
+                  ) {
+                    HeartBurstIcon(
+                      isLiked = currentSong?.song?.liked == true,
+                      iconSize = 24.dp,
+                      unlikedColor = iconButtonColor,
+                    )
+                  }
                 }
               }
             }
@@ -2071,7 +2164,32 @@ fun BottomSheetPlayer(
             }
           }
 
-          Spacer(modifier = Modifier.size(12.dp))
+          if (!showInlineLyrics) {
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Box(
+              modifier =
+                Modifier.size(40.dp)
+                  .clip(RoundedCornerShape(24.dp))
+                  .background(
+                    if (isDisliked) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)
+                    else textButtonColor.copy(alpha = 0.2f)
+                  )
+                  .clickable(onClick = onToggleDislike)
+            ) {
+              Icon(
+                painter =
+                  painterResource(
+                    if (isDisliked) R.drawable.thumb_down_filled else R.drawable.thumb_down
+                  ),
+                contentDescription = "Dislike",
+                tint = if (isDisliked) MaterialTheme.colorScheme.error else textButtonColor,
+                modifier = Modifier.align(Alignment.Center).size(22.dp),
+              )
+            }
+          }
+
+          Spacer(modifier = Modifier.size(10.dp))
 
           AnimatedContent(targetState = showInlineLyrics, label = "LikeButton") { showLyrics ->
             if (showLyrics) {

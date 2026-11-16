@@ -28,7 +28,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.Settings
 import android.util.Log
 import echo.music.iad1tya.nullmusic.AudioDeviceBottomSheet
 import android.view.HapticFeedbackConstants
@@ -74,7 +73,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -105,6 +103,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -245,6 +244,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -463,7 +463,7 @@ class MainActivity : ComponentActivity() {
               UpdateNotificationHelper.showUpdateNotification(context, latestVersion)
             }
           },
-          onError = { Log.e("UpdateCheck", "Startup check failed") }
+          onError = { Log.e("UpdateCheck", "Startup check failed") },
         )
       }
     }
@@ -481,7 +481,7 @@ class MainActivity : ComponentActivity() {
             android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
               androidx.core.content.ContextCompat.checkSelfPermission(
                 context,
-                android.Manifest.permission.POST_NOTIFICATIONS
+                android.Manifest.permission.POST_NOTIFICATIONS,
               ) == android.content.pm.PackageManager.PERMISSION_GRANTED
           ) {
 
@@ -494,7 +494,7 @@ class MainActivity : ComponentActivity() {
                 android.app.NotificationChannel(
                   channelId,
                   "Birthday",
-                  android.app.NotificationManager.IMPORTANCE_HIGH
+                  android.app.NotificationManager.IMPORTANCE_HIGH,
                 )
               notificationManager.createNotificationChannel(channel)
             }
@@ -627,7 +627,7 @@ class MainActivity : ComponentActivity() {
           version = availableUpdateVersion,
           changelog = availableUpdateChangelog,
           description = availableUpdateDescription,
-          onDismiss = { showUpdateDialog = false }
+          onDismiss = { showUpdateDialog = false },
         )
       } else {
         whatsNewInfo?.let { info ->
@@ -640,7 +640,7 @@ class MainActivity : ComponentActivity() {
                 BuildConfig.VERSION_NAME,
               )
               whatsNewInfo = null
-            }
+            },
           )
         }
       }
@@ -678,6 +678,13 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(blockedArtists) {
           com.music.innertube.YouTube.blockedArtists = blockedArtists
         }
+        val dislikedSongs by
+          dataStore.data
+            .map { it[DislikedSongsKey] ?: emptySet() }
+            .collectAsState(initial = emptySet())
+        LaunchedEffect(dislikedSongs) {
+          com.music.innertube.YouTube.dislikedSongs = dislikedSongs
+        }
         val homeViewModel: HomeViewModel = hiltViewModel()
         val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -700,8 +707,7 @@ class MainActivity : ComponentActivity() {
           }
         val (useNewMiniPlayerDesign) =
           rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
-        val (musicFlowEnabled) =
-          rememberPreference(MusicFlowEnabledKey, defaultValue = true)
+        val (musicFlowEnabled) = rememberPreference(MusicFlowEnabledKey, defaultValue = true)
         val defaultOpenTab = remember {
           dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
         }
@@ -759,10 +765,8 @@ class MainActivity : ComponentActivity() {
               currentRoute!!.startsWith("artist/")
           }
 
-        val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
-
-        val showRail =
-          isLandscape && !inSearchScreen && currentRoute != "ambient_mode" && currentRoute != "music_flow" && currentRoute != "wrapped" && currentRoute != "podcast_video"
+        // Unified floating pill navigation toolbar across both portrait and landscape views
+        val showRail = false
 
         val navPadding =
           if (shouldShowNavigationBar && !showRail) {
@@ -902,7 +906,7 @@ class MainActivity : ComponentActivity() {
             canScroll = {
               !inSearchScreen &&
                 (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
-            },
+            }
           )
 
         LaunchedEffect(navBackStackEntry) {
@@ -1240,14 +1244,14 @@ class MainActivity : ComponentActivity() {
                         IconButton(onClick = { navController.navigate("history") }) {
                           Icon(
                             painter = painterResource(R.drawable.music_history),
-                            contentDescription = stringResource(R.string.history)
+                            contentDescription = stringResource(R.string.history),
                           )
                         }
                       }
                       IconButton(onClick = { navController.navigate("stats") }) {
                         Icon(
                           painter = painterResource(R.drawable.stats),
-                          contentDescription = stringResource(R.string.stats)
+                          contentDescription = stringResource(R.string.stats),
                         )
                       }
                       if (listenTogetherInTopBar) {
@@ -1256,7 +1260,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                           Icon(
                             painter = painterResource(R.drawable.group_outlined),
-                            contentDescription = stringResource(R.string.together)
+                            contentDescription = stringResource(R.string.together),
                           )
                         }
                     }
@@ -1604,7 +1608,7 @@ class MainActivity : ComponentActivity() {
                               painter = painterResource(R.drawable.settings),
                               contentDescription = stringResource(R.string.account),
                               modifier = Modifier.size(18.dp),
-                              tint = MaterialTheme.colorScheme.onSurface
+                              tint = MaterialTheme.colorScheme.onSurface,
                             )
                           }
                         }
@@ -1617,7 +1621,7 @@ class MainActivity : ComponentActivity() {
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                         titleContentColor = MaterialTheme.colorScheme.onSurface,
                         actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                       ),
                     windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
                     modifier =
@@ -1628,7 +1632,7 @@ class MainActivity : ComponentActivity() {
                         } else {
                           cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
                         }
-                      )
+                      ),
                   )
                 }
               }
@@ -1639,7 +1643,7 @@ class MainActivity : ComponentActivity() {
                   navController,
                   coroutineScope,
                   topAppBarScrollBehavior,
-                  playerBottomSheetState
+                  playerBottomSheetState,
                 ) {
                   { screen: Screens, isSelected: Boolean ->
                     if (playerBottomSheetState.isExpanded) {
@@ -1731,14 +1735,14 @@ class MainActivity : ComponentActivity() {
                                   hiddenOffset * (1 - navBarHeightPx / NavigationBarHeight.toPx())
                                 slideOffset + hideOffset
                               }
-                          }
+                          },
                     )
                   } else {
                     Box(
                       modifier =
                         Modifier.align(Alignment.BottomCenter)
                           .height(navSlideDistance)
-                          .offset(y = navOffsetY),
+                          .offset(y = navOffsetY)
                     ) {
                       FloatingNavigationToolbar(
                         items = navigationItems,
@@ -1776,7 +1780,7 @@ class MainActivity : ComponentActivity() {
                               end = FloatingToolbarHorizontalPadding,
                               bottom = bottomInset + FloatingToolbarBottomPadding,
                             )
-                            .height(NavigationBarHeight)
+                            .height(NavigationBarHeight),
                       )
                     }
 
@@ -1855,7 +1859,7 @@ class MainActivity : ComponentActivity() {
                   } else {
                     Modifier
                   }
-                )
+                ),
           ) {
             Row(Modifier.fillMaxSize()) {
               val onRailItemClick: (Screens, Boolean) -> Unit =
@@ -1863,7 +1867,7 @@ class MainActivity : ComponentActivity() {
                   navController,
                   coroutineScope,
                   topAppBarScrollBehavior,
-                  playerBottomSheetState
+                  playerBottomSheetState,
                 ) {
                   { screen: Screens, isSelected: Boolean ->
                     if (playerBottomSheetState.isExpanded) {
@@ -1908,7 +1912,7 @@ class MainActivity : ComponentActivity() {
                     navController.navigate("settings/ai") { launchSingleTop = true }
                   },
                   aiHubIconRes = R.drawable.ai_pfp,
-                  aiHubContentDescription = stringResource(R.string.ai_lyrics_translation)
+                  aiHubContentDescription = stringResource(R.string.ai_lyrics_translation),
                 )
               }
               Box(Modifier.weight(1f)) {
@@ -1921,10 +1925,12 @@ class MainActivity : ComponentActivity() {
                       else -> Screens.Home
                     }.route,
                   enterTransition = {
-                    val currentRouteIndex =
-                      navigationItems.indexOfFirst { it.route == targetState.destination.route }
-                    val previousRouteIndex =
-                      navigationItems.indexOfFirst { it.route == initialState.destination.route }
+                    val currentRouteIndex = navigationItems.indexOfFirst {
+                      it.route == targetState.destination.route
+                    }
+                    val previousRouteIndex = navigationItems.indexOfFirst {
+                      it.route == initialState.destination.route
+                    }
 
                     if (currentRouteIndex == -1 || currentRouteIndex > previousRouteIndex)
                       slideInHorizontally(animationSpec = tween(400, easing = EmphasizedEasing)) {
@@ -1936,10 +1942,12 @@ class MainActivity : ComponentActivity() {
                       } + fadeIn(tween(400, easing = EmphasizedEasing))
                   },
                   exitTransition = {
-                    val currentRouteIndex =
-                      navigationItems.indexOfFirst { it.route == initialState.destination.route }
-                    val targetRouteIndex =
-                      navigationItems.indexOfFirst { it.route == targetState.destination.route }
+                    val currentRouteIndex = navigationItems.indexOfFirst {
+                      it.route == initialState.destination.route
+                    }
+                    val targetRouteIndex = navigationItems.indexOfFirst {
+                      it.route == targetState.destination.route
+                    }
 
                     if (targetRouteIndex == -1 || targetRouteIndex > currentRouteIndex)
                       slideOutHorizontally(animationSpec = tween(400, easing = EmphasizedEasing)) {
@@ -1951,10 +1959,12 @@ class MainActivity : ComponentActivity() {
                       } + fadeOut(tween(400, easing = EmphasizedEasing))
                   },
                   popEnterTransition = {
-                    val currentRouteIndex =
-                      navigationItems.indexOfFirst { it.route == targetState.destination.route }
-                    val previousRouteIndex =
-                      navigationItems.indexOfFirst { it.route == initialState.destination.route }
+                    val currentRouteIndex = navigationItems.indexOfFirst {
+                      it.route == targetState.destination.route
+                    }
+                    val previousRouteIndex = navigationItems.indexOfFirst {
+                      it.route == initialState.destination.route
+                    }
 
                     if (previousRouteIndex != -1 && previousRouteIndex < currentRouteIndex)
                       slideInHorizontally(animationSpec = tween(400, easing = EmphasizedEasing)) {
@@ -1966,10 +1976,12 @@ class MainActivity : ComponentActivity() {
                       } + fadeIn(tween(400, easing = EmphasizedEasing))
                   },
                   popExitTransition = {
-                    val currentRouteIndex =
-                      navigationItems.indexOfFirst { it.route == initialState.destination.route }
-                    val targetRouteIndex =
-                      navigationItems.indexOfFirst { it.route == targetState.destination.route }
+                    val currentRouteIndex = navigationItems.indexOfFirst {
+                      it.route == initialState.destination.route
+                    }
+                    val targetRouteIndex = navigationItems.indexOfFirst {
+                      it.route == targetState.destination.route
+                    }
 
                     if (currentRouteIndex != -1 && currentRouteIndex < targetRouteIndex)
                       slideOutHorizontally(animationSpec = tween(400, easing = EmphasizedEasing)) {
@@ -1982,13 +1994,13 @@ class MainActivity : ComponentActivity() {
                   },
                   modifier =
                     Modifier.layerBackdrop(appBackdrop)
-                      .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                      .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
                 ) {
                   navigationBuilder(
                     navController = navController,
                     scrollBehavior = topAppBarScrollBehavior,
                     activity = this@MainActivity,
-                    snackbarHostState = snackbarHostState
+                    snackbarHostState = snackbarHostState,
                   )
                 }
               }
@@ -1997,18 +2009,16 @@ class MainActivity : ComponentActivity() {
 
           BottomSheetMenu(
             state = LocalMenuState.current,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
           )
 
           BottomSheetPage(
             state = LocalBottomSheetPageState.current,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
           )
 
           if (showAudioDeviceBottomSheet) {
-            AudioDeviceBottomSheet(
-              onDismiss = { showAudioDeviceBottomSheet = false }
-            )
+            AudioDeviceBottomSheet(onDismiss = { showAudioDeviceBottomSheet = false })
           }
 
           sharedSong?.let { song ->
@@ -2023,9 +2033,7 @@ class MainActivity : ComponentActivity() {
                   color = AlertDialogDefaults.containerColor,
                   tonalElevation = AlertDialogDefaults.TonalElevation,
                 ) {
-                  Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                  ) {
+                  Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     YouTubeSongMenu(
                       song = song,
                       navController = navController,
@@ -2046,7 +2054,7 @@ class MainActivity : ComponentActivity() {
             onResolveStreamUrl = { ringtoneViewModel.getStreamUrl(this@MainActivity, it) },
             onConfirm = { start, end ->
               ringtoneViewModel.setAsRingtone(this@MainActivity, start, end)
-            }
+            },
           )
 
           if (ringtoneUiState.showProgress) {
@@ -2057,7 +2065,7 @@ class MainActivity : ComponentActivity() {
               isComplete = ringtoneUiState.isComplete,
               isSuccess = ringtoneUiState.isSuccess,
               onDismiss = { ringtoneViewModel.dismissProgress() },
-              onOpenSettings = { ringtoneViewModel.openRingtoneSettings(this@MainActivity) }
+              onOpenSettings = { ringtoneViewModel.openRingtoneSettings(this@MainActivity) },
             )
           }
 
@@ -2068,7 +2076,7 @@ class MainActivity : ComponentActivity() {
                 showSettingDialoge = false
                 navController.navigate(route)
               },
-              homeViewModel = homeViewModel
+              homeViewModel = homeViewModel,
             )
           }
 
@@ -2101,7 +2109,7 @@ class MainActivity : ComponentActivity() {
                   spread = 60,
                   colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
                   emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(0.5, 1.0)
+                  position = Position.Relative(0.5, 1.0),
                 ),
                 Party(
                   speed = 30f,
@@ -2111,7 +2119,7 @@ class MainActivity : ComponentActivity() {
                   spread = 45,
                   colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
                   emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(0.0, 1.0)
+                  position = Position.Relative(0.0, 1.0),
                 ),
                 Party(
                   speed = 30f,
@@ -2121,8 +2129,8 @@ class MainActivity : ComponentActivity() {
                   spread = 45,
                   colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
                   emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(1.0, 1.0)
-                )
+                  position = Position.Relative(1.0, 1.0),
+                ),
               )
             }
             KonfettiView(
@@ -2132,11 +2140,11 @@ class MainActivity : ComponentActivity() {
                 object : OnParticleSystemUpdateListener {
                   override fun onParticleSystemEnded(
                     system: nl.dionsegijn.konfetti.core.PartySystem,
-                    activeSystems: Int
+                    activeSystems: Int,
                   ) {
                     if (activeSystems == 0) showPartyBomb = false
                   }
-                }
+                },
             )
           }
         }
@@ -2182,7 +2190,7 @@ class MainActivity : ComponentActivity() {
           android.widget.Toast.makeText(
               this,
               R.string.invalid_playlist_url,
-              android.widget.Toast.LENGTH_SHORT
+              android.widget.Toast.LENGTH_SHORT,
             )
             .show()
         } else {
@@ -2191,7 +2199,9 @@ class MainActivity : ComponentActivity() {
               YouTube.albumSongs(playlistId)
                 .onSuccess { songs ->
                   songs.firstOrNull()?.album?.id?.let { browseId ->
-                    withContext(Dispatchers.Main) { navController.navigate("album/${URLEncoder.encode(browseId, "UTF-8")}") }
+                    withContext(Dispatchers.Main) {
+                      navController.navigate("album/${URLEncoder.encode(browseId, "UTF-8")}")
+                    }
                   }
                 }
                 .onFailure { reportException(it) }
@@ -2201,9 +2211,15 @@ class MainActivity : ComponentActivity() {
           }
         }
       }
-      "browse" -> uri.lastPathSegment?.let { browseId -> navController.navigate("album/${URLEncoder.encode(browseId, "UTF-8")}") }
+      "browse" ->
+        uri.lastPathSegment?.let { browseId ->
+          navController.navigate("album/${URLEncoder.encode(browseId, "UTF-8")}")
+        }
       "channel",
-      "c" -> uri.lastPathSegment?.let { artistId -> navController.navigate("artist/${URLEncoder.encode(artistId, "UTF-8")}") }
+      "c" ->
+        uri.lastPathSegment?.let { artistId ->
+          navController.navigate("artist/${URLEncoder.encode(artistId, "UTF-8")}")
+        }
       "search" -> {
         uri.getQueryParameter("q")?.let {
           navController.navigate("search/${URLEncoder.encode(it, "UTF-8")}")
@@ -2233,7 +2249,7 @@ class MainActivity : ComponentActivity() {
                   playerConnection?.playQueue(
                     YouTubeQueue(
                       WatchEndpoint(videoId = queue.firstOrNull()?.id, playlistId = playlistId),
-                      queue.firstOrNull()?.toMediaMetadata()
+                      queue.firstOrNull()?.toMediaMetadata(),
                     )
                   )
                 }
@@ -2254,7 +2270,7 @@ class MainActivity : ComponentActivity() {
                   playerConnection?.playQueue(
                     YouTubeQueue(
                       WatchEndpoint(videoId = firstItem?.id, playlistId = playlistId),
-                      firstItem?.toMediaMetadata()
+                      firstItem?.toMediaMetadata(),
                     )
                   )
                 }

@@ -21,7 +21,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.net.ConnectivityManager
 import android.os.Binder
 import android.os.Build
-import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
@@ -1554,7 +1553,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
           .build()
       startForeground(NOTIFICATION_ID, notification)
     } catch (e: Exception) {
-      Timber.tag(TAG).e(e, "Failed to create foreground notification")
+      Timber.tag(TAG).e(e, "Failed to create notification channel")
       reportException(e)
     }
 

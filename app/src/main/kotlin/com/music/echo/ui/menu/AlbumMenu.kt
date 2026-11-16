@@ -5,6 +5,7 @@ package iad1tya.echo.music.ui.menu
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -108,6 +109,18 @@ fun AlbumMenu(
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { database.albumSongs(album.id).collect { songs = it } }
+
+  val exclusions by
+    database.recommendationExclusionDao.observeAll().collectAsState(initial = emptyList())
+  val albumTrackKeys =
+    remember(songs) {
+      songs.map { song -> trackKeyOf(song.song.title, song.artists.joinToString(", ") { it.name }) }
+    }
+  val isAlbumExcluded =
+    remember(albumTrackKeys, exclusions) {
+      albumTrackKeys.isNotEmpty() &&
+        exclusions.map { it.trackKey }.toSet().containsAll(albumTrackKeys)
+    }
 
   var downloadState by remember { mutableIntStateOf(STATE_STOPPED) }
 
@@ -608,6 +621,60 @@ fun AlbumMenu(
                     database.transaction { update(album.album, it, album.artists) }
                   }
                 }
+              }
+            ),
+            Material3MenuItemData(
+              title = {
+                Text(
+                  text = if (isAlbumExcluded) "Allow in recommendations" else "Never recommend again"
+                )
+              },
+              description = {
+                Text(
+                  text =
+                    if (isAlbumExcluded) "Remove album exclusion from taste recommendations"
+                    else "Exclude album from local taste recommendations"
+                )
+              },
+              icon = {
+                Icon(
+                  painter = painterResource(if (isAlbumExcluded) R.drawable.remove else R.drawable.close),
+                  contentDescription = null,
+                )
+              },
+              onClick = {
+                val wasExcluded = isAlbumExcluded
+                val albumSongs = songs
+                scope.launch(Dispatchers.IO) {
+                  if (wasExcluded) {
+                    albumSongs.forEach { song ->
+                      database.recommendationExclusionDao.delete(
+                        trackKeyOf(song.song.title, song.artists.joinToString(", ") { it.name })
+                      )
+                    }
+                  } else {
+                    val now = System.currentTimeMillis()
+                    database.recommendationExclusionDao.upsertAll(
+                      albumSongs.map { song ->
+                        val artistName = song.artists.joinToString(", ") { it.name }
+                        RecommendationExclusionEntity(
+                          trackKey = trackKeyOf(song.song.title, artistName),
+                          excludedAtMillis = now,
+                          trackName = song.song.title,
+                          artistName = artistName,
+                        )
+                      }
+                    )
+                  }
+                }
+                Toast.makeText(
+                    context,
+                    if (wasExcluded) "Album re-allowed in recommendations"
+                    else "Album excluded from recommendations",
+                    Toast.LENGTH_SHORT
+                  )
+                  .show()
+                onDismiss()
               }
             )
           )

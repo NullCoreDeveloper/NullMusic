@@ -29,7 +29,7 @@ android {
     minSdk = 26
     targetSdk = 36
     versionCode = 168
-    versionName = "1.4.7"
+    versionName = "1.4.6"
 
     defaultConfig {
         applicationId = "com.nullcore.music"

@@ -363,7 +363,7 @@ private fun WordLevelCanvasLyrics(
   val isGlow = animationStyle == LyricsAnimationStyle.GLOW
   val isFade = animationStyle == LyricsAnimationStyle.FADE
   val isNone = animationStyle == LyricsAnimationStyle.NONE
-  val isFluid = animationStyle == LyricsAnimationStyle.echomusic_1 || animationStyle == LyricsAnimationStyle.LYRICS_V2
+  val isFluid = animationStyle == LyricsAnimationStyle.nullmusic_1 || animationStyle == LyricsAnimationStyle.LYRICS_V2
 
   val density = LocalDensity.current
   val textMeasurer = rememberTextMeasurer()

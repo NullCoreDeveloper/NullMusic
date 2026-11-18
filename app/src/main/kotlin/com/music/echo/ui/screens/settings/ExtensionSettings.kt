@@ -217,13 +217,13 @@ fun ExtensionSettingsScreen(
                 )
             )
         )
-        
+
         Spacer(Modifier.height(32.dp))
 
         if (showDialog) {
             var name by remember { mutableStateOf(androidx.compose.ui.text.input.TextFieldValue("")) }
             var url by remember { mutableStateOf(androidx.compose.ui.text.input.TextFieldValue("")) }
-            
+
             echo.music.iad1tya.ui.component.TextFieldDialog(
                 title = { Text("Add Extension") },
                 textFields = listOf("Name" to name, "Server URL" to url),

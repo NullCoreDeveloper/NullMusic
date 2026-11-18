@@ -358,7 +358,7 @@ fun BottomSheetPlayer(
   val dataSaverEnabled by
     rememberPreference(key = echo.music.iad1tya.constants.DataSaverEnabledKey, defaultValue = false)
   val enableCanvasPref by rememberPreference(CanvasThumbnailAnimationKey, defaultValue = false)
-  val enableCanvas = if (dataSaverEnabled) false else enableCanvasPref
+  val enableCanvas = if (dataSaverEnabled || isEpisode) false else enableCanvasPref
 
   val shouldUseDarkButtonColors =
     remember(playerBackground, useDarkTheme) {
@@ -777,8 +777,8 @@ fun BottomSheetPlayer(
   var canvasArtwork by remember(mediaMetadata?.id) { mutableStateOf<CanvasArtwork?>(null) }
   var canvasFetchInFlight by remember(mediaMetadata?.id) { mutableStateOf(false) }
 
-  LaunchedEffect(mediaMetadata?.id, playerBackground, enableCanvas) {
-    if (playerBackground != PlayerBackgroundStyle.APPLE_MUSIC || !enableCanvas) {
+  LaunchedEffect(mediaMetadata?.id, playerBackground, enableCanvas, isEpisode) {
+    if (isEpisode || playerBackground != PlayerBackgroundStyle.APPLE_MUSIC || !enableCanvas) {
       canvasArtwork = null
       return@LaunchedEffect
     }
@@ -1047,6 +1047,12 @@ fun BottomSheetPlayer(
   var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
   var showInlineLyrics by rememberSaveable { mutableStateOf(false) }
+
+  LaunchedEffect(isEpisode) {
+    if (isEpisode) {
+      showInlineLyrics = false
+    }
+  }
 
   var isFullScreen by rememberSaveable { mutableStateOf(false) }
 
@@ -1462,7 +1468,7 @@ fun BottomSheetPlayer(
                       modifier = Modifier.fillMaxSize(),
                     )
 
-                    if (enableCanvas && canvasArtwork != null && showCanvas) {
+                    if (!isEpisode && enableCanvas && canvasArtwork != null && showCanvas) {
                       CanvasArtworkPlayer(
                         primaryUrl = canvasArtwork?.animated,
                         fallbackUrl = canvasArtwork?.videoUrl,
@@ -3641,35 +3647,42 @@ fun BottomSheetPlayer(
               }
             }
 
-            PlayerTopPill(
-              modifier = Modifier.align(Alignment.TopCenter).zIndex(10f).padding(top = 8.dp),
-              selectedOption = PlayerPillOption.SONG,
-              onOptionSelected = { option ->
-                when (option) {
-                  PlayerPillOption.SONG -> {}
-                  PlayerPillOption.VIDEO -> {
-                    if (isLocalMedia) {
-                      Toast.makeText(
-                          context,
-                          "Video unavailable for local tracks",
-                          Toast.LENGTH_SHORT,
-                        )
-                        .show()
-                    } else {
-                      navController.navigate("podcast_video") { launchSingleTop = true }
+            androidx.compose.animation.AnimatedVisibility(
+              visible = !showInlineLyrics,
+              enter = fadeIn(),
+              exit = fadeOut(),
+              modifier = Modifier.align(Alignment.TopCenter).zIndex(10f),
+            ) {
+              PlayerTopPill(
+                modifier = Modifier.padding(top = 8.dp),
+                selectedOption = PlayerPillOption.SONG,
+                onOptionSelected = { option ->
+                  when (option) {
+                    PlayerPillOption.SONG -> {}
+                    PlayerPillOption.VIDEO -> {
+                      if (isLocalMedia) {
+                        Toast.makeText(
+                            context,
+                            "Video unavailable for local tracks",
+                            Toast.LENGTH_SHORT,
+                          )
+                          .show()
+                      } else {
+                        navController.navigate("podcast_video") { launchSingleTop = true }
+                      }
+                    }
+                    PlayerPillOption.MUSIC_FLOW -> {
+                      navController.navigate("music_flow") { launchSingleTop = true }
+                      state.collapseSoft()
                     }
                   }
-                  PlayerPillOption.MUSIC_FLOW -> {
-                    navController.navigate("music_flow") { launchSingleTop = true }
-                    state.collapseSoft()
-                  }
-                }
-              },
-              isLightBackground = isTopLight,
-              musicFlowEnabled = musicFlowEnabled && !isEpisode,
-              firstTabTitle = if (isEpisode) "Episode" else "Song",
-              firstTabIcon = if (isEpisode) R.drawable.radio else R.drawable.music_note,
-            )
+                },
+                isLightBackground = isTopLight,
+                musicFlowEnabled = musicFlowEnabled && !isEpisode,
+                firstTabTitle = if (isEpisode) "Episode" else "Song",
+                firstTabIcon = if (isEpisode) R.drawable.radio else R.drawable.music_note,
+              )
+            }
           }
 
           Column(
@@ -3681,7 +3694,7 @@ fun BottomSheetPlayer(
           ) {
             Spacer(Modifier.weight(1f))
 
-            if (showLyricsOnPlayer && !showInlineLyrics) {
+            if (showLyricsOnPlayer && !showInlineLyrics && !isEpisode) {
               PlayerSyncedLyricsView(
                 mediaMetadata = mediaMetadata,
                 positionProvider = { effectivePosition },
@@ -3738,42 +3751,47 @@ fun BottomSheetPlayer(
               }
             }
 
-            PlayerTopPill(
-              modifier =
-                Modifier.align(Alignment.TopCenter)
-                  .zIndex(10f)
-                  .statusBarsPadding()
-                  .padding(top = 10.dp),
-              selectedOption = PlayerPillOption.SONG,
-              onOptionSelected = { option ->
-                when (option) {
-                  PlayerPillOption.SONG -> {}
-                  PlayerPillOption.VIDEO -> {
-                    if (isLocalMedia) {
-                      Toast.makeText(
-                          context,
-                          "Video unavailable for local tracks",
-                          Toast.LENGTH_SHORT,
-                        )
-                        .show()
-                    } else {
-                      navController.navigate("podcast_video") { launchSingleTop = true }
+            androidx.compose.animation.AnimatedVisibility(
+              visible = !showInlineLyrics,
+              enter = fadeIn(),
+              exit = fadeOut(),
+              modifier = Modifier.align(Alignment.TopCenter).zIndex(10f),
+            ) {
+              PlayerTopPill(
+                modifier =
+                  Modifier.statusBarsPadding()
+                    .padding(top = 10.dp),
+                selectedOption = PlayerPillOption.SONG,
+                onOptionSelected = { option ->
+                  when (option) {
+                    PlayerPillOption.SONG -> {}
+                    PlayerPillOption.VIDEO -> {
+                      if (isLocalMedia) {
+                        Toast.makeText(
+                            context,
+                            "Video unavailable for local tracks",
+                            Toast.LENGTH_SHORT,
+                          )
+                          .show()
+                      } else {
+                        navController.navigate("podcast_video") { launchSingleTop = true }
+                      }
+                    }
+                    PlayerPillOption.MUSIC_FLOW -> {
+                      navController.navigate("music_flow") { launchSingleTop = true }
+                      state.collapseSoft()
                     }
                   }
-                  PlayerPillOption.MUSIC_FLOW -> {
-                    navController.navigate("music_flow") { launchSingleTop = true }
-                    state.collapseSoft()
-                  }
-                }
-              },
-              isLightBackground = isTopLight,
-              musicFlowEnabled = musicFlowEnabled && !isEpisode,
-              firstTabTitle = if (isEpisode) "Episode" else "Song",
-              firstTabIcon = if (isEpisode) R.drawable.radio else R.drawable.music_note,
-            )
+                },
+                isLightBackground = isTopLight,
+                musicFlowEnabled = musicFlowEnabled && !isEpisode,
+                firstTabTitle = if (isEpisode) "Episode" else "Song",
+                firstTabIcon = if (isEpisode) R.drawable.radio else R.drawable.music_note,
+              )
+            }
           }
 
-          if (showLyricsOnPlayer && !showInlineLyrics) {
+          if (showLyricsOnPlayer && !showInlineLyrics && !isEpisode) {
             PlayerSyncedLyricsView(
               mediaMetadata = mediaMetadata,
               positionProvider = { effectivePosition },
@@ -3813,6 +3831,7 @@ fun BottomSheetPlayer(
         pureBlack = pureBlack,
         showInlineLyrics = showInlineLyrics,
         playerBackground = playerBackground,
+        isEpisode = isEpisode,
         onToggleLyrics = { showInlineLyrics = !showInlineLyrics },
       )
     }
@@ -4081,15 +4100,13 @@ fun PlayerTopPill(
   firstTabTitle: String = "Song",
   firstTabIcon: Int = R.drawable.music_note,
 ) {
-  val pillContentColor = if (isLightBackground) Color(0xFF1A1A1A) else Color.White
+  // Frosted translucent glass styling: optimal blend with background media and maximum readability
+  val pillContentColor = Color.White
   val pillContainerColor =
-    if (isLightBackground) Color.White.copy(alpha = 0.88f) else Color.Black.copy(alpha = 0.45f)
-  val pillBorderColor =
-    if (isLightBackground) Color.Black.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.22f)
-  val selectedBgColor =
-    if (isLightBackground) Color.Black.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.22f)
-  val unselectedContentColor =
-    if (isLightBackground) Color.Black.copy(alpha = 0.65f) else Color.White.copy(alpha = 0.75f)
+    Color.Black.copy(alpha = if (isLightBackground) 0.38f else 0.34f)
+  val pillBorderColor = Color.White.copy(alpha = 0.18f)
+  val selectedBgColor = Color.White.copy(alpha = 0.22f)
+  val unselectedContentColor = Color.White.copy(alpha = 0.72f)
 
   Surface(
     shape = CircleShape,
@@ -4100,7 +4117,7 @@ fun PlayerTopPill(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(3.dp),
+      modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
     ) {
       PillTabItem(
         title = firstTabTitle,
@@ -4163,21 +4180,21 @@ private fun PillTabItem(
       Modifier.clip(CircleShape)
         .then(backgroundModifier)
         .clickable(role = Role.Tab, onClick = onClick)
-        .padding(horizontal = 10.dp, vertical = 5.dp),
+        .padding(horizontal = 13.dp, vertical = 7.dp),
   ) {
     Icon(
       painter = painterResource(icon),
       contentDescription = null,
       tint = if (isSelected) contentColor else unselectedContentColor,
-      modifier = Modifier.size(13.dp),
+      modifier = Modifier.size(15.dp),
     )
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(5.dp))
     Text(
       text = title,
       style =
         MaterialTheme.typography.labelSmall.copy(
           fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-          fontSize = 11.5.sp,
+          fontSize = 12.sp,
           letterSpacing = 0.2.sp,
         ),
       color = if (isSelected) contentColor else unselectedContentColor,

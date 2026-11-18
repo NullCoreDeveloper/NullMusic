@@ -366,8 +366,12 @@ object YouTube {
       shelves.drop(1)
   }
 
-  suspend fun search(query: String, filter: SearchFilter): Result<SearchResult> = runCatching {
-    val response = innerTube.search(WEB_REMIX, query, filter.value).body<SearchResponse>()
+  suspend fun search(
+    query: String,
+    filter: SearchFilter,
+    setLogin: Boolean? = null,
+  ): Result<SearchResult> = runCatching {
+    val response = innerTube.search(WEB_REMIX, query, filter.value, setLogin = setLogin).body<SearchResponse>()
     val musicShelfRenderer =
       response.contents
         ?.tabbedSearchResultsRenderer
@@ -1351,6 +1355,7 @@ object YouTube {
         .orEmpty()
         .mapNotNull { it.musicCarouselShelfRenderer }
         .mapNotNull { HomePage.Section.fromMusicCarouselShelfRenderer(it) }
+        .filterNot { it.isStationListenTogether }
         .toMutableList()
     val chips =
       sectionListRender?.header?.chipCloudRenderer?.chips?.mapNotNull {
@@ -1370,6 +1375,7 @@ object YouTube {
         ?.contents
         ?.mapNotNull { it.musicCarouselShelfRenderer }
         ?.mapNotNull { HomePage.Section.fromMusicCarouselShelfRenderer(it) }
+        ?.filterNot { it.isStationListenTogether }
         .orEmpty(),
       continuation,
     )

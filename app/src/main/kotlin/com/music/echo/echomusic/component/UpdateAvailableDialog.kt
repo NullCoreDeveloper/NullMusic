@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import echo.music.iad1tya.R
 import echo.music.iad1tya.nullmusic.updater.ChangelogSection
 import echo.music.iad1tya.ui.utils.parseSimpleMarkdown
+import echo.music.iad1tya.ui.utils.safeOpenUri
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 
 /**

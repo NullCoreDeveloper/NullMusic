@@ -279,11 +279,7 @@ fun ChangelogItem(
         text = annotatedText,
         onClick = { offset ->
           annotatedText.getStringAnnotations("URL", offset, offset).firstOrNull()?.let {
-            ContextCompat.startActivity(
-              context,
-              Intent(Intent.ACTION_VIEW, Uri.parse(it.item)),
-              null
-            )
+            context.safeOpenUri(it.item)
           }
         },
         style =

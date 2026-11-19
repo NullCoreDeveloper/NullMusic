@@ -1083,13 +1083,9 @@ private fun ThumbnailItem(
                           ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                     }
 
+                // Only a real canvas: without one the cover stays. A video of the song from YouTube
+                // was most often its still cover or an audio upload, zoomed in and softer.
                 genuineCanvas
-                  ?: YouTubeVideoCanvasProvider.getCanvasForVideo(
-                    videoId = item.mediaId,
-                    title = songTitleRaw.ifBlank { songTitle },
-                    artist = artistNameRaw.ifBlank { artistName },
-                    durationSec = playerDurationSec ?: duration?.toLong(),
-                  )
               }
 
             val requestedArtist = item.mediaMetadata.artist?.toString() ?: ""
@@ -1218,9 +1214,11 @@ private fun ThumbnailImage(
       error = painterResource(R.drawable.ic_launcher_nobg),
       fallback = painterResource(R.drawable.ic_launcher_nobg),
       onError = {
+        // Walk the same ladder the loader uses: maxresdefault -> hq720 -> hqdefault, instead of
+        // dropping straight to the 480x360 variant that looks soft and squashed on a phone.
         val url = currentUrl
-        if (url != null && url.contains("maxresdefault.jpg")) {
-          currentUrl = url.replace("maxresdefault.jpg", "hqdefault.jpg")
+        if (url != null) {
+          ytimgFallbackUrl(url)?.let { currentUrl = it }
         }
       },
       modifier = Modifier.fillMaxSize(),

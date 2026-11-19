@@ -419,7 +419,7 @@ private fun formatMessageWithLinks(text: String): AnnotatedString {
               context.startActivity(intent)
               Toast.makeText(context, "Playing now", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-              context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+              context.safeOpenUri(url)
             }
           }
         )

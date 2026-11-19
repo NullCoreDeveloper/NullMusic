@@ -29,14 +29,14 @@ android {
     minSdk = 26
     targetSdk = 36
     versionCode = 168
-    versionName = "1.4.6"
+    versionName = "1.4.8"
 
     defaultConfig {
         applicationId = "com.nullcore.music"
         minSdk = 26
         targetSdk = 36
         versionCode = 525
-        versionName = "1.4.6"
+        versionName = "1.4.8"
 
     // LastFM API keys from GitHub Secrets
     val lastFmKey = "266d77b5790e413ada7e41ef100d017a"

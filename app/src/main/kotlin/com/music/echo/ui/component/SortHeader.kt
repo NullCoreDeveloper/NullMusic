@@ -86,8 +86,8 @@ inline fun <reified T : Enum<T>> SortHeader(
           state = rememberTooltipState(),
         ) {
           SplitButtonDefaults.TrailingButton(
-            checked = sortDescending,
-            onCheckedChange = { onSortDescendingChange(it) },
+            checked = false,
+            onCheckedChange = { onSortDescendingChange(!sortDescending) },
             colors =
               ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

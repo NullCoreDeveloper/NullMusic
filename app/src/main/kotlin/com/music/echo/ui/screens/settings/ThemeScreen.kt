@@ -98,14 +98,12 @@ fun ThemeScreen(navController: NavController, highlightKey: String? = null) {
   }
   val (selectedThemeColorInt, onSelectedThemeColorChange) =
     rememberPreference(SelectedThemeColorKey, DefaultThemeColor.toArgb())
-  val (_, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = true)
 
   val selectedThemeColor = Color(selectedThemeColorInt)
 
   val handleColorSelection: (Color) -> Unit = { color ->
     onMonochromeChange(false)
     onSelectedThemeColorChange(color.toArgb())
-    onDynamicThemeChange(color == DefaultThemeColor)
   }
 
   Scaffold(

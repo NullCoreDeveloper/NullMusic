@@ -129,6 +129,8 @@ fun currentGridThumbnailHeight(): Dp {
   return if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
 }
 
+// Rows sit on the background by default, as on YouTube Music: the filled cards with dividers
+// made every list heavier than the covers around it. A caller can still pass a color.
 @Composable
 inline fun ListItem(
   modifier: Modifier = Modifier,
@@ -142,7 +144,7 @@ inline fun ListItem(
   shape: Shape = RectangleShape,
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   verticalPadding: Dp = 2.dp,
 ) {
   Row(
@@ -221,7 +223,7 @@ fun ListItem(
   shape: Shape = RectangleShape,
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   verticalPadding: Dp = 2.dp,
 ) =
   ListItem(
@@ -262,7 +264,7 @@ fun ListItem(
   shape: Shape = RectangleShape,
   drawHighlight: Boolean = true,
   horizontalPadding: Dp = 16.dp,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   verticalPadding: Dp = 2.dp,
 ) =
   ListItem(
@@ -406,7 +408,7 @@ fun SongListItem(
   trailingContent: @Composable RowScope.() -> Unit = {},
   drawHighlight: Boolean = true,
   shape: Shape = RectangleShape,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   horizontalPadding: Dp = 16.dp,
 ) {
   val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = true)
@@ -531,7 +533,7 @@ fun SongGridItem(
 fun ArtistListItem(
   artist: Artist,
   modifier: Modifier = Modifier,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   shape: Shape = RectangleShape,
   badges: @Composable RowScope.() -> Unit = {
     if (artist.artist.bookmarkedAt != null) {
@@ -606,7 +608,7 @@ fun ArtistGridItem(
 fun AlbumListItem(
   album: Album,
   modifier: Modifier = Modifier,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   shape: Shape = RectangleShape,
   showLikedIcon: Boolean = true,
   badges: @Composable RowScope.() -> Unit = {
@@ -769,7 +771,7 @@ fun AlbumGridItem(
 fun PlaylistListItem(
   playlist: Playlist,
   modifier: Modifier = Modifier,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   autoPlaylist: Boolean = false,
   badges: @Composable RowScope.() -> Unit = {
     val downloadUtil = LocalDownloadUtil.current
@@ -983,7 +985,7 @@ fun MediaMetadataListItem(
   isActive: Boolean = false,
   isPlaying: Boolean = false,
   shape: Shape = RectangleShape,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   verticalPadding: Dp = 2.dp,
   trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
@@ -1032,7 +1034,7 @@ fun MediaMetadataListItem(
 fun YouTubeListItem(
   item: YTItem,
   modifier: Modifier = Modifier,
-  color: Color = MaterialTheme.colorScheme.surfaceContainer,
+  color: Color = Color.Transparent,
   albumIndex: Int? = null,
   isSelected: Boolean = false,
   isActive: Boolean = false,
@@ -1125,6 +1127,7 @@ fun YouTubeListItem(
         isSelected = isSelected,
         isActive = isActive,
         shape = shape,
+        color = color,
         drawHighlight = drawHighlight
       )
     } else {
@@ -1138,6 +1141,7 @@ fun YouTubeListItem(
         isSelected = isSelected,
         isActive = isActive,
         shape = shape,
+        color = color,
         drawHighlight = drawHighlight
       )
     }

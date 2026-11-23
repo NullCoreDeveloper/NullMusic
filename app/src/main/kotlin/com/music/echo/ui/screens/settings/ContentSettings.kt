@@ -240,6 +240,12 @@ fun ContentSettings(
     rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
   val (showSpeedDial, onShowSpeedDialChange) =
     rememberPreference(key = ShowSpeedDialKey, defaultValue = true)
+  val (showHomeHeroCarousel, onShowHomeHeroCarouselChange) =
+    rememberPreference(key = ShowHomeHeroCarouselKey, defaultValue = true)
+  val (showHomeCommunity, onShowHomeCommunityChange) =
+    rememberPreference(key = ShowHomeCommunityKey, defaultValue = false)
+  val (showHomeMoodAndGenres, onShowHomeMoodAndGenresChange) =
+    rememberPreference(key = ShowHomeMoodAndGenresKey, defaultValue = false)
   val (randomizeHomeOrder, onRandomizeHomeOrderChange) =
     rememberPreference(RandomizeHomeOrderKey, defaultValue = false)
   val (ipVersion, onIpVersionChange) =
@@ -1192,8 +1198,8 @@ fun ContentSettings(
           Material3SettingsItem(
             isHighlighted = (highlightKey == "Speed Dial"),
             icon = painterResource(R.drawable.grid_view),
-            title = { Text("Speed Dial") },
-            description = { Text("Show Speed Dial on the Home Screen") },
+            title = { Text(stringResource(R.string.home_shortcuts)) },
+            description = { Text(stringResource(R.string.home_shortcuts_desc)) },
             trailingContent = {
               Switch(
                 checked = showSpeedDial,
@@ -1206,6 +1212,60 @@ fun ContentSettings(
               )
             },
             onClick = { onShowSpeedDialChange(!showSpeedDial) },
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.home_featured_carousel)),
+            icon = painterResource(R.drawable.album),
+            title = { Text(stringResource(R.string.home_featured_carousel)) },
+            description = { Text(stringResource(R.string.home_featured_carousel_desc)) },
+            trailingContent = {
+              Switch(
+                checked = showHomeHeroCarousel,
+                onCheckedChange = { onShowHomeHeroCarouselChange(it) },
+                colors =
+                  SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                  ),
+              )
+            },
+            onClick = { onShowHomeHeroCarouselChange(!showHomeHeroCarousel) },
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.from_the_community)),
+            icon = painterResource(R.drawable.group_outlined),
+            title = { Text(stringResource(R.string.from_the_community)) },
+            description = { Text(stringResource(R.string.home_community_desc)) },
+            trailingContent = {
+              Switch(
+                checked = showHomeCommunity,
+                onCheckedChange = { onShowHomeCommunityChange(it) },
+                colors =
+                  SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                  ),
+              )
+            },
+            onClick = { onShowHomeCommunityChange(!showHomeCommunity) },
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.mood_and_genres)),
+            icon = painterResource(R.drawable.explore_outlined),
+            title = { Text(stringResource(R.string.mood_and_genres)) },
+            description = { Text(stringResource(R.string.home_mood_and_genres_desc)) },
+            trailingContent = {
+              Switch(
+                checked = showHomeMoodAndGenres,
+                onCheckedChange = { onShowHomeMoodAndGenresChange(it) },
+                colors =
+                  SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                  ),
+              )
+            },
+            onClick = { onShowHomeMoodAndGenresChange(!showHomeMoodAndGenres) },
           ),
         ),
     )

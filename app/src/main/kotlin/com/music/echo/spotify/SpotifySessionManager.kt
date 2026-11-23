@@ -30,7 +30,7 @@ import timber.log.Timber
 /**
  * Manages Spotify authentication session state, persistence, and token refreshes.
  *
- * Preserves Echo Music's individual DataStore preference keys so all downstream
+ * Preserves NullMusic's individual DataStore preference keys so all downstream
  * settings, library observers, and playback components continue working without disruption.
  */
 object SpotifySessionManager {

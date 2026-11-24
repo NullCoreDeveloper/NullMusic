@@ -118,7 +118,7 @@ private constructor(
                 } catch (error) {
                     $JS_INTERFACE.onJsInitializationError(error + "\n" + error.stack)
                 }""",
-        null
+        null,
       )
     }
   }
@@ -151,7 +151,7 @@ private constructor(
         val (integrityToken, expirationTimeInSeconds) = parseIntegrityTokenData(responseBody)
         Timber.tag(TAG)
           .d(
-            "Parsed integrityToken (${integrityToken.take(50)}...), expires in $expirationTimeInSeconds sec"
+            "Parsed integrityToken (${integrityToken.take(50)}...), expires in $expirationTimeInSeconds sec",
           )
 
         // leave 10 minutes of margin just to be sure
@@ -177,22 +177,24 @@ private constructor(
                         console.log('[JS] createPoTokenMinter SYNC error: ' + error);
                         $JS_INTERFACE.onJsInitializationError(error + "\n" + error.stack)
                     }""",
-          null
+          null,
         )
       } catch (e: Exception) {
         Timber.tag(TAG).e(e, "Failed to parse integrity token data: ${e.message}")
         onInitializationErrorCloseAndCancel(
-          PoTokenException("parseIntegrityTokenData failed: ${e.message}")
+          PoTokenException("parseIntegrityTokenData failed: ${e.message}"),
         )
       }
     }
   }
+
   /** Called during initialization after the poToken minter has been created successfully. */
   @JavascriptInterface
   fun onMinterCreated() {
     Timber.tag(TAG).d("poToken minter created successfully, initialization complete")
     continuation.resume(this)
   }
+
   // endregion
 
   // region Obtaining poTokens
@@ -215,7 +217,7 @@ private constructor(
                     } catch (error) {
                         $JS_INTERFACE.onObtainPoTokenError(identifier, error + "\n" + error.stack)
                     }""",
-          null
+          null,
         )
       }
     }
@@ -255,6 +257,7 @@ private constructor(
 
   val isExpired: Boolean
     get() = Instant.now().isAfter(expirationInstant)
+
   // endregion
 
   // region Handling multiple emitters
@@ -271,6 +274,7 @@ private constructor(
     poTokenContinuations.clear()
     return result
   }
+
   // endregion
 
   // region Utils
@@ -291,7 +295,7 @@ private constructor(
                 "x-goog-api-key" to GOOGLE_API_KEY,
                 "x-user-agent" to "grpc-web-javascript/0.1",
               )
-              .toHeaders()
+              .toHeaders(),
           )
           .url(url)
       val response =
@@ -324,6 +328,7 @@ private constructor(
     webView.removeAllViews()
     webView.destroy()
   }
+
   // endregion
 
   companion object {

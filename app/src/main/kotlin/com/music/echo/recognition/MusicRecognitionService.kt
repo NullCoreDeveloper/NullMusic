@@ -57,7 +57,7 @@ object MusicRecognitionService {
             data = audioData,
             channelCount = 1,
             sampleRate = RECORDING_SAMPLE_RATE,
-            pcmEncoding = AUDIO_FORMAT
+            pcmEncoding = AUDIO_FORMAT,
           )
 
         val resampledAudio =
@@ -74,7 +74,7 @@ object MusicRecognitionService {
             resampledAudio.pcmEncoding == AudioFormat.ENCODING_PCM_16BIT &&
             ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN &&
             resampledAudio.data.isNotEmpty() &&
-            resampledAudio.data.size % 2 == 0
+            resampledAudio.data.size % 2 == 0,
         ) {
           "Invalid audio format for fingerprint generation"
         }
@@ -105,7 +105,7 @@ object MusicRecognitionService {
               } else {
                 RecognitionStatus.Error(message)
               }
-          }
+          },
         )
 
         _recognitionStatus.value
@@ -127,7 +127,7 @@ object MusicRecognitionService {
           RECORDING_SAMPLE_RATE,
           CHANNEL_CONFIG,
           AUDIO_FORMAT,
-          bufferSize
+          bufferSize,
         )
 
       val outputStream = ByteArrayOutputStream()

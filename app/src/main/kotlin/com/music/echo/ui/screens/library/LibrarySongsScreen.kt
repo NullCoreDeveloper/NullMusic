@@ -159,14 +159,14 @@ fun LibrarySongsScreen(
               selected = true,
               colors =
                 FilterChipDefaults.filterChipColors(
-                  containerColor = MaterialTheme.colorScheme.surface
+                  containerColor = MaterialTheme.colorScheme.surface,
                 ),
               onClick = onDeselect,
               shape = RoundedCornerShape(16.dp),
               leadingIcon = {
                 Icon(painter = painterResource(R.drawable.close), contentDescription = "")
               },
-              modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+              modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
             )
             ChipsRow(
               chips =
@@ -292,7 +292,7 @@ fun LibrarySongsScreen(
                         )
                       }
                     }
-                  }
+                  },
                 )
                 .animateItem(),
           )
@@ -303,7 +303,7 @@ fun LibrarySongsScreen(
         visible = inSelectMode,
         enter = androidx.compose.animation.fadeIn(),
         exit = androidx.compose.animation.fadeOut(),
-        modifier = Modifier.align(Alignment.TopCenter)
+        modifier = Modifier.align(Alignment.TopCenter),
       ) {
         androidx.compose.material3.TopAppBar(
           title = {
@@ -324,7 +324,7 @@ fun LibrarySongsScreen(
                   selection.clear()
                   selection.addAll(filteredSongs.map { it.song.id })
                 }
-              }
+              },
             )
             IconButton(
               enabled = selection.isNotEmpty(),
@@ -333,19 +333,19 @@ fun LibrarySongsScreen(
                   SelectionSongMenu(
                     songSelection = selection.mapNotNull { id -> songs.find { it.song.id == id } },
                     onDismiss = menuState::dismiss,
-                    clearAction = onExitSelectionMode
+                    clearAction = onExitSelectionMode,
                   )
                 }
-              }
+              },
             ) {
               Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
             }
           },
           colors =
             TopAppBarDefaults.topAppBarColors(
-              containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
+              containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f),
             ),
-          windowInsets = WindowInsets(0.dp)
+          windowInsets = WindowInsets(0.dp),
         )
       }
 

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -36,6 +35,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.music.innertube.models.WatchEndpoint
@@ -77,7 +77,8 @@ fun StatsScreen(
   val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
   val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
   val context = LocalContext.current
-  val (isWrappedDismissed, onDismissWrapped) = rememberPreference(EchoWrappedBannerDismissedKey, defaultValue = false)
+  val (isWrappedDismissed, onDismissWrapped) =
+    rememberPreference(EchoWrappedBannerDismissedKey, defaultValue = false)
 
   val indexChips by viewModel.indexChips.collectAsState()
   val mostPlayedSongs by viewModel.mostPlayedSongs.collectAsState()
@@ -399,8 +400,8 @@ fun StatsScreen(
           .asPaddingValues(),
       modifier =
         Modifier.windowInsetsPadding(
-          LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)
-        )
+          LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
+        ),
     ) {
       item(key = "choice_chips") {
         ChoiceChipsRow(
@@ -442,7 +443,7 @@ fun StatsScreen(
           com.music.echo.ui.screens.wrapped.WrappedBannerCard(
             onClick = { navController.navigate("wrapped") },
             onDismiss = { onDismissWrapped(true) },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
           )
         }
       }

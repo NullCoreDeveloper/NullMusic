@@ -10,6 +10,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapShader
 import android.graphics.Canvas
@@ -18,7 +19,6 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.SweepGradient
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -47,7 +47,7 @@ data class WidgetQueueItem(
   val index: Int,
   val title: String,
   val artist: String,
-  val isCurrent: Boolean
+  val isCurrent: Boolean,
 )
 
 @Singleton
@@ -80,7 +80,7 @@ constructor(
     isShuffle: Boolean = false,
     repeatMode: Int = 0,
     isMuted: Boolean = false,
-    queueItems: List<WidgetQueueItem> = emptyList()
+    queueItems: List<WidgetQueueItem> = emptyList(),
   ) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
 
@@ -127,7 +127,7 @@ constructor(
             isPlaying,
             isLiked,
             duration,
-            currentPosition
+            currentPosition,
           )
         appWidgetManager.updateAppWidget(widgetId, views)
       }
@@ -156,7 +156,7 @@ constructor(
           isLiked,
           duration,
           currentPosition,
-          accentColor
+          accentColor,
         )
       modernWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, modernViews)
@@ -173,7 +173,7 @@ constructor(
           artist,
           roundedAlbumArt,
           isPlaying,
-          accentColor
+          accentColor,
         )
       squareWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, squareViews)
@@ -193,7 +193,7 @@ constructor(
           isLiked,
           duration,
           currentPosition,
-          accentColor
+          accentColor,
         )
       showcaseWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, showcaseViews)
@@ -212,7 +212,7 @@ constructor(
           isPlaying,
           duration,
           currentPosition,
-          accentColor
+          accentColor,
         )
       slimWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, slimViews)
@@ -220,9 +220,10 @@ constructor(
     }
 
     // Vinyl Rotation Calculation (33 1/3 RPM = 1 full spin every 1.8 seconds)
-    val vinylAngle = if (isPlaying && duration > 0) {
-      ((currentPosition % 1800L).toFloat() / 1800f * 360f)
-    } else 0f
+    val vinylAngle =
+      if (isPlaying && duration > 0) {
+        ((currentPosition % 1800L).toFloat() / 1800f * 360f)
+      } else 0f
 
     val vinylDisc = createVinylDiscBitmap(cachedAlbumArt, vinylAngle, 320, false)
     val vintageVinylDisc = createVinylDiscBitmap(cachedAlbumArt, vinylAngle, 260, true)
@@ -240,7 +241,7 @@ constructor(
           duration,
           currentPosition,
           accentColor,
-          vinylAngle
+          vinylAngle,
         )
       vinylWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, vinylViews)
@@ -259,7 +260,7 @@ constructor(
           isPlaying,
           duration,
           currentPosition,
-          vinylAngle
+          vinylAngle,
         )
       vintageWidgetIds.forEach { widgetId ->
         appWidgetManager.updateAppWidget(widgetId, vintageViews)
@@ -276,43 +277,44 @@ constructor(
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
         val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 100)
 
-        val compactViews = createAdaptiveCompactRemoteViews(
-          title,
-          artist,
-          adaptiveAlbumArt,
-          isPlaying,
-          isShuffle,
-          repeatMode
-        )
-
-        val expandedViews = createAdaptiveExpandedRemoteViews(
-          widgetId,
-          title,
-          artist,
-          adaptiveAlbumArt,
-          isPlaying,
-          isShuffle,
-          repeatMode,
-          queueItems
-        )
-
-        val finalViews = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          RemoteViews(
-            mapOf(
-              SizeF(200f, 80f) to compactViews,
-              SizeF(200f, 150f) to expandedViews
-            )
+        val compactViews =
+          createAdaptiveCompactRemoteViews(
+            title,
+            artist,
+            adaptiveAlbumArt,
+            isPlaying,
+            isShuffle,
+            repeatMode,
           )
-        } else {
-          if (minHeight >= 130) expandedViews else compactViews
-        }
+
+        val expandedViews =
+          createAdaptiveExpandedRemoteViews(
+            widgetId,
+            title,
+            artist,
+            adaptiveAlbumArt,
+            isPlaying,
+            isShuffle,
+            repeatMode,
+            queueItems,
+          )
+
+        val finalViews =
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            RemoteViews(
+              mapOf(
+                SizeF(200f, 80f) to compactViews,
+                SizeF(200f, 150f) to expandedViews,
+              ),
+            )
+          } else {
+            if (minHeight >= 130) expandedViews else compactViews
+          }
 
         appWidgetManager.updateAppWidget(widgetId, finalViews)
         appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_queue_list)
       }
     }
-
-
 
     playlistWidgetManager.updateWidgets(
       title = title,
@@ -333,7 +335,7 @@ constructor(
     isPlaying: Boolean,
     isLiked: Boolean,
     duration: Long,
-    currentPosition: Long
+    currentPosition: Long,
   ): RemoteViews {
     val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
     val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
@@ -349,7 +351,15 @@ constructor(
       }
       minWidth >= 180 && minHeight < 100 -> {
         // 4x1 Wide - Single row with album art, song info, like and play buttons
-        createCompactWideRemoteViews(title, artist, albumArt, isPlaying, isLiked, duration, currentPosition)
+        createCompactWideRemoteViews(
+          title,
+          artist,
+          albumArt,
+          isPlaying,
+          isLiked,
+          duration,
+          currentPosition,
+        )
       }
       else -> {
         // Full layout
@@ -365,7 +375,7 @@ constructor(
     isPlaying: Boolean,
     isLiked: Boolean,
     duration: Long = 0,
-    currentPosition: Long = 0
+    currentPosition: Long = 0,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_music_player)
 
@@ -504,7 +514,7 @@ constructor(
     isPlaying: Boolean,
     isLiked: Boolean,
     duration: Long = 0,
-    currentPosition: Long = 0
+    currentPosition: Long = 0,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_compact_wide)
 
@@ -550,7 +560,7 @@ constructor(
   private fun createTurntableRemoteViews(
     circularAlbumArt: Bitmap?,
     isPlaying: Boolean,
-    isLiked: Boolean
+    isLiked: Boolean,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_turntable)
 
@@ -571,7 +581,7 @@ constructor(
     views.setOnClickPendingIntent(R.id.widget_turntable_album_art, getNowPlayingIntent())
     views.setOnClickPendingIntent(
       R.id.widget_turntable_play_container,
-      getTurntablePlayPauseIntent()
+      getTurntablePlayPauseIntent(),
     )
     views.setOnClickPendingIntent(R.id.widget_turntable_prev_button, getTurntablePreviousIntent())
     views.setOnClickPendingIntent(R.id.widget_turntable_next_button, getTurntableNextIntent())
@@ -607,7 +617,7 @@ constructor(
       context,
       0,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -620,7 +630,7 @@ constructor(
       context,
       1,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -633,7 +643,7 @@ constructor(
       context,
       2,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -646,7 +656,7 @@ constructor(
       context,
       3,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -659,7 +669,7 @@ constructor(
       context,
       4,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -672,7 +682,7 @@ constructor(
       context,
       5,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -685,7 +695,7 @@ constructor(
       context,
       10,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -698,7 +708,7 @@ constructor(
       context,
       11,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -712,7 +722,7 @@ constructor(
       context,
       12,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -720,13 +730,16 @@ constructor(
     val intent =
       Intent(context, MainActivity::class.java).apply {
         action = MainActivity.ACTION_NOW_PLAYING
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags =
+          Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
       }
     return PendingIntent.getActivity(
       context,
       14,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -734,13 +747,16 @@ constructor(
     val intent =
       Intent(context, MainActivity::class.java).apply {
         action = MainActivity.ACTION_QUEUE
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags =
+          Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
       }
     return PendingIntent.getActivity(
       context,
       15,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -748,13 +764,16 @@ constructor(
     val intent =
       Intent(context, MainActivity::class.java).apply {
         action = MainActivity.ACTION_SONG_OPTIONS
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags =
+          Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
       }
     return PendingIntent.getActivity(
       context,
       16,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -771,7 +790,7 @@ constructor(
             context,
             13,
             panelIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
           )
         }
       } catch (_: Exception) {}
@@ -779,13 +798,16 @@ constructor(
     val intent =
       Intent(context, MainActivity::class.java).apply {
         action = MainActivity.ACTION_OUTPUT_SWITCHER
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags =
+          Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
       }
     return PendingIntent.getActivity(
       context,
       13,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -793,13 +815,16 @@ constructor(
     val intent =
       Intent(context, MainActivity::class.java).apply {
         action = MainActivity.ACTION_LYRICS
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags =
+          Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+            Intent.FLAG_ACTIVITY_SINGLE_TOP
       }
     return PendingIntent.getActivity(
       context,
       17,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -817,7 +842,7 @@ constructor(
       context,
       901,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -830,7 +855,7 @@ constructor(
       context,
       905,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -843,7 +868,7 @@ constructor(
       context,
       907,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -857,7 +882,7 @@ constructor(
       context,
       910 + queueIndex,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
   }
 
@@ -865,7 +890,7 @@ constructor(
     centerArt: Bitmap?,
     rotationDegrees: Float,
     discSize: Int = 300,
-    hasShadow: Boolean = false
+    hasShadow: Boolean = false,
   ): Bitmap {
     val bitmap = Bitmap.createBitmap(discSize, discSize, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
@@ -873,9 +898,10 @@ constructor(
     val radius = center - if (hasShadow) 14f else 8f
 
     if (hasShadow) {
-      val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0x30000000.toInt()
-      }
+      val shadowPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+          color = 0x30000000.toInt()
+        }
       canvas.drawCircle(center + 2f, center + 4f, radius, shadowPaint)
     }
 
@@ -883,18 +909,20 @@ constructor(
     canvas.rotate(rotationDegrees, center, center)
 
     // Outer Vinyl Record Disc (Glossy deep obsidian)
-    val discPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      color = 0xFF141517.toInt()
-      style = Paint.Style.FILL
-    }
+    val discPaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xFF141517.toInt()
+        style = Paint.Style.FILL
+      }
     canvas.drawCircle(center, center, radius, discPaint)
 
     // Concentric Grooves
-    val groovePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      style = Paint.Style.STROKE
-      strokeWidth = 1.2f
-      color = 0x22FFFFFF.toInt()
-    }
+    val groovePaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 1.2f
+        color = 0x22FFFFFF.toInt()
+      }
     val minGroove = radius * 0.48f
     val maxGroove = radius * 0.94f
     var r = minGroove
@@ -904,14 +932,17 @@ constructor(
     }
 
     // Specular light sheen highlight sweep across vinyl
-    val sheenPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      shader = SweepGradient(
-        center, center,
-        intArrayOf(0x00FFFFFF, 0x1EFFFFFF.toInt(), 0x00FFFFFF, 0x1EFFFFFF.toInt(), 0x00FFFFFF),
-        floatArrayOf(0f, 0.25f, 0.5f, 0.75f, 1f)
-      )
-      style = Paint.Style.FILL
-    }
+    val sheenPaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        shader =
+          SweepGradient(
+            center,
+            center,
+            intArrayOf(0x00FFFFFF, 0x1EFFFFFF.toInt(), 0x00FFFFFF, 0x1EFFFFFF.toInt(), 0x00FFFFFF),
+            floatArrayOf(0f, 0.25f, 0.5f, 0.75f, 1f),
+          )
+        style = Paint.Style.FILL
+      }
     canvas.drawCircle(center, center, radius, sheenPaint)
 
     // Center circular album artwork label
@@ -919,34 +950,44 @@ constructor(
     if (centerArt != null) {
       val circularArt = getCircularBitmap(centerArt)
       val src = Rect(0, 0, circularArt.width, circularArt.height)
-      val dst = RectF(center - labelRadius, center - labelRadius, center + labelRadius, center + labelRadius)
+      val dst =
+        RectF(
+          center - labelRadius,
+          center - labelRadius,
+          center + labelRadius,
+          center + labelRadius,
+        )
       val artPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
       canvas.drawBitmap(circularArt, src, dst, artPaint)
     } else {
-      val fallbackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xFF7C3AED.toInt()
-      }
+      val fallbackPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+          color = 0xFF7C3AED.toInt()
+        }
       canvas.drawCircle(center, center, labelRadius, fallbackPaint)
     }
 
     // Outer center ring rim
-    val rimPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      style = Paint.Style.STROKE
-      strokeWidth = 2.5f
-      color = 0x55FFFFFF.toInt()
-    }
+    val rimPaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 2.5f
+        color = 0x55FFFFFF.toInt()
+      }
     canvas.drawCircle(center, center, labelRadius, rimPaint)
 
     // Center spindle hole
-    val holePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      style = Paint.Style.FILL
-      color = 0xFF0D0E10.toInt()
-    }
-    val holeBezelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      style = Paint.Style.STROKE
-      strokeWidth = 2f
-      color = 0x99D1D5DB.toInt()
-    }
+    val holePaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = 0xFF0D0E10.toInt()
+      }
+    val holeBezelPaint =
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 2f
+        color = 0x99D1D5DB.toInt()
+      }
     val holeRadius = radius * 0.075f
     canvas.drawCircle(center, center, holeRadius, holePaint)
     canvas.drawCircle(center, center, holeRadius, holeBezelPaint)
@@ -983,7 +1024,7 @@ constructor(
     isLiked: Boolean,
     duration: Long,
     currentPosition: Long,
-    accentColor: Int
+    accentColor: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_modern_flow)
 
@@ -992,17 +1033,20 @@ constructor(
 
     views.setImageViewBitmap(
       R.id.widget_album_art,
-      roundedAlbumArt ?: getRoundedDefaultIcon(36f)
+      roundedAlbumArt ?: getRoundedDefaultIcon(36f),
     )
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
-    val likeIcon = if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
+    val likeIcon =
+      if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
     views.setImageViewResource(R.id.widget_like_icon, likeIcon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))
@@ -1033,7 +1077,7 @@ constructor(
     isLiked: Boolean,
     duration: Long,
     currentPosition: Long,
-    accentColor: Int
+    accentColor: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_device_connect)
 
@@ -1043,17 +1087,20 @@ constructor(
 
     views.setImageViewBitmap(
       R.id.widget_album_art,
-      roundedAlbumArt ?: getRoundedDefaultIcon(36f)
+      roundedAlbumArt ?: getRoundedDefaultIcon(36f),
     )
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
-    val likeIcon = if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
+    val likeIcon =
+      if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
     views.setImageViewResource(R.id.widget_like_icon, likeIcon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))
@@ -1081,7 +1128,7 @@ constructor(
     artist: String,
     roundedAlbumArt: Bitmap?,
     isPlaying: Boolean,
-    accentColor: Int
+    accentColor: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_compact_glow)
 
@@ -1090,10 +1137,11 @@ constructor(
 
     views.setImageViewBitmap(
       R.id.widget_album_art,
-      roundedAlbumArt ?: getRoundedDefaultIcon(36f)
+      roundedAlbumArt ?: getRoundedDefaultIcon(36f),
     )
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
     views.setOnClickPendingIntent(R.id.widget_album_art, getNowPlayingIntent())
@@ -1114,7 +1162,7 @@ constructor(
     isLiked: Boolean,
     duration: Long,
     currentPosition: Long,
-    accentColor: Int
+    accentColor: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_showcase_card)
 
@@ -1123,19 +1171,21 @@ constructor(
 
     views.setImageViewBitmap(
       R.id.widget_album_art,
-      bannerAlbumArt ?: getRoundedDefaultIcon(44f)
+      bannerAlbumArt ?: getRoundedDefaultIcon(44f),
     )
 
-
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
-    val likeIcon = if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
+    val likeIcon =
+      if (isLiked) R.drawable.ic_widget_heart_filled_clean else R.drawable.ic_widget_heart_clean
     views.setImageViewResource(R.id.widget_like_icon, likeIcon)
     views.setImageViewResource(R.id.widget_soundwave_logo, R.drawable.icon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))
@@ -1166,7 +1216,7 @@ constructor(
     isPlaying: Boolean,
     duration: Long,
     currentPosition: Long,
-    accentColor: Int
+    accentColor: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_slim_strip)
 
@@ -1175,14 +1225,16 @@ constructor(
 
     views.setImageViewBitmap(
       R.id.widget_album_art,
-      roundedAlbumArt ?: getRoundedDefaultIcon(32f)
+      roundedAlbumArt ?: getRoundedDefaultIcon(32f),
     )
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))
@@ -1211,7 +1263,7 @@ constructor(
     duration: Long,
     currentPosition: Long,
     accentColor: Int,
-    vinylAngle: Float
+    vinylAngle: Float,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_vinyl_square)
 
@@ -1224,11 +1276,13 @@ constructor(
       views.setFloat(R.id.widget_tonearm, "setRotation", if (isPlaying) 0f else -18f)
     }
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))
@@ -1255,7 +1309,7 @@ constructor(
     albumArt: Bitmap?,
     isPlaying: Boolean,
     isShuffle: Boolean,
-    repeatMode: Int
+    repeatMode: Int,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_adaptive_compact)
 
@@ -1271,23 +1325,26 @@ constructor(
       views.setViewVisibility(R.id.widget_placeholder_icon, View.VISIBLE)
     }
 
-    val shuffleIcon = if (isShuffle) R.drawable.ic_widget_shuffle_on else R.drawable.ic_widget_shuffle_off
+    val shuffleIcon =
+      if (isShuffle) R.drawable.ic_widget_shuffle_on else R.drawable.ic_widget_shuffle_off
     views.setImageViewResource(R.id.widget_shuffle_icon, shuffleIcon)
     views.setOnClickPendingIntent(R.id.widget_shuffle_button, getShuffleIntent())
 
     views.setOnClickPendingIntent(R.id.widget_prev_button, getPreviousIntent())
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause_icon, playIcon)
     views.setOnClickPendingIntent(R.id.widget_play_pause_button, getPlayPauseIntent())
 
     views.setOnClickPendingIntent(R.id.widget_next_button, getNextIntent())
 
-    val repeatIcon = when (repeatMode) {
-      Player.REPEAT_MODE_ALL -> R.drawable.ic_widget_repeat_all
-      Player.REPEAT_MODE_ONE -> R.drawable.ic_widget_repeat_one
-      else -> R.drawable.ic_widget_repeat_off
-    }
+    val repeatIcon =
+      when (repeatMode) {
+        Player.REPEAT_MODE_ALL -> R.drawable.ic_widget_repeat_all
+        Player.REPEAT_MODE_ONE -> R.drawable.ic_widget_repeat_one
+        else -> R.drawable.ic_widget_repeat_off
+      }
     views.setImageViewResource(R.id.widget_repeat_icon, repeatIcon)
     views.setOnClickPendingIntent(R.id.widget_repeat_button, getRepeatIntent())
 
@@ -1307,7 +1364,7 @@ constructor(
     isPlaying: Boolean,
     isShuffle: Boolean,
     repeatMode: Int,
-    queueItems: List<WidgetQueueItem>
+    queueItems: List<WidgetQueueItem>,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_adaptive_expanded)
 
@@ -1323,23 +1380,26 @@ constructor(
       views.setViewVisibility(R.id.widget_placeholder_icon, View.VISIBLE)
     }
 
-    val shuffleIcon = if (isShuffle) R.drawable.ic_widget_shuffle_on else R.drawable.ic_widget_shuffle_off
+    val shuffleIcon =
+      if (isShuffle) R.drawable.ic_widget_shuffle_on else R.drawable.ic_widget_shuffle_off
     views.setImageViewResource(R.id.widget_shuffle_icon, shuffleIcon)
     views.setOnClickPendingIntent(R.id.widget_shuffle_button, getShuffleIntent())
 
     views.setOnClickPendingIntent(R.id.widget_prev_button, getPreviousIntent())
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_bold_white else R.drawable.ic_widget_play_bold_white
     views.setImageViewResource(R.id.widget_play_pause_icon, playIcon)
     views.setOnClickPendingIntent(R.id.widget_play_pause_button, getPlayPauseIntent())
 
     views.setOnClickPendingIntent(R.id.widget_next_button, getNextIntent())
 
-    val repeatIcon = when (repeatMode) {
-      Player.REPEAT_MODE_ALL -> R.drawable.ic_widget_repeat_all
-      Player.REPEAT_MODE_ONE -> R.drawable.ic_widget_repeat_one
-      else -> R.drawable.ic_widget_repeat_off
-    }
+    val repeatIcon =
+      when (repeatMode) {
+        Player.REPEAT_MODE_ALL -> R.drawable.ic_widget_repeat_all
+        Player.REPEAT_MODE_ONE -> R.drawable.ic_widget_repeat_one
+        else -> R.drawable.ic_widget_repeat_off
+      }
     views.setImageViewResource(R.id.widget_repeat_icon, repeatIcon)
     views.setOnClickPendingIntent(R.id.widget_repeat_button, getRepeatIntent())
 
@@ -1348,35 +1408,36 @@ constructor(
     views.setOnClickPendingIntent(R.id.widget_artist_name, getNowPlayingIntent())
 
     // Configure scrollable ListView with AdaptiveQueueWidgetService
-    val serviceIntent = Intent(context, AdaptiveQueueWidgetService::class.java).apply {
-      putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-      data = Uri.parse("widget://adaptive/queue/$widgetId")
-    }
+    val serviceIntent =
+      Intent(context, AdaptiveQueueWidgetService::class.java).apply {
+        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+        data = Uri.parse("widget://adaptive/queue/$widgetId")
+      }
     views.setRemoteAdapter(R.id.widget_queue_list, serviceIntent)
     views.setEmptyView(R.id.widget_queue_list, R.id.widget_queue_empty)
 
     // Set PendingIntent template for ListView item clicks
-    val clickIntent = Intent(context, MusicWidgetReceiver::class.java).apply {
-      action = MusicWidgetReceiver.ACTION_SKIP_TO_QUEUE_ITEM
-    }
-    val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-    } else {
-      PendingIntent.FLAG_UPDATE_CURRENT
-    }
-    val clickPendingIntent = PendingIntent.getBroadcast(
-      context,
-      920,
-      clickIntent,
-      flags
-    )
+    val clickIntent =
+      Intent(context, MusicWidgetReceiver::class.java).apply {
+        action = MusicWidgetReceiver.ACTION_SKIP_TO_QUEUE_ITEM
+      }
+    val flags =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+      } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+      }
+    val clickPendingIntent =
+      PendingIntent.getBroadcast(
+        context,
+        920,
+        clickIntent,
+        flags,
+      )
     views.setPendingIntentTemplate(R.id.widget_queue_list, clickPendingIntent)
 
     return views
   }
-
-
-
 
   private fun createVintageTurntableRemoteViews(
     title: String,
@@ -1385,7 +1446,7 @@ constructor(
     isPlaying: Boolean,
     duration: Long,
     currentPosition: Long,
-    vinylAngle: Float
+    vinylAngle: Float,
   ): RemoteViews {
     val views = RemoteViews(context.packageName, R.layout.widget_vintage_turntable)
 
@@ -1398,11 +1459,13 @@ constructor(
       views.setFloat(R.id.widget_tonearm, "setRotation", if (isPlaying) 0f else -18f)
     }
 
-    val playIcon = if (isPlaying) R.drawable.ic_widget_pause_brown else R.drawable.ic_widget_play_brown
+    val playIcon =
+      if (isPlaying) R.drawable.ic_widget_pause_brown else R.drawable.ic_widget_play_brown
     views.setImageViewResource(R.id.widget_play_pause, playIcon)
 
     if (duration > 0) {
-      val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
+      val level =
+        ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
       views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
       views.setTextViewText(R.id.widget_time_current, formatDuration(currentPosition))
       views.setTextViewText(R.id.widget_time_duration, formatDuration(duration))

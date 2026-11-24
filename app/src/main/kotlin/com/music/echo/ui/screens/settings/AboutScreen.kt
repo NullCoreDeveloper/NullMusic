@@ -51,7 +51,7 @@ fun AboutScreen(
   navController: NavController,
   scrollBehavior: TopAppBarScrollBehavior,
   onBack: (() -> Unit)? = null,
-  highlightKey: String? = null
+  highlightKey: String? = null,
 ) {
   val uriHandler = LocalUriHandler.current
 
@@ -340,7 +340,7 @@ fun AboutScreen(
             echo.music.iad1tya.ui.component.PreferenceGroupTitle(title = "Contributors")
             Row(
               modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-              horizontalArrangement = Arrangement.spacedBy(12.dp)
+              horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
               contributors.forEach { contributor ->
                 coil3.compose.AsyncImage(
@@ -350,7 +350,7 @@ fun AboutScreen(
                     Modifier.size(48.dp).clip(CircleShape).clickable {
                       uriHandler.openUri(contributor.htmlUrl)
                     },
-                  contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                  contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                 )
               }
             }
@@ -379,9 +379,9 @@ fun AboutScreen(
                 icon = painterResource(R.drawable.ic_x_new),
                 title = { Text("X (Twitter)") },
                 description = { Text("@xad1tya") },
-                onClick = { uriHandler.openUri("https://x.com/xad1tya") }
-              )
-            )
+                onClick = { uriHandler.openUri("https://x.com/xad1tya") },
+              ),
+            ),
         )
       }
 
@@ -410,9 +410,9 @@ fun AboutScreen(
                   uriHandler.openUri(
                     "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
                   )
-                }
-              )
-            )
+                },
+              ),
+            ),
         )
       }
 
@@ -425,9 +425,9 @@ fun AboutScreen(
                 icon = painterResource(R.drawable.ic_discord_new),
                 title = { Text("Discord") },
                 description = { Text("discord.gg/Xt5hgsJJuA") },
-                onClick = { uriHandler.openUri("https://discord.gg/Xt5hgsJJuA") }
-              )
-            )
+                onClick = { uriHandler.openUri("https://discord.gg/Xt5hgsJJuA") },
+              ),
+            ),
         )
       }
 
@@ -475,7 +475,7 @@ private fun AboutAppCard() {
         targetValue = if (isEasterEggActive) 180f else 0f,
         animationSpec =
           spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-        label = "flip"
+        label = "flip",
       )
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -486,9 +486,9 @@ private fun AboutAppCard() {
         animationSpec =
           spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMedium,
           ),
-        label = "scale"
+        label = "scale",
       )
 
     Box(
@@ -504,16 +504,16 @@ private fun AboutAppCard() {
           .clickable(
             interactionSource = interactionSource,
             indication = null,
-            onClick = { isEasterEggActive = !isEasterEggActive }
+            onClick = { isEasterEggActive = !isEasterEggActive },
           ),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.Center,
     ) {
       if (rotation <= 90f) {
         Image(
           painter = painterResource(R.drawable.ic_launcher_nobg),
           contentDescription = null,
           colorFilter = ColorFilter.tint(if (isDark) Color.White else Color(0xFFEA3829)),
-          modifier = Modifier.fillMaxSize()
+          modifier = Modifier.fillMaxSize(),
         )
       } else {
         coil3.compose.AsyncImage(
@@ -521,7 +521,7 @@ private fun AboutAppCard() {
           contentDescription = null,
           modifier =
             Modifier.fillMaxSize().graphicsLayer { rotationY = 180f }, // Un-flip the backside image
-          contentScale = androidx.compose.ui.layout.ContentScale.Crop
+          contentScale = androidx.compose.ui.layout.ContentScale.Crop,
         )
       }
     }

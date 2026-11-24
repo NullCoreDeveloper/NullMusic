@@ -95,15 +95,15 @@ fun YouTubeArtistMenu(
                         painter = painterResource(R.drawable.radio),
                         contentDescription = null,
                         modifier = Modifier.size(28.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                       )
                     },
                     text = stringResource(R.string.start_an_radio),
                     onClick = {
                       playerConnection.playQueue(YouTubeQueue(watchEndpoint))
                       onDismiss()
-                    }
-                  )
+                    },
+                  ),
                 )
               }
             }
@@ -115,7 +115,7 @@ fun YouTubeArtistMenu(
                     painter = painterResource(if (isPinned) R.drawable.remove else R.drawable.add),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 },
                 text = if (isPinned) "Unpin" else "Pin",
@@ -128,8 +128,8 @@ fun YouTubeArtistMenu(
                     }
                   }
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             add(
@@ -139,7 +139,7 @@ fun YouTubeArtistMenu(
                     painter = painterResource(R.drawable.share),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 },
                 text = stringResource(R.string.share),
@@ -152,12 +152,12 @@ fun YouTubeArtistMenu(
                     }
                   context.startActivity(Intent.createChooser(intent, null))
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
           },
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
-        columns = if (isGuest) 1 else 3
+        columns = if (isGuest) 1 else 3,
       )
     }
 
@@ -171,7 +171,7 @@ fun YouTubeArtistMenu(
                   text =
                     if (libraryArtist?.artist?.bookmarkedAt != null)
                       stringResource(R.string.subscribed)
-                    else stringResource(R.string.subscribe)
+                    else stringResource(R.string.subscribe),
                 )
               },
               icon = {
@@ -182,7 +182,7 @@ fun YouTubeArtistMenu(
                         R.drawable.subscribed
                       } else {
                         R.drawable.subscribe
-                      }
+                      },
                     ),
                   contentDescription = null,
                 )
@@ -200,13 +200,13 @@ fun YouTubeArtistMenu(
                           channelId = artist.channelId,
                           thumbnailUrl = artist.thumbnail,
                         )
-                        .toggleLike()
+                        .toggleLike(),
                     )
                   }
                 }
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
     }
   }

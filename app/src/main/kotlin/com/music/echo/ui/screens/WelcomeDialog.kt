@@ -38,13 +38,13 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
 
   Dialog(
     onDismissRequest = onDismissRequest,
-    properties = DialogProperties(usePlatformDefaultWidth = false)
+    properties = DialogProperties(usePlatformDefaultWidth = false),
   ) {
     Card(
       modifier = Modifier.padding(24.dp).fillMaxWidth(),
       shape = RoundedCornerShape(28.dp),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-      elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+      elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
     ) {
       Column(
         modifier =
@@ -184,7 +184,7 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
               uriHandler.openUri(
                 "https://intradeus.github.io/http-protocol-redirector/?r=upi://pay?pa=nullcore@upi&pn=Aditya%20Yadav&am=&tn=Thank%20You%20so%20much%20for%20this%20support"
               )
-            }
+            },
           )
         }
 
@@ -193,7 +193,7 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
             icon = painterResource(R.drawable.ic_discord_new),
             title = "Discord",
             subtitle = "discord.gg/Xt5hgsJJuA",
-            onClick = { uriHandler.openUri("https://discord.gg/Xt5hgsJJuA") }
+            onClick = { uriHandler.openUri("https://discord.gg/Xt5hgsJJuA") },
           )
         }
 
@@ -206,13 +206,13 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
           colors =
             ButtonDefaults.buttonColors(
               containerColor = MaterialTheme.colorScheme.surfaceVariant,
-              contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+              contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
         ) {
           Icon(
             painter = painterResource(id = R.drawable.star),
             contentDescription = null,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
           )
           Spacer(modifier = Modifier.width(8.dp))
           Text("Star the Repo", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
@@ -225,8 +225,8 @@ fun WelcomeDialog(onDismissRequest: () -> Unit) {
           colors =
             ButtonDefaults.buttonColors(
               containerColor = MaterialTheme.colorScheme.primary,
-              contentColor = MaterialTheme.colorScheme.onPrimary
-            )
+              contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
         ) {
           Text("Continue", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }

@@ -23,7 +23,7 @@ fun leadingItemShape(): RoundedCornerShape =
     topStart = EndCornerRadius.dp,
     topEnd = EndCornerRadius.dp,
     bottomStart = ConnectedCornerRadius.dp,
-    bottomEnd = ConnectedCornerRadius.dp
+    bottomEnd = ConnectedCornerRadius.dp,
   )
 
 fun middleItemShape(): RoundedCornerShape = RoundedCornerShape(ConnectedCornerRadius.dp)
@@ -33,7 +33,7 @@ fun endItemShape(): RoundedCornerShape =
     topStart = ConnectedCornerRadius.dp,
     topEnd = ConnectedCornerRadius.dp,
     bottomStart = EndCornerRadius.dp,
-    bottomEnd = EndCornerRadius.dp
+    bottomEnd = EndCornerRadius.dp,
   )
 
 fun getGroupedShape(index: Int, count: Int): Shape {

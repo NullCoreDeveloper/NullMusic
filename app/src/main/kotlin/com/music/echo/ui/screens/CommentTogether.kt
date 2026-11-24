@@ -79,13 +79,13 @@ fun CommentTogetherScreen(navController: NavController) {
             Text(
               text = stringResource(R.string.comments),
               style = MaterialTheme.typography.titleLarge,
-              fontWeight = FontWeight.Bold
+              fontWeight = FontWeight.Bold,
             )
             roomState?.roomCode?.let { code ->
               Text(
                 text = "Room: $code",
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
           }
@@ -98,8 +98,8 @@ fun CommentTogetherScreen(navController: NavController) {
         colors =
           TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-          )
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+          ),
       )
     },
     bottomBar = {
@@ -107,44 +107,44 @@ fun CommentTogetherScreen(navController: NavController) {
         AnimatedVisibility(
           visible = replyingTo != null,
           enter = expandVertically() + fadeIn(),
-          exit = shrinkVertically() + fadeOut()
+          exit = shrinkVertically() + fadeOut(),
         ) {
           replyingTo?.let { replyMsg ->
             Surface(
               modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
               color = MaterialTheme.colorScheme.surfaceVariant,
-              shape = RoundedCornerShape(12.dp)
+              shape = RoundedCornerShape(12.dp),
             ) {
               Row(
                 modifier = Modifier.padding(8.dp).height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
               ) {
                 Box(
                   modifier =
                     Modifier.fillMaxHeight()
                       .width(4.dp)
                       .clip(RoundedCornerShape(2.dp))
-                      .background(MaterialTheme.colorScheme.primary)
+                      .background(MaterialTheme.colorScheme.primary),
                 )
                 Column(modifier = Modifier.weight(1f).padding(horizontal = 12.dp)) {
                   Text(
                     text = replyMsg.username,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                   )
                   Text(
                     text = replyMsg.message,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 }
                 IconButton(onClick = { replyingTo = null }) {
                   Icon(
                     painter = painterResource(R.drawable.close),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                   )
                 }
               }
@@ -163,15 +163,15 @@ fun CommentTogetherScreen(navController: NavController) {
               replyingTo = null
               focusManager.clearFocus()
             }
-          }
+          },
         )
       }
     },
-    contentWindowInsets = windowInsets
+    contentWindowInsets = windowInsets,
   ) { padding ->
     Box(
       modifier =
-        Modifier.fillMaxSize().padding(padding).background(MaterialTheme.colorScheme.surface)
+        Modifier.fillMaxSize().padding(padding).background(MaterialTheme.colorScheme.surface),
     ) {
       if (messages.isEmpty()) {
         EmptyChatPlaceholder()
@@ -180,13 +180,13 @@ fun CommentTogetherScreen(navController: NavController) {
           state = lazyListState,
           modifier = Modifier.fillMaxSize(),
           contentPadding = PaddingValues(16.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp)
+          verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
           items(items = messages, key = { it.timestamp.toString() + it.userId }) { message ->
             MessageItem(
               message = message,
               isMe = message.userId == userId,
-              onReply = { replyingTo = it }
+              onReply = { replyingTo = it },
             )
           }
         }
@@ -200,7 +200,7 @@ fun CommentTogetherScreen(navController: NavController) {
 private fun MessageItem(
   message: ChatMessagePayload,
   isMe: Boolean,
-  onReply: (ChatMessagePayload) -> Unit
+  onReply: (ChatMessagePayload) -> Unit,
 ) {
   val alignment = if (isMe) Alignment.End else Alignment.Start
   val bubbleColor =
@@ -219,7 +219,7 @@ private fun MessageItem(
         text = message.username,
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 12.dp, bottom = 4.dp)
+        modifier = Modifier.padding(start = 12.dp, bottom = 4.dp),
       )
     }
 
@@ -230,19 +230,19 @@ private fun MessageItem(
           topStart = 16.dp,
           topEnd = 16.dp,
           bottomStart = if (isMe) 16.dp else 4.dp,
-          bottomEnd = if (isMe) 4.dp else 16.dp
+          bottomEnd = if (isMe) 4.dp else 16.dp,
         ),
       tonalElevation = 2.dp,
       modifier =
         Modifier.widthIn(max = 280.dp)
-          .combinedClickable(onClick = {}, onLongClick = { onReply(message) })
+          .combinedClickable(onClick = {}, onLongClick = { onReply(message) }),
     ) {
       Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
         message.replyTo?.let { reply ->
           Surface(
             color = replyBgColor,
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.padding(bottom = 6.dp).fillMaxWidth()
+            modifier = Modifier.padding(bottom = 6.dp).fillMaxWidth(),
           ) {
             Row(modifier = Modifier.padding(8.dp).height(IntrinsicSize.Min)) {
               Box(
@@ -250,7 +250,7 @@ private fun MessageItem(
                   Modifier.fillMaxHeight()
                     .width(3.dp)
                     .clip(RoundedCornerShape(1.5.dp))
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(MaterialTheme.colorScheme.primary),
               )
               Column(modifier = Modifier.padding(start = 10.dp)) {
                 Text(
@@ -258,14 +258,14 @@ private fun MessageItem(
                   style = MaterialTheme.typography.labelSmall,
                   color = MaterialTheme.colorScheme.primary,
                   fontWeight = FontWeight.Bold,
-                  maxLines = 1
+                  maxLines = 1,
                 )
                 Text(
                   text = formatMessageWithLinks(reply.message),
                   style = MaterialTheme.typography.bodySmall,
                   maxLines = 2,
                   color = textColor.copy(alpha = 0.8f),
-                  fontSize = 12.sp
+                  fontSize = 12.sp,
                 )
               }
             }
@@ -277,7 +277,7 @@ private fun MessageItem(
         Text(
           text = formatMessageWithLinks(message.message),
           style = MaterialTheme.typography.bodyMedium,
-          color = textColor
+          color = textColor,
         )
 
         Text(
@@ -285,7 +285,7 @@ private fun MessageItem(
           style = MaterialTheme.typography.labelSmall,
           color = textColor.copy(alpha = 0.6f),
           textAlign = TextAlign.End,
-          modifier = Modifier.align(Alignment.End).padding(top = 2.dp)
+          modifier = Modifier.align(Alignment.End).padding(top = 2.dp),
         )
       }
     }
@@ -297,16 +297,16 @@ private fun ChatInputArea(
   text: String,
   onTextChange: (String) -> Unit,
   onSend: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
     shape = RoundedCornerShape(28.dp),
-    modifier = modifier.fillMaxWidth()
+    modifier = modifier.fillMaxWidth(),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+      modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
       OutlinedTextField(
         value = text,
@@ -321,7 +321,7 @@ private fun ChatInputArea(
         maxLines = 4,
         keyboardOptions =
           KeyboardOptions(imeAction = ImeAction.Send, keyboardType = KeyboardType.Text),
-        keyboardActions = KeyboardActions(onSend = { onSend() })
+        keyboardActions = KeyboardActions(onSend = { onSend() }),
       )
 
       FloatingActionButton(
@@ -330,12 +330,12 @@ private fun ChatInputArea(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.size(48.dp),
-        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp)
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp),
       ) {
         Icon(
           painter = painterResource(R.drawable.send_chat),
           contentDescription = stringResource(R.string.send),
-          modifier = Modifier.size(24.dp)
+          modifier = Modifier.size(24.dp),
         )
       }
     }
@@ -347,7 +347,7 @@ private fun EmptyChatPlaceholder() {
   Column(
     modifier = Modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Box(
       modifier =
@@ -357,17 +357,17 @@ private fun EmptyChatPlaceholder() {
             Brush.verticalGradient(
               listOf(
                 MaterialTheme.colorScheme.primaryContainer,
-                MaterialTheme.colorScheme.secondaryContainer
-              )
-            )
+                MaterialTheme.colorScheme.secondaryContainer,
+              ),
+            ),
           ),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.Center,
     ) {
       Icon(
         painter = painterResource(R.drawable.chat_msg),
         contentDescription = null,
         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier.size(56.dp)
+        modifier = Modifier.size(56.dp),
       )
     }
     Spacer(modifier = Modifier.height(24.dp))
@@ -375,12 +375,12 @@ private fun EmptyChatPlaceholder() {
       text = "No messages yet",
       style = MaterialTheme.typography.titleMedium,
       fontWeight = FontWeight.Bold,
-      color = MaterialTheme.colorScheme.onSurface
+      color = MaterialTheme.colorScheme.onSurface,
     )
     Text(
       text = "Start the conversation!",
       style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
 }
@@ -409,8 +409,8 @@ private fun formatMessageWithLinks(text: String): AnnotatedString {
                 SpanStyle(
                   color = MaterialTheme.colorScheme.primary,
                   textDecoration = TextDecoration.Underline,
-                  fontWeight = FontWeight.Bold
-                )
+                  fontWeight = FontWeight.Bold,
+                ),
             ),
           linkInteractionListener = {
             try {
@@ -421,7 +421,7 @@ private fun formatMessageWithLinks(text: String): AnnotatedString {
             } catch (e: Exception) {
               context.safeOpenUri(url)
             }
-          }
+          },
         )
 
       withLink(linkAnnotation) { append(url) }

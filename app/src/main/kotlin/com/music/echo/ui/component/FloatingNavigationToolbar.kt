@@ -108,7 +108,7 @@ fun FloatingNavigationToolbar(
     if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
   android.util.Log.d(
     "COLOR_MATCH",
-    "NavBar - pureBlack parameter: $pureBlack, toolbarContainerColor: $toolbarContainerColor"
+    "NavBar - pureBlack parameter: $pureBlack, toolbarContainerColor: $toolbarContainerColor",
   )
   val toolbarColors =
     FloatingToolbarDefaults.standardFloatingToolbarColors(
@@ -122,26 +122,28 @@ fun FloatingNavigationToolbar(
   val toolbarModifier =
     if (useGlass) {
         androidx.compose.ui.Modifier.clip(
-            androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
+            androidx.compose.foundation.shape.RoundedCornerShape(percent = 50),
           )
           .liquidGlass(
             config = glassConfig,
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50),
           )
       } else {
         androidx.compose.ui.Modifier.clip(
-            androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
+            androidx.compose.foundation.shape.RoundedCornerShape(percent = 50),
           )
           .background(toolbarContainerColor)
       }
       .border(
         1.dp,
         outlineColor.copy(alpha = 0.3f),
-        androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
+        androidx.compose.foundation.shape.RoundedCornerShape(percent = 50),
       )
 
   val hasOverflowMenu =
-    (onShuffleClick != null && shuffleIconRes != null) || (onAiHubClick != null && aiHubIconRes != null) || onMusicRecognitionClick != null
+    (onShuffleClick != null && shuffleIconRes != null) ||
+      (onAiHubClick != null && aiHubIconRes != null) ||
+      onMusicRecognitionClick != null
   val hasFabAction = onFabClick != null && fabIconRes != null
 
   Box(
@@ -209,7 +211,7 @@ private fun ToolbarItemsContainer(
   onFabClick: (() -> Unit)? = null,
   fabIconRes: Int? = null,
   fabContentDescription: String = "",
-  onSearchLongClick: (() -> Unit)? = null
+  onSearchLongClick: (() -> Unit)? = null,
 ) {
   val density = LocalDensity.current
   val itemWidths = remember { mutableStateMapOf<Screens, Dp>() }
@@ -224,7 +226,7 @@ private fun ToolbarItemsContainer(
       targetValue = targetWidth,
       animationSpec =
         spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMediumLow),
-      label = "pillWidth"
+      label = "pillWidth",
     )
 
   val slidingPillOffset by
@@ -232,7 +234,7 @@ private fun ToolbarItemsContainer(
       targetValue = targetPosition,
       animationSpec =
         spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMediumLow),
-      label = "pillOffset"
+      label = "pillOffset",
     )
 
   Box(modifier = Modifier.height(IntrinsicSize.Min)) {
@@ -245,23 +247,14 @@ private fun ToolbarItemsContainer(
               .fillMaxHeight()
               .background(
                 color = floatingToolbarSelectedItemContainerColor(pureBlack),
-                shape = RoundedCornerShape(24.dp)
-              )
+                shape = RoundedCornerShape(24.dp),
+              ),
         )
       }
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
       items.forEach { screen ->
-        if (screen == Screens.Library && onMusicRecognitionClick != null) {
-          FloatingNavigationToolbarActionItem(
-            iconRes = R.drawable.mic,
-            contentDescription = musicRecognitionContentDescription,
-            pureBlack = pureBlack,
-            onClick = onMusicRecognitionClick
-          )
-        }
-
         val selected = isSelected(screen)
         FloatingNavigationToolbarItem(
           screen = screen,
@@ -274,7 +267,7 @@ private fun ToolbarItemsContainer(
             Modifier.onGloballyPositioned { coordinates ->
               itemWidths[screen] = with(density) { coordinates.size.width.toDp() }
               itemPositions[screen] = with(density) { coordinates.positionInParent().x.toDp() }
-            }
+            },
         )
       }
 
@@ -290,14 +283,16 @@ private fun ToolbarItemsContainer(
           onAiHubClick = onAiHubClick,
           aiHubIconRes = aiHubIconRes,
           aiHubContentDescription = aiHubContentDescription,
-          onWrappedClick = onWrappedClick
+          onMusicRecognitionClick = onMusicRecognitionClick,
+          musicRecognitionContentDescription = musicRecognitionContentDescription,
+          onWrappedClick = onWrappedClick,
         )
       } else if (hasFabAction && fabIconRes != null && onFabClick != null) {
         FloatingToolbarFabAction(
           pureBlack = pureBlack,
           onClick = onFabClick,
           iconRes = fabIconRes,
-          contentDescription = fabContentDescription
+          contentDescription = fabContentDescription,
         )
       }
     }
@@ -317,6 +312,8 @@ fun FloatingToolbarOverflowMenuButton(
   onAiHubClick: (() -> Unit)?,
   aiHubIconRes: Int?,
   aiHubContentDescription: String,
+  onMusicRecognitionClick: (() -> Unit)? = null,
+  musicRecognitionContentDescription: String = "",
   onWrappedClick: (() -> Unit)? = null,
 ) {
   var showSheet by rememberSaveable { mutableStateOf(false) }
@@ -336,28 +333,68 @@ fun FloatingToolbarOverflowMenuButton(
         onDismissRequest = { showSheet = false },
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
       ) {
         Column(
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 32.dp),
-          verticalArrangement = Arrangement.spacedBy(4.dp)
+          verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
           Text(
             text = stringResource(R.string.more_options),
             style =
               MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp
+                letterSpacing = 0.5.sp,
               ),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
           )
 
           Material3SettingsGroup(
             compact = true,
             items =
               buildList {
+                if (onAiHubClick != null && aiHubIconRes != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = { Text(aiHubContentDescription) },
+                      icon = painterResource(aiHubIconRes),
+                      tintIcon = false,
+                      iconShape = androidx.compose.foundation.shape.CircleShape,
+                      onClick = {
+                        scope.launch {
+                          sheetState.hide()
+                          showSheet = false
+                          onAiHubClick()
+                        }
+                      },
+                    ),
+                  )
+                }
+
+                if (onMusicRecognitionClick != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = {
+                        Text(
+                          musicRecognitionContentDescription.ifEmpty {
+                            stringResource(R.string.recognition)
+                          },
+                        )
+                      },
+                      icon = painterResource(R.drawable.mic),
+                      onClick = {
+                        scope.launch {
+                          sheetState.hide()
+                          showSheet = false
+                          onMusicRecognitionClick()
+                        }
+                      },
+                    ),
+                  )
+                }
+
                 if (onShuffleClick != null && shuffleIconRes != null) {
                   add(
                     Material3SettingsItem(
@@ -373,33 +410,15 @@ fun FloatingToolbarOverflowMenuButton(
                               checkedThumbColor = MaterialTheme.colorScheme.surface,
                               checkedTrackColor = MaterialTheme.colorScheme.onSurface,
                               uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                              uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            )
+                              uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            ),
                         )
                       },
-                      onClick = { onShuffleClick() }
-                    )
+                      onClick = { onShuffleClick() },
+                    ),
                   )
                 }
-
-                if (onAiHubClick != null && aiHubIconRes != null) {
-                  add(
-                    Material3SettingsItem(
-                      title = { Text(aiHubContentDescription) },
-                      icon = painterResource(aiHubIconRes),
-                      tintIcon = false,
-                      iconShape = androidx.compose.foundation.shape.CircleShape,
-                      onClick = {
-                        scope.launch {
-                          sheetState.hide()
-                          showSheet = false
-                          onAiHubClick()
-                        }
-                      }
-                    )
-                  )
-                }
-              }
+              },
           )
         }
       }
@@ -420,7 +439,7 @@ private fun FloatingToolbarFabAction(
     iconRes = iconRes,
     contentDescription = contentDescription.ifEmpty { stringResource(R.string.create_playlist) },
     pureBlack = pureBlack,
-    onClick = onClick
+    onClick = onClick,
   )
 }
 

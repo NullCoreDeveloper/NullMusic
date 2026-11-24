@@ -78,26 +78,26 @@ fun SpotifyImportScreen(
             Icon(painterResource(R.drawable.arrow_back), null)
           }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
       )
-    }
+    },
   ) { innerPadding ->
     LazyColumn(
       modifier =
         Modifier.fillMaxSize()
           .windowInsetsPadding(
             LocalPlayerAwareWindowInsets.current.only(
-              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-            )
+              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+            ),
           ),
       contentPadding =
         PaddingValues(
           top = innerPadding.calculateTopPadding(),
           bottom = innerPadding.calculateBottomPadding() + 32.dp,
           start = 16.dp,
-          end = 16.dp
+          end = 16.dp,
         ),
-      verticalArrangement = Arrangement.spacedBy(16.dp)
+      verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       item {
         Spacer(modifier = Modifier.height(16.dp))
@@ -163,7 +163,7 @@ private fun spotifyImportItems(
         Text(
           if (state.accountName.isNotBlank())
             stringResource(R.string.spotify_connected_as, state.accountName)
-          else stringResource(R.string.spotify_account)
+          else stringResource(R.string.spotify_account),
         )
       },
       description =
@@ -179,7 +179,7 @@ private fun spotifyImportItems(
       description = {
         Text(
           if (state.hasSources) stringResource(R.string.spotify_available_count, state.sources.size)
-          else stringResource(R.string.spotify_no_sources)
+          else stringResource(R.string.spotify_no_sources),
         )
       },
       icon = painterResource(R.drawable.playlist_play),
@@ -305,8 +305,8 @@ private fun SpotifyImportProgressDialog(
           progress.completedSources,
           progress.totalSources,
           progress.matchedTracks,
-          progress.totalTracks
-        )
+          progress.totalTracks,
+        ),
       )
       LinearProgressIndicator(
         progress = { progress.percent.toFloat() / 100f },

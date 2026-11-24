@@ -54,27 +54,27 @@ enum class ConnectionState {
   CONNECTING,
   CONNECTED,
   RECONNECTING,
-  ERROR
+  ERROR,
 }
 
 enum class RoomRole {
   HOST,
   GUEST,
-  NONE
+  NONE,
 }
 
 data class LogEntry(
   val timestamp: String,
   val level: LogLevel,
   val message: String,
-  val details: String? = null
+  val details: String? = null,
 )
 
 enum class LogLevel {
   INFO,
   WARNING,
   ERROR,
-  DEBUG
+  DEBUG,
 }
 
 sealed class PendingAction {
@@ -114,7 +114,7 @@ sealed class ListenTogetherEvent {
     val roomCode: String,
     val userId: String,
     val state: RoomState,
-    val isHost: Boolean
+    val isHost: Boolean,
   ) : ListenTogetherEvent()
 
   data class UserReconnected(val userId: String, val username: String) : ListenTogetherEvent()
@@ -133,8 +133,7 @@ sealed class ListenTogetherEvent {
 
   data class ChatMessageReceived(val payload: ChatMessagePayload) : ListenTogetherEvent()
 
-  data class LocalSuggestionApproved(val payload: SuggestionReceivedPayload) :
-    ListenTogetherEvent()
+  data class LocalSuggestionApproved(val payload: SuggestionReceivedPayload) : ListenTogetherEvent()
 
   data class RoomSettingsChanged(val allowParticipantControl: Boolean) : ListenTogetherEvent()
 }
@@ -203,7 +202,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
   private val _events =
     MutableSharedFlow<ListenTogetherEvent>(
       extraBufferCapacity = 64,
-      onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+      onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST,
     )
   val events: SharedFlow<ListenTogetherEvent> = _events.asSharedFlow()
 
@@ -1328,7 +1327,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               log(
                 LogLevel.INFO,
                 "Attempting to reconnect to previous session",
-                "Room: $storedRoomCode"
+                "Room: $storedRoomCode",
               )
               sendMessage(MessageTypes.RECONNECT, ReconnectPayload(sessionToken!!))
             } else {
@@ -1361,7 +1360,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             log(LogLevel.ERROR, "Connection failure", t.message)
             handleConnectionFailure(t)
           }
-        }
+        },
       )
   }
 
@@ -1378,11 +1377,11 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         log(
           LogLevel.INFO,
           "Executing pending join room",
-          "${action.roomCode} as ${action.username}"
+          "${action.roomCode} as ${action.username}",
         )
         sendMessage(
           MessageTypes.JOIN_ROOM,
-          JoinRoomPayload(action.roomCode.uppercase(), action.username)
+          JoinRoomPayload(action.roomCode.uppercase(), action.username),
         )
       }
     }
@@ -1415,14 +1414,13 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
 
   private fun startPingJob() {
     pingJob?.cancel()
-    pingJob =
-      scope.launch {
-        while (true) {
-          delay(PING_INTERVAL_MS)
-          pingSentTime = System.currentTimeMillis()
-          sendMessageNoPayload(MessageTypes.PING)
-        }
+    pingJob = scope.launch {
+      while (true) {
+        delay(PING_INTERVAL_MS)
+        pingSentTime = System.currentTimeMillis()
+        sendMessageNoPayload(MessageTypes.PING)
       }
+    }
   }
 
   @Suppress("DEPRECATION")
@@ -1455,7 +1453,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
           NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             context.getString(R.string.listen_together_notification_channel_name),
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_HIGH,
           )
         channel.description = context.getString(R.string.listen_together_notification_channel_desc)
         nm?.createNotificationChannel(channel)
@@ -1489,14 +1487,14 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         context,
         payload.userId.hashCode(),
         approveIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
     val rejectPI =
       PendingIntent.getBroadcast(
         context,
         payload.userId.hashCode().inv(),
         rejectIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
     val content =
@@ -1544,21 +1542,21 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         context,
         payload.suggestionId.hashCode(),
         approveIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
     val rejectPI =
       PendingIntent.getBroadcast(
         context,
         payload.suggestionId.hashCode().inv(),
         rejectIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
     val content =
       context.getString(
         R.string.listen_together_suggestion_received,
         payload.fromUsername,
-        payload.trackInfo.title
+        payload.trackInfo.title,
       )
 
     val builder =
@@ -1617,7 +1615,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
       log(
         LogLevel.INFO,
         "Attempting reconnect",
-        "Attempt $reconnectAttempts/$MAX_RECONNECT_ATTEMPTS, waiting ${delaySeconds}s, reason: ${t.message}"
+        "Attempt $reconnectAttempts/$MAX_RECONNECT_ATTEMPTS, waiting ${delaySeconds}s, reason: ${t.message}",
       )
 
       scope.launch {
@@ -1639,13 +1637,13 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         log(
           LogLevel.ERROR,
           "Reconnection failed",
-          "Max attempts reached, but session preserved for manual reconnect"
+          "Max attempts reached, but session preserved for manual reconnect",
         )
         scope.launch {
           _events.emit(
             ListenTogetherEvent.ConnectionError(
-              "Connection failed after $MAX_RECONNECT_ATTEMPTS attempts. ${t.message ?: "Unknown error"}"
-            )
+              "Connection failed after $MAX_RECONNECT_ATTEMPTS attempts. ${t.message ?: "Unknown error"}",
+            ),
           )
         }
       } else {
@@ -1698,7 +1696,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               isPlaying = false,
               position = 0,
               lastUpdate = System.currentTimeMillis(),
-              volume = 1f
+              volume = 1f,
             )
 
           savePersistedSession()
@@ -1713,7 +1711,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             Toast.makeText(
                 context,
                 context.getString(R.string.listen_together_room_created, payload.roomCode),
-                Toast.LENGTH_LONG
+                Toast.LENGTH_LONG,
               )
               .show()
           }
@@ -1727,7 +1725,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             log(
               LogLevel.INFO,
               "Join request from blocked user ignored",
-              "User: ${payload.username}"
+              "User: ${payload.username}",
             )
 
             rejectJoin(payload.userId, "You are blocked")
@@ -1749,7 +1747,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               if (
                 ActivityCompat.checkSelfPermission(
                   context,
-                  Manifest.permission.POST_NOTIFICATIONS
+                  Manifest.permission.POST_NOTIFICATIONS,
                 ) == PackageManager.PERMISSION_GRANTED
               ) {
                 showJoinRequestNotification(payload)
@@ -1779,7 +1777,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
           log(LogLevel.INFO, "Joined room", "Code: ${payload.roomCode}")
           scope.launch {
             _events.emit(
-              ListenTogetherEvent.JoinApproved(payload.roomCode, payload.userId, payload.state)
+              ListenTogetherEvent.JoinApproved(payload.roomCode, payload.userId, payload.state),
             )
           }
         }
@@ -1796,7 +1794,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               ?: return
           _roomState.value =
             _roomState.value?.copy(
-              users = _roomState.value!!.users + UserInfo(payload.userId, payload.username, false)
+              users = _roomState.value!!.users + UserInfo(payload.userId, payload.username, false),
             )
           _pendingJoinRequests.value =
             _pendingJoinRequests.value.filter { it.userId != payload.userId }
@@ -1815,7 +1813,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             codec.decodePayload(msgType, payloadBytes, detectedFormat) as? UserLeftPayload ?: return
           _roomState.value =
             _roomState.value?.copy(
-              users = _roomState.value!!.users.filter { it.userId != payload.userId }
+              users = _roomState.value!!.users.filter { it.userId != payload.userId },
             )
           log(LogLevel.INFO, "User left", payload.username)
           scope.launch {
@@ -1830,7 +1828,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             _roomState.value?.copy(
               hostId = payload.newHostId,
               users =
-                _roomState.value!!.users.map { it.copy(isHost = it.userId == payload.newHostId) }
+                _roomState.value!!.users.map { it.copy(isHost = it.userId == payload.newHostId) },
             )
           if (payload.newHostId == _userId.value) {
             _role.value = RoomRole.HOST
@@ -1864,14 +1862,14 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               _roomState.value =
                 _roomState.value?.copy(
                   isPlaying = true,
-                  position = payload.position ?: _roomState.value!!.position
+                  position = payload.position ?: _roomState.value!!.position,
                 )
             }
             PlaybackActions.PAUSE -> {
               _roomState.value =
                 _roomState.value?.copy(
                   isPlaying = false,
-                  position = payload.position ?: _roomState.value!!.position
+                  position = payload.position ?: _roomState.value!!.position,
                 )
             }
             PlaybackActions.SEEK -> {
@@ -1883,7 +1881,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
                 _roomState.value?.copy(
                   currentTrack = payload.trackInfo,
                   isPlaying = false,
-                  position = 0
+                  position = 0,
                 )
             }
             PlaybackActions.QUEUE_ADD -> {
@@ -1894,7 +1892,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
                   _roomState.value?.copy(
                     queue =
                       if (payload.insertNext == true) listOf(ti) + currentQueue
-                      else currentQueue + ti
+                      else currentQueue + ti,
                   )
               }
             }
@@ -1944,7 +1942,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
           log(
             LogLevel.INFO,
             "Sync state received",
-            "Playing: ${payload.isPlaying}, Position: ${payload.position}"
+            "Playing: ${payload.isPlaying}, Position: ${payload.position}",
           )
           scope.launch { _events.emit(ListenTogetherEvent.SyncStateReceived(payload)) }
         }
@@ -1959,7 +1957,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               log(
                 LogLevel.INFO,
                 "Suggestion from blocked user ignored",
-                "User: ${payload.fromUsername}"
+                "User: ${payload.fromUsername}",
               )
               return
             }
@@ -1968,14 +1966,14 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             log(
               LogLevel.INFO,
               "Suggestion received",
-              "${payload.fromUsername}: ${payload.trackInfo.title}"
+              "${payload.fromUsername}: ${payload.trackInfo.title}",
             )
 
             scope.launch(Dispatchers.Main) {
               Toast.makeText(
                   context,
                   "${payload.fromUsername} suggested: ${payload.trackInfo.title}",
-                  Toast.LENGTH_LONG
+                  Toast.LENGTH_LONG,
                 )
                 .show()
             }
@@ -2020,7 +2018,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
                 log(
                   LogLevel.WARNING,
                   "Session expired on server",
-                  "Attempting automatic rejoin to room: $storedRoomCode"
+                  "Attempting automatic rejoin to room: $storedRoomCode",
                 )
 
                 scope.launch {
@@ -2032,7 +2030,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
                 log(
                   LogLevel.WARNING,
                   "Host session expired",
-                  "Room: $storedRoomCode - manual intervention may be needed"
+                  "Room: $storedRoomCode - manual intervention may be needed",
                 )
                 clearPersistedSession()
                 sessionToken = null
@@ -2076,7 +2074,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
           log(
             LogLevel.INFO,
             "Successfully reconnected to room",
-            "Code: ${payload.roomCode}, isHost: ${payload.isHost}, attempt was $reconnectAttempts"
+            "Code: ${payload.roomCode}, isHost: ${payload.isHost}, attempt was $reconnectAttempts",
           )
           scope.launch {
             _events.emit(
@@ -2084,8 +2082,8 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
                 payload.roomCode,
                 payload.userId,
                 payload.state,
-                payload.isHost
-              )
+                payload.isHost,
+              ),
             )
           }
         }
@@ -2099,7 +2097,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               users =
                 _roomState.value!!.users.map { user ->
                   if (user.userId == payload.userId) user.copy(isConnected = true) else user
-                }
+                },
             )
           log(LogLevel.INFO, "User reconnected", payload.username)
           scope.launch {
@@ -2116,7 +2114,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
               users =
                 _roomState.value!!.users.map { user ->
                   if (user.userId == payload.userId) user.copy(isConnected = false) else user
-                }
+                },
             )
           log(LogLevel.INFO, "User temporarily disconnected", payload.username)
           scope.launch {
@@ -2158,7 +2156,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
           log(
             LogLevel.INFO,
             "Room settings changed",
-            "allowParticipantControl=${payload.allowParticipantControl}"
+            "allowParticipantControl=${payload.allowParticipantControl}",
           )
           scope.launch {
             _events.emit(ListenTogetherEvent.RoomSettingsChanged(payload.allowParticipantControl))
@@ -2309,7 +2307,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
     }
     sendMessage(
       MessageTypes.UPDATE_ROOM_SETTINGS,
-      UpdateRoomSettingsPayload(allowParticipantControl)
+      UpdateRoomSettingsPayload(allowParticipantControl),
     )
     _roomState.value = _roomState.value?.copy(allowParticipantControl = allowParticipantControl)
   }
@@ -2322,7 +2320,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
     insertNext: Boolean? = null,
     queue: List<TrackInfo>? = null,
     queueTitle: String? = null,
-    volume: Float? = null
+    volume: Float? = null,
   ) {
     val canControl =
       _role.value == RoomRole.HOST ||
@@ -2341,8 +2339,8 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         insertNext,
         queue,
         queueTitle,
-        volume
-      )
+        volume,
+      ),
     )
   }
 
@@ -2382,7 +2380,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
       Toast.makeText(
           context,
           context.getString(R.string.listen_together_suggestion_sent),
-          Toast.LENGTH_SHORT
+          Toast.LENGTH_SHORT,
         )
         .show()
     }

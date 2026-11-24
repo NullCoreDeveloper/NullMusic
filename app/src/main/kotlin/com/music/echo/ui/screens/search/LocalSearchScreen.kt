@@ -111,13 +111,13 @@ fun LocalSearchScreen(
           if (isLandscape) {
             base.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
           } else base
-        }
+        },
   ) {
     stickyHeader {
       Box(
         modifier =
           Modifier.fillMaxWidth()
-            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background),
       ) {
         ChipsRow(
           chips =
@@ -155,7 +155,7 @@ fun LocalSearchScreen(
                     LocalFilter.ARTIST -> R.string.filter_artists
                     LocalFilter.PLAYLIST -> R.string.filter_playlists
                     LocalFilter.ALL -> error("")
-                  }
+                  },
                 ),
               style = MaterialTheme.typography.titleLarge,
               modifier = Modifier.weight(1f),
@@ -193,10 +193,10 @@ fun LocalSearchScreen(
                           onDismiss()
                           menuState.dismiss()
                         },
-                        isFromCache = isFromCache
+                        isFromCache = isFromCache,
                       )
                     }
-                  }
+                  },
                 ) {
                   Icon(
                     painter = painterResource(R.drawable.more_vert),
@@ -220,7 +220,7 @@ fun LocalSearchScreen(
                             title = context.getString(R.string.queue_searched_songs),
                             items = songs,
                             startIndex = songs.indexOfFirst { it.mediaId == item.id },
-                          )
+                          ),
                         )
                       }
                     },
@@ -233,10 +233,10 @@ fun LocalSearchScreen(
                             onDismiss()
                             menuState.dismiss()
                           },
-                          isFromCache = isFromCache
+                          isFromCache = isFromCache,
                         )
                       }
-                    }
+                    },
                   )
                   .animateItem(),
             )

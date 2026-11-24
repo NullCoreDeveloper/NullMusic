@@ -52,8 +52,8 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.concurrent.Executors
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +66,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -238,7 +237,7 @@ constructor(
                             }
                         }
                     }
-                  }
+                  },
                 )
                 .proxy(YouTube.proxy)
                 .proxyAuthenticator { _, response ->
@@ -247,11 +246,11 @@ constructor(
                   } ?: response.request
                 }
                 .build(),
-            )
+            ),
           )
           .setCacheWriteDataSinkFactory(null)
-          .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-      )
+          .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR),
+      ),
     ) { dataSpec ->
       // If this is a Canvas request (e.g., Apple Music or Tidal), bypass YouTube resolution!
       if (
@@ -277,7 +276,7 @@ constructor(
             YTPlayerUtils.playerResponseForPlayback(
               videoId = mediaId,
               audioQuality = AudioQuality.AUTO,
-              connectivityManager = connectivityManager
+              connectivityManager = connectivityManager,
             )
           }
           .getOrThrow()
@@ -296,7 +295,7 @@ constructor(
             contentLength = format.contentLength ?: 0L,
             loudnessDb = playbackData.audioConfig?.loudnessDb,
             perceptualLoudnessDb = playbackData.audioConfig?.perceptualLoudnessDb,
-            playbackUrl = playbackData.playbackTracking?.videostatsPlaybackUrl?.baseUrl
+            playbackUrl = playbackData.playbackTracking?.videostatsPlaybackUrl?.baseUrl,
           ),
         )
 
@@ -358,7 +357,7 @@ constructor(
                     ?.thumbnails
                     ?.lastOrNull()
                     ?.url
-                    ?.resize(1200, 1200)
+                    ?.resize(1200, 1200),
             )
           } else {
             SongEntity(
@@ -373,7 +372,7 @@ constructor(
                   ?.url
                   ?.resize(1200, 1200),
               dateDownload = null,
-              isDownloaded = false
+              isDownloaded = false,
             )
           }
 
@@ -405,7 +404,7 @@ constructor(
         databaseProvider,
         downloadCache,
         dataSourceFactory,
-        Executors.newFixedThreadPool(3)
+        Executors.newFixedThreadPool(3),
       )
       .apply {
         maxParallelDownloads = 3
@@ -423,9 +422,17 @@ constructor(
               scope.launch {
                 when (download.state) {
                   Download.STATE_COMPLETED -> {
-                    val timestamp = if (download.updateTimeMs > 0) download.updateTimeMs else System.currentTimeMillis()
-                    val downloadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
-                    val title = runCatching { androidx.media3.common.util.Util.fromUtf8Bytes(download.request.data) }.getOrNull()?.takeIf { it.isNotBlank() } ?: "Unknown"
+                    val timestamp =
+                      if (download.updateTimeMs > 0) download.updateTimeMs
+                      else System.currentTimeMillis()
+                    val downloadDate =
+                      LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
+                    val title =
+                      runCatching {
+                        androidx.media3.common.util.Util.fromUtf8Bytes(download.request.data)
+                      }
+                        .getOrNull()
+                        ?.takeIf { it.isNotBlank() } ?: "Unknown"
                     database.withTransaction {
                       val rowId =
                         insert(
@@ -433,8 +440,8 @@ constructor(
                             id = download.request.id,
                             title = title,
                             dateDownload = downloadDate,
-                            isDownloaded = true
-                          )
+                            isDownloaded = true,
+                          ),
                         )
                       if (rowId == -1L) {
                         updateDownloadedInfo(download.request.id, true, downloadDate)
@@ -461,7 +468,7 @@ constructor(
                 database.updateDownloadedInfo(download.request.id, false, null)
               }
             }
-          }
+          },
         )
       }
 
@@ -477,9 +484,14 @@ constructor(
     scope.launch(Dispatchers.IO) {
       result.values.forEach { download ->
         if (download.state == Download.STATE_COMPLETED) {
-          val timestamp = if (download.updateTimeMs > 0) download.updateTimeMs else System.currentTimeMillis()
-          val downloadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
-          val title = runCatching { androidx.media3.common.util.Util.fromUtf8Bytes(download.request.data) }.getOrNull()?.takeIf { it.isNotBlank() } ?: "Unknown"
+          val timestamp =
+            if (download.updateTimeMs > 0) download.updateTimeMs else System.currentTimeMillis()
+          val downloadDate =
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
+          val title =
+            runCatching { androidx.media3.common.util.Util.fromUtf8Bytes(download.request.data) }
+              .getOrNull()
+              ?.takeIf { it.isNotBlank() } ?: "Unknown"
           database.withTransaction {
             val rowId =
               insert(
@@ -487,8 +499,8 @@ constructor(
                   id = download.request.id,
                   title = title,
                   dateDownload = downloadDate,
-                  isDownloaded = true
-                )
+                  isDownloaded = true,
+                ),
               )
             if (rowId == -1L) {
               updateDownloadedInfo(download.request.id, true, downloadDate)
@@ -544,9 +556,7 @@ constructor(
       }
     }
 
-    /**
-     * Returns true if the song is currently completed, queued, or downloading.
-     */
+    /** Returns true if the song is currently completed, queued, or downloading. */
     fun hasDownload(songId: String, downloads: Map<String, Download>): Boolean {
       val state = downloads[songId]?.state
       return state == Download.STATE_COMPLETED ||

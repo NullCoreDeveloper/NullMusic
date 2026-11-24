@@ -137,7 +137,7 @@ object AppModule {
                 }
             }
           }
-        }
+        },
       )
       .build()
 

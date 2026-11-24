@@ -12,8 +12,7 @@ enum class StatPeriod {
   MONTH_3,
   MONTH_6,
   YEAR_1,
-  ALL,
-  ;
+  ALL;
 
   fun toTimeMillis(): Long =
     when (this) {

@@ -66,7 +66,7 @@ fun AddToPlaylistDialog(
   initialTextFieldValue: String? = null,
   onGetSong: suspend (Playlist) -> List<String>,
   onDismiss: () -> Unit,
-  viewModel: PlaylistsViewModel = hiltViewModel()
+  viewModel: PlaylistsViewModel = hiltViewModel(),
 ) {
   val database = LocalDatabase.current
   val context = LocalContext.current
@@ -107,11 +107,11 @@ fun AddToPlaylistDialog(
               painter = painterResource(R.drawable.add),
               contentDescription = null,
               colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-              modifier = Modifier.size(ListThumbnailSize)
+              modifier = Modifier.size(ListThumbnailSize),
             )
           },
           shape = listItemShape(index = 0, count = totalItemsCount),
-          modifier = Modifier.clickable { showCreatePlaylistDialog = true }
+          modifier = Modifier.clickable { showCreatePlaylistDialog = true },
         )
       }
 
@@ -124,14 +124,14 @@ fun AddToPlaylistDialog(
               Text(
                 text = stringResource(R.string.search),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
               )
             },
             leadingIcon = {
               Icon(
                 painter = painterResource(R.drawable.search),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
               )
             },
             trailingIcon = {
@@ -140,7 +140,7 @@ fun AddToPlaylistDialog(
                   Icon(
                     painter = painterResource(R.drawable.close),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 }
               }
@@ -157,7 +157,7 @@ fun AddToPlaylistDialog(
                 cursorColor = MaterialTheme.colorScheme.primary,
               ),
             textStyle = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
           )
         }
       }
@@ -193,7 +193,7 @@ fun AddToPlaylistDialog(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
           )
         }
       }
@@ -208,7 +208,8 @@ fun AddToPlaylistDialog(
               coroutineScope.launch {
                 val ids = songIds ?: withContext(Dispatchers.IO) { onGetSong(playlist) }
                 songIds = ids
-                val dupes = withContext(Dispatchers.IO) { database.playlistDuplicates(playlist.id, ids) }
+                val dupes =
+                  withContext(Dispatchers.IO) { database.playlistDuplicates(playlist.id, ids) }
                 duplicates = dupes
                 if (dupes.isNotEmpty()) {
                   showDuplicateDialog = true
@@ -223,12 +224,12 @@ fun AddToPlaylistDialog(
                   Toast.makeText(
                       context,
                       context.getString(R.string.added_to_playlist, playlist.playlist.name),
-                      Toast.LENGTH_SHORT
+                      Toast.LENGTH_SHORT,
                     )
                     .show()
                 }
               }
-            }
+            },
         )
       }
     }
@@ -238,7 +239,7 @@ fun AddToPlaylistDialog(
     CreatePlaylistDialog(
       onDismiss = { showCreatePlaylistDialog = false },
       initialTextFieldValue = initialTextFieldValue,
-      allowSyncing = allowSyncing
+      allowSyncing = allowSyncing,
     )
   }
 
@@ -253,8 +254,10 @@ fun AddToPlaylistDialog(
             val targetPlaylist = selectedPlaylist ?: return@TextButton
             val toRemoveSongIds = duplicates.toSet()
             coroutineScope.launch(Dispatchers.IO) {
-              val maps = database.playlistSongMaps(targetPlaylist.id, 0)
-                .filter { it.songId in toRemoveSongIds }
+              val maps =
+                database.playlistSongMaps(targetPlaylist.id, 0).filter {
+                  it.songId in toRemoveSongIds
+                }
               database.transaction {
                 maps.forEach { map ->
                   move(map.playlistId, map.position, Int.MAX_VALUE)
@@ -273,18 +276,18 @@ fun AddToPlaylistDialog(
                     context,
                     context.getString(
                       R.string.removed_song_from_playlist,
-                      targetPlaylist.playlist.name
+                      targetPlaylist.playlist.name,
                     ),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                   )
                   .show()
               }
             }
-          }
+          },
         ) {
           Text(
             text = stringResource(R.string.remove_from_playlist),
-            color = MaterialTheme.colorScheme.error
+            color = MaterialTheme.colorScheme.error,
           )
         }
 
@@ -307,12 +310,12 @@ fun AddToPlaylistDialog(
                 Toast.makeText(
                     context,
                     context.getString(R.string.added_to_playlist, targetPlaylist.playlist.name),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                   )
                   .show()
               }
             }
-          }
+          },
         ) {
           Text(stringResource(R.string.skip_duplicates))
         }
@@ -332,12 +335,12 @@ fun AddToPlaylistDialog(
                 Toast.makeText(
                     context,
                     context.getString(R.string.added_to_playlist, targetPlaylist.playlist.name),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                   )
                   .show()
               }
             }
-          }
+          },
         ) {
           Text(stringResource(R.string.add_anyway))
         }
@@ -346,7 +349,7 @@ fun AddToPlaylistDialog(
           Text(stringResource(android.R.string.cancel))
         }
       },
-      onDismiss = { showDuplicateDialog = false }
+      onDismiss = { showDuplicateDialog = false },
     ) {
       Text(
         text =
@@ -356,7 +359,7 @@ fun AddToPlaylistDialog(
             stringResource(R.string.duplicates_description_multiple, duplicates.size)
           },
         textAlign = TextAlign.Start,
-        modifier = Modifier.align(Alignment.Start)
+        modifier = Modifier.align(Alignment.Start),
       )
     }
   }

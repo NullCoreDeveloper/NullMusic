@@ -26,7 +26,7 @@ fun PlayerSliderTrack(
   sliderState: SliderState,
   modifier: Modifier = Modifier,
   colors: SliderColors = SliderDefaults.colors(),
-  trackHeight: Dp = 10.dp
+  trackHeight: Dp = 10.dp,
 ) {
   val inactiveTrackColor = colors.inactiveTrackColor
   val activeTrackColor = colors.activeTrackColor
@@ -40,13 +40,13 @@ fun PlayerSliderTrack(
       calcFraction(
         valueRange.start,
         valueRange.endInclusive,
-        sliderState.value.coerceIn(valueRange.start, valueRange.endInclusive)
+        sliderState.value.coerceIn(valueRange.start, valueRange.endInclusive),
       ),
       inactiveTrackColor,
       activeTrackColor,
       inactiveTickColor,
       activeTickColor,
-      trackHeight
+      trackHeight,
     )
   }
 }
@@ -59,7 +59,7 @@ private fun DrawScope.drawTrack(
   activeTrackColor: Color,
   inactiveTickColor: Color,
   activeTickColor: Color,
-  trackHeight: Dp = 2.dp
+  trackHeight: Dp = 2.dp,
 ) {
   val isRtl = layoutDirection == LayoutDirection.Rtl
   val sliderLeft = Offset(0f, center.y)
@@ -79,7 +79,7 @@ private fun DrawScope.drawTrack(
     drawCircle(
       color = if (outsideFraction) inactiveTickColor else activeTickColor,
       center = Offset(lerp(sliderStart, sliderEnd, tick).x, center.y),
-      radius = tickSize / 2f
+      radius = tickSize / 2f,
     )
   }
 }

@@ -646,7 +646,7 @@ object AppleMusicCanvasProvider {
 
             if (isBlacklisted) {
               AppleCanvasLogger.d(
-                "  - Skipping blacklisted result: '$resultName' (Album: '$resultCollectionName')"
+                "  - Skipping blacklisted result: '$resultName' (Album: '$resultCollectionName')",
               )
               return@mapNotNull null
             }
@@ -708,7 +708,7 @@ object AppleMusicCanvasProvider {
             }
 
             AppleCanvasLogger.d(
-              "  - Result: '$resultName' by '$resultArtistName' (Album: '$resultCollectionName', ID: ${obj["id"]}) -> Score: $score"
+              "  - Result: '$resultName' by '$resultArtistName' (Album: '$resultCollectionName', ID: ${obj["id"]}) -> Score: $score",
             )
             score to item
           }
@@ -766,13 +766,13 @@ object AppleMusicCanvasProvider {
 
         if (targetAlbumId == null || targetAlbumId.startsWith("pl.")) {
           AppleCanvasLogger.d(
-            "skipping null or playlist albumId ($targetAlbumId) for $resultName ($resultArtistName)"
+            "skipping null or playlist albumId ($targetAlbumId) for $resultName ($resultArtistName)",
           )
           continue
         }
 
         AppleCanvasLogger.d(
-          "trying resolve for $targetAlbumId (from ${obj["type"]?.jsonPrimitive?.contentOrNull})"
+          "trying resolve for $targetAlbumId (from ${obj["type"]?.jsonPrimitive?.contentOrNull})",
         )
 
         // 2. Check for immediate motion in search result
@@ -809,7 +809,7 @@ object AppleMusicCanvasProvider {
         if (fetched != null) return@runCatching fetched
       }
       AppleCanvasLogger.d(
-        "no canvas found in resolution/lookup for $term after ${scoredResults.size} results"
+        "no canvas found in resolution/lookup for $term after ${scoredResults.size} results",
       )
       null
     }
@@ -877,7 +877,7 @@ object AppleMusicCanvasProvider {
 
       if (isBlacklisted) {
         AppleCanvasLogger.d(
-          "fetchMotionArtwork: ignoring blacklisted album '$albumName' ($albumId)"
+          "fetchMotionArtwork: ignoring blacklisted album '$albumName' ($albumId)",
         )
         return@runCatching null
       }
@@ -893,7 +893,7 @@ object AppleMusicCanvasProvider {
         val url = extractEditorialVideoUrl(ev)
         if (!url.isNullOrBlank()) {
           AppleCanvasLogger.d(
-            "found editorialVideo for $finalTitle (album: $albumName, id: $albumId)"
+            "found editorialVideo for $finalTitle (album: $albumName, id: $albumId)",
           )
           return@runCatching CanvasArtwork(
             finalTitle,

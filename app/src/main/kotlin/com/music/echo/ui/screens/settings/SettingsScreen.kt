@@ -89,19 +89,21 @@ highlightKey: String? = null) {
   val scrollState = rememberScrollState()
   Column(
     Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal),
       )
       .verticalScroll(scrollState)
-      .padding(horizontal = 16.dp)
+      .padding(horizontal = 16.dp),
   ) {
     Spacer(
-      Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top))
+      Modifier.windowInsetsPadding(
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
+      ),
     )
     Text(
       text = stringResource(R.string.settings),
       style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.SemiBold),
       color = MaterialTheme.colorScheme.onBackground,
-      modifier = Modifier.padding(start = 8.dp, top = 24.dp, bottom = 16.dp)
+      modifier = Modifier.padding(start = 8.dp, top = 24.dp, bottom = 16.dp),
     )
 
     TextField(
@@ -111,7 +113,7 @@ highlightKey: String? = null) {
       leadingIcon = {
         Icon(
           imageVector = Icons.Rounded.Search,
-          contentDescription = stringResource(R.string.search)
+          contentDescription = stringResource(R.string.search),
         )
       },
       trailingIcon = {
@@ -126,9 +128,9 @@ highlightKey: String? = null) {
         TextFieldDefaults.colors(
           focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
           unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-          disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+          disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
         ),
-      modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
+      modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
     )
 
     val itemsList = buildList {
@@ -142,8 +144,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.account),
             title = { Text(accountText) },
             description = { Text(accountDesc) },
-            onClick = { navController.navigate("settings/account") }
-          )
+            onClick = { navController.navigate("settings/account") },
+          ),
         )
       }
 
@@ -161,13 +163,13 @@ highlightKey: String? = null) {
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color =
                   if (highlightKey == aiLyricsText) MaterialTheme.colorScheme.onSurface
-                  else MaterialTheme.colorScheme.onSurfaceVariant
+                  else MaterialTheme.colorScheme.onSurfaceVariant,
               )
             },
             title = { Text(aiLyricsText) },
             description = { Text(aiLyricsDesc) },
-            onClick = { navController.navigate("settings/ai") }
-          )
+            onClick = { navController.navigate("settings/ai") },
+          ),
         )
       }
 
@@ -179,19 +181,23 @@ highlightKey: String? = null) {
             description = {
               Text(stringResource(echo.music.iad1tya.R.string.listening_summary_desc))
             },
-            onClick = { navController.navigate("settings/listening_summary") }
-          )
+            onClick = { navController.navigate("settings/listening_summary") },
+          ),
         )
       }
 
-      if ("echo wrapped".contains(searchLower) || "wrapped".contains(searchLower) || "replay".contains(searchLower)) {
+      if (
+        "echo wrapped".contains(searchLower) ||
+          "wrapped".contains(searchLower) ||
+          "replay".contains(searchLower)
+      ) {
         add(
           Material3SettingsItem(
             icon = painterResource(echo.music.iad1tya.R.drawable.ic_echo_wrapped),
             title = { Text("Echo Wrapped") },
             description = { Text("Your year in sound & personal music recap") },
-            onClick = { navController.navigate("wrapped") }
-          )
+            onClick = { navController.navigate("wrapped") },
+          ),
         )
       }
 
@@ -205,8 +211,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.palette),
             title = { Text(appearanceText) },
             description = { Text(appearanceDesc) },
-            onClick = { navController.navigate("settings/appearance") }
-          )
+            onClick = { navController.navigate("settings/appearance") },
+          ),
         )
       }
       if (
@@ -218,8 +224,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.play),
             title = { Text(playerText) },
             description = { Text(playerDesc) },
-            onClick = { navController.navigate("settings/player") }
-          )
+            onClick = { navController.navigate("settings/player") },
+          ),
         )
       }
       val musicFlowText = stringResource(R.string.music_flow)
@@ -234,8 +240,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.swipe_vertical),
             title = { Text(musicFlowText) },
             description = { Text(musicFlowDesc) },
-            onClick = { navController.navigate("settings/music_flow") }
-          )
+            onClick = { navController.navigate("settings/music_flow") },
+          ),
         )
       }
       if (
@@ -248,8 +254,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.group),
             title = { Text(listenTogetherText) },
             description = { Text(listenTogetherDesc) },
-            onClick = { navController.navigate(Screens.ListenTogether.route) }
-          )
+            onClick = { navController.navigate(Screens.ListenTogether.route) },
+          ),
         )
       }
       if (
@@ -262,12 +268,10 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.language),
             title = { Text(contentText) },
             description = { Text(contentDesc) },
-            onClick = { navController.navigate("settings/content") }
-          )
+            onClick = { navController.navigate("settings/content") },
+          ),
         )
       }
-
-
 
       if (
         privacyText.lowercase().contains(searchLower) ||
@@ -279,8 +283,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.security),
             title = { Text(privacyText) },
             description = { Text(privacyDesc) },
-            onClick = { navController.navigate("settings/privacy") }
-          )
+            onClick = { navController.navigate("settings/privacy") },
+          ),
         )
       }
       if (
@@ -293,11 +297,10 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.storage),
             title = { Text(storageText) },
             description = { Text(storageDesc) },
-            onClick = { navController.navigate("settings/storage") }
-          )
+            onClick = { navController.navigate("settings/storage") },
+          ),
         )
       }
-
 
       if (
         backupText.lowercase().contains(searchLower) || backupDesc.lowercase().contains(searchLower)
@@ -308,8 +311,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.restore),
             title = { Text(backupText) },
             description = { Text(backupDesc) },
-            onClick = { navController.navigate("settings/backup_restore") }
-          )
+            onClick = { navController.navigate("settings/backup_restore") },
+          ),
         )
       }
       if (
@@ -321,7 +324,7 @@ highlightKey: String? = null) {
             isHighlighted = (highlightKey == systemUpdateText),
             icon =
               painterResource(
-                if (isUpdateAvailable) R.drawable.ic_launcher_nobg else R.drawable.update
+                if (isUpdateAvailable) R.drawable.ic_launcher_nobg else R.drawable.update,
               ),
             title = { Text(systemUpdateText) },
             description =
@@ -329,14 +332,14 @@ highlightKey: String? = null) {
                 {
                   Text(
                     text = stringResource(R.string.update_available),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                   )
                 }
               } else {
                 { Text(systemUpdateDesc) }
               },
-            onClick = { navController.navigate("settings/update") }
-          )
+            onClick = { navController.navigate("settings/update") },
+          ),
         )
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -352,7 +355,7 @@ highlightKey: String? = null) {
                   val intent =
                     Intent(
                       Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
-                      Uri.parse("package:${context.packageName}")
+                      Uri.parse("package:${context.packageName}"),
                     )
                   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                   context.startActivity(intent)
@@ -367,8 +370,8 @@ highlightKey: String? = null) {
                     }
                   }
                 }
-              }
-            )
+              },
+            ),
           )
         }
       }
@@ -381,8 +384,8 @@ highlightKey: String? = null) {
             icon = painterResource(R.drawable.info),
             title = { Text(aboutText) },
             description = { Text(aboutDesc) },
-            onClick = { navController.navigate("settings/about") }
-          )
+            onClick = { navController.navigate("settings/about") },
+          ),
         )
       }
     }
@@ -414,7 +417,7 @@ highlightKey: String? = null) {
                     if (setting.route.contains("?")) "${setting.route}&highlightKey=$encodedTitle"
                     else "${setting.route}?highlightKey=$encodedTitle"
                   navController.navigate(finalRoute)
-                }
+                },
               )
             }
 
@@ -430,7 +433,7 @@ highlightKey: String? = null) {
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
     } else if (searchQuery.isNotEmpty()) {
       Spacer(modifier = Modifier.height(16.dp))
@@ -469,8 +472,8 @@ highlightKey: String? = null) {
     Spacer(modifier = Modifier.height(50.dp))
     Spacer(
       Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
-      )
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom),
+      ),
     )
   }
 
@@ -479,7 +482,7 @@ highlightKey: String? = null) {
       androidx.compose.animation.AnimatedVisibility(
         visible = scrollState.value > 100,
         enter = androidx.compose.animation.fadeIn(),
-        exit = androidx.compose.animation.fadeOut()
+        exit = androidx.compose.animation.fadeOut(),
       ) {
         Text(text = stringResource(R.string.settings), style = MaterialTheme.typography.titleLarge)
       }
@@ -488,6 +491,6 @@ highlightKey: String? = null) {
       IconButton(onClick = navController::navigateUp, onLongClick = navController::backToMain) {
         Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
       }
-    }
+    },
   )
 }

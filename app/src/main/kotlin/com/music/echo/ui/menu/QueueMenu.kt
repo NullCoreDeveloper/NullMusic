@@ -120,7 +120,7 @@ fun QueueMenu(
       }
       listOf(mediaMetadata.id)
     },
-    onDismiss = { showChoosePlaylistDialog = false }
+    onDismiss = { showChoosePlaylistDialog = false },
   )
 
   var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
@@ -134,14 +134,14 @@ fun QueueMenu(
       text = {
         androidx.compose.material3.Text(
           text =
-            "This song was dynamically added by Echo Brain based on your listening patterns, the current song's genre, and your library's vibes."
+            "This song was dynamically added by Echo Brain based on your listening patterns, the current song's genre, and your library's vibes.",
         )
       },
       confirmButton = {
         androidx.compose.material3.TextButton(onClick = { showWhyDialog = false }) {
           androidx.compose.material3.Text("Got it")
         }
-      }
+      },
     )
   }
 
@@ -502,7 +502,7 @@ fun QueueMenu(
           painter =
             painterResource(
               if (librarySong?.song?.liked == true) R.drawable.favorite
-              else R.drawable.favorite_border
+              else R.drawable.favorite_border,
             ),
           tint =
             if (librarySong?.song?.liked == true) MaterialTheme.colorScheme.error
@@ -539,14 +539,14 @@ fun QueueMenu(
                   painter = painterResource(R.drawable.radio),
                   contentDescription = null,
                   modifier = Modifier.size(28.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.start_an_radio),
               onClick = {
                 onDismiss()
                 playerConnection.playQueue(YouTubeQueue.radio(mediaMetadata))
-              }
+              },
             ),
             NewAction(
               icon = {
@@ -554,11 +554,11 @@ fun QueueMenu(
                   painter = painterResource(R.drawable.playlist_add),
                   contentDescription = null,
                   modifier = Modifier.size(28.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.add_to_an_playlist),
-              onClick = { showChoosePlaylistDialog = true }
+              onClick = { showChoosePlaylistDialog = true },
             ),
             NewAction(
               icon = {
@@ -566,7 +566,7 @@ fun QueueMenu(
                   painter = painterResource(R.drawable.share),
                   contentDescription = null,
                   modifier = Modifier.size(28.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.share),
@@ -582,10 +582,10 @@ fun QueueMenu(
                     )
                   }
                 context.startActivity(Intent.createChooser(intent, null))
-              }
-            )
+              },
+            ),
           ),
-        modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
       )
     }
 
@@ -606,7 +606,7 @@ fun QueueMenu(
                 onDismiss()
                 librarySong?.let { playerConnection.playNext(it.toMediaItem()) }
                   ?: run { playerConnection.playNext(mediaMetadata.toMediaItem()) }
-              }
+              },
             ),
             Material3MenuItemData(
               title = { Text(text = stringResource(R.string.add_to_queue)) },
@@ -621,9 +621,9 @@ fun QueueMenu(
                 onDismiss()
                 librarySong?.let { playerConnection.addToQueue(it.toMediaItem()) }
                   ?: run { playerConnection.addToQueue(mediaMetadata.toMediaItem()) }
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
     }
 
@@ -641,7 +641,7 @@ fun QueueMenu(
                     Icon(
                       painter = painterResource(R.drawable.offline),
                       contentDescription = null,
-                      modifier = Modifier.size(24.dp)
+                      modifier = Modifier.size(24.dp),
                     )
                   },
                   onClick = {
@@ -651,7 +651,7 @@ fun QueueMenu(
                       mediaMetadata.id,
                       false,
                     )
-                  }
+                  },
                 )
               }
               Download.STATE_QUEUED,
@@ -668,7 +668,7 @@ fun QueueMenu(
                       mediaMetadata.id,
                       false,
                     )
-                  }
+                  },
                 )
               }
               else -> {
@@ -679,7 +679,7 @@ fun QueueMenu(
                     Icon(
                       painter = painterResource(R.drawable.download),
                       contentDescription = null,
-                      modifier = Modifier.size(24.dp)
+                      modifier = Modifier.size(24.dp),
                     )
                   },
                   onClick = {
@@ -695,11 +695,11 @@ fun QueueMenu(
                       downloadRequest,
                       false,
                     )
-                  }
+                  },
                 )
               }
-            }
-          )
+            },
+          ),
       )
     }
 
@@ -717,14 +717,14 @@ fun QueueMenu(
                     Text(
                       text = mediaMetadata.artists.joinToString { it.name },
                       maxLines = 1,
-                      overflow = TextOverflow.Ellipsis
+                      overflow = TextOverflow.Ellipsis,
                     )
                   },
                   icon = {
                     Icon(
                       painter = painterResource(R.drawable.artist),
                       contentDescription = null,
-                      modifier = Modifier.size(24.dp)
+                      modifier = Modifier.size(24.dp),
                     )
                   },
                   onClick = {
@@ -735,8 +735,8 @@ fun QueueMenu(
                     } else {
                       showSelectArtistDialog = true
                     }
-                  }
-                )
+                  },
+                ),
               )
             }
             if (mediaMetadata.album != null) {
@@ -747,25 +747,25 @@ fun QueueMenu(
                     Text(
                       text = mediaMetadata.album!!.title,
                       maxLines = 1,
-                      overflow = TextOverflow.Ellipsis
+                      overflow = TextOverflow.Ellipsis,
                     )
                   },
                   icon = {
                     Icon(
                       painter = painterResource(R.drawable.album),
                       contentDescription = null,
-                      modifier = Modifier.size(24.dp)
+                      modifier = Modifier.size(24.dp),
                     )
                   },
                   onClick = {
                     navController.navigate("album/${mediaMetadata.album!!.id}")
                     playerBottomSheetState.collapseSoft()
                     onDismiss()
-                  }
-                )
+                  },
+                ),
               )
             }
-          }
+          },
       )
     }
 
@@ -792,7 +792,7 @@ fun QueueMenu(
                     context,
                     echo.music.iad1tya.playback.ExoDownloadService::class.java,
                     mediaMetadata.id,
-                    false
+                    false,
                   )
                   val intent =
                     android.content
@@ -811,8 +811,8 @@ fun QueueMenu(
                       }
                     }
                   }
-                }
-              )
+                },
+              ),
             )
             add(
               Material3MenuItemData(
@@ -822,16 +822,16 @@ fun QueueMenu(
                   Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   onShowDetailsDialog()
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
-          }
+          },
       )
     }
   }

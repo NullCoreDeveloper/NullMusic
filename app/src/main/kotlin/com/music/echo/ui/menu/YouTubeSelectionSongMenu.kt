@@ -80,7 +80,7 @@ fun YouTubeSelectionSongMenu(
           songSelection.all { song ->
             val metadata = song.toMediaMetadata()
             metadata.liked
-          }
+          },
       )
     }
 
@@ -178,8 +178,8 @@ fun YouTubeSelectionSongMenu(
               }
               clearAction()
               onDismiss()
-            }
-          )
+            },
+          ),
         ),
     ) {
         item {

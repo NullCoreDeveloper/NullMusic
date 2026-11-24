@@ -79,7 +79,7 @@ import kotlinx.coroutines.withContext
 @OptIn(
   ExperimentalFoundationApi::class,
   ExperimentalMaterial3Api::class,
-  ExperimentalMaterial3ExpressiveApi::class
+  ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
 fun LibraryArtistsScreen(
@@ -113,13 +113,13 @@ fun LibraryArtistsScreen(
           leadingIcon = {
             Icon(painter = painterResource(R.drawable.close), contentDescription = "")
           },
-          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
         )
         ChipsRow(
           chips =
             listOf(
               ArtistFilter.LIKED to stringResource(R.string.filter_liked),
-              ArtistFilter.LIBRARY to stringResource(R.string.filter_library)
+              ArtistFilter.LIBRARY to stringResource(R.string.filter_library),
             ),
           currentValue = filter,
           onValueUpdate = { filter = it },
@@ -205,7 +205,7 @@ fun LibraryArtistsScreen(
                     when (type) {
                       LibraryViewType.LIST -> R.drawable.list
                       LibraryViewType.GRID -> R.drawable.grid_view
-                    }
+                    },
                   ),
                 contentDescription = null,
               )
@@ -244,7 +244,7 @@ fun LibraryArtistsScreen(
                 EmptyPlaceholder(
                   icon = R.drawable.artist,
                   text = stringResource(R.string.library_artist_empty),
-                  modifier = Modifier.animateItem()
+                  modifier = Modifier.animateItem(),
                 )
               }
             }
@@ -259,7 +259,7 @@ fun LibraryArtistsScreen(
                 menuState = menuState,
                 coroutineScope = coroutineScope,
                 modifier = Modifier.animateItem(),
-                artist = artist
+                artist = artist,
               )
             }
           }
@@ -296,7 +296,7 @@ fun LibraryArtistsScreen(
                 EmptyPlaceholder(
                   icon = R.drawable.artist,
                   text = stringResource(R.string.library_artist_empty),
-                  modifier = Modifier.animateItem()
+                  modifier = Modifier.animateItem(),
                 )
               }
             }
@@ -311,7 +311,7 @@ fun LibraryArtistsScreen(
                 menuState = menuState,
                 coroutineScope = coroutineScope,
                 modifier = Modifier.animateItem(),
-                artist = artist
+                artist = artist,
               )
             }
           }

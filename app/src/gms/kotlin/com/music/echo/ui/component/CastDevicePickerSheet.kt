@@ -107,8 +107,8 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
     MediaRouteSelector.Builder()
       .addControlCategory(
         CastMediaControlIntent.categoryForCast(
-          CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
-        )
+          CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID,
+        ),
       )
       .build()
   }
@@ -125,7 +125,7 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
             if (discoveredRoutes.none { it.id == route.id }) {
               discoveredRoutes.add(route)
               Timber.d(
-                "Cast route added: name=${route.name}, description=${route.description}, extras=${route.extras}"
+                "Cast route added: name=${route.name}, description=${route.description}, extras=${route.extras}",
               )
             }
           }
@@ -170,19 +170,19 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
     // ── Header ──────────────────────────────────────────────────
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 4.dp)
+      modifier = Modifier.padding(horizontal = 4.dp),
     ) {
       Icon(
         painter = painterResource(R.drawable.cast),
         contentDescription = null,
         modifier = Modifier.size(28.dp),
-        tint = MaterialTheme.colorScheme.primary
+        tint = MaterialTheme.colorScheme.primary,
       )
       Spacer(modifier = Modifier.width(12.dp))
       Text(
         text = "Cast to",
         style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
       )
     }
 
@@ -193,7 +193,7 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
       Column {
         LinearProgressIndicator(
           modifier = Modifier.fillMaxWidth().height(2.dp).clip(RoundedCornerShape(1.dp)),
-          strokeCap = StrokeCap.Round
+          strokeCap = StrokeCap.Round,
         )
         Spacer(modifier = Modifier.height(12.dp))
       }
@@ -205,12 +205,12 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
         // Scanning state
         Box(
           modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-          contentAlignment = Alignment.Center
+          contentAlignment = Alignment.Center,
         ) {
           CircularProgressIndicator(
             modifier = Modifier.size(32.dp),
             strokeWidth = 3.dp,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
           )
         }
       }
@@ -218,20 +218,20 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
         // No devices found
         Column(
           modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
+          horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           Box(
             modifier =
               Modifier.size(64.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
           ) {
             Icon(
               painter = painterResource(R.drawable.cast),
               contentDescription = null,
               modifier = Modifier.size(32.dp),
-              tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+              tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
           }
           Spacer(modifier = Modifier.height(16.dp))
@@ -239,13 +239,13 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
             text = "No devices found",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
           )
           Spacer(modifier = Modifier.height(6.dp))
           Text(
             text = "Make sure your device is on the same Wi-Fi network",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
@@ -265,7 +265,7 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
                 } catch (e: Exception) {
                   Timber.e(e, "Failed to select Cast route")
                 }
-              }
+              },
             )
           }
         }
@@ -278,7 +278,7 @@ fun CastDevicePickerSheet(onDismiss: () -> Unit, modifier: Modifier = Modifier) 
 private fun CastDeviceItem(
   route: MediaRouter.RouteInfo,
   onClick: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   val isSelected = route.isSelected
   val deviceType =
@@ -293,7 +293,7 @@ private fun CastDeviceItem(
         .fillMaxWidth()
         .clip(RoundedCornerShape(12.dp))
         .clickable(onClick = onClick)
-        .padding(horizontal = 12.dp, vertical = 14.dp)
+        .padding(horizontal = 12.dp, vertical = 14.dp),
   ) {
     // Device icon with background
     Box(
@@ -302,9 +302,9 @@ private fun CastDeviceItem(
           .clip(CircleShape)
           .background(
             if (isSelected) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
           ),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.Center,
     ) {
       Image(
         painter = painterResource(if (isSelected) deviceType.connectedIcon else deviceType.icon),
@@ -323,7 +323,7 @@ private fun CastDeviceItem(
         fontWeight = FontWeight.Medium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
       )
       if (!route.description.isNullOrBlank()) {
         Text(
@@ -331,7 +331,7 @@ private fun CastDeviceItem(
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
       }
     }
@@ -343,7 +343,7 @@ private fun CastDeviceItem(
         text = "Connected",
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium,
       )
     }
   }

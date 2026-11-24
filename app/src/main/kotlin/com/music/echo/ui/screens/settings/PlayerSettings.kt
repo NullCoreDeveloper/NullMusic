@@ -87,7 +87,7 @@ import kotlin.math.roundToInt
 fun PlayerSettings(
   navController: NavController,
   scrollBehavior: TopAppBarScrollBehavior,
-  highlightKey: String? = null
+  highlightKey: String? = null,
 ) {
   val scrollState = androidx.compose.foundation.rememberScrollState()
 
@@ -96,12 +96,12 @@ fun PlayerSettings(
   val (audioQualityWifi, onAudioQualityWifiChange) =
     rememberEnumPreference(
       echo.music.iad1tya.constants.AudioQualityWifiKey,
-      defaultValue = AudioQuality.LOSSLESS
+      defaultValue = AudioQuality.LOSSLESS,
     )
   val (audioQualityCellular, onAudioQualityCellularChange) =
     rememberEnumPreference(
       echo.music.iad1tya.constants.AudioQualityCellularKey,
-      defaultValue = AudioQuality.MEDIUM
+      defaultValue = AudioQuality.MEDIUM,
     )
 
   val (crossfadeEnabled, onCrossfadeEnabledChange) =
@@ -125,7 +125,7 @@ fun PlayerSettings(
   val (audioLoudnessPreset, onAudioLoudnessPresetChange) =
     rememberEnumPreference(
       echo.music.iad1tya.constants.AudioLoudnessPresetKey,
-      defaultValue = echo.music.iad1tya.constants.AudioLoudnessPreset.NORMAL
+      defaultValue = echo.music.iad1tya.constants.AudioLoudnessPreset.NORMAL,
     )
   var showLoudnessPresetDialog by remember { mutableStateOf(false) }
 
@@ -208,13 +208,13 @@ fun PlayerSettings(
   val (playbackEngine, onPlaybackEngineChange) =
     rememberEnumPreference(
       echo.music.iad1tya.constants.PlaybackEngineKey,
-      defaultValue = echo.music.iad1tya.constants.PlaybackEngine.AUTO
+      defaultValue = echo.music.iad1tya.constants.PlaybackEngine.AUTO,
     )
 
   val (downloadQuality, onDownloadQualityChange) =
     rememberEnumPreference(
       echo.music.iad1tya.constants.DownloadQualityKey,
-      defaultValue = echo.music.iad1tya.constants.DownloadQuality.YOUTUBE
+      defaultValue = echo.music.iad1tya.constants.DownloadQuality.YOUTUBE,
     )
 
   if (showAudioQualityWifiDialog) {
@@ -226,14 +226,15 @@ fun PlayerSettings(
       },
       title = stringResource(R.string.audio_quality_wifi),
       current = audioQualityWifi,
-      values = listOf(
-        AudioQuality.LOSSLESS,
-        AudioQuality.HIGH,
-        AudioQuality.MEDIUM,
-        AudioQuality.LOW,
-      ),
+      values =
+        listOf(
+          AudioQuality.LOSSLESS,
+          AudioQuality.HIGH,
+          AudioQuality.MEDIUM,
+          AudioQuality.LOW,
+        ),
       valueText = { it.label },
-      valueDescription = { "${it.detail} (${it.hourly})" }
+      valueDescription = { "${it.detail} (${it.hourly})" },
     )
   }
 
@@ -246,14 +247,15 @@ fun PlayerSettings(
       },
       title = stringResource(R.string.audio_quality_cellular),
       current = audioQualityCellular,
-      values = listOf(
-        AudioQuality.MEDIUM,
-        AudioQuality.LOW,
-        AudioQuality.HIGH,
-        AudioQuality.LOSSLESS,
-      ),
+      values =
+        listOf(
+          AudioQuality.MEDIUM,
+          AudioQuality.LOW,
+          AudioQuality.HIGH,
+          AudioQuality.LOSSLESS,
+        ),
       valueText = { it.label },
-      valueDescription = { "${it.detail} (${it.hourly})" }
+      valueDescription = { "${it.detail} (${it.hourly})" },
     )
   }
 
@@ -272,7 +274,7 @@ fun PlayerSettings(
           echo.music.iad1tya.constants.DownloadQuality.YOUTUBE -> "YouTube Music (AAC/Default)"
           else -> ""
         }
-      }
+      },
     )
   }
 
@@ -290,7 +292,7 @@ fun PlayerSettings(
           echo.music.iad1tya.constants.AudioLoudnessPreset.QUIET,
           echo.music.iad1tya.constants.AudioLoudnessPreset.NORMAL,
           echo.music.iad1tya.constants.AudioLoudnessPreset.LOUD,
-          echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE
+          echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE,
         ),
       valueText = {
         when (it) {
@@ -303,7 +305,7 @@ fun PlayerSettings(
           echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE ->
             stringResource(R.string.loudness_preset_aggressive)
         }
-      }
+      },
     )
   }
 
@@ -321,7 +323,7 @@ fun PlayerSettings(
         listOf(
           echo.music.iad1tya.constants.PlaybackEngine.POTOKEN,
           echo.music.iad1tya.constants.PlaybackEngine.BRAVEPIPE,
-          echo.music.iad1tya.constants.PlaybackEngine.AUTO
+          echo.music.iad1tya.constants.PlaybackEngine.AUTO,
         ),
       valueText = {
         when (it) {
@@ -339,16 +341,16 @@ fun PlayerSettings(
           echo.music.iad1tya.constants.PlaybackEngine.AUTO ->
             "Tries PoToken first, falls back to BravePipe if it fails."
         }
-      }
+      },
     )
   }
 
   Column(
     Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal),
       )
       .verticalScroll(scrollState)
-      .padding(horizontal = 16.dp)
+      .padding(horizontal = 16.dp),
   ) {
     var showCrossfadeBetaDialog by remember { mutableStateOf(false) }
 
@@ -477,7 +479,7 @@ fun PlayerSettings(
           ) {
             Text(stringResource(R.string.enable))
           }
-        }
+        },
       ) {
         Text(stringResource(R.string.crossfade_beta_message))
       }
@@ -516,7 +518,7 @@ fun PlayerSettings(
               title = { Text("Data Saver Mode (Beta)") },
               description = {
                 Text(
-                  "Disable lyrics, videos, preloading, background syncs, and force Opus audio to save data."
+                  "Disable lyrics, videos, preloading, background syncs, and force Opus audio to save data.",
                 )
               },
               trailingContent = {
@@ -527,18 +529,18 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (dataSaverEnabled) R.drawable.check else R.drawable.close
+                          id = if (dataSaverEnabled) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onDataSaverEnabledChange(!dataSaverEnabled) }
-            )
+              onClick = { onDataSaverEnabledChange(!dataSaverEnabled) },
+            ),
           )
-        }
+        },
     )
 
     if (showPlaybackEngineDialog) {
@@ -580,8 +582,8 @@ fun PlayerSettings(
                     WindowInsetsSides.Horizontal
                 )
               },
-              onClick = { showPlaybackEngineDialog = true }
-            )
+              onClick = { showPlaybackEngineDialog = true },
+            ),
           )
 
           add(
@@ -864,16 +866,16 @@ fun PlayerSettings(
                       Icon(
                         painter =
                           painterResource(
-                            id = if (crossfadeGapless) R.drawable.check else R.drawable.close
+                            id = if (crossfadeGapless) R.drawable.check else R.drawable.close,
                           ),
                         contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
-                onClick = { onCrossfadeGaplessChange(!crossfadeGapless) }
-              )
+                onClick = { onCrossfadeGaplessChange(!crossfadeGapless) },
+              ),
             )
           }
 
@@ -898,12 +900,12 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (automixCrossfade) R.drawable.check else R.drawable.close
+                          id = if (automixCrossfade) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
               onClick = {
@@ -914,8 +916,8 @@ fun PlayerSettings(
                 } else {
                   onCrossfadeEnabledChange(false)
                 }
-              }
-            )
+              },
+            ),
           )
           if (automixCrossfade) {
             add(
@@ -932,16 +934,16 @@ fun PlayerSettings(
                       Icon(
                         painter =
                           painterResource(
-                            id = if (automixDebugOverlay) R.drawable.check else R.drawable.close
+                            id = if (automixDebugOverlay) R.drawable.check else R.drawable.close,
                           ),
                         contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
-                onClick = { onAutomixDebugOverlayChange(!automixDebugOverlay) }
-              )
+                onClick = { onAutomixDebugOverlayChange(!automixDebugOverlay) },
+              ),
             )
           }
 
@@ -959,16 +961,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (enableBitPerfectUsbDac) R.drawable.check else R.drawable.close
+                          id = if (enableBitPerfectUsbDac) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onEnableBitPerfectUsbDacChange(!enableBitPerfectUsbDac) }
-            )
+              onClick = { onEnableBitPerfectUsbDacChange(!enableBitPerfectUsbDac) },
+            ),
           )
 
           add(
@@ -981,11 +983,11 @@ fun PlayerSettings(
                   value = historyDuration,
                   onValueChange = { onHistoryDurationChange(it.roundToInt().toFloat()) },
                   valueRange = 1f..100f,
-                  steps = 9
+                  steps = 9,
                 )
               },
-              trailingContent = { Text(text = historyDuration.roundToInt().toString()) }
-            )
+              trailingContent = { Text(text = historyDuration.roundToInt().toString()) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1001,16 +1003,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (skipSilence) R.drawable.check else R.drawable.close
+                          id = if (skipSilence) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onSkipSilenceChange(!skipSilence) }
-            )
+              onClick = { onSkipSilenceChange(!skipSilence) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1027,16 +1029,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (skipSilenceInstant) R.drawable.check else R.drawable.close
+                          id = if (skipSilenceInstant) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { if (skipSilence) onSkipSilenceInstantChange(!skipSilenceInstant) }
-            )
+              onClick = { if (skipSilence) onSkipSilenceInstantChange(!skipSilenceInstant) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1052,16 +1054,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (audioNormalization) R.drawable.check else R.drawable.close
+                          id = if (audioNormalization) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onAudioNormalizationChange(!audioNormalization) }
-            )
+              onClick = { onAudioNormalizationChange(!audioNormalization) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1075,15 +1077,16 @@ fun PlayerSettings(
                   onCheckedChange = onVarispeedChange,
                   thumbContent = {
                     Icon(
-                      painter = painterResource(id = if (varispeed) R.drawable.check else R.drawable.close),
+                      painter =
+                        painterResource(id = if (varispeed) R.drawable.check else R.drawable.close),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onVarispeedChange(!varispeed) }
-            )
+              onClick = { onVarispeedChange(!varispeed) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1101,11 +1104,11 @@ fun PlayerSettings(
                       stringResource(R.string.loudness_preset_loud)
                     echo.music.iad1tya.constants.AudioLoudnessPreset.AGGRESSIVE ->
                       stringResource(R.string.loudness_preset_aggressive)
-                  }
+                  },
                 )
               },
-              onClick = { showLoudnessPresetDialog = true }
-            )
+              onClick = { showLoudnessPresetDialog = true },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1121,16 +1124,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (spatialAudio) R.drawable.check else R.drawable.close
+                          id = if (spatialAudio) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onSpatialAudioChange(!spatialAudio) }
-            )
+              onClick = { onSpatialAudioChange(!spatialAudio) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1140,7 +1143,7 @@ fun PlayerSettings(
               description = {
                 Text(
                   if (crossfadeEnabled) stringResource(R.string.audio_offload_disabled_by_crossfade)
-                  else stringResource(R.string.audio_offload_description)
+                  else stringResource(R.string.audio_offload_description),
                 )
               },
               trailingContent = {
@@ -1154,16 +1157,16 @@ fun PlayerSettings(
                         painterResource(
                           id =
                             if (!crossfadeEnabled && audioOffload) R.drawable.check
-                            else R.drawable.close
+                            else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { if (!crossfadeEnabled) onAudioOffloadChange(!audioOffload) }
-            )
+              onClick = { if (!crossfadeEnabled) onAudioOffloadChange(!audioOffload) },
+            ),
           )
 
           add(
@@ -1180,16 +1183,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (preloadNextSongEnabled) R.drawable.check else R.drawable.close
+                          id = if (preloadNextSongEnabled) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onPreloadNextSongEnabledChange(!preloadNextSongEnabled) }
-            )
+              onClick = { onPreloadNextSongEnabledChange(!preloadNextSongEnabled) },
+            ),
           )
 
           if (preloadNextSongEnabled) {
@@ -1203,11 +1206,11 @@ fun PlayerSettings(
                     value = preloadNextSongLimit.toFloat(),
                     onValueChange = { onPreloadNextSongLimitChange(it.roundToInt()) },
                     valueRange = 1f..10f,
-                    steps = 9
+                    steps = 9,
                   )
                 },
-                trailingContent = { Text(text = preloadNextSongLimit.toString()) }
-              )
+                trailingContent = { Text(text = preloadNextSongLimit.toString()) },
+              ),
             )
 
             add(
@@ -1224,16 +1227,16 @@ fun PlayerSettings(
                       Icon(
                         painter =
                           painterResource(
-                            id = if (preloadLyricsEnabled) R.drawable.check else R.drawable.close
+                            id = if (preloadLyricsEnabled) R.drawable.check else R.drawable.close,
                           ),
                         contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
-                onClick = { onPreloadLyricsEnabledChange(!preloadLyricsEnabled) }
-              )
+                onClick = { onPreloadLyricsEnabledChange(!preloadLyricsEnabled) },
+              ),
             )
           }
 
@@ -1252,16 +1255,16 @@ fun PlayerSettings(
                       Icon(
                         painter =
                           painterResource(
-                            id = if (enableGoogleCast) R.drawable.check else R.drawable.close
+                            id = if (enableGoogleCast) R.drawable.check else R.drawable.close,
                           ),
                         contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
-                onClick = { onEnableGoogleCastChange(!enableGoogleCast) }
-              )
+                onClick = { onEnableGoogleCastChange(!enableGoogleCast) },
+              ),
             )
           }
           add(
@@ -1278,16 +1281,16 @@ fun PlayerSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (seekExtraSeconds) R.drawable.check else R.drawable.close
+                          id = if (seekExtraSeconds) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
-                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                      modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
-              onClick = { onSeekExtraSeconds(!seekExtraSeconds) }
-            )
+              onClick = { onSeekExtraSeconds(!seekExtraSeconds) },
+            ),
           )
           add(
             Material3SettingsItem(
@@ -1295,10 +1298,10 @@ fun PlayerSettings(
               icon = painterResource(R.drawable.echoequlizer),
               title = { Text(stringResource(R.string.echo_equalizer)) },
               description = { Text(stringResource(R.string.echo_equalizer_desc)) },
-              onClick = { navController.navigate("settings/equalizer") }
-            )
+              onClick = { navController.navigate("settings/equalizer") },
+            ),
           )
-        }
+        },
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -1321,15 +1324,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (persistentQueue) R.drawable.check else R.drawable.close
+                        id = if (persistentQueue) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onPersistentQueueChange(!persistentQueue) }
+            onClick = { onPersistentQueueChange(!persistentQueue) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.auto_load_more)),
@@ -1344,15 +1347,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (autoLoadMore) R.drawable.check else R.drawable.close
+                        id = if (autoLoadMore) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onAutoLoadMoreChange(!autoLoadMore) }
+            onClick = { onAutoLoadMoreChange(!autoLoadMore) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.auto_download_on_like)),
@@ -1367,15 +1370,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (autoDownloadOnLike) R.drawable.check else R.drawable.close
+                        id = if (autoDownloadOnLike) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onAutoDownloadOnLikeChange(!autoDownloadOnLike) }
+            onClick = { onAutoDownloadOnLikeChange(!autoDownloadOnLike) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.enable_similar_content)),
@@ -1390,15 +1393,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (similarContentEnabled) R.drawable.check else R.drawable.close
+                        id = if (similarContentEnabled) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { similarContentEnabledChange(!similarContentEnabled) }
+            onClick = { similarContentEnabledChange(!similarContentEnabled) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.persistent_shuffle_title)),
@@ -1414,15 +1417,15 @@ fun PlayerSettings(
                     painter =
                       painterResource(
                         id =
-                          if (persistentShuffleAcrossQueues) R.drawable.check else R.drawable.close
+                          if (persistentShuffleAcrossQueues) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onPersistentShuffleAcrossQueuesChange(!persistentShuffleAcrossQueues) }
+            onClick = { onPersistentShuffleAcrossQueuesChange(!persistentShuffleAcrossQueues) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.remember_shuffle_and_repeat)),
@@ -1437,15 +1440,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (rememberShuffleAndRepeat) R.drawable.check else R.drawable.close
+                        id = if (rememberShuffleAndRepeat) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onRememberShuffleAndRepeatChange(!rememberShuffleAndRepeat) }
+            onClick = { onRememberShuffleAndRepeatChange(!rememberShuffleAndRepeat) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.shuffle_playlist_first)),
@@ -1460,15 +1463,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (shufflePlaylistFirst) R.drawable.check else R.drawable.close
+                        id = if (shufflePlaylistFirst) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onShufflePlaylistFirstChange(!shufflePlaylistFirst) }
+            onClick = { onShufflePlaylistFirstChange(!shufflePlaylistFirst) },
           ),
           Material3SettingsItem(
             isHighlighted =
@@ -1485,15 +1488,15 @@ fun PlayerSettings(
                     painter =
                       painterResource(
                         id =
-                          if (preventDuplicateTracksInQueue) R.drawable.check else R.drawable.close
+                          if (preventDuplicateTracksInQueue) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onPreventDuplicateTracksInQueueChange(!preventDuplicateTracksInQueue) }
+            onClick = { onPreventDuplicateTracksInQueueChange(!preventDuplicateTracksInQueue) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.auto_skip_next_on_error)),
@@ -1508,17 +1511,17 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (autoSkipNextOnError) R.drawable.check else R.drawable.close
+                        id = if (autoSkipNextOnError) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onAutoSkipNextOnErrorChange(!autoSkipNextOnError) }
-          )
-        )
+            onClick = { onAutoSkipNextOnErrorChange(!autoSkipNextOnError) },
+          ),
+        ),
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -1541,15 +1544,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (stopMusicOnTaskClear) R.drawable.check else R.drawable.close
+                        id = if (stopMusicOnTaskClear) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onStopMusicOnTaskClearChange(!stopMusicOnTaskClear) }
+            onClick = { onStopMusicOnTaskClearChange(!stopMusicOnTaskClear) },
           ),
           Material3SettingsItem(
             isHighlighted =
@@ -1566,12 +1569,12 @@ fun PlayerSettings(
                     painter =
                       painterResource(id = if (pauseOnMute) R.drawable.check else R.drawable.close),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onPauseOnMuteChange(!pauseOnMute) }
+            onClick = { onPauseOnMuteChange(!pauseOnMute) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.resume_on_bluetooth_connect)),
@@ -1586,18 +1589,19 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (resumeOnBluetoothConnect) R.drawable.check else R.drawable.close
+                        id = if (resumeOnBluetoothConnect) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onResumeOnBluetoothConnectChange(!resumeOnBluetoothConnect) }
+            onClick = { onResumeOnBluetoothConnectChange(!resumeOnBluetoothConnect) },
           ),
           Material3SettingsItem(
-            isHighlighted = (highlightKey == stringResource(R.string.autoplay_on_automotive_connect)),
+            isHighlighted =
+              (highlightKey == stringResource(R.string.autoplay_on_automotive_connect)),
             icon = painterResource(R.drawable.auto_play),
             title = { Text(stringResource(R.string.autoplay_on_automotive_connect)) },
             description = { Text(stringResource(R.string.autoplay_on_automotive_connect_desc)) },
@@ -1609,15 +1613,16 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (autoplayOnAutomotiveConnect) R.drawable.check else R.drawable.close
+                        id =
+                          if (autoplayOnAutomotiveConnect) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onAutoplayOnAutomotiveConnectChange(!autoplayOnAutomotiveConnect) }
+            onClick = { onAutoplayOnAutomotiveConnectChange(!autoplayOnAutomotiveConnect) },
           ),
           Material3SettingsItem(
             isHighlighted =
@@ -1635,15 +1640,15 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (keepScreenOn) R.drawable.check else R.drawable.close
+                        id = if (keepScreenOn) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onKeepScreenOnChange(!keepScreenOn) }
+            onClick = { onKeepScreenOnChange(!keepScreenOn) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.export_desc)),
@@ -1658,24 +1663,24 @@ fun PlayerSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (enableExportAsMp3) R.drawable.check else R.drawable.close
+                        id = if (enableExportAsMp3) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                   )
-                }
+                },
               )
             },
-            onClick = { onEnableExportAsMp3Change(!enableExportAsMp3) }
-          )
-        )
+            onClick = { onEnableExportAsMp3Change(!enableExportAsMp3) },
+          ),
+        ),
     )
     Spacer(modifier = Modifier.height(16.dp))
 
     Spacer(
       Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
-      )
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom),
+      ),
     )
   }
 
@@ -1685,6 +1690,6 @@ fun PlayerSettings(
       IconButton(onClick = navController::navigateUp, onLongClick = navController::backToMain) {
         Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
       }
-    }
+    },
   )
 }

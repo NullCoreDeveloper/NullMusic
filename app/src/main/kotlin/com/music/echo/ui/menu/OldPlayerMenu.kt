@@ -2,8 +2,12 @@ package iad1tya.echo.music.ui.menu
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,21 +41,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.CircleShape
-
-import androidx.compose.runtime.LaunchedEffect
-import echo.music.iad1tya.ui.component.DefaultDialog
-import androidx.compose.material3.TextButton
-import com.music.echo.ui.component.SongDnaBottomSheet
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,6 +58,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.navigation.NavController
+import com.music.echo.ui.component.SongDnaBottomSheet
 import com.music.innertube.YouTube
 import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.LocalDownloadUtil
@@ -150,7 +143,7 @@ fun OldPlayerMenu(
   val (showLyricsOnPlayer, onShowLyricsOnPlayerChange) =
     rememberPreference(
       key = echo.music.iad1tya.constants.ShowLyricsOnPlayerKey,
-      defaultValue = false
+      defaultValue = false,
     )
 
   val isExporting =
@@ -177,7 +170,7 @@ fun OldPlayerMenu(
               android.widget.Toast.makeText(
                   context,
                   context.getString(R.string.export_directory_not_set),
-                  android.widget.Toast.LENGTH_SHORT
+                  android.widget.Toast.LENGTH_SHORT,
                 )
                 .show()
               onDismiss()
@@ -190,10 +183,10 @@ fun OldPlayerMenu(
                 songArtist = artists.joinToString(", ") { it.name },
                 songAlbum = mediaMetadata.album?.title ?: "",
                 artworkUrl = mediaMetadata.thumbnailUrl ?: "",
-                targetDirectoryUri = exportDirectoryUri
+                targetDirectoryUri = exportDirectoryUri,
               )
             }
-          }
+          },
         ) {
           androidx.compose.material3.Text("Yes")
         }
@@ -202,7 +195,7 @@ fun OldPlayerMenu(
         androidx.compose.material3.OutlinedButton(onClick = { showReExportDialog = false }) {
           androidx.compose.material3.Text("No")
         }
-      }
+      },
     )
   }
 
@@ -216,7 +209,7 @@ fun OldPlayerMenu(
     animateFloatAsState(
       targetValue = refetchIconDegree,
       animationSpec = tween(durationMillis = 800, easing = LinearEasing),
-      label = ""
+      label = "",
     )
 
   AddToPlaylistDialog(
@@ -225,13 +218,13 @@ fun OldPlayerMenu(
       database.transaction { insert(mediaMetadata) }
       listOf(mediaMetadata.id)
     },
-    onDismiss = { showChoosePlaylistDialog = false }
+    onDismiss = { showChoosePlaylistDialog = false },
   )
 
   ListenTogetherDialog(
     visible = showListenTogetherDialog,
     mediaMetadata = mediaMetadata,
-    onDismiss = { showListenTogetherDialog = false }
+    onDismiss = { showListenTogetherDialog = false },
   )
 
   if (showSelectArtistDialog) {
@@ -290,19 +283,19 @@ fun OldPlayerMenu(
       Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
       ) {
         Icon(
           painter = painterResource(R.drawable.cast),
           contentDescription = null,
           modifier = Modifier.size(24.dp),
-          tint = MaterialTheme.colorScheme.primary
+          tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
           text = stringResource(R.string.casting_to, castDeviceName ?: ""),
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.primary
+          color = MaterialTheme.colorScheme.primary,
         )
       }
     }
@@ -329,7 +322,7 @@ fun OldPlayerMenu(
                     painter = painterResource(R.drawable.radio),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 },
                 text = stringResource(R.string.start_an_radio),
@@ -337,7 +330,7 @@ fun OldPlayerMenu(
                   Toast.makeText(context, startingRadioText, Toast.LENGTH_SHORT).show()
                   playerConnection.startRadioSeamlessly()
                   onDismiss()
-                }
+                },
               )
             } else null,
             NewAction(
@@ -346,11 +339,11 @@ fun OldPlayerMenu(
                   painter = painterResource(R.drawable.playlist_add),
                   contentDescription = null,
                   modifier = Modifier.size(32.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.add_to_an_playlist),
-              onClick = { showChoosePlaylistDialog = true }
+              onClick = { showChoosePlaylistDialog = true },
             ),
             NewAction(
               icon = {
@@ -358,7 +351,7 @@ fun OldPlayerMenu(
                   painter = painterResource(R.drawable.share),
                   contentDescription = null,
                   modifier = Modifier.size(32.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.share),
@@ -374,11 +367,11 @@ fun OldPlayerMenu(
                   }
                 context.startActivity(android.content.Intent.createChooser(intent, null))
                 onDismiss()
-              }
-            )
+              },
+            ),
           ),
         columns = if (isListenTogetherGuest) 2 else 3,
-        modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
       )
     }
 
@@ -389,35 +382,42 @@ fun OldPlayerMenu(
         items =
           buildList {
             val infiniteTransition = rememberInfiniteTransition()
-            val animatedColor by infiniteTransition.animateColor(
+            val animatedColor by
+              infiniteTransition.animateColor(
                 initialValue = MaterialTheme.colorScheme.primary,
                 targetValue = MaterialTheme.colorScheme.tertiary,
-                animationSpec = infiniteRepeatable(
+                animationSpec =
+                  infiniteRepeatable(
                     animation = tween(400, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                ),
-                label = "dnaColor"
-            )
+                    repeatMode = RepeatMode.Reverse,
+                  ),
+                label = "dnaColor",
+              )
 
             add(
               Material3MenuItemData(
-                title = { Text(text = "Song DNA", color = animatedColor, fontWeight = FontWeight.Bold) },
+                title = {
+                  Text(text = "Song DNA", color = animatedColor, fontWeight = FontWeight.Bold)
+                },
                 icon = {
                   androidx.compose.foundation.Image(
                     painter = painterResource(R.drawable.songdna),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp).clip(androidx.compose.foundation.shape.CircleShape)
+                    modifier =
+                      Modifier.size(24.dp).clip(androidx.compose.foundation.shape.CircleShape),
                   )
                 },
                 onClick = {
                   showSongDnaDialog = true
-                }
-              )
+                },
+              ),
             )
             add(
               Material3MenuItemData(
-                customComposable = { echo.music.iad1tya.ui.component.CastButton(asMenuItem = true) }
-              )
+                customComposable = {
+                  echo.music.iad1tya.ui.component.CastButton(asMenuItem = true)
+                },
+              ),
             )
 
             add(
@@ -427,15 +427,15 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.fullscreen),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   navController.navigate("ambient_mode")
                   playerBottomSheetState.collapseSoft()
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             add(
@@ -445,14 +445,14 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.lyrics),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   onShowLyricsOnPlayerChange(!showLyricsOnPlayer)
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             if (!isListenTogetherGuest) {
@@ -466,14 +466,14 @@ fun OldPlayerMenu(
                       modifier = Modifier.size(24.dp),
                       tint =
                         if (shuffleModeEnabled) MaterialTheme.colorScheme.primary
-                        else androidx.compose.material3.LocalContentColor.current
+                        else androidx.compose.material3.LocalContentColor.current,
                     )
                   },
                   onClick = {
                     playerConnection.player.shuffleModeEnabled = !shuffleModeEnabled
                     onDismiss()
-                  }
-                )
+                  },
+                ),
               )
             }
 
@@ -486,7 +486,7 @@ fun OldPlayerMenu(
                       Icon(
                         painter = painterResource(R.drawable.offline),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                       )
                     },
                     onClick = {
@@ -494,11 +494,11 @@ fun OldPlayerMenu(
                         context,
                         ExoDownloadService::class.java,
                         mediaMetadata.id,
-                        false
+                        false,
                       )
                       onDismiss()
-                    }
-                  )
+                    },
+                  ),
                 )
               }
               Download.STATE_QUEUED,
@@ -514,11 +514,11 @@ fun OldPlayerMenu(
                         context,
                         ExoDownloadService::class.java,
                         mediaMetadata.id,
-                        false
+                        false,
                       )
                       onDismiss()
-                    }
-                  )
+                    },
+                  ),
                 )
               }
               else -> {
@@ -529,7 +529,7 @@ fun OldPlayerMenu(
                       Icon(
                         painter = painterResource(R.drawable.download),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                       )
                     },
                     onClick = {
@@ -543,11 +543,11 @@ fun OldPlayerMenu(
                         context,
                         ExoDownloadService::class.java,
                         downloadRequest,
-                        false
+                        false,
                       )
                       onDismiss()
-                    }
-                  )
+                    },
+                  ),
                 )
               }
             }
@@ -561,11 +561,11 @@ fun OldPlayerMenu(
                       icon = {
                         CircularProgressIndicator(
                           modifier = Modifier.size(24.dp),
-                          strokeWidth = 2.dp
+                          strokeWidth = 2.dp,
                         )
                       },
-                      onClick = {}
-                    )
+                      onClick = {},
+                    ),
                   )
                 isExported ->
                   add(
@@ -575,11 +575,11 @@ fun OldPlayerMenu(
                         Icon(
                           painter = painterResource(R.drawable.folder_managed),
                           contentDescription = null,
-                          modifier = Modifier.size(24.dp)
+                          modifier = Modifier.size(24.dp),
                         )
                       },
-                      onClick = { showReExportDialog = true }
-                    )
+                      onClick = { showReExportDialog = true },
+                    ),
                   )
                 else ->
                   add(
@@ -589,7 +589,7 @@ fun OldPlayerMenu(
                         Icon(
                           painter = painterResource(R.drawable.file_export),
                           contentDescription = null,
-                          modifier = Modifier.size(24.dp)
+                          modifier = Modifier.size(24.dp),
                         )
                       },
                       onClick = {
@@ -597,7 +597,7 @@ fun OldPlayerMenu(
                           android.widget.Toast.makeText(
                               context,
                               context.getString(R.string.export_directory_not_set),
-                              android.widget.Toast.LENGTH_SHORT
+                              android.widget.Toast.LENGTH_SHORT,
                             )
                             .show()
                           onDismiss()
@@ -610,11 +610,11 @@ fun OldPlayerMenu(
                             songArtist = artists.joinToString(", ") { it.name },
                             songAlbum = mediaMetadata.album?.title ?: "",
                             artworkUrl = mediaMetadata.thumbnailUrl ?: "",
-                            targetDirectoryUri = exportDirectoryUri
+                            targetDirectoryUri = exportDirectoryUri,
                           )
                         }
-                      }
-                    )
+                      },
+                    ),
                   )
               }
             }
@@ -627,20 +627,20 @@ fun OldPlayerMenu(
                   Icon(
                     painter =
                       painterResource(
-                        if (isLiked) R.drawable.favorite else R.drawable.favorite_border
+                        if (isLiked) R.drawable.favorite else R.drawable.favorite_border,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint =
                       if (isLiked) MaterialTheme.colorScheme.error
-                      else androidx.compose.material3.LocalContentColor.current
+                      else androidx.compose.material3.LocalContentColor.current,
                   )
                 },
                 onClick = {
                   playerConnection.toggleLike()
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             if (!isListenTogetherGuest) {
@@ -656,17 +656,17 @@ fun OldPlayerMenu(
                             Player.REPEAT_MODE_ALL -> R.drawable.repeat
                             Player.REPEAT_MODE_ONE -> R.drawable.repeat_one
                             else -> R.drawable.repeat
-                          }
+                          },
                         ),
                       contentDescription = null,
                       modifier = Modifier.size(24.dp),
                       tint =
                         if (repeatMode != Player.REPEAT_MODE_OFF) MaterialTheme.colorScheme.primary
-                        else androidx.compose.material3.LocalContentColor.current
+                        else androidx.compose.material3.LocalContentColor.current,
                     )
                   },
-                  onClick = { playerConnection.player.toggleRepeatMode() }
-                )
+                  onClick = { playerConnection.player.toggleRepeatMode() },
+                ),
               )
             }
 
@@ -678,7 +678,7 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.sync),
                     contentDescription = null,
-                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation)
+                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation),
                   )
                 },
                 onClick = {
@@ -688,7 +688,7 @@ fun OldPlayerMenu(
                     context,
                     echo.music.iad1tya.playback.ExoDownloadService::class.java,
                     mediaMetadata.id,
-                    false
+                    false,
                   )
                   val intent =
                     android.content
@@ -714,10 +714,10 @@ fun OldPlayerMenu(
                       }
                     }
                   }
-                }
-              )
+                },
+              ),
             )
-          }
+          },
       )
     }
 
@@ -1133,27 +1133,27 @@ fun OldPlayerMenu(
                   Text(
                     text =
                       stringResource(
-                        if (isInLibrary) R.string.remove_from_library else R.string.add_to_library
-                      )
+                        if (isInLibrary) R.string.remove_from_library else R.string.add_to_library,
+                      ),
                   )
                 },
                 icon = {
                   Icon(
                     painter =
                       painterResource(
-                        if (isInLibrary) R.drawable.library_add_check else R.drawable.library_add
+                        if (isInLibrary) R.drawable.library_add_check else R.drawable.library_add,
                       ),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   playerConnection.toggleLibrary()
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
-          }
+          },
       )
     }
 
@@ -1169,7 +1169,7 @@ fun OldPlayerMenu(
                 Icon(
                   painter = painterResource(R.drawable.notification),
                   contentDescription = null,
-                  modifier = Modifier.size(24.dp)
+                  modifier = Modifier.size(24.dp),
                 )
               },
               onClick = {
@@ -1178,15 +1178,15 @@ fun OldPlayerMenu(
                     mediaMetadata.id,
                     mediaMetadata.title,
                     mediaMetadata.artists.joinToString { it.name },
-                    mediaMetadata.duration
+                    mediaMetadata.duration,
                   )
                 } else {
                   ringtoneViewModel.requestSettingsPermission(context)
                 }
                 onDismiss()
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
     }
 
@@ -1203,11 +1203,11 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.group),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
-                onClick = { showListenTogetherDialog = true }
-              )
+                onClick = { showListenTogetherDialog = true },
+              ),
             )
             if (isListenTogetherGuest) {
               add(
@@ -1217,17 +1217,17 @@ fun OldPlayerMenu(
                     Icon(
                       painter = painterResource(R.drawable.replay),
                       contentDescription = null,
-                      modifier = Modifier.size(24.dp)
+                      modifier = Modifier.size(24.dp),
                     )
                   },
                   onClick = {
                     listenTogetherManager?.requestSync()
                     onDismiss()
-                  }
-                )
+                  },
+                ),
               )
             }
-          }
+          },
       )
     }
 
@@ -1245,14 +1245,14 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   onShowDetailsDialog()
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             add(
@@ -1263,14 +1263,14 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.equalizer),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
                 onClick = {
                   navController.navigate("equalizer")
                   onDismiss()
-                }
-              )
+                },
+              ),
             )
 
             add(
@@ -1281,13 +1281,15 @@ fun OldPlayerMenu(
                   Icon(
                     painter = painterResource(R.drawable.tune),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                   )
                 },
-                onClick = { if (!varispeedMode) showPitchTempoDialog = true else showSpeedDialog = true }
-              )
+                onClick = {
+                  if (!varispeedMode) showPitchTempoDialog = true else showSpeedDialog = true
+                },
+              ),
             )
-          }
+          },
       )
     }
   }

@@ -35,14 +35,14 @@ fun Material3MenuGroup(items: List<Material3MenuItemData>, modifier: Modifier = 
               topStart = 24.dp,
               topEnd = 24.dp,
               bottomStart = 6.dp,
-              bottomEnd = 6.dp
+              bottomEnd = 6.dp,
             )
           index == items.size - 1 ->
             RoundedCornerShape(
               topStart = 6.dp,
               topEnd = 6.dp,
               bottomStart = 24.dp,
-              bottomEnd = 24.dp
+              bottomEnd = 24.dp,
             )
           else -> RoundedCornerShape(6.dp)
         }
@@ -65,9 +65,9 @@ fun Material3MenuGroup(items: List<Material3MenuItemData>, modifier: Modifier = 
         colors =
           item.cardColors
             ?: CardDefaults.cardColors(
-              containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+              containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
             ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
       ) {
         content()
       }
@@ -79,7 +79,7 @@ fun Material3MenuGroup(items: List<Material3MenuItemData>, modifier: Modifier = 
 private fun Material3MenuItemRow(item: Material3MenuItemData) {
   Row(
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     item.icon?.let { icon ->
       icon()
@@ -93,8 +93,8 @@ private fun Material3MenuItemRow(item: Material3MenuItemData) {
         Spacer(modifier = Modifier.height(2.dp))
         ProvideTextStyle(
           MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-          )
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
         ) {
           desc()
         }
@@ -114,5 +114,5 @@ data class Material3MenuItemData(
   val onClick: (() -> Unit)? = null,
   val cardColors: CardColors? = null,
   val trailingContent: (@Composable () -> Unit)? = null,
-  val customComposable: (@Composable () -> Unit)? = null
+  val customComposable: (@Composable () -> Unit)? = null,
 )

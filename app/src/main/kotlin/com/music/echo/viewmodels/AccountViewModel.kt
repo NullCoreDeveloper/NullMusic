@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 enum class AccountContentType {
   PLAYLISTS,
   ALBUMS,
-  ARTISTS
+  ARTISTS,
 }
 
 @HiltViewModel

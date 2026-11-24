@@ -36,7 +36,7 @@ data class YouTubeClient(
           androidSdkVersion = androidSdkVersion,
           gl = locale.gl,
           hl = locale.hl,
-          visitorData = visitorData
+          visitorData = visitorData,
         ),
       user = Context.User(onBehalfOfUser = if (loginSupported) dataSyncId else null),
     )
@@ -124,7 +124,7 @@ data class YouTubeClient(
         clientId = "3",
         userAgent = "com.google.android.youtube/21.03.38 (Linux; U; Android 14) gzip",
         loginSupported = true,
-        useSignatureTimestamp = true
+        useSignatureTimestamp = true,
       )
 
     /**
@@ -139,7 +139,7 @@ data class YouTubeClient(
         userAgent = "com.google.android.youtube/21.03.38 (Linux; U; Android 14) gzip",
         friendlyName = "Android No SDK",
         loginSupported = false,
-        useSignatureTimestamp = false
+        useSignatureTimestamp = false,
       )
 
     val ANDROID_VR_NO_AUTH =
@@ -150,7 +150,7 @@ data class YouTubeClient(
         userAgent =
           "com.google.android.apps.youtube.vr.oculus/1.61.48 (Linux; U; Android 12; en_US; Oculus Quest 3; Build/SQ3A.220605.009.A1; Cronet/132.0.6808.3)",
         loginSupported = false,
-        useSignatureTimestamp = false
+        useSignatureTimestamp = false,
       )
 
     /**
@@ -174,7 +174,7 @@ data class YouTubeClient(
         packageName = "com.google.android.apps.youtube.vr.oculus",
         friendlyName = "Android VR 1.61",
         loginSupported = false,
-        useSignatureTimestamp = false
+        useSignatureTimestamp = false,
       )
 
         /**
@@ -220,7 +220,7 @@ data class YouTubeClient(
         packageName = "com.google.android.apps.youtube.creator",
         friendlyName = "Android Studio",
         loginSupported = true,
-        useSignatureTimestamp = true
+        useSignatureTimestamp = true,
       )
 
     /** Internal YT client for an unreleased YT client. May stop working at any time. */
@@ -237,7 +237,7 @@ data class YouTubeClient(
         deviceModel = "RealityDevice14,1",
         friendlyName = "visionOS",
         loginSupported = false,
-        useSignatureTimestamp = false
+        useSignatureTimestamp = false,
       )
 
     /**
@@ -257,7 +257,7 @@ data class YouTubeClient(
         friendlyName = "iPadOS",
         loginSupported = false,
         useSignatureTimestamp = false,
-        packageName = "com.google.ios.youtube"
+        packageName = "com.google.ios.youtube",
       )
   }
 }

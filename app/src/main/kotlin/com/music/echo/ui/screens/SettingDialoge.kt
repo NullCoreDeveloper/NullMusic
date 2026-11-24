@@ -40,7 +40,7 @@ import iad1tya.echo.music.viewmodels.HomeViewModel
 fun SettingDialoge(
   onDismissRequest: () -> Unit,
   onNavigate: (String) -> Unit,
-  homeViewModel: HomeViewModel
+  homeViewModel: HomeViewModel,
 ) {
   val uriHandler = LocalUriHandler.current
   val (audioQuality) = rememberEnumPreference(AudioQualityKey, defaultValue = AudioQuality.OPUS)
@@ -72,7 +72,7 @@ fun SettingDialoge(
     onDismissRequest = onDismissRequest,
     sheetState = sheetState,
     dragHandle = { BottomSheetDefaults.DragHandle() },
-    containerColor = MaterialTheme.colorScheme.surfaceContainer
+    containerColor = MaterialTheme.colorScheme.surfaceContainer,
   ) {
     val primaryColor = MaterialTheme.colorScheme.onSurface
     val onSecondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -82,7 +82,7 @@ fun SettingDialoge(
         Modifier.fillMaxWidth()
           .verticalScroll(rememberScrollState())
           .padding(bottom = 32.dp, start = 16.dp, end = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp)
+      verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       // Header
       // Removed NullMusic text

@@ -49,7 +49,7 @@ import iad1tya.echo.music.R
 fun AccountSettingsScreen(
   navController: NavController,
   scrollBehavior: TopAppBarScrollBehavior,
-  highlightKey: String? = null
+  highlightKey: String? = null,
 ) {
   val scrollState = androidx.compose.foundation.rememberScrollState()
 
@@ -80,7 +80,7 @@ fun AccountSettingsScreen(
   val cloudEntryPoint = remember {
     dagger.hilt.android.EntryPointAccessors.fromApplication(
       context.applicationContext,
-      com.music.echo.cloud.CloudEntryPoint::class.java
+      com.music.echo.cloud.CloudEntryPoint::class.java,
     )
   }
   val navidromeRepo = remember { cloudEntryPoint.navidromeRepository() }
@@ -109,18 +109,18 @@ fun AccountSettingsScreen(
             Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
           }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
       )
-    }
+    },
   ) { padding ->
     Column(
       modifier =
         Modifier.padding(padding)
           .windowInsetsPadding(
-            LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+            LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal),
           )
           .verticalScroll(scrollState)
-          .padding(horizontal = 16.dp)
+          .padding(horizontal = 16.dp),
     ) {
       Spacer(modifier = Modifier.height(16.dp))
 
@@ -145,8 +145,8 @@ fun AccountSettingsScreen(
                 cookie = innerTubeCookie,
                 visitorData = visitorData,
                 dataSyncId = dataSyncId,
-                avatarUrl = accountImageUrl ?: ""
-              )
+                avatarUrl = accountImageUrl ?: "",
+              ),
             )
             onSavedAccountsJsonChange(Json.encodeToString(mutableAccounts))
           } else if (
@@ -155,7 +155,7 @@ fun AccountSettingsScreen(
             mutableAccounts[index] =
               mutableAccounts[index].copy(
                 name = nameToUse,
-                avatarUrl = accountImageUrl ?: mutableAccounts[index].avatarUrl
+                avatarUrl = accountImageUrl ?: mutableAccounts[index].avatarUrl,
               )
             onSavedAccountsJsonChange(Json.encodeToString(mutableAccounts))
           }
@@ -178,7 +178,7 @@ fun AccountSettingsScreen(
                         model = account.avatarUrl,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(40.dp).clip(CircleShape)
+                        modifier = Modifier.size(40.dp).clip(CircleShape),
                       )
                       Spacer(modifier = Modifier.width(12.dp))
                     }
@@ -189,7 +189,7 @@ fun AccountSettingsScreen(
                           if (account.cookie == innerTubeCookie) MaterialTheme.colorScheme.primary
                           else MaterialTheme.colorScheme.onSurface,
                         style =
-                          MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                          MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                       )
                       if (account.email.isNotBlank()) {
                         Text(text = account.email, style = MaterialTheme.typography.bodySmall)
@@ -204,7 +204,7 @@ fun AccountSettingsScreen(
                         val mutableAccounts = savedAccounts.toMutableList()
                         mutableAccounts.remove(account)
                         onSavedAccountsJsonChange(Json.encodeToString(mutableAccounts))
-                      }
+                      },
                     ) {
                       Icon(painterResource(R.drawable.close), contentDescription = "Remove Account")
                     }
@@ -214,8 +214,8 @@ fun AccountSettingsScreen(
                       colors =
                         ButtonDefaults.outlinedButtonColors(
                           containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                          contentColor = MaterialTheme.colorScheme.onSurface
-                        )
+                          contentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
                     ) {
                       Text(stringResource(R.string.action_logout))
                     }
@@ -230,19 +230,19 @@ fun AccountSettingsScreen(
                       dataSyncId = account.dataSyncId,
                       accountName = account.name,
                       accountEmail = account.email,
-                      accountChannelHandle = account.channelHandle
+                      accountChannelHandle = account.channelHandle,
                     )
                   }
-                }
+                },
               )
             } +
               listOf(
                 Material3SettingsItem(
                   icon = painterResource(R.drawable.add),
                   title = { Text("Add another account") },
-                  onClick = { navController.navigate("login") }
-                )
-              )
+                  onClick = { navController.navigate("login") },
+                ),
+              ),
         )
         Spacer(modifier = Modifier.height(16.dp))
       } else {
@@ -262,14 +262,14 @@ fun AccountSettingsScreen(
                         model = accountImageUrl,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(40.dp).clip(CircleShape)
+                        modifier = Modifier.size(40.dp).clip(CircleShape),
                       )
                       Spacer(modifier = Modifier.width(12.dp))
                     }
                     Text(
                       text = if (isLoggedIn) accountName else "Log In",
                       color = MaterialTheme.colorScheme.primary,
-                      style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                      style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     )
                   }
                 },
@@ -281,25 +281,25 @@ fun AccountSettingsScreen(
                         colors =
                           ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                          )
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                          ),
                       ) {
                         Text(stringResource(R.string.action_logout))
                       }
                     })
                   else null,
-                onClick = { if (!isLoggedIn) navController.navigate("login") }
-              )
+                onClick = { if (!isLoggedIn) navController.navigate("login") },
+              ),
             ) +
               if (isLoggedIn) {
                 listOf(
                   Material3SettingsItem(
                     icon = painterResource(R.drawable.add),
                     title = { Text("Add another account") },
-                    onClick = { navController.navigate("login") }
-                  )
+                    onClick = { navController.navigate("login") },
+                  ),
                 )
-              } else emptyList()
+              } else emptyList(),
         )
         Spacer(modifier = Modifier.height(16.dp))
       }
@@ -321,15 +321,15 @@ fun AccountSettingsScreen(
                     !isLoggedIn -> stringResource(R.string.advanced_login)
                     showToken -> stringResource(R.string.token_shown)
                     else -> stringResource(R.string.token_hidden)
-                  }
+                  },
                 )
               },
               onClick = {
                 if (!isLoggedIn) showTokenEditor = true
                 else if (!showToken) showToken = true else showTokenEditor = true
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
 
       Spacer(modifier = Modifier.height(16.dp))
@@ -359,19 +359,19 @@ fun AccountSettingsScreen(
                       Icon(
                         painter =
                           painterResource(
-                            id = if (useLoginForBrowse) R.drawable.check else R.drawable.close
+                            id = if (useLoginForBrowse) R.drawable.check else R.drawable.close,
                           ),
                         contentDescription = null,
                         modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
                 onClick = {
                   val newValue = !useLoginForBrowse
                   YouTube.useLoginForBrowse = newValue
                   onUseLoginForBrowseChange(newValue)
-                }
+                },
               ),
               Material3SettingsItem(
                 isHighlighted = (highlightKey == stringResource(R.string.yt_sync)),
@@ -389,12 +389,12 @@ fun AccountSettingsScreen(
                         contentDescription = null,
                         modifier = Modifier.size(SwitchDefaults.IconSize),
                       )
-                    }
+                    },
                   )
                 },
-                onClick = { onYtmSyncChange(!ytmSync) }
-              )
-            )
+                onClick = { onYtmSyncChange(!ytmSync) },
+              ),
+            ),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -410,8 +410,9 @@ fun AccountSettingsScreen(
               title = { Text("Subsonic / Navidrome") },
               description = {
                 Text(
-                  if (navidromeConnected) "Connected: ${navidromeServer ?: ""} (${navidromeUser ?: ""})"
-                  else "Stream lossless audio from your Subsonic/Navidrome server"
+                  if (navidromeConnected)
+                    "Connected: ${navidromeServer ?: ""} (${navidromeUser ?: ""})"
+                  else "Stream lossless audio from your Subsonic/Navidrome server",
                 )
               },
               trailingContent =
@@ -421,7 +422,7 @@ fun AccountSettingsScreen(
                       painter = painterResource(R.drawable.check),
                       contentDescription = "Connected",
                       tint = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.size(20.dp)
+                      modifier = Modifier.size(20.dp),
                     )
                   }
                 } else null,
@@ -431,15 +432,16 @@ fun AccountSettingsScreen(
                 } else {
                   navController.navigate("settings/navidrome_login")
                 }
-              }
+              },
             ),
             Material3SettingsItem(
               icon = painterResource(R.drawable.ic_jellyfin),
               title = { Text("Jellyfin") },
               description = {
                 Text(
-                  if (jellyfinConnected) "Connected: ${jellyfinServer ?: ""} (${jellyfinUser ?: ""})"
-                  else "Direct bit-exact lossless streaming from Jellyfin media server"
+                  if (jellyfinConnected)
+                    "Connected: ${jellyfinServer ?: ""} (${jellyfinUser ?: ""})"
+                  else "Direct bit-exact lossless streaming from Jellyfin media server",
                 )
               },
               trailingContent =
@@ -449,7 +451,7 @@ fun AccountSettingsScreen(
                       painter = painterResource(R.drawable.check),
                       contentDescription = "Connected",
                       tint = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.size(20.dp)
+                      modifier = Modifier.size(20.dp),
                     )
                   }
                 } else null,
@@ -459,9 +461,9 @@ fun AccountSettingsScreen(
                 } else {
                   navController.navigate("settings/jellyfin_login")
                 }
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
 
       Spacer(modifier = Modifier.height(16.dp))
@@ -472,27 +474,30 @@ fun AccountSettingsScreen(
         items =
           listOf(
             Material3SettingsItem(
-              isHighlighted = (highlightKey == "Spotify" || highlightKey == "Integrations" || highlightKey == stringResource(R.string.integrations)),
+              isHighlighted =
+                (highlightKey == "Spotify" ||
+                  highlightKey == "Integrations" ||
+                  highlightKey == stringResource(R.string.integrations)),
               icon = painterResource(R.drawable.ic_spotify),
               title = { Text("Spotify") },
               description = { Text("Connect Spotify for recommendations") },
-              onClick = { navController.navigate("settings/spotify_import") }
+              onClick = { navController.navigate("settings/spotify_import") },
             ),
             Material3SettingsItem(
               isHighlighted = (highlightKey == stringResource(R.string.discord)),
               icon = painterResource(R.drawable.discord),
               title = { Text(stringResource(R.string.discord)) },
               description = { Text(stringResource(R.string.discord_integration_desc)) },
-              onClick = { navController.navigate("settings/discord") }
+              onClick = { navController.navigate("settings/discord") },
             ),
             Material3SettingsItem(
               isHighlighted = (highlightKey == stringResource(R.string.lastfm_integration)),
               icon = painterResource(R.drawable.ic_lastfm),
               title = { Text(stringResource(R.string.lastfm_integration)) },
               description = { Text(stringResource(R.string.lastfm_integration_desc)) },
-              onClick = { navController.navigate("settings/lastfm") }
-            )
-          )
+              onClick = { navController.navigate("settings/lastfm") },
+            ),
+          ),
       )
     }
 
@@ -547,7 +552,7 @@ fun AccountSettingsScreen(
           val cookieValue = cookieLine?.substringAfter("***INNERTUBE COOKIE*** =")?.trim() ?: ""
           cookieValue.isNotEmpty() && "SAPISID" in parseCookieString(cookieValue)
         },
-        extraContent = { InfoLabel(text = stringResource(R.string.token_adv_login_description)) }
+        extraContent = { InfoLabel(text = stringResource(R.string.token_adv_login_description)) },
       )
     }
     if (showLogoutDialog) {
@@ -557,7 +562,7 @@ fun AccountSettingsScreen(
         buttons = {
           Column(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
           ) {
             Button(
               onClick = {
@@ -565,7 +570,7 @@ fun AccountSettingsScreen(
                 showLogoutDialog = false
                 navController.navigateUp()
               },
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier.fillMaxWidth(),
             ) {
               Text(stringResource(R.string.logout_keep_data))
             }
@@ -574,15 +579,15 @@ fun AccountSettingsScreen(
               onClick = {
                 accountSettingsViewModel.logoutAndClearSyncedContent(
                   context,
-                  onInnerTubeCookieChange
+                  onInnerTubeCookieChange,
                 )
                 showLogoutDialog = false
               },
               modifier = Modifier.fillMaxWidth(),
               colors =
                 ButtonDefaults.filledTonalButtonColors(
-                  contentColor = MaterialTheme.colorScheme.error
-                )
+                  contentColor = MaterialTheme.colorScheme.error,
+                ),
             ) {
               Text(stringResource(R.string.logout_clear_data))
             }
@@ -591,12 +596,12 @@ fun AccountSettingsScreen(
               Text(stringResource(android.R.string.cancel))
             }
           }
-        }
+        },
       ) {
         Text(
           text = stringResource(R.string.logout_dialog_message),
           style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.padding(bottom = 8.dp)
+          modifier = Modifier.padding(bottom = 8.dp),
         )
       }
     }
@@ -614,15 +619,15 @@ fun AccountSettingsScreen(
         isInputValid = { it.isNotEmpty() },
         extraContent = {
           InfoLabel(text = stringResource(R.string.listenbrainz_scrobbling_description))
-        }
+        },
       )
     }
 
     Spacer(Modifier.height(100.dp))
     Spacer(
       Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
-      )
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom),
+      ),
     )
   }
 }

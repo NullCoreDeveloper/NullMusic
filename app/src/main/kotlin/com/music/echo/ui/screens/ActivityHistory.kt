@@ -59,7 +59,7 @@ fun ActivityHistoryBottomSheet(
     sheetState = sheetState,
     dragHandle = { BottomSheetDefaults.DragHandle() },
     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
   ) {
     Column(
       modifier =
@@ -67,13 +67,13 @@ fun ActivityHistoryBottomSheet(
           .padding(horizontal = 24.dp)
           .padding(bottom = 32.dp)
           .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
-      horizontalAlignment = Alignment.CenterHorizontally
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       // Header Row (Standard settings top app bar aesthetic)
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(modifier = Modifier.weight(1f)) {
           Text(
@@ -82,14 +82,14 @@ fun ActivityHistoryBottomSheet(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
           )
           Text(
             text = periodLabel,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
           )
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -97,7 +97,7 @@ fun ActivityHistoryBottomSheet(
           Icon(
             painter = painterResource(R.drawable.close),
             contentDescription = stringResource(R.string.close),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
@@ -108,12 +108,12 @@ fun ActivityHistoryBottomSheet(
       Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
       ) {
         Row(
           modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
           verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween
+          horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           val durationText = formatDuration(totalPlayTimeMs)
           val durationFontSize =
@@ -130,7 +130,7 @@ fun ActivityHistoryBottomSheet(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               fontWeight = FontWeight.Bold,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -139,24 +139,24 @@ fun ActivityHistoryBottomSheet(
                 MaterialTheme.typography.headlineLarge.copy(
                   fontWeight = FontWeight.Bold,
                   fontSize = durationFontSize,
-                  letterSpacing = (-1).sp
+                  letterSpacing = (-1).sp,
                 ),
               color = MaterialTheme.colorScheme.onSurface,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
           }
           Spacer(modifier = Modifier.width(16.dp))
           Box(
             modifier =
               Modifier.size(48.dp).background(MaterialTheme.colorScheme.surface, CircleShape),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
           ) {
             Icon(
               painter = painterResource(R.drawable.timer),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(24.dp)
+              modifier = Modifier.size(24.dp),
             )
           }
         }
@@ -180,20 +180,20 @@ fun ActivityHistoryBottomSheet(
                     topStart = 20.dp,
                     bottomStart = 20.dp,
                     topEnd = 6.dp,
-                    bottomEnd = 6.dp
-                  )
+                    bottomEnd = 6.dp,
+                  ),
               ),
-          contentAlignment = Alignment.Center
+          contentAlignment = Alignment.Center,
         ) {
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
           ) {
             Icon(
               painter = painterResource(R.drawable.music_note),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(20.dp)
+              modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.height(6.dp))
             val songsText = uniqueSongs.toString()
@@ -209,11 +209,11 @@ fun ActivityHistoryBottomSheet(
                 MaterialTheme.typography.titleLarge.copy(
                   fontWeight = FontWeight.Bold,
                   fontSize = songsFontSize,
-                  letterSpacing = (-0.5).sp
+                  letterSpacing = (-0.5).sp,
                 ),
               color = MaterialTheme.colorScheme.onSurface,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
@@ -222,7 +222,7 @@ fun ActivityHistoryBottomSheet(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               fontWeight = FontWeight.Medium,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
           }
         }
@@ -235,17 +235,17 @@ fun ActivityHistoryBottomSheet(
             Modifier.weight(1f)
               .height(112.dp)
               .background(color = segmentBgColor, shape = RoundedCornerShape(6.dp)),
-          contentAlignment = Alignment.Center
+          contentAlignment = Alignment.Center,
         ) {
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
           ) {
             Icon(
               painter = painterResource(R.drawable.artist),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(20.dp)
+              modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.height(6.dp))
             val artistsText = uniqueArtists.toString()
@@ -261,11 +261,11 @@ fun ActivityHistoryBottomSheet(
                 MaterialTheme.typography.titleLarge.copy(
                   fontWeight = FontWeight.Bold,
                   fontSize = artistsFontSize,
-                  letterSpacing = (-0.5).sp
+                  letterSpacing = (-0.5).sp,
                 ),
               color = MaterialTheme.colorScheme.onSurface,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
@@ -274,7 +274,7 @@ fun ActivityHistoryBottomSheet(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               fontWeight = FontWeight.Medium,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
           }
         }
@@ -293,20 +293,20 @@ fun ActivityHistoryBottomSheet(
                     topEnd = 20.dp,
                     bottomEnd = 20.dp,
                     topStart = 6.dp,
-                    bottomStart = 6.dp
-                  )
+                    bottomStart = 6.dp,
+                  ),
               ),
-          contentAlignment = Alignment.Center
+          contentAlignment = Alignment.Center,
         ) {
           Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
           ) {
             Icon(
               painter = painterResource(R.drawable.album),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(20.dp)
+              modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.height(6.dp))
             val albumsText = uniqueAlbums.toString()
@@ -322,11 +322,11 @@ fun ActivityHistoryBottomSheet(
                 MaterialTheme.typography.titleLarge.copy(
                   fontWeight = FontWeight.Bold,
                   fontSize = albumsFontSize,
-                  letterSpacing = (-0.5).sp
+                  letterSpacing = (-0.5).sp,
                 ),
               color = MaterialTheme.colorScheme.onSurface,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
@@ -335,7 +335,7 @@ fun ActivityHistoryBottomSheet(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               fontWeight = FontWeight.Medium,
               maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
             )
           }
         }
@@ -347,28 +347,28 @@ fun ActivityHistoryBottomSheet(
       Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
       ) {
         Row(
           modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
           verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween
+          horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
           ) {
             Box(
               modifier =
                 Modifier.size(40.dp).background(MaterialTheme.colorScheme.surface, CircleShape),
-              contentAlignment = Alignment.Center
+              contentAlignment = Alignment.Center,
             ) {
               Icon(
                 painter = painterResource(R.drawable.timer),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
               )
             }
             Column {
@@ -378,14 +378,14 @@ fun ActivityHistoryBottomSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
               )
               Text(
                 text = stringResource(R.string.total_listening_time),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
               )
             }
           }
@@ -404,11 +404,11 @@ fun ActivityHistoryBottomSheet(
               MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = allTimeFontSize,
-                letterSpacing = (-0.5).sp
+                letterSpacing = (-0.5).sp,
               ),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
           )
         }
       }

@@ -82,7 +82,7 @@ class CrashActivity : ComponentActivity() {
           crashLog = crashLog,
           onClose = { finishAffinity() },
           onShare = { shareCrashLog(crashLog) },
-          onCopy = { copyToClipboard(crashLog) }
+          onCopy = { copyToClipboard(crashLog) },
         )
       }
     }
@@ -146,25 +146,25 @@ fun CrashScreen(crashLog: String, onClose: () -> Unit, onShare: () -> Unit, onCo
         title = {
           Text(
             text = stringResource(R.string.crash_title),
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
           )
         },
         actions = {
           IconButton(onClick = onCopy) {
             Icon(
               painter = painterResource(R.drawable.content_copy),
-              contentDescription = stringResource(R.string.copy_logs)
+              contentDescription = stringResource(R.string.copy_logs),
             )
           }
           IconButton(onClick = onClose) {
             Icon(
               painter = painterResource(R.drawable.close),
-              contentDescription = stringResource(R.string.crash_close)
+              contentDescription = stringResource(R.string.crash_close),
             )
           }
         },
         colors =
-          TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+          TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
       )
     },
     floatingActionButton = {
@@ -173,22 +173,22 @@ fun CrashScreen(crashLog: String, onClose: () -> Unit, onShare: () -> Unit, onCo
         icon = { Icon(painter = painterResource(R.drawable.share), contentDescription = null) },
         text = { Text(stringResource(R.string.crash_share_logs)) },
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
       )
     },
-    containerColor = MaterialTheme.colorScheme.surface
+    containerColor = MaterialTheme.colorScheme.surface,
   ) { paddingValues ->
     Column(
       modifier =
         Modifier.fillMaxSize()
           .padding(paddingValues)
           .padding(horizontal = 16.dp)
-          .verticalScroll(rememberScrollState())
+          .verticalScroll(rememberScrollState()),
     ) {
       Text(
         text = stringResource(R.string.crash_description),
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
 
       Spacer(modifier = Modifier.height(16.dp))
@@ -198,7 +198,7 @@ fun CrashScreen(crashLog: String, onClose: () -> Unit, onShare: () -> Unit, onCo
           Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-            .padding(16.dp)
+            .padding(16.dp),
       ) {
         Text(
           text = crashLog,
@@ -206,10 +206,10 @@ fun CrashScreen(crashLog: String, onClose: () -> Unit, onShare: () -> Unit, onCo
             MaterialTheme.typography.bodySmall.copy(
               fontFamily = FontFamily.Monospace,
               fontSize = 11.sp,
-              lineHeight = 16.sp
+              lineHeight = 16.sp,
             ),
           color = MaterialTheme.colorScheme.onSurface,
-          modifier = Modifier.horizontalScroll(rememberScrollState())
+          modifier = Modifier.horizontalScroll(rememberScrollState()),
         )
       }
 

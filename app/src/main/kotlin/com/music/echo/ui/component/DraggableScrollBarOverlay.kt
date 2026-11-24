@@ -49,7 +49,7 @@ fun DraggableScrollbar(
   trackWidth: Dp = 24.dp,
   minItemCountForScroll: Int = 15,
   minScrollRangeForDrag: Int = 5,
-  headerItems: Int = 0
+  headerItems: Int = 0,
 ) {
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
@@ -95,7 +95,7 @@ fun DraggableScrollbar(
           onDragCancel = {
             isDragging = false
             lastScrollTime = 0L
-          }
+          },
         ) { change, _ ->
           val currentTime = System.currentTimeMillis()
           val viewportHeight = size.height.toFloat()
@@ -141,7 +141,7 @@ fun DraggableScrollbar(
             val targetIndex =
               (headerItems + targetFractionalIndex.toInt()).coerceIn(
                 headerItems,
-                layoutInfo.totalItemsCount - 1
+                layoutInfo.totalItemsCount - 1,
               )
 
             if (abs(targetIndex - lastTargetIndex) >= 1) {
@@ -154,7 +154,7 @@ fun DraggableScrollbar(
             }
           }
         }
-      }
+      },
   ) {
     val viewportHeight = with(density) { this@BoxWithConstraints.maxHeight.toPx() }
     val constThumbHeight = with(density) { thumbHeight.toPx() }
@@ -202,7 +202,7 @@ fun DraggableScrollbar(
           if (totalContentItems < 30) {
             animatedThumbY.animateTo(
               targetValue = targetThumbY,
-              animationSpec = spring(stiffness = 100f, dampingRatio = 1.2f)
+              animationSpec = spring(stiffness = 100f, dampingRatio = 1.2f),
             )
           } else {
             animatedThumbY.snapTo(targetThumbY)
@@ -214,8 +214,8 @@ fun DraggableScrollbar(
             animationSpec =
               spring(
                 stiffness = if (totalContentItems < 30) 80f else 150f,
-                dampingRatio = if (totalContentItems < 30) 1.5f else 0.9f
-              )
+                dampingRatio = if (totalContentItems < 30) 1.5f else 0.9f,
+              ),
           )
         }
       }
@@ -229,7 +229,7 @@ fun DraggableScrollbar(
         color = color,
         topLeft = Offset(0f, animatedThumbY.value),
         size = Size(this.size.width, constThumbHeight),
-        cornerRadius = CornerRadius(cornerRadiusPx)
+        cornerRadius = CornerRadius(cornerRadiusPx),
       )
     }
   }

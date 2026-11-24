@@ -43,7 +43,7 @@ fun VolumeSlider(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   onValueChangeFinished: (() -> Unit)? = null,
-  accentColor: Color = MaterialTheme.colorScheme.primary
+  accentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
 
@@ -66,7 +66,7 @@ fun VolumeSlider(
       activeTrackColor = accentColor,
       activeTickColor = MaterialTheme.colorScheme.onPrimary,
       inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-      inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant
+      inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
   val stopIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -108,7 +108,7 @@ fun VolumeSlider(
               inactiveTrackWidth = inactiveTrackWidth,
               activeIconColor = activeIconColor,
               inactiveIconColor = inactiveIconColor,
-              volumeOffIcon = volumeOffIcon
+              volumeOffIcon = volumeOffIcon,
             )
           },
         colors = colors,
@@ -121,12 +121,12 @@ fun VolumeSlider(
               drawCircle(
                 color = stopIndicatorColor,
                 radius = VolumeSliderDefaults.StopIndicatorRadius.toPx(),
-                center = offset
+                center = offset,
               )
             }
-          else null
+          else null,
       )
-    }
+    },
   )
 }
 
@@ -140,7 +140,7 @@ private fun DrawScope.drawVolumeIcon(
   inactiveTrackWidth: Float,
   activeIconColor: Color,
   inactiveIconColor: Color,
-  volumeOffIcon: Painter
+  volumeOffIcon: Painter,
 ) {
   val iconSizePx = iconSize.toSize()
   val iconPaddingPx = iconPadding.toPx()

@@ -362,7 +362,7 @@ fun ContentSettings(
             onProxyUsernameChange(if (authEnabled) tempProxyUsername else "")
             onProxyPasswordChange(if (authEnabled) tempProxyPassword else "")
             showProxyConfigurationDialog = false
-          }
+          },
         ) {
           Text(stringResource(R.string.save))
         }
@@ -456,7 +456,7 @@ fun ContentSettings(
             name = LyricsProviderRegistry.getDisplayName(name),
             icon = lyricsIcon,
           )
-        }
+        },
       )
     }
 
@@ -533,7 +533,7 @@ fun ContentSettings(
 
                 val rest = normalizedOrder.filter { it !in enabledProviders }
                 onLyricsProviderOrderChange(
-                  LyricsProviderRegistry.serializeProviderOrder(enabledOrder + rest)
+                  LyricsProviderRegistry.serializeProviderOrder(enabledOrder + rest),
                 )
               },
               modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -606,7 +606,7 @@ fun ContentSettings(
           onClick = {
             onLengthTopChange(tempLength.toInt().toString())
             showTopLengthDialog = false
-          }
+          },
         ) {
           Text(stringResource(R.string.save))
         }
@@ -654,13 +654,15 @@ fun ContentSettings(
 
   Column(
     Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal),
       )
       .verticalScroll(scrollState)
-      .padding(horizontal = 16.dp)
+      .padding(horizontal = 16.dp),
   ) {
     Spacer(
-      Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top))
+      Modifier.windowInsetsPadding(
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
+      ),
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -700,7 +702,7 @@ fun ContentSettings(
             title = { Text("Force Opus Audio (itag 251)") },
             description = {
               Text(
-                "Force WebM/Opus streaming. Halves data usage and buffers 2x faster, but may lower raw bitrate."
+                "Force WebM/Opus streaming. Halves data usage and buffers 2x faster, but may lower raw bitrate.",
               )
             },
             trailingContent = {
@@ -734,7 +736,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (enableCronet) R.drawable.check else R.drawable.close
+                        id = if (enableCronet) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -752,7 +754,7 @@ fun ContentSettings(
               Text(
                 LanguageCodeToName.getOrElse(contentLanguage) {
                   stringResource(R.string.system_default)
-                }
+                },
               )
             },
             onClick = { showContentLanguageDialog = true },
@@ -765,7 +767,7 @@ fun ContentSettings(
               Text(
                 CountryCodeToName.getOrElse(contentCountry) {
                   stringResource(R.string.system_default)
-                }
+                },
               )
             },
             onClick = { showContentCountryDialog = true },
@@ -792,7 +794,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (hideExplicit) R.drawable.check else R.drawable.close
+                        id = if (hideExplicit) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -815,7 +817,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (hideVideoSongs) R.drawable.check else R.drawable.close
+                        id = if (hideVideoSongs) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -838,7 +840,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (hideYoutubeShorts) R.drawable.check else R.drawable.close
+                        id = if (hideYoutubeShorts) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -861,7 +863,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (sponsorBlockEnabled) R.drawable.check else R.drawable.close
+                        id = if (sponsorBlockEnabled) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -894,7 +896,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (albumCanvasEnabled) R.drawable.check else R.drawable.close
+                        id = if (albumCanvasEnabled) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -903,7 +905,7 @@ fun ContentSettings(
               )
             },
             onClick = { onAlbumCanvasEnabledChange(!albumCanvasEnabled) },
-          )
+          ),
         ),
     )
 
@@ -925,7 +927,7 @@ fun ContentSettings(
                   Intent(
                     Settings.ACTION_APP_LOCALE_SETTINGS,
                     "package:${context.packageName}".toUri(),
-                  )
+                  ),
                 )
               },
             )
@@ -938,12 +940,12 @@ fun ContentSettings(
                 Text(
                   LanguageCodeToName.getOrElse(appLanguage) {
                     stringResource(R.string.system_default)
-                  }
+                  },
                 )
               },
               onClick = { showAppLanguageDialog = true },
             )
-          }
+          },
         ),
     )
 
@@ -965,11 +967,11 @@ fun ContentSettings(
                     IpVersion.AUTO -> stringResource(R.string.ip_version_auto)
                     IpVersion.IPV4 -> stringResource(R.string.ip_version_ipv4)
                     IpVersion.IPV6 -> stringResource(R.string.ip_version_ipv6)
-                  }
+                  },
                 )
               },
               onClick = { showIpVersionDialog = true },
-            )
+            ),
           )
           add(
             Material3SettingsItem(
@@ -985,7 +987,7 @@ fun ContentSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (proxyEnabled) R.drawable.check else R.drawable.close
+                          id = if (proxyEnabled) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
                       modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -994,7 +996,7 @@ fun ContentSettings(
                 )
               },
               onClick = { onProxyEnabledChange(!proxyEnabled) },
-            )
+            ),
           )
           if (proxyEnabled) {
             add(
@@ -1004,7 +1006,7 @@ fun ContentSettings(
                 title = { Text(stringResource(R.string.config_proxy)) },
                 description = { Text(stringResource(R.string.config_proxy_desc)) },
                 onClick = { showProxyConfigurationDialog = true },
-              )
+              ),
             )
           }
         },
@@ -1049,7 +1051,7 @@ fun ContentSettings(
                       painterResource(
                         id =
                           if (lyricsRomanizeJapanese && lyricsRomanizeKorean) R.drawable.check
-                          else R.drawable.close
+                          else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -1090,7 +1092,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (lyricsRomanizeAsMain) R.drawable.check else R.drawable.close
+                        id = if (lyricsRomanizeAsMain) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -1128,7 +1130,7 @@ fun ContentSettings(
                     stringResource(R.string.recommendation_source_youtube)
                   RecommendationSource.SPOTIFY ->
                     stringResource(R.string.recommendation_source_spotify)
-                }
+                },
               )
             },
             onClick = {
@@ -1164,7 +1166,7 @@ fun ContentSettings(
                   Icon(
                     painter =
                       painterResource(
-                        id = if (randomizeHomeOrder) R.drawable.check else R.drawable.close
+                        id = if (randomizeHomeOrder) R.drawable.check else R.drawable.close,
                       ),
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -1190,7 +1192,7 @@ fun ContentSettings(
                 when (quickPicks) {
                   QuickPicks.QUICK_PICKS -> stringResource(R.string.quick_picks)
                   QuickPicks.LAST_LISTEN -> stringResource(R.string.last_song_listened)
-                }
+                },
               )
             },
             onClick = { showQuickPicksDialog = true },
@@ -1274,8 +1276,8 @@ fun ContentSettings(
 
     Spacer(
       Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
-      )
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom),
+      ),
     )
   }
 

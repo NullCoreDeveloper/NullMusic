@@ -70,7 +70,7 @@ fun rememberAlbumCanvas(
               ?: AppleMusicCanvasProvider.getByAlbumArtist(
                   album = s,
                   artist = a,
-                  storefront = storefront
+                  storefront = storefront,
                 )
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
               ?: TidalCanvasProvider.getByAlbumArtist(album = s, artist = a)?.takeIf {
@@ -96,24 +96,23 @@ fun rememberAlbumCanvas(
                     )?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 }
         }
-      validated =
-        tidalFetched?.let { artwork ->
-          val resultArtist = artwork.artist
-          val canvasAlbumName = artwork.albumName
+      validated = tidalFetched?.let { artwork ->
+        val resultArtist = artwork.artist
+        val canvasAlbumName = artwork.albumName
 
-          val artistMatches =
-            if (resultArtist != null && artistName.isNotBlank()) {
-              resultArtist.contains(artistName, ignoreCase = true) ||
-                artistName.contains(resultArtist, ignoreCase = true)
-            } else true
+        val artistMatches =
+          if (resultArtist != null && artistName.isNotBlank()) {
+            resultArtist.contains(artistName, ignoreCase = true) ||
+              artistName.contains(resultArtist, ignoreCase = true)
+          } else true
 
-          val albumMatches =
-            if (canvasAlbumName != null && !albumTitle.isNullOrBlank()) {
-              canvasAlbumName.trim().equals(albumTitle.trim(), ignoreCase = true)
-            } else false
+        val albumMatches =
+          if (canvasAlbumName != null && !albumTitle.isNullOrBlank()) {
+            canvasAlbumName.trim().equals(albumTitle.trim(), ignoreCase = true)
+          } else false
 
-          if (artistMatches && albumMatches) artwork else null
-        }
+        if (artistMatches && albumMatches) artwork else null
+      }
     }
 
     if (validated != null) {

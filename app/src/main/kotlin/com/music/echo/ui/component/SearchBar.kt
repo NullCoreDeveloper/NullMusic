@@ -77,7 +77,7 @@ fun TopSearch(
   shape: Shape? = null,
   colors: TopAppBarColors =
     TopAppBarDefaults.topAppBarColors(
-      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ),
   scrollBehavior: TopAppBarScrollBehavior? = null,
   windowInsets: WindowInsets = WindowInsets.systemBars,
@@ -107,7 +107,7 @@ fun TopSearch(
               disabledContainerColor = Color.Transparent,
               cursorColor = MaterialTheme.colorScheme.primary,
               focusedIndicatorColor = Color.Transparent,
-              unfocusedIndicatorColor = Color.Transparent
+              unfocusedIndicatorColor = Color.Transparent,
             ),
           interactionSource = interactionSource,
           focusRequester = focusRequester,
@@ -125,7 +125,7 @@ fun TopSearch(
       },
       colors = colors,
       scrollBehavior = scrollBehavior,
-      windowInsets = windowInsets
+      windowInsets = windowInsets,
     )
 
     if (active) {
@@ -133,7 +133,7 @@ fun TopSearch(
         modifier =
           Modifier.fillMaxWidth()
             .padding(top = AppBarHeight + windowInsets.asPaddingValues().calculateTopPadding())
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface),
       ) {
         Column { content() }
       }

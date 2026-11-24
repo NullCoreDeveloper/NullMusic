@@ -214,7 +214,7 @@ fun FloatingMiniPlayer(
             }
           } else {
             Modifier
-          }
+          },
         ),
   ) {
     Row(

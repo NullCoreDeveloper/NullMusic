@@ -91,7 +91,7 @@ data class SyncState(
   val uploadedAlbums: SyncStatus = SyncStatus.Idle,
   val artists: SyncStatus = SyncStatus.Idle,
   val playlists: SyncStatus = SyncStatus.Idle,
-  val currentOperation: String = ""
+  val currentOperation: String = "",
 )
 
 @Singleton
@@ -184,18 +184,17 @@ constructor(
   }
 
   private fun startProcessingQueue() {
-    processingJob =
-      syncScope.launch {
-        for (operation in syncChannel) {
-          try {
-            processOperation(operation)
-          } catch (e: CancellationException) {
-            throw e
-          } catch (e: Exception) {
-            Timber.e(e, "Error processing sync operation: $operation")
-          }
+    processingJob = syncScope.launch {
+      for (operation in syncChannel) {
+        try {
+          processOperation(operation)
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          Timber.e(e, "Error processing sync operation: $operation")
         }
       }
+    }
   }
 
   private suspend fun processOperation(operation: SyncOperation) {
@@ -239,7 +238,7 @@ constructor(
   private suspend fun <T> withRetry(
     maxRetries: Int = MAX_RETRIES,
     initialDelay: Long = INITIAL_RETRY_DELAY_MS,
-    block: suspend () -> T
+    block: suspend () -> T,
   ): Result<T> {
     var currentDelay = initialDelay
     repeat(maxRetries) { attempt ->
@@ -437,7 +436,7 @@ constructor(
         updateState {
           copy(
             overallStatus = SyncStatus.Error(e.message ?: "Unknown error"),
-            currentOperation = ""
+            currentOperation = "",
           )
         }
       }
@@ -515,8 +514,8 @@ constructor(
                           dbSong.song.copy(
                             liked = true,
                             likedDate = newLikedDate,
-                            isVideo = isVideoSong
-                          )
+                            isVideo = isVideoSong,
+                          ),
                         )
                       }
                     }
@@ -623,12 +622,12 @@ constructor(
       }
 
       withRetry {
-          Timber.d(
-            "[UPLOAD_DEBUG] Calling YouTube.library(FEmusic_library_privately_owned_tracks, tabIndex=1)"
-          )
+        Timber.d(
+          "[UPLOAD_DEBUG] Calling YouTube.library(FEmusic_library_privately_owned_tracks, tabIndex=1)",
+        )
 
-          YouTube.library("FEmusic_library_privately_owned_tracks", tabIndex = 1).completed()
-        }
+        YouTube.library("FEmusic_library_privately_owned_tracks", tabIndex = 1).completed()
+      }
         .onSuccess { result ->
           Timber.d("[UPLOAD_DEBUG] withRetry succeeded, result isSuccess=${result.isSuccess}")
           result
@@ -637,14 +636,14 @@ constructor(
                 Timber.d("[UPLOAD_DEBUG] Page received, total items: ${page.items.size}")
                 page.items.forEachIndexed { index, item ->
                   Timber.d(
-                    "[UPLOAD_DEBUG] Page item $index: type=${item::class.simpleName}, id=${(item as? SongItem)?.id ?: "N/A"}"
+                    "[UPLOAD_DEBUG] Page item $index: type=${item::class.simpleName}, id=${(item as? SongItem)?.id ?: "N/A"}",
                   )
                 }
                 val remoteSongs = page.items.filterIsInstance<SongItem>().reversed()
                 Timber.d("[UPLOAD_DEBUG] Filtered to ${remoteSongs.size} SongItems")
                 remoteSongs.forEachIndexed { index, song ->
                   Timber.d(
-                    "[UPLOAD_DEBUG] Remote song $index: id=${song.id}, title=${song.title}, artists=${song.artists.map { it.name }}"
+                    "[UPLOAD_DEBUG] Remote song $index: id=${song.id}, title=${song.title}, artists=${song.artists.map { it.name }}",
                   )
                 }
                 val remoteIds = remoteSongs.map { it.id }.toSet()
@@ -667,7 +666,7 @@ constructor(
                   try {
                     val dbSong = database.song(song.id).firstOrNull()
                     Timber.d(
-                      "[UPLOAD_DEBUG] Processing remote song ${song.id}: exists in db=${dbSong != null}, isUploaded=${dbSong?.song?.isUploaded}"
+                      "[UPLOAD_DEBUG] Processing remote song ${song.id}: exists in db=${dbSong != null}, isUploaded=${dbSong?.song?.isUploaded}",
                     )
                     database.transaction {
                       if (dbSong == null) {
@@ -896,8 +895,8 @@ constructor(
                             name = artist.title,
                             thumbnailUrl = artist.thumbnail,
                             channelId = channelId,
-                            bookmarkedAt = LocalDateTime.now()
-                          )
+                            bookmarkedAt = LocalDateTime.now(),
+                          ),
                         )
                       } else {
                         val existing = dbArtist.artist
@@ -914,8 +913,8 @@ constructor(
                               thumbnailUrl = artist.thumbnail,
                               channelId = channelId ?: existing.channelId,
                               bookmarkedAt = existing.bookmarkedAt ?: LocalDateTime.now(),
-                              lastUpdateTime = LocalDateTime.now()
-                            )
+                              lastUpdateTime = LocalDateTime.now(),
+                            ),
                           )
                         }
                       }
@@ -999,16 +998,16 @@ constructor(
                             },
                           playEndpointParams = playlist.playEndpoint?.params,
                           shuffleEndpointParams = playlist.shuffleEndpoint?.params,
-                          radioEndpointParams = playlist.radioEndpoint?.params
+                          radioEndpointParams = playlist.radioEndpoint?.params,
                         )
                       database.insert(playlistEntity)
                       Timber.d(
-                        "syncSavedPlaylists: Created new playlist ${playlist.title} (${playlist.id})"
+                        "syncSavedPlaylists: Created new playlist ${playlist.title} (${playlist.id})",
                       )
                     } else {
                       database.update(playlistEntity, playlist)
                       Timber.d(
-                        "syncSavedPlaylists: Updated existing playlist ${playlist.title} (${playlist.id})"
+                        "syncSavedPlaylists: Updated existing playlist ${playlist.title} (${playlist.id})",
                       )
                     }
 
@@ -1081,7 +1080,7 @@ constructor(
                   // Remote returned empty — could be a transient API hiccup.
                   // Don't clear local songs to avoid data loss.
                   Timber.w(
-                    "syncPlaylist: Remote playlist returned empty, skipping clear to preserve local songs"
+                    "syncPlaylist: Remote playlist returned empty, skipping clear to preserve local songs",
                   )
                   return@onSuccess
                 }
@@ -1110,7 +1109,7 @@ constructor(
                 if (localOnlySongs.isNotEmpty()) {
                   Timber.d(
                     "syncPlaylist: Local has ${localOnlySongs.size} song(s) not in remote (freshly added). " +
-                      "Performing additive-only sync to preserve local songs."
+                      "Performing additive-only sync to preserve local songs.",
                   )
                   // Only insert remote songs that are missing from local
                   val missingSongsFromLocal = songs.filter { it.id !in localIdSet }
@@ -1126,8 +1125,8 @@ constructor(
                             songId = song.id,
                             playlistId = playlistId,
                             position = nextPosition + idx,
-                            setVideoId = song.setVideoId
-                          )
+                            setVideoId = song.setVideoId,
+                          ),
                         )
                       }
                     }
@@ -1136,7 +1135,7 @@ constructor(
                 }
 
                 Timber.d(
-                  "syncPlaylist: Updating local playlist (remote: ${remoteIds.size}, local: ${localIds.size})"
+                  "syncPlaylist: Updating local playlist (remote: ${remoteIds.size}, local: ${localIds.size})",
                 )
 
                 database.withTransaction {
@@ -1150,8 +1149,8 @@ constructor(
                         songId = song.id,
                         playlistId = playlistId,
                         position = idx,
-                        setVideoId = song.setVideoId
-                      )
+                        setVideoId = song.setVideoId,
+                      ),
                     )
                   }
                 }
@@ -1182,7 +1181,7 @@ constructor(
               .forEach { duplicate ->
                 try {
                   Timber.d(
-                    "Removing duplicate playlist: ${duplicate.playlist.name} (${duplicate.id})"
+                    "Removing duplicate playlist: ${duplicate.playlist.name} (${duplicate.id})",
                   )
                   database.clearPlaylist(duplicate.id)
                   database.delete(duplicate.playlist)
@@ -1250,7 +1249,7 @@ constructor(
         updateState {
           copy(
             overallStatus = SyncStatus.Error(e.message ?: "Unknown error"),
-            currentOperation = ""
+            currentOperation = "",
           )
         }
       }

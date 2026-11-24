@@ -18,7 +18,7 @@ open class MusicWidgetReceiver : AppWidgetProvider() {
   override fun onUpdate(
     context: Context,
     appWidgetManager: AppWidgetManager,
-    appWidgetIds: IntArray
+    appWidgetIds: IntArray,
   ) {
     // Only trigger update through MusicService if it's already running
     // This prevents BackgroundServiceStartNotAllowedException on Android 14+
@@ -37,7 +37,7 @@ open class MusicWidgetReceiver : AppWidgetProvider() {
     context: Context,
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int,
-    newOptions: Bundle
+    newOptions: Bundle,
   ) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     // Trigger widget update when size changes

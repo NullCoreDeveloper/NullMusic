@@ -74,7 +74,7 @@ object ListenBrainzManager {
     artistNames: String,
     releaseName: String,
     durationMs: Long,
-    positionMs: Long
+    positionMs: Long,
   ): Boolean {
     if (token.isBlank()) return false
     if (title.isBlank()) return false
@@ -148,7 +148,7 @@ object ListenBrainzManager {
           Timber.tag(logTag)
             .w(
               "listened_at %s looks too small, replacing with current epoch seconds",
-              listenedAtStart
+              listenedAtStart,
             )
           listenedAtStart = System.currentTimeMillis() / 1000L
         }

@@ -21,7 +21,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import echo.music.iad1tya.ai.AiLogger
 
 object AiPlaylistGenerator {
   private val client =
@@ -36,7 +35,7 @@ object AiPlaylistGenerator {
     userPrompt: String,
     numberOfSongs: Int = 15,
     weatherInfo: echo.music.iad1tya.ai.weather.WeatherInfo? = null,
-    onLog: suspend (String) -> Unit
+    onLog: suspend (String) -> Unit,
   ): String? =
     withContext(Dispatchers.IO) {
       val database = InternalDatabase.newInstance(context)
@@ -93,7 +92,7 @@ object AiPlaylistGenerator {
         append("\n")
         if (weatherInfo != null) {
           append(
-            "Weather: ${weatherInfo.condition}, ${weatherInfo.temperature}°C (Feels like ${weatherInfo.feelsLike}°C), Humidity: ${weatherInfo.humidity}%, ${if (weatherInfo.isDay) "Daytime" else "Nighttime"}\n"
+            "Weather: ${weatherInfo.condition}, ${weatherInfo.temperature}°C (Feels like ${weatherInfo.feelsLike}°C), Humidity: ${weatherInfo.humidity}%, ${if (weatherInfo.isDay) "Daytime" else "Nighttime"}\n",
           )
         }
         append("Desired playlist length: $numberOfSongs")
@@ -109,7 +108,7 @@ object AiPlaylistGenerator {
           val baseUrl =
             context.dataStore.get(
               OpenRouterBaseUrlKey,
-              "https://openrouter.ai/api/v1/chat/completions"
+              "https://openrouter.ai/api/v1/chat/completions",
             )
           val model = context.dataStore.get(OpenRouterModelKey, "openrouter/free")
 
@@ -134,15 +133,15 @@ object AiPlaylistGenerator {
                       JSONObject().apply {
                         put("role", "system")
                         put("content", systemPrompt)
-                      }
+                      },
                     )
                     put(
                       JSONObject().apply {
                         put("role", "user")
                         put("content", fullUserPrompt)
-                      }
+                      },
                     )
-                  }
+                  },
                 )
               }
               .toString()
@@ -219,7 +218,7 @@ object AiPlaylistGenerator {
           radioEndpointParams = weatherSnapshot,
           bookmarkedAt = java.time.LocalDateTime.now(),
           isLocal = true,
-          isEditable = true
+          isEditable = true,
         )
       database.insert(playlistEntity)
       val playlistId = playlistEntity.id
@@ -230,11 +229,11 @@ object AiPlaylistGenerator {
             id = songItem.id,
             title = songItem.title,
             duration = songItem.duration ?: 0,
-            thumbnailUrl = songItem.thumbnail
+            thumbnailUrl = songItem.thumbnail,
           )
         database.insert(songEntity)
         database.insert(
-          PlaylistSongMap(playlistId = playlistId, songId = songItem.id, position = index)
+          PlaylistSongMap(playlistId = playlistId, songId = songItem.id, position = index),
         )
       }
 

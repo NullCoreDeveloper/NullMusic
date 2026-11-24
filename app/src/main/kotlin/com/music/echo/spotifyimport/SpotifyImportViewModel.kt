@@ -43,8 +43,9 @@ constructor(
   private suspend fun updateSources(
     updateAction:
       (List<SpotifyImportSource>) -> Pair<
-          List<SpotifyImportSource>, (SpotifyImportUiState) -> SpotifyImportUiState
-        >
+          List<SpotifyImportSource>,
+          (SpotifyImportUiState) -> SpotifyImportUiState,
+        >,
   ) {
     sourcesMutex.withLock {
       val (nextSources, uiStateUpdate) = updateAction(sources)

@@ -23,7 +23,7 @@ class AxionEqViewModel
 constructor(
   @ApplicationContext private val context: Context,
   private val dspController: DspController,
-  private val eqProfileRepository: EQProfileRepository
+  private val eqProfileRepository: EQProfileRepository,
 ) : ViewModel() {
 
   private val prefs = context.getSharedPreferences("echo_eq_prefs", Context.MODE_PRIVATE)
@@ -107,7 +107,7 @@ constructor(
             gain = f.toDouble() / 50.0,
             q = 1.41,
             filterType = FilterType.PK,
-            enabled = true
+            enabled = true,
           )
         }
 
@@ -120,7 +120,7 @@ constructor(
           bands = bands,
           preamp = 0.0,
           isCustom = true,
-          isActive = true
+          isActive = true,
         )
 
       eqProfileRepository.saveProfile(profile)
@@ -142,7 +142,7 @@ constructor(
             gain = f.toDouble() / 50.0,
             q = 1.41,
             filterType = FilterType.PK,
-            enabled = true
+            enabled = true,
           )
         }
 
@@ -154,7 +154,7 @@ constructor(
           bands = bands,
           preamp = 0.0,
           isCustom = false,
-          isActive = true
+          isActive = true,
         )
 
       eqProfileRepository.saveProfile(profile)

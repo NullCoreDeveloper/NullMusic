@@ -17,7 +17,7 @@ class EQViewModel
 @Inject
 constructor(
   private val eqProfileRepository: EQProfileRepository,
-  private val dspController: DspController
+  private val dspController: DspController,
 ) : ViewModel() {
 
   private val _state = MutableStateFlow(EQState())
@@ -74,7 +74,7 @@ constructor(
     fileName: String,
     inputStream: InputStream,
     onSuccess: () -> Unit,
-    onError: (Exception) -> Unit
+    onError: (Exception) -> Unit,
   ) {
     viewModelScope.launch {
       try {

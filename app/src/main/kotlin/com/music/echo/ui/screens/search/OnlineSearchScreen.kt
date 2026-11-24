@@ -83,7 +83,7 @@ import kotlinx.coroutines.flow.drop
   ExperimentalFoundationApi::class,
   ExperimentalComposeUiApi::class,
   ExperimentalMaterial3Api::class,
-  FlowPreview::class
+  FlowPreview::class,
 )
 @Composable
 fun OnlineSearchScreen(
@@ -132,7 +132,7 @@ fun OnlineSearchScreen(
       LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom).asPaddingValues(),
     modifier =
       Modifier.fillMaxSize()
-        .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+        .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background),
   ) {
     if (viewState.history.isNotEmpty()) {
       item(key = "history_header") {
@@ -141,7 +141,7 @@ fun OnlineSearchScreen(
           style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp).animateItem()
+          modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp).animateItem(),
         )
       }
     }
@@ -160,7 +160,7 @@ fun OnlineSearchScreen(
           onQueryChange(TextFieldValue(history.query, TextRange(history.query.length)))
         },
         modifier = Modifier.animateItem(),
-        pureBlack = pureBlack
+        pureBlack = pureBlack,
       )
     }
 
@@ -177,7 +177,7 @@ fun OnlineSearchScreen(
           style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp).animateItem()
+          modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp).animateItem(),
         )
       }
     }
@@ -193,7 +193,7 @@ fun OnlineSearchScreen(
         },
         onFillTextField = { onQueryChange(TextFieldValue(query, TextRange(query.length))) },
         modifier = Modifier.animateItem(),
-        pureBlack = pureBlack
+        pureBlack = pureBlack,
       )
     }
 
@@ -208,12 +208,12 @@ fun OnlineSearchScreen(
         Text(
           text =
             stringResource(
-              if (viewState.isFromLink) R.string.parsed_from_link else R.string.top_result
+              if (viewState.isFromLink) R.string.parsed_from_link else R.string.top_result,
             ),
           style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.padding(start = 16.dp, top = 8.dp).animateItem()
+          modifier = Modifier.padding(start = 16.dp, top = 8.dp).animateItem(),
         )
       }
       item(key = "search_divider_spacer") { Spacer(modifier = Modifier.height(8.dp)) }
@@ -242,7 +242,7 @@ fun OnlineSearchScreen(
                       onDismiss = {
                         menuState.dismiss()
                         onDismiss()
-                      }
+                      },
                     )
                   is AlbumItem ->
                     YouTubeAlbumMenu(
@@ -251,7 +251,7 @@ fun OnlineSearchScreen(
                       onDismiss = {
                         menuState.dismiss()
                         onDismiss()
-                      }
+                      },
                     )
                   is ArtistItem ->
                     YouTubeArtistMenu(
@@ -259,7 +259,7 @@ fun OnlineSearchScreen(
                       onDismiss = {
                         menuState.dismiss()
                         onDismiss()
-                      }
+                      },
                     )
                   is PlaylistItem ->
                     YouTubePlaylistMenu(
@@ -268,11 +268,11 @@ fun OnlineSearchScreen(
                       onDismiss = {
                         menuState.dismiss()
                         onDismiss()
-                      }
+                      },
                     )
                 }
               }
-            }
+            },
           ) {
             Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
           }
@@ -314,7 +314,7 @@ fun OnlineSearchScreen(
                         onDismiss = {
                           menuState.dismiss()
                           onDismiss()
-                        }
+                        },
                       )
                     is AlbumItem ->
                       YouTubeAlbumMenu(
@@ -323,7 +323,7 @@ fun OnlineSearchScreen(
                         onDismiss = {
                           menuState.dismiss()
                           onDismiss()
-                        }
+                        },
                       )
                     is ArtistItem ->
                       YouTubeArtistMenu(
@@ -331,7 +331,7 @@ fun OnlineSearchScreen(
                         onDismiss = {
                           menuState.dismiss()
                           onDismiss()
-                        }
+                        },
                       )
                     is PlaylistItem ->
                       YouTubePlaylistMenu(
@@ -340,14 +340,14 @@ fun OnlineSearchScreen(
                         onDismiss = {
                           menuState.dismiss()
                           onDismiss()
-                        }
+                        },
                       )
                   }
                 }
-              }
+              },
             )
             .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
-            .animateItem()
+            .animateItem(),
       )
     }
   }
@@ -362,7 +362,7 @@ fun SuggestionItem(
   onClick: () -> Unit,
   onDelete: () -> Unit = {},
   onFillTextField: () -> Unit,
-  pureBlack: Boolean
+  pureBlack: Boolean,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
@@ -379,7 +379,7 @@ fun SuggestionItem(
     Icon(
       painterResource(if (online) R.drawable.search else R.drawable.history),
       contentDescription = null,
-      modifier = Modifier.padding(horizontal = 16.dp).alpha(0.5f)
+      modifier = Modifier.padding(horizontal = 16.dp).alpha(0.5f),
     )
 
     Text(

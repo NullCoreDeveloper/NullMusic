@@ -36,9 +36,9 @@ fun <T> EnumDialog(
       Text(
         text = title,
         style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
       )
-    }
+    },
   ) {
     itemsIndexed(values) { index, value ->
       val shape =
@@ -49,14 +49,14 @@ fun <T> EnumDialog(
               topStart = 24.dp,
               topEnd = 24.dp,
               bottomStart = 4.dp,
-              bottomEnd = 4.dp
+              bottomEnd = 4.dp,
             )
           index == values.size - 1 ->
             RoundedCornerShape(
               topStart = 4.dp,
               topEnd = 4.dp,
               bottomStart = 24.dp,
-              bottomEnd = 24.dp
+              bottomEnd = 24.dp,
             )
           else -> RoundedCornerShape(4.dp)
         }
@@ -82,7 +82,7 @@ fun <T> EnumDialog(
           Text(
             text = valueText(value),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
           )
           if (valueDescription != null && valueDescription(value).isNotEmpty()) {
             Text(

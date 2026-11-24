@@ -46,7 +46,7 @@ fun WavySlider(
   strokeWidth: Dp = 4.dp,
   thumbRadius: Dp = 8.dp,
   wavelength: Dp = WavyProgressIndicatorDefaults.LinearDeterminateWavelength,
-  waveSpeed: Dp = wavelength
+  waveSpeed: Dp = wavelength,
 ) {
   val density = LocalDensity.current
   val strokeWidthPx = with(density) { strokeWidth.toPx() }
@@ -65,7 +65,7 @@ fun WavySlider(
     animateFloatAsState(
       targetValue = if (isPlaying) 1f else 0f,
       animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-      label = "amplitude"
+      label = "amplitude",
     )
 
   val activeColor = colors.activeTrackColor
@@ -107,7 +107,7 @@ fun WavySlider(
               val mappedValue =
                 valueRange.start + dragValue * (valueRange.endInclusive - valueRange.start)
               onValueChange(mappedValue)
-            }
+            },
           )
         }
     } else {
@@ -126,7 +126,7 @@ fun WavySlider(
       stopSize = WavyProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
       amplitude = { progress -> if (progress > 0f) animatedAmplitude else 0f },
       wavelength = wavelength,
-      waveSpeed = waveSpeed
+      waveSpeed = waveSpeed,
     )
 
     Canvas(modifier = Modifier.fillMaxSize()) {

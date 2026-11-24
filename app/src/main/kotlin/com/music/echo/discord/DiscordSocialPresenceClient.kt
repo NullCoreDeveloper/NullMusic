@@ -28,7 +28,7 @@ object DiscordSocialPresenceClient {
         val token = accessToken.trim()
         if (token.isBlank()) {
           return@withLock Result.failure(
-            IllegalArgumentException("Discord access token is missing")
+            IllegalArgumentException("Discord access token is missing"),
           )
         }
 
@@ -94,7 +94,8 @@ object DiscordSocialPresenceClient {
       scope = newScope
       gateway = newGateway
       activeToken = token
-    }.onFailure { newGateway.disconnect() }
+    }
+      .onFailure { newGateway.disconnect() }
   }
 
   private suspend fun buildPresencePayload(

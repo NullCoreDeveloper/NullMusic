@@ -2,8 +2,6 @@
 
 package iad1tya.echo.music.ui.screens.settings
 
-import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -64,14 +62,14 @@ enum class ActivitySource {
   ARTIST,
   ALBUM,
   SONG,
-  APP
+  APP,
 }
 
 private enum class DiscordAuthorizationUiMode {
   Idle,
   Waiting,
   Success,
-  Failure
+  Failure,
 }
 
 private val DiscordImageOptions = listOf("thumbnail", "artist", "appicon", "custom")
@@ -450,8 +448,8 @@ fun DiscordSettings(
       button2UrlSource,
       button2CustomUrl,
       activityType,
-      showWhenPaused
-    )
+      showWhenPaused,
+    ),
   ) {
     if (discordRPC && discordToken.isNotBlank() && DiscordPresenceManager.isRunning()) {
       delay(500)
@@ -799,7 +797,7 @@ fun DiscordSettings(
           authorizationUiModeName = DiscordAuthorizationUiMode.Idle.name
           authorizationMessage = null
         },
-        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
       ) {
         Surface(modifier = Modifier.fillMaxSize()) {
           DiscordTokenWebView(
@@ -809,7 +807,7 @@ fun DiscordSettings(
               authorizationMessage = context.getString(R.string.discord_authorization_success)
               authorizationUiModeName = DiscordAuthorizationUiMode.Success.name
               // Account details are fetched in LaunchedEffect(discordToken) automatically
-            }
+            },
           )
         }
       }
@@ -853,23 +851,22 @@ private fun DiscordAccountGroupCard(
       return@LaunchedEffect
     }
 
-    val bitmap =
-      runCatching {
-          context.imageLoader
-            .execute(
-              ImageRequest.Builder(context)
-                .data(avatarUrl)
-                .size(
-                  PlayerColorExtractor.Config.IMAGE_SIZE,
-                  PlayerColorExtractor.Config.IMAGE_SIZE
-                )
-                .allowHardware(false)
-                .build(),
+    val bitmap = runCatching {
+      context.imageLoader
+        .execute(
+          ImageRequest.Builder(context)
+            .data(avatarUrl)
+            .size(
+              PlayerColorExtractor.Config.IMAGE_SIZE,
+              PlayerColorExtractor.Config.IMAGE_SIZE,
             )
-            .image
-            ?.toBitmap()
-        }
-        .getOrNull()
+            .allowHardware(false)
+            .build(),
+        )
+        .image
+        ?.toBitmap()
+    }
+      .getOrNull()
 
     extractedGlowColor =
       if (bitmap != null) {
@@ -925,7 +922,7 @@ private fun DiscordAccountGroupCard(
       Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
       ) {
         Box(
           modifier = Modifier.size(88.dp),
@@ -1023,7 +1020,7 @@ private fun DiscordAccountGroupCard(
         if (isNarrow) {
           Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
           ) {
             Surface(
               modifier = Modifier.fillMaxWidth(),
@@ -1041,19 +1038,19 @@ private fun DiscordAccountGroupCard(
                 Row(
                   modifier = Modifier.weight(1f, fill = false),
                   verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(12.dp)
+                  horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                   Surface(
                     shape = MaterialTheme.shapes.small,
                     color = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp),
                   ) {
                     Box(contentAlignment = Alignment.Center) {
                       Icon(
                         painter = painterResource(R.drawable.info),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                       )
                     }
                   }
@@ -1084,8 +1081,8 @@ private fun DiscordAccountGroupCard(
                       checkedThumbColor = MaterialTheme.colorScheme.surface,
                       checkedTrackColor = MaterialTheme.colorScheme.onSurface,
                       uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                      uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                    )
+                      uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ),
                 )
               }
             }
@@ -1114,7 +1111,7 @@ private fun DiscordAccountGroupCard(
           Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             Surface(
               modifier = Modifier.weight(1f),
@@ -1132,19 +1129,19 @@ private fun DiscordAccountGroupCard(
                 Row(
                   modifier = Modifier.weight(1f, fill = false),
                   verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(8.dp)
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                   Surface(
                     shape = MaterialTheme.shapes.small,
                     color = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(30.dp),
                   ) {
                     Box(contentAlignment = Alignment.Center) {
                       Icon(
                         painter = painterResource(R.drawable.info),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                       )
                     }
                   }
@@ -1175,8 +1172,8 @@ private fun DiscordAccountGroupCard(
                       checkedThumbColor = MaterialTheme.colorScheme.surface,
                       checkedTrackColor = MaterialTheme.colorScheme.onSurface,
                       uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                      uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                    )
+                      uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ),
                 )
               }
             }
@@ -1187,12 +1184,12 @@ private fun DiscordAccountGroupCard(
                 enabled = primaryActionEnabled,
                 modifier = Modifier.weight(1f).heightIn(min = 56.dp),
                 shape = androidx.compose.foundation.shape.CircleShape,
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
               ) {
                 Text(
                   text = stringResource(R.string.action_logout),
                   maxLines = 1,
-                  overflow = TextOverflow.Ellipsis
+                  overflow = TextOverflow.Ellipsis,
                 )
               }
             } else {
@@ -1201,14 +1198,14 @@ private fun DiscordAccountGroupCard(
                 enabled = primaryActionEnabled,
                 modifier = Modifier.weight(1f).heightIn(min = 56.dp),
                 shape = androidx.compose.foundation.shape.CircleShape,
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
               ) {
                 Text(
                   text = stringResource(R.string.discord_open_authorization),
                   textAlign = TextAlign.Center,
                   style = MaterialTheme.typography.labelLarge,
                   maxLines = 2,
-                  overflow = TextOverflow.Ellipsis
+                  overflow = TextOverflow.Ellipsis,
                 )
               }
             }
@@ -1363,7 +1360,7 @@ fun EditablePreference(
             onValueChange(if (text.isBlank()) "" else text)
             showDialog = false
           },
-          shapes = ButtonDefaults.shapes()
+          shapes = ButtonDefaults.shapes(),
         ) {
           Text("Save")
         }
@@ -1450,8 +1447,9 @@ fun RichPresence(
   val previewDetails = previewSourceValue(detailsSource)
   val previewState = previewSourceValue(stateSource)
   val visiblePreviewDetails = previewDetails.takeUnless { it == previewName }
-  val visiblePreviewState =
-    previewState.takeUnless { it == previewName || it == visiblePreviewDetails }
+  val visiblePreviewState = previewState.takeUnless {
+    it == previewName || it == visiblePreviewDetails
+  }
   val visiblePreviewLargeText =
     previewSourceValue(ActivitySource.ALBUM).takeUnless {
       it == previewName || it == visiblePreviewDetails || it == visiblePreviewState
@@ -1713,15 +1711,15 @@ fun PreferenceGroup(
         text = title.uppercase(),
         style =
           androidx.compose.material3.MaterialTheme.typography.labelLarge.copy(
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
           ),
         color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = androidx.compose.ui.Modifier.padding(bottom = 8.dp, top = 8.dp, start = 8.dp)
+        modifier = androidx.compose.ui.Modifier.padding(bottom = 8.dp, top = 8.dp, start = 8.dp),
       )
     }
     androidx.compose.foundation.layout.Column(
       modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
-      verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(2.dp)
+      verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(2.dp),
     ) {
       scope.items.forEachIndexed { index, item ->
         val shape =
@@ -1732,14 +1730,14 @@ fun PreferenceGroup(
                 topStart = 24.dp,
                 topEnd = 24.dp,
                 bottomStart = 4.dp,
-                bottomEnd = 4.dp
+                bottomEnd = 4.dp,
               )
             index == scope.items.size - 1 ->
               androidx.compose.foundation.shape.RoundedCornerShape(
                 topStart = 4.dp,
                 topEnd = 4.dp,
                 bottomStart = 24.dp,
-                bottomEnd = 24.dp
+                bottomEnd = 24.dp,
               )
             else -> androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
           }
@@ -1750,9 +1748,10 @@ fun PreferenceGroup(
           colors =
             androidx.compose.material3.CardDefaults.cardColors(
               containerColor =
-                androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerHigh
+                androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerHigh,
             ),
-          elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 0.dp)
+          elevation =
+            androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
           item()
         }

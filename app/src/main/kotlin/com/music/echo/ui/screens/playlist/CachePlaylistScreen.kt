@@ -148,8 +148,8 @@ fun CachePlaylistScreen(
       saver =
         listSaver<MutableList<String>, String>(
           save = { it.toList() },
-          restore = { it.toMutableStateList() }
-        )
+          restore = { it.toMutableStateList() },
+        ),
     ) {
       mutableStateListOf()
     }
@@ -208,7 +208,7 @@ fun CachePlaylistScreen(
           EmptyPlaceholder(
             icon = R.drawable.music_note,
             text = stringResource(R.string.playlist_is_empty),
-            modifier = Modifier.animateItem()
+            modifier = Modifier.animateItem(),
           )
         }
       }
@@ -218,7 +218,7 @@ fun CachePlaylistScreen(
           EmptyPlaceholder(
             icon = R.drawable.search,
             text = stringResource(R.string.no_results_found),
-            modifier = Modifier.animateItem()
+            modifier = Modifier.animateItem(),
           )
         }
       } else {
@@ -228,7 +228,7 @@ fun CachePlaylistScreen(
               songs = filteredSongs,
               context = context,
               menuState = menuState,
-              modifier = Modifier.animateItem()
+              modifier = Modifier.animateItem(),
             )
           }
         }
@@ -287,7 +287,7 @@ fun CachePlaylistScreen(
                         isFromCache = true,
                       )
                     }
-                  }
+                  },
                 ) {
                   Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
                 }
@@ -307,8 +307,8 @@ fun CachePlaylistScreen(
                         ListQueue(
                           title = "Cache Songs",
                           items = cachedSongs.map { it.toMediaItem() },
-                          startIndex = cachedSongs.indexOfFirst { it.id == song.id }
-                        )
+                          startIndex = cachedSongs.indexOfFirst { it.id == song.id },
+                        ),
                       )
                     }
                   },
@@ -318,9 +318,9 @@ fun CachePlaylistScreen(
                       inSelectMode = true
                       onCheckedChange(true)
                     }
-                  }
+                  },
                 )
-                .animateItem()
+                .animateItem(),
           )
         }
 
@@ -331,11 +331,11 @@ fun CachePlaylistScreen(
     DraggableScrollbar(
       modifier =
         Modifier.padding(
-            LocalPlayerAwareWindowInsets.current.union(WindowInsets.ime).asPaddingValues()
+            LocalPlayerAwareWindowInsets.current.union(WindowInsets.ime).asPaddingValues(),
           )
           .align(Alignment.CenterEnd),
       scrollState = lazyListState,
-      headerItems = 2
+      headerItems = 2,
     )
 
     TopAppBar(
@@ -344,7 +344,7 @@ fun CachePlaylistScreen(
           inSelectMode -> {
             Text(
               text = pluralStringResource(R.plurals.n_song, selection.size, selection.size),
-              style = MaterialTheme.typography.titleLarge
+              style = MaterialTheme.typography.titleLarge,
             )
           }
           isSearching -> {
@@ -354,7 +354,7 @@ fun CachePlaylistScreen(
               placeholder = {
                 Text(
                   text = stringResource(R.string.search),
-                  style = MaterialTheme.typography.titleLarge
+                  style = MaterialTheme.typography.titleLarge,
                 )
               },
               singleLine = true,
@@ -368,13 +368,13 @@ fun CachePlaylistScreen(
                   unfocusedIndicatorColor = Color.Transparent,
                   disabledIndicatorColor = Color.Transparent,
                 ),
-              modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+              modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             )
           }
           else -> {
             Text(
               stringResource(R.string.cached_playlist),
-              style = MaterialTheme.typography.titleLarge
+              style = MaterialTheme.typography.titleLarge,
             )
           }
         }
@@ -400,12 +400,12 @@ fun CachePlaylistScreen(
             if (!isSearching && !inSelectMode) {
               navController.backToMain()
             }
-          }
+          },
         ) {
           Icon(
             painter =
               painterResource(if (inSelectMode) R.drawable.close else R.drawable.arrow_back),
-            contentDescription = null
+            contentDescription = null,
           )
         }
       },
@@ -420,7 +420,7 @@ fun CachePlaylistScreen(
                 selection.clear()
                 selection.addAll(filteredSongs.map { it.id })
               }
-            }
+            },
           )
           IconButton(
             enabled = selection.isNotEmpty(),
@@ -429,10 +429,10 @@ fun CachePlaylistScreen(
                 SelectionSongMenu(
                   songSelection = filteredSongs.filter { it.id in selection },
                   onDismiss = menuState::dismiss,
-                  clearAction = onExitSelectionMode
+                  clearAction = onExitSelectionMode,
                 )
               }
-            }
+            },
           ) {
             Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
           }
@@ -441,7 +441,7 @@ fun CachePlaylistScreen(
             Icon(painter = painterResource(R.drawable.search), contentDescription = null)
           }
         }
-      }
+      },
     )
   }
 }
@@ -458,25 +458,25 @@ private fun CachePlaylistHeader(
 
   Column(
     modifier = modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Box(
       modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.Center,
     ) {
       Box(
         modifier =
           Modifier.then(
               if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
-              else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f)
+              else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f),
             )
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp)),
       ) {
         AsyncImage(
           model = songs.firstOrNull()?.thumbnailUrl,
           contentDescription = null,
           contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-          modifier = Modifier.fillMaxSize()
+          modifier = Modifier.fillMaxSize(),
         )
       }
     }
@@ -484,13 +484,13 @@ private fun CachePlaylistHeader(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
-      modifier = Modifier.padding(horizontal = 24.dp)
+      modifier = Modifier.padding(horizontal = 24.dp),
     ) {
       Icon(
         painter = painterResource(R.drawable.cached),
         contentDescription = null,
         modifier = Modifier.size(28.dp),
-        tint = MaterialTheme.colorScheme.primary
+        tint = MaterialTheme.colorScheme.primary,
       )
       Spacer(Modifier.width(8.dp))
       Text(
@@ -498,7 +498,7 @@ private fun CachePlaylistHeader(
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-        color = MaterialTheme.colorScheme.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
       )
     }
 
@@ -514,7 +514,7 @@ private fun CachePlaylistHeader(
           }
         },
       style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
     Spacer(Modifier.height(24.dp))
@@ -522,7 +522,7 @@ private fun CachePlaylistHeader(
     Row(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
       horizontalArrangement = Arrangement.spacedBy(12.dp),
-      verticalAlignment = Alignment.CenterVertically
+      verticalAlignment = Alignment.CenterVertically,
     ) {
       TextButton(
         onClick = {
@@ -530,7 +530,7 @@ private fun CachePlaylistHeader(
             ListQueue(
               title = context.getString(R.string.cached_playlist),
               items = songs.map { it.toMediaItem() },
-            )
+            ),
           )
         },
         modifier = Modifier.weight(1f).height(48.dp),
@@ -538,19 +538,19 @@ private fun CachePlaylistHeader(
         colors =
           androidx.compose.material3.ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-          )
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+          ),
       ) {
         Icon(
           painter = painterResource(R.drawable.play),
           contentDescription = null,
-          modifier = Modifier.size(20.dp)
+          modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(8.dp))
         Text(
           text = stringResource(R.string.play),
           style = MaterialTheme.typography.labelLarge,
-          fontWeight = FontWeight.Bold
+          fontWeight = FontWeight.Bold,
         )
       }
 
@@ -560,7 +560,7 @@ private fun CachePlaylistHeader(
             ListQueue(
               title = context.getString(R.string.cached_playlist),
               items = songs.shuffled().map { it.toMediaItem() },
-            )
+            ),
           )
         },
         modifier = Modifier.weight(1f).height(48.dp),
@@ -568,13 +568,13 @@ private fun CachePlaylistHeader(
         colors =
           androidx.compose.material3.ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-          )
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
       ) {
         Icon(
           painter = painterResource(R.drawable.shuffle),
           contentDescription = null,
-          modifier = Modifier.size(20.dp)
+          modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(8.dp))
         Text(
@@ -582,7 +582,7 @@ private fun CachePlaylistHeader(
           style = MaterialTheme.typography.labelLarge,
           fontWeight = FontWeight.Bold,
           maxLines = 1,
-          overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+          overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
         )
       }
 
@@ -607,20 +607,20 @@ private fun CachePlaylistHeader(
                   )
                 }
               },
-              onDismiss = { menuState.dismiss() }
+              onDismiss = { menuState.dismiss() },
             )
           }
         },
         shape = androidx.compose.foundation.shape.CircleShape,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.size(48.dp)
+        modifier = Modifier.size(48.dp),
       ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Icon(
             painter = painterResource(R.drawable.more_vert),
             contentDescription = null,
             modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
@@ -644,7 +644,7 @@ private fun CachePlaylistHeader(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
       )
 
       ExpandableText(text = staticDescription, runs = null, collapsedMaxLines = 3)

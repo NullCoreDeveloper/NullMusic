@@ -164,8 +164,8 @@ fun FullPlayerPreview(
                 listOf(
                   colorScheme.primaryContainer.copy(alpha = 0.5f),
                   colorScheme.surfaceContainer,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.BLUR ->
           Modifier.background(
@@ -174,8 +174,8 @@ fun FullPlayerPreview(
                 listOf(
                   colorScheme.primary.copy(alpha = 0.35f),
                   colorScheme.surfaceContainerHigh,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.GLOW_ANIMATED ->
           Modifier.background(
@@ -184,8 +184,8 @@ fun FullPlayerPreview(
                 listOf(
                   colorScheme.primary.copy(alpha = 0.45f),
                   colorScheme.surfaceContainerHigh,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.APPLE_MUSIC ->
           Modifier.background(
@@ -194,8 +194,8 @@ fun FullPlayerPreview(
                 listOf(
                   colorScheme.secondaryContainer.copy(alpha = 0.6f),
                   colorScheme.surfaceContainer,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.LIVE_MESH ->
           Modifier.background(
@@ -205,8 +205,8 @@ fun FullPlayerPreview(
                   colorScheme.primary.copy(alpha = 0.4f),
                   colorScheme.tertiary.copy(alpha = 0.3f),
                   colorScheme.surfaceContainerHigh,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.LIQUID_GLASS ->
           Modifier.background(colorScheme.surfaceContainer.copy(alpha = 0.7f))
@@ -240,9 +240,9 @@ fun FullPlayerPreview(
                       Color.Transparent,
                       colorScheme.surfaceContainer.copy(alpha = 0.5f),
                       colorScheme.surfaceContainer,
-                    )
-                  )
-                )
+                    ),
+                  ),
+                ),
           )
         }
       }
@@ -511,8 +511,8 @@ fun MiniPlayerPreview(
                 listOf(
                   colorScheme.primaryContainer.copy(alpha = 0.6f),
                   colorScheme.surfaceContainerHighest,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.BLUR ->
           Modifier.background(
@@ -521,8 +521,8 @@ fun MiniPlayerPreview(
                 listOf(
                   colorScheme.primary.copy(alpha = 0.4f),
                   colorScheme.surfaceContainerHighest,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.GLOW_ANIMATED ->
           Modifier.background(
@@ -531,8 +531,8 @@ fun MiniPlayerPreview(
                 listOf(
                   colorScheme.primary.copy(alpha = 0.5f),
                   colorScheme.surfaceContainerHighest,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.APPLE_MUSIC ->
           Modifier.background(
@@ -541,8 +541,8 @@ fun MiniPlayerPreview(
                 listOf(
                   colorScheme.secondaryContainer.copy(alpha = 0.7f),
                   colorScheme.surfaceContainerHighest,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.LIVE_MESH ->
           Modifier.background(
@@ -552,8 +552,8 @@ fun MiniPlayerPreview(
                   colorScheme.primary.copy(alpha = 0.45f),
                   colorScheme.tertiary.copy(alpha = 0.35f),
                   colorScheme.surfaceContainerHighest,
-                )
-            )
+                ),
+            ),
           )
         PlayerBackgroundStyle.LIQUID_GLASS ->
           Modifier.background(colorScheme.surfaceContainerHighest.copy(alpha = 0.7f))
@@ -566,7 +566,7 @@ fun MiniPlayerPreview(
       modifier
         .clip(RoundedCornerShape(12.dp))
         .then(backgroundBrushOrColor)
-        .padding(horizontal = 10.dp, vertical = 8.dp)
+        .padding(horizontal = 10.dp, vertical = 8.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -839,7 +839,7 @@ fun PlayerBackgroundStyleModal(
               CardDefaults.cardColors(
                 containerColor =
                   if (isSelected) primaryColor.copy(alpha = 0.14f)
-                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f)
+                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f),
               ),
             modifier =
               Modifier.fillMaxWidth().clickable {
@@ -1030,7 +1030,7 @@ fun PlayerButtonsStyleModal(
               CardDefaults.cardColors(
                 containerColor =
                   if (isSelected) primaryColor.copy(alpha = 0.14f)
-                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f)
+                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f),
               ),
             modifier =
               Modifier.fillMaxWidth().clickable {
@@ -1212,7 +1212,7 @@ fun MiniPlayerBackgroundStyleModal(
               CardDefaults.cardColors(
                 containerColor =
                   if (isSelected) primaryColor.copy(alpha = 0.14f)
-                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f)
+                  else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f),
               ),
             modifier =
               Modifier.fillMaxWidth().clickable {

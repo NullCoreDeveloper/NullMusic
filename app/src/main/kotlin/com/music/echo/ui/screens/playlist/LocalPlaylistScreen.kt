@@ -220,7 +220,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @OptIn(
   ExperimentalFoundationApi::class,
   ExperimentalMaterial3Api::class,
-  ExperimentalMaterial3ExpressiveApi::class
+  ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
 fun LocalPlaylistScreen(
@@ -287,8 +287,8 @@ fun LocalPlaylistScreen(
       saver =
         listSaver<MutableList<Int>, Int>(
           save = { it.toList() },
-          restore = { it.toMutableStateList() }
-        )
+          restore = { it.toMutableStateList() },
+        ),
     ) {
       mutableStateListOf()
     }
@@ -449,10 +449,10 @@ fun LocalPlaylistScreen(
                 context,
                 ExoDownloadService::class.java,
                 song.song.id,
-                false
+                false,
               )
             }
-          }
+          },
         ) {
           Text(text = stringResource(android.R.string.ok))
         }
@@ -468,7 +468,7 @@ fun LocalPlaylistScreen(
         Text(
           text = stringResource(R.string.delete_playlist_confirm, playlist?.playlist!!.name),
           style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.padding(horizontal = 18.dp)
+          modifier = Modifier.padding(horizontal = 18.dp),
         )
       },
       buttons = {
@@ -483,11 +483,11 @@ fun LocalPlaylistScreen(
               playlist?.playlist?.browseId?.let { YouTube.deletePlaylist(it) }
             }
             navController.popBackStack()
-          }
+          },
         ) {
           Text(text = stringResource(android.R.string.ok))
         }
-      }
+      },
     )
   }
 
@@ -497,7 +497,7 @@ fun LocalPlaylistScreen(
   val reorderableState =
     rememberReorderableLazyListState(
       lazyListState = lazyListState,
-      scrollThresholdPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+      scrollThresholdPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) { from, to ->
       if (to.index >= headerItems && from.index >= headerItems) {
         val currentDragInfo = dragInfo
@@ -527,7 +527,7 @@ fun LocalPlaylistScreen(
               YouTube.moveSongPlaylist(
                 viewModel.playlist.value?.playlist?.browseId!!,
                 setVideoId,
-                successorSetVideoId
+                successorSetVideoId,
               )
             }
           }
@@ -554,7 +554,7 @@ fun LocalPlaylistScreen(
             EmptyPlaceholder(
               icon = R.drawable.music_note,
               text = stringResource(R.string.playlist_is_empty),
-              modifier = Modifier.animateItem()
+              modifier = Modifier.animateItem(),
             )
           }
         } else {
@@ -571,7 +571,7 @@ fun LocalPlaylistScreen(
                   exportCsvLauncher.launchSafely("${playlist.playlist.name}_export.csv", context)
                 },
                 snackbarHostState = snackbarHostState,
-                modifier = Modifier.animateItem()
+                modifier = Modifier.animateItem(),
               )
             }
           }
@@ -690,13 +690,13 @@ fun LocalPlaylistScreen(
               shape =
                 listItemShape(
                   index = index,
-                  count = if (isSearching) filteredSongs.size else mutableSongs.size
+                  count = if (isSearching) filteredSongs.size else mutableSongs.size,
                 ),
               trailingContent = {
                 if (inSelectMode) {
                   Checkbox(
                     checked = selection.contains(song.map.id),
-                    onCheckedChange = onCheckedChange
+                    onCheckedChange = onCheckedChange,
                   )
                 } else {
                   IconButton(
@@ -728,7 +728,7 @@ fun LocalPlaylistScreen(
                     Icon(
                       painter = painterResource(R.drawable.drag_handle),
                       contentDescription = null,
-                      modifier = Modifier.draggableHandle().padding(12.dp)
+                      modifier = Modifier.draggableHandle().padding(12.dp),
                     )
                   }
                 }
@@ -768,7 +768,7 @@ fun LocalPlaylistScreen(
             SwipeToDismissBox(
               state = dismissBoxState,
               backgroundContent = {},
-              modifier = Modifier.animateItem()
+              modifier = Modifier.animateItem(),
             ) {
               content()
             }
@@ -782,11 +782,11 @@ fun LocalPlaylistScreen(
     DraggableScrollbar(
       modifier =
         Modifier.padding(
-            LocalPlayerAwareWindowInsets.current.union(WindowInsets.ime).asPaddingValues()
+            LocalPlayerAwareWindowInsets.current.union(WindowInsets.ime).asPaddingValues(),
           )
           .align(Alignment.CenterEnd),
       scrollState = lazyListState,
-      headerItems = 2
+      headerItems = 2,
     )
 
     TopAppBar(
@@ -800,7 +800,7 @@ fun LocalPlaylistScreen(
             placeholder = {
               Text(
                 text = stringResource(R.string.search),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
               )
             },
             singleLine = true,
@@ -814,7 +814,7 @@ fun LocalPlaylistScreen(
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
               ),
-            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
           )
         } else if (showTopBarTitle) {
           Text(playlist?.playlist?.name.orEmpty())
@@ -842,7 +842,7 @@ fun LocalPlaylistScreen(
               if (!isSearching) {
                 navController.backToMain()
               }
-            }
+            },
           ) {
             Icon(painter = painterResource(R.drawable.arrow_back), contentDescription = null)
           }
@@ -859,7 +859,7 @@ fun LocalPlaylistScreen(
                 selection.clear()
                 selection.addAll(songs.map { it.map.id })
               }
-            }
+            },
           )
           IconButton(
             enabled = selection.isNotEmpty(),
@@ -871,10 +871,10 @@ fun LocalPlaylistScreen(
                   songPosition =
                     selection.mapNotNull { mapId -> songs.find { it.map.id == mapId }?.map },
                   onDismiss = menuState::dismiss,
-                  clearAction = onExitSelectionMode
+                  clearAction = onExitSelectionMode,
                 )
               }
-            }
+            },
           ) {
             Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
           }
@@ -895,14 +895,14 @@ fun LocalPlaylistScreen(
                     android.widget.Toast.makeText(
                         context,
                         "Synced with Spotify successfully!",
-                        android.widget.Toast.LENGTH_SHORT
+                        android.widget.Toast.LENGTH_SHORT,
                       )
                       .show()
                   } else {
                     android.widget.Toast.makeText(
                         context,
                         "Failed to sync with Spotify.",
-                        android.widget.Toast.LENGTH_SHORT
+                        android.widget.Toast.LENGTH_SHORT,
                       )
                       .show()
                   }
@@ -911,18 +911,18 @@ fun LocalPlaylistScreen(
               modifier =
                 Modifier.background(
                   androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
-                  CircleShape
-                )
+                  CircleShape,
+                ),
             ) {
               if (isSyncing) {
                 androidx.compose.material3.CircularProgressIndicator(
                   modifier = Modifier.padding(12.dp),
-                  strokeWidth = 2.dp
+                  strokeWidth = 2.dp,
                 )
               } else {
                 Icon(
                   painter = painterResource(R.drawable.sync),
-                  contentDescription = "Sync with Spotify"
+                  contentDescription = "Sync with Spotify",
                 )
               }
             }
@@ -932,13 +932,13 @@ fun LocalPlaylistScreen(
             modifier =
               Modifier.background(
                 androidx.compose.material3.MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
-                CircleShape
-              )
+                CircleShape,
+              ),
           ) {
             Icon(painter = painterResource(R.drawable.search), contentDescription = null)
           }
         }
-      }
+      },
     )
 
     SnackbarHost(
@@ -1059,7 +1059,7 @@ fun LocalPlaylistHeader(
             .onFailure {
               if (it is ClientRequestException) {
                 snackbarHostState.showSnackbar(
-                  "Applied locally (${it.response.status.value} ${it.response.status.description})"
+                  "Applied locally (${it.response.status.value} ${it.response.status.description})",
                 )
               }
               reportException(it)
@@ -1085,7 +1085,7 @@ fun LocalPlaylistHeader(
 
   Column(
     modifier = modifier.fillMaxWidth().padding(top = 8.dp, bottom = 20.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     if (showEditNoteDialog) {
       ActionPromptDialog(
@@ -1095,50 +1095,50 @@ fun LocalPlaylistHeader(
           showEditNoteDialog = false
           pickLauncher.launchSafely(
             PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly),
-            context
+            context,
           )
         },
-        onCancel = { showEditNoteDialog = false }
+        onCancel = { showEditNoteDialog = false },
       ) {
         if (playlist.playlist.browseId != null) {
           Text(
             text = stringResource(R.string.edit_playlist_cover_note),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
           )
           Spacer(Modifier.height(8.dp))
         }
         Text(
           text = stringResource(R.string.edit_playlist_cover_note_wait),
           style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+          color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
         )
       }
     }
 
     Box(
       modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.Center,
     ) {
       Box(
         modifier =
           Modifier.then(
               if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
-              else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f)
+              else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f),
             )
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp)),
       ) {
         when (playlist.thumbnails.size) {
           0 ->
             Surface(
               modifier = Modifier.fillMaxSize(),
-              color = MaterialTheme.colorScheme.surfaceVariant
+              color = MaterialTheme.colorScheme.surfaceVariant,
             ) {
               Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
                   painter = painterResource(R.drawable.queue_music),
                   contentDescription = null,
                   modifier = Modifier.size(80.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               }
             }
@@ -1147,7 +1147,7 @@ fun LocalPlaylistHeader(
               model = overrideThumbnail.value ?: playlist.thumbnails[0],
               contentDescription = null,
               contentScale = ContentScale.Crop,
-              modifier = Modifier.fillMaxSize()
+              modifier = Modifier.fillMaxSize(),
             )
             if (editable) {
               OverlayEditButton(
@@ -1155,49 +1155,55 @@ fun LocalPlaylistHeader(
                 alignment = Alignment.BottomEnd,
                 onClick = {
                   if (isCustomThumbnail) {
-                    menuState.show({
-                      CustomThumbnailMenu(
-                        onEdit = {
-                          pickLauncher.launchSafely(
-                            PickVisualMediaRequest(
-                              mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            ),
-                            context
-                          )
-                        },
-                        onRemove = {
-                          when {
-                            playlist.playlist.browseId == null -> {
-                              overrideThumbnail.value = null
-                              database.query { update(playlist.playlist.copy(thumbnailUrl = null)) }
-                            }
-                            else -> {
-                              scope.launch(Dispatchers.IO) {
-                                YouTube.removeThumbnailPlaylist(playlist.playlist.browseId!!)
-                                  .onSuccess { newThumbnailUrl ->
-                                    overrideThumbnail.value = newThumbnailUrl
-                                    database.query {
-                                      update(playlist.playlist.copy(thumbnailUrl = newThumbnailUrl))
+                    menuState.show(
+                      {
+                        CustomThumbnailMenu(
+                          onEdit = {
+                            pickLauncher.launchSafely(
+                              PickVisualMediaRequest(
+                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly,
+                              ),
+                              context,
+                            )
+                          },
+                          onRemove = {
+                            when {
+                              playlist.playlist.browseId == null -> {
+                                overrideThumbnail.value = null
+                                database.query {
+                                  update(playlist.playlist.copy(thumbnailUrl = null))
+                                }
+                              }
+                              else -> {
+                                scope.launch(Dispatchers.IO) {
+                                  YouTube.removeThumbnailPlaylist(playlist.playlist.browseId!!)
+                                    .onSuccess { newThumbnailUrl ->
+                                      overrideThumbnail.value = newThumbnailUrl
+                                      database.query {
+                                        update(
+                                          playlist.playlist.copy(thumbnailUrl = newThumbnailUrl),
+                                        )
+                                      }
                                     }
-                                  }
-                                  .onFailure {
-                                    overrideThumbnail.value = null
-                                    database.query {
-                                      update(playlist.playlist.copy(thumbnailUrl = null))
+                                    .onFailure {
+                                      overrideThumbnail.value = null
+                                      database.query {
+                                        update(playlist.playlist.copy(thumbnailUrl = null))
+                                      }
                                     }
-                                  }
+                                }
                               }
                             }
-                          }
-                          isCustomThumbnail = false
-                        },
-                        onDismiss = menuState::dismiss
-                      )
-                    })
+                            isCustomThumbnail = false
+                          },
+                          onDismiss = menuState::dismiss,
+                        )
+                      },
+                    )
                   } else {
                     showEditNoteDialog = true
                   }
-                }
+                },
               )
             }
           }
@@ -1214,7 +1220,7 @@ fun LocalPlaylistHeader(
                     model = playlist.thumbnails.getOrNull(index),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.align(alignment).fillMaxSize(0.5f)
+                    modifier = Modifier.align(alignment).fillMaxSize(0.5f),
                   )
                 }
             }
@@ -1224,49 +1230,55 @@ fun LocalPlaylistHeader(
                 alignment = Alignment.BottomEnd,
                 onClick = {
                   if (isCustomThumbnail) {
-                    menuState.show({
-                      CustomThumbnailMenu(
-                        onEdit = {
-                          pickLauncher.launchSafely(
-                            PickVisualMediaRequest(
-                              mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                            ),
-                            context
-                          )
-                        },
-                        onRemove = {
-                          when {
-                            playlist.playlist.browseId == null -> {
-                              overrideThumbnail.value = null
-                              database.query { update(playlist.playlist.copy(thumbnailUrl = null)) }
-                            }
-                            else -> {
-                              scope.launch(Dispatchers.IO) {
-                                YouTube.removeThumbnailPlaylist(playlist.playlist.browseId!!)
-                                  .onSuccess { newThumbnailUrl ->
-                                    overrideThumbnail.value = newThumbnailUrl
-                                    database.query {
-                                      update(playlist.playlist.copy(thumbnailUrl = newThumbnailUrl))
+                    menuState.show(
+                      {
+                        CustomThumbnailMenu(
+                          onEdit = {
+                            pickLauncher.launchSafely(
+                              PickVisualMediaRequest(
+                                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly,
+                              ),
+                              context,
+                            )
+                          },
+                          onRemove = {
+                            when {
+                              playlist.playlist.browseId == null -> {
+                                overrideThumbnail.value = null
+                                database.query {
+                                  update(playlist.playlist.copy(thumbnailUrl = null))
+                                }
+                              }
+                              else -> {
+                                scope.launch(Dispatchers.IO) {
+                                  YouTube.removeThumbnailPlaylist(playlist.playlist.browseId!!)
+                                    .onSuccess { newThumbnailUrl ->
+                                      overrideThumbnail.value = newThumbnailUrl
+                                      database.query {
+                                        update(
+                                          playlist.playlist.copy(thumbnailUrl = newThumbnailUrl),
+                                        )
+                                      }
                                     }
-                                  }
-                                  .onFailure {
-                                    overrideThumbnail.value = null
-                                    database.query {
-                                      update(playlist.playlist.copy(thumbnailUrl = null))
+                                    .onFailure {
+                                      overrideThumbnail.value = null
+                                      database.query {
+                                        update(playlist.playlist.copy(thumbnailUrl = null))
+                                      }
                                     }
-                                  }
+                                }
                               }
                             }
-                          }
-                          isCustomThumbnail = false
-                        },
-                        onDismiss = menuState::dismiss
-                      )
-                    })
+                            isCustomThumbnail = false
+                          },
+                          onDismiss = menuState::dismiss,
+                        )
+                      },
+                    )
                   } else {
                     showEditNoteDialog = true
                   }
-                }
+                },
               )
             }
           }
@@ -1281,7 +1293,7 @@ fun LocalPlaylistHeader(
       textAlign = TextAlign.Center,
       maxLines = 2,
       overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.padding(horizontal = 32.dp)
+      modifier = Modifier.padding(horizontal = 32.dp),
     )
 
     Spacer(modifier = Modifier.height(12.dp))
@@ -1302,7 +1314,7 @@ fun LocalPlaylistHeader(
           }
         },
       style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+      color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
     )
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -1597,7 +1609,7 @@ fun LocalPlaylistHeader(
         Text(
           text = stringResource(R.string.play),
           style = MaterialTheme.typography.labelLarge,
-          fontWeight = FontWeight.Bold
+          fontWeight = FontWeight.Bold,
         )
       }
 
@@ -1607,7 +1619,7 @@ fun LocalPlaylistHeader(
             ListQueue(
               title = playlist.playlist.name,
               items = songs.shuffled().map { it.song.toMediaItem() },
-            )
+            ),
           )
         },
         modifier = Modifier.weight(1f).height(48.dp),
@@ -1615,13 +1627,13 @@ fun LocalPlaylistHeader(
         colors =
           androidx.compose.material3.ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-          )
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
       ) {
         Icon(
           painter = painterResource(R.drawable.shuffle),
           contentDescription = null,
-          modifier = Modifier.size(20.dp)
+          modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(8.dp))
         Text(
@@ -1629,7 +1641,7 @@ fun LocalPlaylistHeader(
           style = MaterialTheme.typography.labelLarge,
           fontWeight = FontWeight.Bold,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
       }
 
@@ -1657,7 +1669,7 @@ fun LocalPlaylistHeader(
                           songId = song.id,
                           playlistId = playlist.id,
                           position = position,
-                          setVideoId = song.setVideoId
+                          setVideoId = song.setVideoId,
                         )
                       }
                       .forEach(::insert)
@@ -1669,8 +1681,9 @@ fun LocalPlaylistHeader(
               onModifyWithAi = { showAiModifyDialog = true },
               onDownload = {
                 val downloads = downloadUtil.downloads.value
-                val missingSongs =
-                  songs.filter { song -> !DownloadUtil.hasDownload(song.song.id, downloads) }
+                val missingSongs = songs.filter { song ->
+                  !DownloadUtil.hasDownload(song.song.id, downloads)
+                }
                 if (missingSongs.isNotEmpty()) {
                   missingSongs.forEach { song ->
                     val downloadRequest =
@@ -1682,7 +1695,7 @@ fun LocalPlaylistHeader(
                       context,
                       ExoDownloadService::class.java,
                       downloadRequest,
-                      false
+                      false,
                     )
                   }
                 } else if (downloadState == Download.STATE_COMPLETED) {
@@ -1693,7 +1706,7 @@ fun LocalPlaylistHeader(
                       context,
                       ExoDownloadService::class.java,
                       song.song.id,
-                      false
+                      false,
                     )
                   }
                 }
@@ -1702,20 +1715,20 @@ fun LocalPlaylistHeader(
               onQueue = {
                 playerConnection.addToQueue(items = songs.map { it.song.toMediaItem() })
               },
-              onDismiss = { menuState.dismiss() }
+              onDismiss = { menuState.dismiss() },
             )
           }
         },
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.size(48.dp)
+        modifier = Modifier.size(48.dp),
       ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Icon(
             painter = painterResource(R.drawable.more_vert),
             contentDescription = null,
             modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
@@ -1739,7 +1752,7 @@ fun LocalPlaylistHeader(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
       )
 
       ExpandableText(text = staticDescription, runs = null, collapsedMaxLines = 3)
@@ -1750,7 +1763,7 @@ fun LocalPlaylistHeader(
     AiModifyPlaylistDialog(
       playlistId = playlist.id,
       currentSongs = songs,
-      onDismiss = { showAiModifyDialog = false }
+      onDismiss = { showAiModifyDialog = false },
     )
   }
 }
@@ -1760,24 +1773,24 @@ private fun MetadataChip(icon: Int, text: String, modifier: Modifier = Modifier)
   Surface(
     modifier = modifier,
     shape = RoundedCornerShape(20.dp),
-    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
       horizontalArrangement = Arrangement.spacedBy(6.dp),
-      verticalAlignment = Alignment.CenterVertically
+      verticalAlignment = Alignment.CenterVertically,
     ) {
       Icon(
         painter = painterResource(icon),
         contentDescription = null,
         modifier = Modifier.size(16.dp),
-        tint = MaterialTheme.colorScheme.onSurfaceVariant
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Text(
         text = text,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        maxLines = 1
+        maxLines = 1,
       )
     }
   }

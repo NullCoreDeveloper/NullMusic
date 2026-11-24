@@ -147,7 +147,7 @@ fun YouTubeAlbumMenu(
       }
       album?.songs?.map { it.id }.orEmpty()
     },
-    onDismiss = { showChoosePlaylistDialog = false }
+    onDismiss = { showChoosePlaylistDialog = false },
   )
 
   if (showErrorPlaylistAddDialog) {
@@ -235,7 +235,7 @@ fun YouTubeAlbumMenu(
           painter =
             painterResource(
               if (album?.album?.bookmarkedAt != null) R.drawable.favorite
-              else R.drawable.favorite_border
+              else R.drawable.favorite_border,
             ),
           tint =
             if (album?.album?.bookmarkedAt != null) MaterialTheme.colorScheme.error
@@ -273,7 +273,7 @@ fun YouTubeAlbumMenu(
                     painter = painterResource(R.drawable.play),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 },
                 text = stringResource(R.string.play),
@@ -284,7 +284,7 @@ fun YouTubeAlbumMenu(
                       playerConnection.playQueue(YouTubeAlbumRadio(albumItem.playlistId))
                     }
                   }
-                }
+                },
               )
               NewAction(
                 icon = {
@@ -292,7 +292,7 @@ fun YouTubeAlbumMenu(
                     painter = painterResource(R.drawable.shuffle),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 },
                 text = stringResource(R.string.shuffle),
@@ -303,7 +303,7 @@ fun YouTubeAlbumMenu(
                       playerConnection.playQueue(YouTubeAlbumRadio(albumItem.playlistId))
                     }
                   }
-                }
+                },
               )
             } else null,
             NewAction(
@@ -312,7 +312,7 @@ fun YouTubeAlbumMenu(
                   painter = painterResource(R.drawable.share),
                   contentDescription = null,
                   modifier = Modifier.size(28.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
               },
               text = stringResource(R.string.share),
@@ -325,11 +325,11 @@ fun YouTubeAlbumMenu(
                     putExtra(Intent.EXTRA_TEXT, albumItem.shareLink)
                   }
                 context.startActivity(Intent.createChooser(intent, null))
-              }
-            )
+              },
+            ),
           ),
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
-        columns = if (isGuest) 1 else 3
+        columns = if (isGuest) 1 else 3,
       )
     }
     item {
@@ -349,7 +349,7 @@ fun YouTubeAlbumMenu(
                 onClick = {
                   album?.songs?.map { it.toMediaItem() }?.let(playerConnection::playNext)
                   onDismiss()
-                }
+                },
               )
             } else null,
             if (!isGuest) {
@@ -365,7 +365,7 @@ fun YouTubeAlbumMenu(
                 onClick = {
                   album?.songs?.map { it.toMediaItem() }?.let(playerConnection::addToQueue)
                   onDismiss()
-                }
+                },
               )
             } else null,
             Material3MenuItemData(
@@ -377,7 +377,7 @@ fun YouTubeAlbumMenu(
                   contentDescription = null,
                 )
               },
-              onClick = { showChoosePlaylistDialog = true }
+              onClick = { showChoosePlaylistDialog = true },
             ),
             Material3MenuItemData(
               title = {
@@ -398,9 +398,9 @@ fun YouTubeAlbumMenu(
                   }
                 }
                 onDismiss()
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
     }
 
@@ -426,7 +426,7 @@ fun YouTubeAlbumMenu(
                         false,
                       )
                     }
-                  }
+                  },
                 )
               }
               Download.STATE_QUEUED,
@@ -445,7 +445,7 @@ fun YouTubeAlbumMenu(
                         false,
                       )
                     }
-                  }
+                  },
                 )
               }
               else -> {
@@ -472,11 +472,11 @@ fun YouTubeAlbumMenu(
                         false,
                       )
                     }
-                  }
+                  },
                 )
               }
-            }
-          )
+            },
+          ),
       )
     }
 
@@ -502,9 +502,9 @@ fun YouTubeAlbumMenu(
                   } else {
                     showSelectArtistDialog = true
                   }
-                }
-              )
-            )
+                },
+              ),
+            ),
         )
       }
     }

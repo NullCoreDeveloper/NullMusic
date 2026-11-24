@@ -110,7 +110,7 @@ fun ChartsScreen(
         navigationIcon = {
           IconButton(
             onClick = { navController.navigateUp() },
-            onLongClick = { navController.backToMain() }
+            onLongClick = { navController.backToMain() },
           ) {
             Icon(
               painter = painterResource(R.drawable.arrow_back),
@@ -119,7 +119,7 @@ fun ChartsScreen(
           }
         },
       )
-    }
+    },
   ) { paddingValues ->
     BoxWithConstraints(
       modifier = Modifier.fillMaxSize().padding(paddingValues),

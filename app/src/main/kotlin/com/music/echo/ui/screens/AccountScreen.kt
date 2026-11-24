@@ -66,7 +66,7 @@ fun AccountScreen(
   LazyVerticalGrid(
     columns =
       GridCells.Adaptive(
-        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp
+        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
       ),
     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
   ) {
@@ -127,11 +127,11 @@ fun AccountScreen(
                     YouTubeAlbumMenu(
                       albumItem = item,
                       navController = navController,
-                      onDismiss = menuState::dismiss
+                      onDismiss = menuState::dismiss,
                     )
                   }
-                }
-              )
+                },
+              ),
           )
         }
 
@@ -152,8 +152,8 @@ fun AccountScreen(
                   menuState.show {
                     YouTubeArtistMenu(artist = item, onDismiss = menuState::dismiss)
                   }
-                }
-              )
+                },
+              ),
           )
         }
 

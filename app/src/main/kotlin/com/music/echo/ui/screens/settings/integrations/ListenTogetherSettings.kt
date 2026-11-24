@@ -90,7 +90,7 @@ fun ListenTogetherSettings(
   navController: NavController,
   scrollBehavior: TopAppBarScrollBehavior,
   viewModel: ListenTogetherViewModel = hiltViewModel(),
-  highlightKey: String? = null
+  highlightKey: String? = null,
 ) {
   val context = LocalContext.current
   val coroutineScope = rememberCoroutineScope()
@@ -158,7 +158,7 @@ fun ListenTogetherSettings(
         serverUrl = customUrl
         showServerUrlDialog = false
       },
-      onDismiss = { showServerUrlDialog = false }
+      onDismiss = { showServerUrlDialog = false },
     )
   }
 
@@ -174,7 +174,7 @@ fun ListenTogetherSettings(
           onClick = {
             username = ""
             showUsernameDialog = false
-          }
+          },
         ) {
           Text(stringResource(R.string.reset))
         }
@@ -183,11 +183,11 @@ fun ListenTogetherSettings(
           onClick = {
             username = tempUsername.trim()
             showUsernameDialog = false
-          }
+          },
         ) {
           Text(stringResource(android.R.string.ok))
         }
-      }
+      },
     ) {
       OutlinedTextField(
         value = tempUsername,
@@ -202,7 +202,7 @@ fun ListenTogetherSettings(
           }
         },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
       )
     }
   }
@@ -230,17 +230,17 @@ fun ListenTogetherSettings(
               Toast.makeText(context, R.string.error_username_empty, Toast.LENGTH_SHORT).show()
             }
           },
-          enabled = createUsername.trim().isNotBlank()
+          enabled = createUsername.trim().isNotBlank(),
         ) {
           Text(stringResource(R.string.create))
         }
-      }
+      },
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
           text = stringResource(R.string.listen_together_create_room_desc),
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         OutlinedTextField(
           value = createUsername,
@@ -248,7 +248,7 @@ fun ListenTogetherSettings(
           label = { Text(stringResource(R.string.listen_together_username)) },
           leadingIcon = { Icon(painterResource(R.drawable.person), contentDescription = null) },
           singleLine = true,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
@@ -278,11 +278,11 @@ fun ListenTogetherSettings(
               Toast.makeText(context, R.string.error_username_empty, Toast.LENGTH_SHORT).show()
             }
           },
-          enabled = joinUsername.trim().isNotBlank() && roomCodeInput.length == 8
+          enabled = joinUsername.trim().isNotBlank() && roomCodeInput.length == 8,
         ) {
           Text(stringResource(R.string.join))
         }
-      }
+      },
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         OutlinedTextField(
@@ -291,7 +291,7 @@ fun ListenTogetherSettings(
           label = { Text(stringResource(R.string.listen_together_username)) },
           leadingIcon = { Icon(painterResource(R.drawable.person), contentDescription = null) },
           singleLine = true,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
           value = roomCodeInput,
@@ -301,7 +301,7 @@ fun ListenTogetherSettings(
           label = { Text(stringResource(R.string.listen_together_room_code)) },
           leadingIcon = { Icon(painterResource(R.drawable.key), contentDescription = null) },
           singleLine = true,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
@@ -311,7 +311,7 @@ fun ListenTogetherSettings(
     LogsDialog(
       logs = logs,
       onClear = { viewModel.clearLogs() },
-      onDismiss = { showLogsDialog = false }
+      onDismiss = { showLogsDialog = false },
     )
   }
 
@@ -319,18 +319,20 @@ fun ListenTogetherSettings(
     BlockedUsersDialog(
       blockedUsernames = blockedUsernames,
       onUnblock = { viewModel.unblockUser(it) },
-      onDismiss = { showBlockedUsersDialog = false }
+      onDismiss = { showBlockedUsersDialog = false },
     )
   }
 
   Column(
     Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal),
       )
-      .verticalScroll(scrollState)
+      .verticalScroll(scrollState),
   ) {
     Spacer(
-      Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top))
+      Modifier.windowInsetsPadding(
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
+      ),
     )
 
     val selectedServer = remember(serverUrl) { ListenTogetherServers.findByUrl(serverUrl) }
@@ -349,15 +351,15 @@ fun ListenTogetherSettings(
                   if (blockedUsernames.isNotEmpty())
                     stringResource(
                       R.string.listen_together_blocked_users_count,
-                      blockedUsernames.size
+                      blockedUsernames.size,
                     )
-                  else stringResource(R.string.listen_together_no_blocked_users)
+                  else stringResource(R.string.listen_together_no_blocked_users),
                 )
               },
               onClick =
                 if (blockedUsernames.isNotEmpty()) {
                   { showBlockedUsersDialog = true }
-                } else null
+                } else null,
             ),
             Material3SettingsItem(
               icon = painterResource(R.drawable.person),
@@ -371,11 +373,11 @@ fun ListenTogetherSettings(
                     Toast.makeText(
                         context,
                         context.getString(R.string.listen_together_cannot_edit_username_in_room),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_SHORT,
                       )
                       .show()
                   }
-                }
+                },
             ),
             Material3SettingsItem(
               icon = painterResource(R.drawable.done),
@@ -390,19 +392,19 @@ fun ListenTogetherSettings(
                     Icon(
                       painter =
                         painterResource(
-                          id = if (autoApproval) R.drawable.check else R.drawable.close
+                          id = if (autoApproval) R.drawable.check else R.drawable.close,
                         ),
                       contentDescription = null,
                       modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                  }
+                  },
                 )
               },
               onClick = {
                 if (roomState == null || role != RoomRole.GUEST) autoApproval = !autoApproval
-              }
-            )
-          )
+              },
+            ),
+          ),
       )
     }
 
@@ -410,8 +412,8 @@ fun ListenTogetherSettings(
 
     Spacer(
       Modifier.windowInsetsPadding(
-        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)
-      )
+        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom),
+      ),
     )
   }
 
@@ -427,7 +429,7 @@ fun ListenTogetherSettings(
           contentDescription = null,
         )
       }
-    }
+    },
   )
 }
 
@@ -468,21 +470,21 @@ fun LogsDialog(logs: List<LogEntry>, onClear: () -> Unit, onDismiss: () -> Unit)
           cm.setPrimaryClip(clip)
           Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show()
         },
-        enabled = logs.isNotEmpty()
+        enabled = logs.isNotEmpty(),
       ) {
         Text(stringResource(R.string.copy))
       }
       TextButton(onClick = onClear) { Text(stringResource(R.string.clear)) }
       Spacer(modifier = Modifier.width(8.dp))
       Button(onClick = onDismiss) { Text(stringResource(android.R.string.ok)) }
-    }
+    },
   ) {
     Box(modifier = Modifier.fillMaxWidth().height(350.dp)) {
       if (logs.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             text = stringResource(R.string.listen_together_no_logs),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       } else {
@@ -500,7 +502,7 @@ private fun ServerChooserDialog(
   currentUrl: String,
   onSelect: (ListenTogetherServer) -> Unit,
   onUseCustom: (String) -> Unit,
-  onDismiss: () -> Unit
+  onDismiss: () -> Unit,
 ) {
   var customUrl by rememberSaveable(currentUrl) { mutableStateOf(currentUrl) }
   val trimmedCustomUrl = customUrl.trim()
@@ -509,11 +511,11 @@ private fun ServerChooserDialog(
     onDismiss = onDismiss,
     icon = { Icon(painterResource(R.drawable.cloud), contentDescription = null) },
     title = { Text(stringResource(R.string.listen_together_choose_server)) },
-    buttons = { TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) } }
+    buttons = { TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) } },
   ) {
     Column(
       modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(12.dp)
+      verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       servers.forEach { server ->
         val isSelected = server.url == currentUrl
@@ -527,37 +529,37 @@ private fun ServerChooserDialog(
                   MaterialTheme.colorScheme.primaryContainer
                 } else {
                   MaterialTheme.colorScheme.surfaceVariant
-                }
-            )
+                },
+            ),
         ) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             Column(modifier = Modifier.weight(1f)) {
               Text(
                 text = server.name,
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
               )
               Text(
                 text = "${server.location} - ${server.operator}",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
               Text(
                 text = server.url,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
               )
             }
             if (isSelected) {
               Icon(
                 painter = painterResource(R.drawable.done),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
               )
             }
           }
@@ -569,7 +571,7 @@ private fun ServerChooserDialog(
       Text(
         text = stringResource(R.string.listen_together_custom_server),
         style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold
+        fontWeight = FontWeight.SemiBold,
       )
       OutlinedTextField(
         value = customUrl,
@@ -577,13 +579,13 @@ private fun ServerChooserDialog(
         label = { Text(stringResource(R.string.listen_together_server_url)) },
         leadingIcon = { Icon(painterResource(R.drawable.link), contentDescription = null) },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
       )
       Button(
         onClick = { onUseCustom(trimmedCustomUrl) },
         enabled = trimmedCustomUrl.isNotBlank(),
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
       ) {
         Text(stringResource(R.string.listen_together_use_custom_server))
       }
@@ -601,7 +603,7 @@ fun LogEntryItem(log: LogEntry) {
         text = log.timestamp,
         style = MaterialTheme.typography.labelSmall,
         fontFamily = FontFamily.Monospace,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Spacer(modifier = Modifier.width(8.dp))
       Surface(
@@ -612,7 +614,7 @@ fun LogEntryItem(log: LogEntry) {
             LogLevel.WARNING -> Color(0xFFFFF3CD)
             LogLevel.DEBUG -> MaterialTheme.colorScheme.surfaceVariant
             LogLevel.INFO -> MaterialTheme.colorScheme.primaryContainer
-          }
+          },
       ) {
         Text(
           text = log.level.name,
@@ -624,7 +626,7 @@ fun LogEntryItem(log: LogEntry) {
               LogLevel.WARNING -> Color(0xFF856404)
               LogLevel.DEBUG -> MaterialTheme.colorScheme.onSurfaceVariant
               LogLevel.INFO -> MaterialTheme.colorScheme.onPrimaryContainer
-            }
+            },
         )
       }
     }
@@ -632,7 +634,7 @@ fun LogEntryItem(log: LogEntry) {
     Text(
       text = log.message,
       style = MaterialTheme.typography.bodySmall,
-      fontFamily = FontFamily.Monospace
+      fontFamily = FontFamily.Monospace,
     )
     log.details?.let { details ->
       Text(
@@ -641,7 +643,7 @@ fun LogEntryItem(log: LogEntry) {
         fontFamily = FontFamily.Monospace,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 2,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
       )
     }
   }
@@ -651,7 +653,7 @@ fun LogEntryItem(log: LogEntry) {
 fun BlockedUsersDialog(
   blockedUsernames: Set<String>,
   onUnblock: (String) -> Unit,
-  onDismiss: () -> Unit
+  onDismiss: () -> Unit,
 ) {
   val listState = rememberLazyListState()
 
@@ -659,21 +661,21 @@ fun BlockedUsersDialog(
     onDismiss = onDismiss,
     icon = { Icon(painterResource(R.drawable.person), contentDescription = null) },
     title = { Text(stringResource(R.string.listen_together_blocked_users)) },
-    buttons = { Button(onClick = onDismiss) { Text(stringResource(android.R.string.ok)) } }
+    buttons = { Button(onClick = onDismiss) { Text(stringResource(android.R.string.ok)) } },
   ) {
     Box(modifier = Modifier.fillMaxWidth().height(280.dp)) {
       if (blockedUsernames.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
             text = stringResource(R.string.listen_together_no_blocked_users),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       } else {
         LazyColumn(
           state = listState,
           modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.spacedBy(8.dp)
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           items(blockedUsernames.toList()) { username ->
             Row(
@@ -683,14 +685,14 @@ fun BlockedUsersDialog(
                   .clip(RoundedCornerShape(12.dp))
                   .background(MaterialTheme.colorScheme.surfaceVariant)
                   .padding(12.dp),
-              horizontalArrangement = Arrangement.SpaceBetween
+              horizontalArrangement = Arrangement.SpaceBetween,
             ) {
               Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 Icon(
                   painter = painterResource(R.drawable.person),
                   contentDescription = null,
                   modifier = Modifier.size(20.dp),
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = username, style = MaterialTheme.typography.bodyMedium)

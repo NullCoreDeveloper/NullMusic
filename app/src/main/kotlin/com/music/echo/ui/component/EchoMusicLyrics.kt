@@ -255,14 +255,14 @@ fun nullmusicLyricsLine(
     animateFloatAsState(
       targetValue = targetAlpha,
       animationSpec = tween(durationMillis = 300),
-      label = "lineAlpha"
+      label = "lineAlpha",
     )
 
   val scale by
     animateFloatAsState(
       targetValue = if (isActive) 1f else 0.85f,
       animationSpec = tween(durationMillis = 400),
-      label = "lineScale"
+      label = "lineScale",
     )
 
   val itemModifier =
@@ -278,7 +278,7 @@ fun nullmusicLyricsLine(
       .background(
         if (isSelected && isSelectionModeActive)
           MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-        else Color.Transparent
+        else Color.Transparent,
       )
       .padding(horizontal = 24.dp, vertical = (8 * lineSpacing).dp)
 
@@ -344,8 +344,8 @@ fun nullmusicLyricsLine(
           Arrangement.spacedBy(
             with(LocalDensity.current) {
               (textSize * (lineSpacing.coerceAtMost(1.3f) - 1f)).sp.toDp()
-            }
-          )
+            },
+          ),
       ) {
         val lineRelTime = (effectivePlaybackPosition - entry.time).coerceAtLeast(0L)
         wordData.forEachIndexed { index, (wordText, startRelative, endRelative) ->
@@ -366,7 +366,7 @@ fun nullmusicLyricsLine(
               text = " ",
               fontSize = textSize.sp,
               color = textColor.copy(alpha = if (isSpacePassed) 1f else 0.40f),
-              lineHeight = (textSize * lineSpacing.coerceAtMost(1.3f)).sp
+              lineHeight = (textSize * lineSpacing.coerceAtMost(1.3f)).sp,
             )
           }
         }
@@ -382,7 +382,7 @@ fun nullmusicLyricsLine(
           textAlign = agentTextAlign,
           fontWeight = FontWeight.SemiBold,
           modifier = Modifier.padding(top = 2.dp).fillMaxWidth(),
-          lineHeight = (textSize * 0.65f * lineSpacing.coerceAtMost(1.3f)).sp
+          lineHeight = (textSize * 0.65f * lineSpacing.coerceAtMost(1.3f)).sp,
         )
       }
     }
@@ -397,7 +397,7 @@ fun nullmusicLyricsLine(
           textAlign = agentTextAlign,
           fontWeight = FontWeight.Medium,
           modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
-          lineHeight = (textSize * 0.7f * lineSpacing.coerceAtMost(1.3f)).sp
+          lineHeight = (textSize * 0.7f * lineSpacing.coerceAtMost(1.3f)).sp,
         )
       }
     }
@@ -442,7 +442,7 @@ private fun EchoMusicWord(
           scaleX = wordScale
           scaleY = wordScale
         }
-      }
+      },
   ) {
     Text(
       text = wordText,
@@ -450,7 +450,7 @@ private fun EchoMusicWord(
       fontWeight = if (isActive) FontWeight.ExtraBold else FontWeight.Bold,
       color = textColor.copy(alpha = baseAlpha),
       lineHeight = (textSize * lineSpacing.coerceAtMost(1.3f)).sp,
-      textAlign = agentTextAlign
+      textAlign = agentTextAlign,
     )
 
     if (isActive && (isWordComplete || isWordActive)) {
@@ -468,15 +468,15 @@ private fun EchoMusicWord(
                 Shadow(
                   color = textColor.copy(alpha = 0.45f + 0.25f * sinProgress),
                   offset = Offset.Zero,
-                  blurRadius = 10f + 8f * sinProgress
+                  blurRadius = 10f + 8f * sinProgress,
                 )
               } else {
                 Shadow(
                   color = textColor.copy(alpha = 0.25f),
                   offset = Offset.Zero,
-                  blurRadius = 4f
+                  blurRadius = 4f,
                 )
-              }
+              },
           ),
         modifier =
           if (isWordActive) {
@@ -486,8 +486,10 @@ private fun EchoMusicWord(
                 val feather = 8.dp.toPx()
                 val sweepEnd = size.width * progress
                 val totalWidth = size.width + feather
-                val stopOpaque = if (totalWidth > 0f) (sweepEnd / totalWidth).coerceIn(0f, 1f) else 1f
-                val stopTrans = if (totalWidth > 0f) ((sweepEnd + feather) / totalWidth).coerceIn(0f, 1f) else 1f
+                val stopOpaque =
+                  if (totalWidth > 0f) (sweepEnd / totalWidth).coerceIn(0f, 1f) else 1f
+                val stopTrans =
+                  if (totalWidth > 0f) ((sweepEnd + feather) / totalWidth).coerceIn(0f, 1f) else 1f
                 drawRect(
                   brush =
                     Brush.horizontalGradient(
@@ -496,12 +498,12 @@ private fun EchoMusicWord(
                       stopTrans to Color.Transparent,
                       1.0f to Color.Transparent,
                       startX = 0f,
-                      endX = totalWidth
+                      endX = totalWidth,
                     ),
-                  blendMode = BlendMode.DstIn
+                  blendMode = BlendMode.DstIn,
                 )
               }
-          } else Modifier
+          } else Modifier,
       )
     }
   }

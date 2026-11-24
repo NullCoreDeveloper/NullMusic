@@ -413,7 +413,7 @@ class MainActivity : ComponentActivity() {
       androidx.compose.runtime.mutableStateOf<
         List<echo.music.iad1tya.nullmusic.updater.ChangelogSection>
       >(
-        emptyList()
+        emptyList(),
       )
     }
     var availableUpdateDescription by remember {
@@ -600,7 +600,7 @@ class MainActivity : ComponentActivity() {
                       .diskCachePolicy(CachePolicy.ENABLED)
                       .networkCachePolicy(CachePolicy.ENABLED)
                       .crossfade(false)
-                      .build()
+                      .build(),
                   )
                 result.image?.toBitmap()?.extractThemeColor()
               }
@@ -668,7 +668,7 @@ class MainActivity : ComponentActivity() {
                   }
                 }
               }
-            }
+            },
       ) {
         val focusManager = LocalFocusManager.current
         val density = LocalDensity.current
@@ -730,6 +730,7 @@ class MainActivity : ComponentActivity() {
         val topLevelScreens = remember {
           listOf(
             Screens.Home.route,
+            Screens.Podcast.route,
             Screens.Library.route,
             Screens.ListenTogether.route,
             "settings",
@@ -910,7 +911,7 @@ class MainActivity : ComponentActivity() {
           canScroll = {
             !inSearchScreen &&
               (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
-          }
+          },
         )
 
         val topAppBarScrollBehavior =
@@ -918,7 +919,7 @@ class MainActivity : ComponentActivity() {
             canScroll = {
               !inSearchScreen &&
                 (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
-            }
+            },
           )
 
         LaunchedEffect(navBackStackEntry) {
@@ -1268,7 +1269,7 @@ class MainActivity : ComponentActivity() {
                       }
                       if (listenTogetherInTopBar) {
                         IconButton(
-                          onClick = { navController.navigate("listen_together_from_topbar") }
+                          onClick = { navController.navigate("listen_together_from_topbar") },
                         ) {
                           Icon(
                             painter = painterResource(R.drawable.group_outlined),
@@ -1643,7 +1644,7 @@ class MainActivity : ComponentActivity() {
                             .add(cutoutInsets.only(WindowInsetsSides.Start))
                         } else {
                           cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
-                        }
+                        },
                       ),
                   )
                 }
@@ -1757,7 +1758,7 @@ class MainActivity : ComponentActivity() {
                       modifier =
                         Modifier.align(Alignment.BottomCenter)
                           .height(navSlideDistance)
-                          .offset(y = navOffsetY)
+                          .offset(y = navOffsetY),
                     ) {
                       FloatingNavigationToolbar(
                         items = navigationItems,
@@ -1816,7 +1817,7 @@ class MainActivity : ComponentActivity() {
                                 0f
                               else 1f
                           }
-                          .background(baseBg)
+                          .background(baseBg),
                     )
                   }
                 }
@@ -1861,7 +1862,7 @@ class MainActivity : ComponentActivity() {
                             0f
                           else 1f
                       }
-                      .background(baseBg)
+                      .background(baseBg),
                 )
               }
             },
@@ -1873,7 +1874,7 @@ class MainActivity : ComponentActivity() {
                     Modifier.nestedScroll(floatingNavBarScrollConnection)
                   } else {
                     Modifier
-                  }
+                  },
                 ),
           ) {
             Row(Modifier.fillMaxSize()) {
@@ -2108,7 +2109,7 @@ class MainActivity : ComponentActivity() {
                       BuildConfig.VERSION_CODE
                   }
                 }
-              }
+              },
             )
           }
 
@@ -2268,7 +2269,7 @@ class MainActivity : ComponentActivity() {
                     YouTubeQueue(
                       WatchEndpoint(videoId = queue.firstOrNull()?.id, playlistId = playlistId),
                       queue.firstOrNull()?.toMediaMetadata(),
-                    )
+                    ),
                   )
                 }
               }
@@ -2289,7 +2290,7 @@ class MainActivity : ComponentActivity() {
                     YouTubeQueue(
                       WatchEndpoint(videoId = firstItem?.id, playlistId = playlistId),
                       firstItem?.toMediaMetadata(),
-                    )
+                    ),
                   )
                 }
               }
@@ -2470,7 +2471,7 @@ class MainActivity : ComponentActivity() {
                 items = queue.mediaItems,
                 startIndex = queue.startIndex,
                 position = queue.startPositionMs.coerceAtLeast(0L),
-              )
+              ),
             )
           // Nothing to play: at least show what was asked for.
           !query.isNullOrBlank() ->

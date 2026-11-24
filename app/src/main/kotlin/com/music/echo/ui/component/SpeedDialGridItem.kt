@@ -36,7 +36,7 @@ fun SpeedDialGridItem(
 
   Box(
     modifier = modifier.aspectRatio(1f).clip(RoundedCornerShape(ThumbnailCornerRadius)),
-    contentAlignment = Alignment.Center
+    contentAlignment = Alignment.Center,
   ) {
     ItemThumbnail(
       thumbnailUrl = item.thumbnail,
@@ -44,7 +44,7 @@ fun SpeedDialGridItem(
       isPlaying = isPlaying,
       shape = RoundedCornerShape(ThumbnailCornerRadius),
       forceCrop = true,
-      modifier = Modifier.fillMaxSize()
+      modifier = Modifier.fillMaxSize(),
     )
 
     if (item is SongItem && !isActive) {
@@ -70,7 +70,7 @@ fun SpeedDialGridItem(
               withContext(Dispatchers.Main) { playerConnection.playQueue(LocalAlbumRadio(it)) }
             }
           }
-        }
+        },
       )
     }
 
@@ -80,7 +80,7 @@ fun SpeedDialGridItem(
           painter = painterResource(R.drawable.ic_push_pin),
           contentDescription = null,
           modifier = Modifier.size(16.dp),
-          tint = MaterialTheme.colorScheme.onSurfaceVariant
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
     }

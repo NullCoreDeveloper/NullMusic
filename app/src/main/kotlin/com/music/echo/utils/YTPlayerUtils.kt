@@ -301,6 +301,7 @@ object YTPlayerUtils {
     val streamExpiresInSeconds: Int,
     val headers: Map<String, String>? = null,
   )
+
   /**
    * Custom player response intended to use for playback. Metadata like audioConfig and videoDetails
    * are from [MAIN_CLIENT]. Format & stream can be from [MAIN_CLIENT] or [STREAM_FALLBACK_CLIENTS].
@@ -1008,12 +1009,12 @@ object YTPlayerUtils {
   ): Result<PlayerResponse> {
     Timber.tag(logTag)
       .d(
-        "Fetching metadata-only player response for videoId: $videoId using MAIN_CLIENT: ${MAIN_CLIENT.clientName}"
+        "Fetching metadata-only player response for videoId: $videoId using MAIN_CLIENT: ${MAIN_CLIENT.clientName}",
       )
     return YouTube.player(
         videoId,
         playlistId,
-        client = WEB_REMIX
+        client = WEB_REMIX,
       ) // ANDROID_VR does not work with history
       .onSuccess { Timber.tag(logTag).d("Successfully fetched metadata") }
       .onFailure { Timber.tag(logTag).e(it, "Failed to fetch metadata") }
@@ -1026,7 +1027,7 @@ object YTPlayerUtils {
   ): PlayerResponse.StreamingData.Format? {
     Timber.tag(logTag)
       .d(
-        "Finding format with audioQuality: $audioQuality, network metered: ${connectivityManager.isActiveNetworkMetered}, forceOpus: $forceOpusEnabled"
+        "Finding format with audioQuality: $audioQuality, network metered: ${connectivityManager.isActiveNetworkMetered}, forceOpus: $forceOpusEnabled",
       )
 
     var availableFormats =
@@ -1042,10 +1043,9 @@ object YTPlayerUtils {
       }
     }
 
-    val format =
-      availableFormats.maxByOrNull {
-        it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0)
-      }
+    val format = availableFormats.maxByOrNull {
+      it.bitrate * 1 + (if (it.mimeType.startsWith("audio/webm")) 10240 else 0)
+    }
 
     if (format != null) {
       Timber.tag(logTag).d("Selected format: ${format.mimeType}, bitrate: ${format.bitrate}")
@@ -1133,7 +1133,7 @@ object YTPlayerUtils {
           reportException(error)
         }
         SignatureTimestampResult(null, isAgeRestricted)
-      }
+      },
     )
   }
 
@@ -1141,12 +1141,12 @@ object YTPlayerUtils {
     format: PlayerResponse.StreamingData.Format,
     videoId: String,
     playerResponse: PlayerResponse,
-    skipNewPipe: Boolean = false
+    skipNewPipe: Boolean = false,
   ): Pair<String, Map<String, String>?>? {
     val engine = playbackEngine
     Timber.tag(logTag)
       .d(
-        "Finding stream URL for format: ${format.mimeType}, videoId: $videoId, engine: $engine, skipNewPipe: $skipNewPipe"
+        "Finding stream URL for format: ${format.mimeType}, videoId: $videoId, engine: $engine, skipNewPipe: $skipNewPipe",
       )
 
     // First check if format already has a URL
@@ -1265,8 +1265,9 @@ object YTPlayerUtils {
       } else {
         // Try to get URL using NewPipeExtractor signature deobfuscation
         try {
-          val deobfuscatedUrl =
-            extractionMutex.withLock { NewPipeExtractor.getStreamUrl(format, videoId) }
+          val deobfuscatedUrl = extractionMutex.withLock {
+            NewPipeExtractor.getStreamUrl(format, videoId)
+          }
           if (deobfuscatedUrl != null) {
             Timber.tag(logTag).d("Stream URL obtained via NewPipe deobfuscation")
             return deobfuscatedUrl to null

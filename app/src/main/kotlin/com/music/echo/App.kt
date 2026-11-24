@@ -55,7 +55,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
     get() =
       Configuration.Builder()
         .setMinimumLoggingLevel(
-          if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR
+          if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR,
         )
         .build()
 
@@ -170,7 +170,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
           settings[ContentLanguageKey]?.takeIf { it != SYSTEM_DEFAULT }
             ?: locale.language.takeIf { it in LanguageCodeToName }
             ?: languageTag.takeIf { it in LanguageCodeToName }
-            ?: "en"
+            ?: "en",
       )
 
     if (languageTag == "zh-TW") {
@@ -190,7 +190,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             object : Authenticator() {
               override fun getPasswordAuthentication(): PasswordAuthentication =
                 PasswordAuthentication(username, password.toCharArray())
-            }
+            },
           )
         }
       }
@@ -223,7 +223,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
       NotificationChannel(
           "updates",
           getString(R.string.update_channel_name),
-          NotificationManager.IMPORTANCE_DEFAULT
+          NotificationManager.IMPORTANCE_DEFAULT,
         )
         .apply { description = getString(R.string.update_channel_desc) }
     val nm = getSystemService(NotificationManager::class.java)
@@ -266,12 +266,11 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
         }
         .distinctUntilChanged()
         .collect { dataSyncId ->
-          YouTube.dataSyncId =
-            dataSyncId?.let {
-              it.takeIf { !it.contains("||") }
-                ?: it.takeIf { it.endsWith("||") }?.substringBefore("||")
-                ?: it.substringAfter("||")
-            }
+          YouTube.dataSyncId = dataSyncId?.let {
+            it.takeIf { !it.contains("||") }
+              ?: it.takeIf { it.endsWith("||") }?.substringBefore("||")
+              ?: it.substringAfter("||")
+          }
         }
     }
 
@@ -313,7 +312,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
               it[AppLanguageKey]
             } catch (e: Exception) {
               null
-            })
+            }),
           )
         }
         .distinctUntilChanged()
@@ -334,7 +333,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
                 contentLanguage?.takeIf { it != SYSTEM_DEFAULT }
                   ?: effectiveAppLocale.toLanguageTag().takeIf { it in LanguageCodeToName }
                   ?: effectiveAppLocale.language.takeIf { it in LanguageCodeToName }
-                  ?: "en"
+                  ?: "en",
             )
         }
     }
@@ -388,7 +387,7 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
             DiskCache.Builder()
               .directory(cacheDir.resolve("coil"))
               .maxSizeBytes(cacheSize * 1024 * 1024L)
-              .build()
+              .build(),
           )
         }
       }
@@ -412,14 +411,14 @@ class App : Application(), SingletonImageLoader.Factory, Configuration.Provider 
 
       Timber.d("forgetAccount: Clearing YouTube object auth state")
       Timber.d(
-        "forgetAccount: Before - cookie=${YouTube.cookie?.take(50)}, visitorData=${YouTube.visitorData?.take(20)}, dataSyncId=${YouTube.dataSyncId?.take(20)}"
+        "forgetAccount: Before - cookie=${YouTube.cookie?.take(50)}, visitorData=${YouTube.visitorData?.take(20)}, dataSyncId=${YouTube.dataSyncId?.take(20)}",
       )
       YouTube.cookie = null
       YouTube.visitorData = null
       YouTube.dataSyncId = null
       echo.music.iad1tya.utils.InnerTubeXResolver.onSessionChanged()
       Timber.d(
-        "forgetAccount: After - cookie=${YouTube.cookie}, visitorData=${YouTube.visitorData}, dataSyncId=${YouTube.dataSyncId}"
+        "forgetAccount: After - cookie=${YouTube.cookie}, visitorData=${YouTube.visitorData}, dataSyncId=${YouTube.dataSyncId}",
       )
 
       Timber.d("forgetAccount: Clearing WebView CookieManager")

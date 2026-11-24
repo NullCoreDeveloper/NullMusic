@@ -88,7 +88,7 @@ object AiRecommendationHelper {
           val baseUrl =
             context.dataStore.get(
               OpenRouterBaseUrlKey,
-              "https://openrouter.ai/api/v1/chat/completions"
+              "https://openrouter.ai/api/v1/chat/completions",
             )
           val model = context.dataStore.get(OpenRouterModelKey, "openrouter/free")
 
@@ -113,9 +113,9 @@ object AiRecommendationHelper {
                       JSONObject().apply {
                         put("role", "user")
                         put("content", prompt)
-                      }
+                      },
                     )
-                  }
+                  },
                 )
               }
               .toString()
@@ -192,7 +192,7 @@ object AiRecommendationHelper {
             name = PLAYLIST_NAME,
             bookmarkedAt = java.time.LocalDateTime.now(),
             isLocal = true,
-            isEditable = true
+            isEditable = true,
           )
         database.insert(playlist)
       } else {
@@ -206,15 +206,19 @@ object AiRecommendationHelper {
             id = songItem.id,
             title = songItem.title,
             duration = songItem.duration ?: 0,
-            thumbnailUrl = songItem.thumbnail
+            thumbnailUrl = songItem.thumbnail,
           )
         database.insert(songEntity)
         database.insert(
-          PlaylistSongMap(playlistId = playlist.id, songId = songItem.id, position = index)
+          PlaylistSongMap(playlistId = playlist.id, songId = songItem.id, position = index),
         )
       }
 
-      AiLogger.log(context, "Playlist Generation", "Generated daily AI recommendations playlist with ${resolvedSongs.size} songs.")
+      AiLogger.log(
+        context,
+        "Playlist Generation",
+        "Generated daily AI recommendations playlist with ${resolvedSongs.size} songs.",
+      )
       onLog?.invoke("Done!")
     }
 }

@@ -405,7 +405,7 @@ fun ExploreScreen(
                 title = it.title,
                 onClick = {
                   navController.navigate(
-                    "youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}"
+                    "youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}",
                   )
                 },
                 modifier = Modifier.padding(6.dp).width(180.dp),
@@ -417,8 +417,8 @@ fun ExploreScreen(
 
       Spacer(
         Modifier.height(
-          LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
-        )
+          LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding(),
+        ),
       )
     }
   }

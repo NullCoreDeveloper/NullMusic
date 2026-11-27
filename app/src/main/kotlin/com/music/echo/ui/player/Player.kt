@@ -319,6 +319,7 @@ fun BottomSheetPlayer(
   onPlayerMenuShown: () -> Unit = {},
   showLyricsRequested: Boolean = false,
   onLyricsShown: () -> Unit = {},
+  isInlineWithNav: Boolean = false,
 ) {
   val context = LocalContext.current
   val database = LocalDatabase.current
@@ -533,7 +534,12 @@ fun BottomSheetPlayer(
     val automixDebug by playerConnection.automixDebugInfo.collectAsState()
     val automixDebugOverlayEnabled by rememberPreference(iad1tya.echo.music.constants.AutomixDebugOverlayKey, false)
 
-  val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+  val effectiveIsPlaying =
+    when {
+      isCasting -> castIsPlaying
+      isLanRemote -> lanRemotePlaying
+      else -> isPlaying
+    }
 
   val positionState = remember { mutableLongStateOf(0L) }
   val durationState = remember { mutableLongStateOf(0L) }
@@ -543,10 +549,10 @@ fun BottomSheetPlayer(
 
   val effectivePosition by remember {
     derivedStateOf {
-      if (isCasting) {
-        castPosition
-      } else {
-        position
+      when {
+        isCasting -> castPosition
+        isLanRemote -> lanRemotePosition
+        else -> position
       }
     }
   }
@@ -1089,8 +1095,8 @@ fun BottomSheetPlayer(
     }
   }
 
-  LaunchedEffect(isPlaying, isCasting) {
-    if (!isCasting && isPlaying) {
+  LaunchedEffect(isPlaying, isCasting, isLanRemote) {
+    if (!isCasting && !isLanRemote && isPlaying) {
       while (isActive) {
         delay(200)
         if (sliderPosition == null) {
@@ -1105,14 +1111,24 @@ fun BottomSheetPlayer(
     }
   }
 
-  LaunchedEffect(playbackState, mediaMetadata?.id) {
-    if (!isCasting) {
+  LaunchedEffect(playbackState, mediaMetadata?.id, isLanRemote) {
+    if (!isCasting && !isLanRemote) {
       position = playerConnection.player.currentPosition
       duration =
         echo.music.iad1tya.playback.PlaybackCutoffGuard.computeEffectiveDuration(
           mediaMetadata?.duration,
           playerConnection.player.duration,
         )
+    }
+  }
+
+  LaunchedEffect(isLanRemote, lanRemotePosition, lanRemoteDuration) {
+    if (isLanRemote && sliderPosition == null) {
+      val timeSinceManualSeek = System.currentTimeMillis() - lastManualSeekTime
+      if (timeSinceManualSeek > 1200) {
+        position = lanRemotePosition
+        if (lanRemoteDuration > 0) duration = lanRemoteDuration
+      }
     }
   }
 
@@ -1663,6 +1679,7 @@ fun BottomSheetPlayer(
       MiniPlayer(
         positionState = positionState,
         durationState = durationState,
+        isInlineWithNav = isInlineWithNav,
         onClick = { state.expandSoft() },
       )
     },
@@ -2317,6 +2334,9 @@ fun BottomSheetPlayer(
                   if (isCasting) {
                     castHandler?.seekTo(it)
                     lastManualSeekTime = System.currentTimeMillis()
+                  } else if (isLanRemote) {
+                    lanSync.seekRemote(it)
+                    lastManualSeekTime = System.currentTimeMillis()
                   } else {
                     playerConnection.player.seekTo(it)
                   }
@@ -2347,6 +2367,9 @@ fun BottomSheetPlayer(
                   if (isCasting) {
                     castHandler?.seekTo(it)
                     lastManualSeekTime = System.currentTimeMillis()
+                  } else if (isLanRemote) {
+                    lanSync.seekRemote(it)
+                    lastManualSeekTime = System.currentTimeMillis()
                   } else {
                     playerConnection.player.seekTo(it)
                   }
@@ -2373,6 +2396,9 @@ fun BottomSheetPlayer(
                 sliderPosition?.let {
                   if (isCasting) {
                     castHandler?.seekTo(it)
+                    lastManualSeekTime = System.currentTimeMillis()
+                  } else if (isLanRemote) {
+                    lanSync.seekRemote(it)
                     lastManualSeekTime = System.currentTimeMillis()
                   } else {
                     playerConnection.player.seekTo(it)
@@ -2423,6 +2449,9 @@ fun BottomSheetPlayer(
                 sliderPosition?.let {
                   if (isCasting) {
                     castHandler?.seekTo(it)
+                    lastManualSeekTime = System.currentTimeMillis()
+                  } else if (isLanRemote) {
+                    lanSync.seekRemote(it)
                     lastManualSeekTime = System.currentTimeMillis()
                   } else {
                     playerConnection.player.seekTo(it)
@@ -2556,10 +2585,30 @@ fun BottomSheetPlayer(
             }
           val mixCountdownActive = !isCrossfading && mixBeatsLeft != null && mixBeatsLeft in 1..16
 
+          var showLanBadgeInCodec by remember { mutableStateOf(false) }
+          val hasCodecText = showCodecOnPlayer && formatText.isNotEmpty()
+          LaunchedEffect(isLanRemote, lanActivePeer?.id, hasCodecText) {
+            if (!isLanRemote || lanActivePeer == null) {
+              showLanBadgeInCodec = false
+              return@LaunchedEffect
+            }
+            if (!hasCodecText) {
+              showLanBadgeInCodec = true
+              return@LaunchedEffect
+            }
+            while (isActive) {
+              showLanBadgeInCodec = false
+              delay(3000)
+              showLanBadgeInCodec = true
+              delay(3000)
+            }
+          }
+
           val shouldShowCodecBox =
             showCodecOnPlayer && (formatText.isNotEmpty() || isBuffering) ||
               isCrossfading ||
-              mixCountdownActive
+              mixCountdownActive ||
+              (isLanRemote && lanActivePeer != null)
 
           if (dacDeviceState is DacDeviceState.Connected) {
             val connectedDac = dacDeviceState as DacDeviceState.Connected
@@ -2591,6 +2640,7 @@ fun BottomSheetPlayer(
                   sleepTimerEnabled -> 0
                   isCrossfading -> 1
                   mixCountdownActive -> 4
+                  isLanRemote && lanActivePeer != null && showLanBadgeInCodec -> 5
                   isBuffering -> 2
                   else -> 3
                 }
@@ -2983,6 +3033,19 @@ fun BottomSheetPlayer(
                       maxLines = 1,
                     )
                   }
+                  5 -> {
+                    Text(
+                      text = "PLAYING ON ${lanActivePeer?.name?.uppercase() ?: "DEVICE"}",
+                      style =
+                        MaterialTheme.typography.labelSmall.copy(
+                          fontWeight = FontWeight.Bold,
+                          letterSpacing = 1.sp,
+                          fontSize = 10.sp,
+                        ),
+                      color = TextBackgroundColor.copy(alpha = 0.85f),
+                      maxLines = 1,
+                    )
+                  }
                   4 -> {
                     val beatTransition =
                       androidx.compose.animation.core.rememberInfiniteTransition(
@@ -3058,13 +3121,17 @@ fun BottomSheetPlayer(
               enabled =
                 !isListenTogetherGuest &&
                   (if (isCasting) castDuration > 0
+                  else if (isLanRemote) lanRemoteDuration > 0
                   else playerConnection.player.isCurrentMediaItemSeekable),
               color = TextBackgroundColor,
               onSeek = { offsetMs ->
                 playerConnection.seekTo(
                   echo.music.iad1tya.playback.seekButtonTarget(
-                    if (isCasting) castPosition else playerConnection.player.currentPosition,
-                    if (isCasting) castDuration else playerConnection.player.duration,
+                    if (isCasting) castPosition
+                    else if (isLanRemote) lanRemotePosition
+                    else playerConnection.player.currentPosition,
+                    if (isCasting) castDuration
+                    else if (isLanRemote) lanRemoteDuration else playerConnection.player.duration,
                     offsetMs,
                   ),
                 )
@@ -3075,13 +3142,17 @@ fun BottomSheetPlayer(
               enabled =
                 !isListenTogetherGuest &&
                   (if (isCasting) castDuration > 0
+                  else if (isLanRemote) lanRemoteDuration > 0
                   else playerConnection.player.isCurrentMediaItemSeekable),
               color = TextBackgroundColor,
               onSeek = { offsetMs ->
                 val currentPosition =
-                  if (isCasting) castPosition else playerConnection.player.currentPosition
+                  if (isCasting) castPosition
+                  else if (isLanRemote) lanRemotePosition
+                  else playerConnection.player.currentPosition
                 val currentDuration =
-                  if (isCasting) castDuration else playerConnection.player.duration
+                  if (isCasting) castDuration
+                  else if (isLanRemote) lanRemoteDuration else playerConnection.player.duration
                 playerConnection.seekTo(
                   echo.music.iad1tya.playback.seekButtonTarget(
                     currentPosition,
@@ -3096,12 +3167,15 @@ fun BottomSheetPlayer(
             val seekButtonsEnabled =
               !isListenTogetherGuest &&
                 (if (isCasting) castDuration > 0
+                else if (isLanRemote) lanRemoteDuration > 0
                 else playerConnection.player.isCurrentMediaItemSeekable)
             val seekBy: (Long) -> Unit = { offsetMs ->
               val currentPosition =
-                if (isCasting) castPosition else playerConnection.player.currentPosition
+                if (isCasting) castPosition
+                else if (isLanRemote) lanRemotePosition else playerConnection.player.currentPosition
               val currentDuration =
-                if (isCasting) castDuration else playerConnection.player.duration
+                if (isCasting) castDuration
+                else if (isLanRemote) lanRemoteDuration else playerConnection.player.duration
               playerConnection.seekTo(
                 echo.music.iad1tya.playback.seekButtonTarget(
                   currentPosition,
@@ -3184,7 +3258,7 @@ fun BottomSheetPlayer(
                   if (backLongPressFired) backLongPressFired = false
                   else playerConnection.seekToPrevious()
                 },
-                enabled = canSkipPrevious && !isListenTogetherGuest,
+                enabled = (canSkipPrevious || isLanRemote) && !isListenTogetherGuest,
                 shape = mainButtonSquircle,
                 interactionSource = backInteractionSource,
                 colors =
@@ -3264,7 +3338,7 @@ fun BottomSheetPlayer(
                     } else {
                       castHandler?.play()
                     }
-                  } else if (playbackState == STATE_ENDED) {
+                  } else if (!isLanRemote && playbackState == STATE_ENDED) {
                     playerConnection.player.seekTo(0, 0)
                     playerConnection.player.playWhenReady = true
                   } else {
@@ -3341,7 +3415,7 @@ fun BottomSheetPlayer(
 
               FilledIconButton(
                 onClick = playerConnection::seekToNext,
-                enabled = canSkipNext && !isListenTogetherGuest,
+                enabled = (canSkipNext || isLanRemote) && !isListenTogetherGuest,
                 shape = mainButtonSquircle,
                 interactionSource = nextInteractionSource,
                 colors =
@@ -3370,7 +3444,7 @@ fun BottomSheetPlayer(
               Box(modifier = Modifier.weight(1f)) {
                 ResizableIconButton(
                   icon = R.drawable.apple_skip_previous,
-                  enabled = canSkipPrevious && !isListenTogetherGuest,
+                  enabled = (canSkipPrevious || isLanRemote) && !isListenTogetherGuest,
                   color = TextBackgroundColor,
                   modifier =
                     Modifier.size(48.dp)
@@ -3398,11 +3472,11 @@ fun BottomSheetPlayer(
                       } else {
                         castHandler?.play()
                       }
-                    } else if (playbackState == STATE_ENDED) {
+                    } else if (!isLanRemote && playbackState == STATE_ENDED) {
                       playerConnection.player.seekTo(0, 0)
                       playerConnection.player.playWhenReady = true
                     } else {
-                      playerConnection.player.togglePlayPause()
+                      playerConnection.togglePlayPause()
                     }
                   },
               ) {
@@ -3411,7 +3485,7 @@ fun BottomSheetPlayer(
                     painterResource(
                       if (isListenTogetherGuest) {
                         if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-                      } else if (playbackState == STATE_ENDED) {
+                      } else if (!isLanRemote && playbackState == STATE_ENDED) {
                         R.drawable.replay
                       } else if (effectiveIsPlaying) {
                         R.drawable.pause_applemusic
@@ -3430,7 +3504,7 @@ fun BottomSheetPlayer(
               Box(modifier = Modifier.weight(1f)) {
                 ResizableIconButton(
                   icon = R.drawable.apple_skip_next,
-                  enabled = canSkipNext && !isListenTogetherGuest,
+                  enabled = (canSkipNext || isLanRemote) && !isListenTogetherGuest,
                   color = TextBackgroundColor,
                   modifier =
                     Modifier.size(48.dp)

@@ -329,6 +329,12 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable(
+    route = "settings/echo_connect",
+  ) {
+    EchoConnectSettingsScreen(navController, scrollBehavior)
+  }
+
+  composable(
     route = "settings/account?highlightKey={highlightKey}",
     arguments =
       listOf(

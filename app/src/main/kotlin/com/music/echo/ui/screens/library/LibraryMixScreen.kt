@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -279,6 +280,7 @@ fun LibraryMixScreen(
     state = pullRefreshState,
     isRefreshing = isRefreshing,
     onRefresh = viewModel::refresh,
+    modifier = Modifier.fillMaxSize(),
     indicator = {
       PullToRefreshDefaults.LoadingIndicator(
         state = pullRefreshState,
@@ -292,6 +294,7 @@ fun LibraryMixScreen(
         LazyColumn(
           state = lazyListState,
           contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+          modifier = Modifier.fillMaxSize(),
         ) {
           item(
             key = "filter",
@@ -310,7 +313,7 @@ fun LibraryMixScreen(
               verticalArrangement = Arrangement.spacedBy(8.dp),
               modifier =
                 Modifier.fillMaxWidth()
-                  .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+                  .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
             ) {
               val itemModifier = Modifier.weight(1f)
               if (showLiked) {
@@ -393,7 +396,7 @@ fun LibraryMixScreen(
             Row(
               modifier =
                 Modifier.fillMaxWidth()
-                  .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
+                  .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -575,6 +578,7 @@ fun LibraryMixScreen(
                 GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
             ),
           contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+          modifier = Modifier.fillMaxSize(),
         ) {
           item(
             key = "filter",
@@ -595,7 +599,7 @@ fun LibraryMixScreen(
               verticalArrangement = Arrangement.spacedBy(8.dp),
               modifier =
                 Modifier.fillMaxWidth()
-                  .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+                  .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
             ) {
               val itemModifier = Modifier.weight(1f)
               if (showLiked) {
@@ -679,7 +683,7 @@ fun LibraryMixScreen(
             Row(
               modifier =
                 Modifier.fillMaxWidth()
-                  .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
+                  .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {

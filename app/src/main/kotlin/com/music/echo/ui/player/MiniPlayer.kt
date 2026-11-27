@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -191,6 +192,7 @@ fun MiniPlayer(
   positionState: MutableLongState,
   durationState: MutableLongState,
   modifier: Modifier = Modifier,
+  isInlineWithNav: Boolean = false,
   onClick: () -> Unit = {},
 ) {
   val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
@@ -266,16 +268,40 @@ fun MiniPlayer(
       )
     }
   } else if (useNewMiniPlayerDesign) {
-    NewMiniPlayer(progressState = progressState, modifier = modifier)
+    NewMiniPlayer(
+      progressState = progressState,
+      isInlineWithNav = isInlineWithNav,
+      modifier = modifier,
+    )
   } else {
-    Box(modifier = modifier.fillMaxWidth()) {
+    val legacyInlineStartPadding by
+      animateDpAsState(
+        targetValue =
+          if (isInlineWithNav) {
+            echo.music.iad1tya.constants.FloatingToolbarHorizontalPadding + MiniPlayerHeight + 8.dp
+          } else {
+            0.dp
+          },
+        animationSpec =
+          tween(
+            durationMillis = 220,
+            delayMillis = if (isInlineWithNav) 25 else 0,
+            easing = androidx.compose.animation.core.FastOutSlowInEasing,
+          ),
+        label = "legacyMiniPlayerInlineStartPadding",
+      )
+    Box(modifier = modifier.fillMaxWidth().padding(start = legacyInlineStartPadding)) {
       LegacyMiniPlayer(progressState = progressState, modifier = Modifier.align(Alignment.Center))
     }
   }
 }
 
 @Composable
-private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Modifier) {
+private fun NewMiniPlayer(
+  progressState: ProgressState,
+  isInlineWithNav: Boolean = false,
+  modifier: Modifier = Modifier,
+) {
   val playerConnection = LocalPlayerConnection.current ?: return
 
   val pureBlackMini by rememberPreference(PureBlackMiniPlayerKey, defaultValue = false)
@@ -307,7 +333,11 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
     else if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
 
   val playbackState by playerConnection.playbackState.collectAsState()
-  val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val localMediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val isLanRemote by playerConnection.lanSync.isRemoteControlling.collectAsState()
+  val lanRemoteMediaMetadata by playerConnection.lanSync.remoteMediaMetadata.collectAsState()
+  val mediaMetadata =
+    if (isLanRemote) (lanRemoteMediaMetadata ?: localMediaMetadata) else localMediaMetadata
   val canSkipNext by playerConnection.canSkipNext.collectAsState()
   val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
 
@@ -399,15 +429,32 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
     else androidx.compose.material3.MaterialTheme.colorScheme.onSurface
   val errorColor = MaterialTheme.colorScheme.error
 
+  val animatedStartPadding by
+    animateDpAsState(
+      targetValue =
+        if (isInlineWithNav) {
+          echo.music.iad1tya.constants.FloatingToolbarHorizontalPadding + MiniPlayerHeight + 8.dp
+        } else {
+          12.dp
+        },
+      animationSpec =
+        tween(
+          durationMillis = 220,
+          delayMillis = if (isInlineWithNav) 25 else 0,
+          easing = androidx.compose.animation.core.FastOutSlowInEasing,
+        ),
+      label = "miniPlayerInlineStartPadding",
+    )
+
   Box(
     modifier =
       modifier
         .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+        .padding(start = animatedStartPadding, end = 12.dp)
         .wrapContentWidth(Alignment.CenterHorizontally)
         .widthIn(max = 340.dp)
         .height(MiniPlayerHeight)
-        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-        .padding(horizontal = 12.dp)
         .let { baseModifier ->
           if (swipeThumbnail) {
             baseModifier.pointerInput(Unit) {
@@ -453,10 +500,10 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
                       (kotlin.math.abs(currentOffset) > autoSwipeThreshold)
 
                   if (shouldChangeSong) {
-                    if (currentOffset > 0 && canSkipPrevious) {
-                      playerConnection.player.seekToPreviousMediaItem()
-                    } else if (currentOffset <= 0 && canSkipNext) {
-                      playerConnection.player.seekToNext()
+                    if (currentOffset > 0 && (canSkipPrevious || isLanRemote)) {
+                      playerConnection.seekToPrevious()
+                    } else if (currentOffset <= 0 && (canSkipNext || isLanRemote)) {
+                      playerConnection.seekToNext()
                     }
                   }
                   coroutineScope.launch { offsetXAnimatable.animateTo(0f, animationSpec) }
@@ -699,7 +746,11 @@ private fun LegacyMiniPlayer(progressState: ProgressState, modifier: Modifier = 
     else if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh
 
   val playbackState by playerConnection.playbackState.collectAsState()
-  val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val localMediaMetadata by playerConnection.mediaMetadata.collectAsState()
+  val isLanRemote by playerConnection.lanSync.isRemoteControlling.collectAsState()
+  val lanRemoteMediaMetadata by playerConnection.lanSync.remoteMediaMetadata.collectAsState()
+  val mediaMetadata =
+    if (isLanRemote) (lanRemoteMediaMetadata ?: localMediaMetadata) else localMediaMetadata
   val canSkipNext by playerConnection.canSkipNext.collectAsState()
   val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
 
@@ -804,10 +855,10 @@ private fun LegacyMiniPlayer(progressState: ProgressState, modifier: Modifier = 
                       (kotlin.math.abs(currentOffset) > autoSwipeThreshold)
 
                   if (shouldChangeSong) {
-                    if (currentOffset > 0 && canSkipPrevious) {
-                      playerConnection.player.seekToPreviousMediaItem()
-                    } else if (currentOffset <= 0 && canSkipNext) {
-                      playerConnection.player.seekToNext()
+                    if (currentOffset > 0 && (canSkipPrevious || isLanRemote)) {
+                      playerConnection.seekToPrevious()
+                    } else if (currentOffset <= 0 && (canSkipNext || isLanRemote)) {
+                      playerConnection.seekToNext()
                     }
                   }
                   coroutineScope.launch { offsetXAnimatable.animateTo(0f, animationSpec) }
@@ -894,9 +945,16 @@ private fun LegacyPlayPauseButton(
   tint: Color = androidx.compose.material3.LocalContentColor.current,
 ) {
   val isPlaying by playerConnection.isPlaying.collectAsState()
+  val isLanRemote by playerConnection.lanSync.isRemoteControlling.collectAsState()
+  val lanRemotePlaying by playerConnection.lanSync.remotePlaying.collectAsState()
   val castIsPlaying by
     castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
-  val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+  val effectiveIsPlaying =
+    when {
+      isCasting -> castIsPlaying
+      isLanRemote -> lanRemotePlaying
+      else -> isPlaying
+    }
   val isListenTogetherGuest = listenTogetherManager?.let { it.isGuestPlaybackRestricted } ?: false
   val isMuted by playerConnection.isMuted.collectAsState()
 
@@ -1281,9 +1339,16 @@ private fun MiniPlayerControls(
 ) {
   val isListenTogetherGuest = listenTogetherManager?.let { it.isGuestPlaybackRestricted } ?: false
   val isPlaying by playerConnection.isPlaying.collectAsState()
+  val isLanRemote by playerConnection.lanSync.isRemoteControlling.collectAsState()
+  val lanRemotePlaying by playerConnection.lanSync.remotePlaying.collectAsState()
   val castIsPlaying by
     castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
-  val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+  val effectiveIsPlaying =
+    when {
+      isCasting -> castIsPlaying
+      isLanRemote -> lanRemotePlaying
+      else -> isPlaying
+    }
   val isMuted by playerConnection.isMuted.collectAsState()
   val wavyPlayPause by
     echo.music.iad1tya.utils.rememberPreference(

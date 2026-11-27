@@ -131,6 +131,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -796,7 +797,13 @@ class MainActivity : ComponentActivity() {
           )
 
         val (useFloatingNavBar) = rememberPreference(UseFloatingNavBarKey, defaultValue = false)
-        val floatingNavBarScrollConnection = rememberFloatingTabBarScrollConnection()
+        val floatingNavBarScrollConnection =
+          rememberFloatingTabBarScrollConnection(scrollThreshold = 20.dp)
+        val isDefaultNavCollapsed =
+          !useFloatingNavBar &&
+            !showRail &&
+            shouldShowNavigationBar &&
+            floatingNavBarScrollConnection.isInline
 
         val playerBottomSheetState =
           rememberBottomSheetState(
@@ -804,6 +811,8 @@ class MainActivity : ComponentActivity() {
             collapsedBound =
               if (useFloatingNavBar && !showRail && shouldShowNavigationBar) {
                 0.dp
+              } else if (isDefaultNavCollapsed) {
+                bottomInset + FloatingToolbarBottomPadding + MiniPlayerHeight
               } else {
                 bottomInset +
                   (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
@@ -811,6 +820,16 @@ class MainActivity : ComponentActivity() {
                   MiniPlayerHeight
               },
             expandedBound = maxHeight,
+            collapsedBoundAnimationSpec =
+              if (!useFloatingNavBar && !showRail && shouldShowNavigationBar) {
+                androidx.compose.animation.core.tween(
+                  durationMillis = 220,
+                  delayMillis = if (isDefaultNavCollapsed) 25 else 0,
+                  easing = androidx.compose.animation.core.FastOutSlowInEasing,
+                )
+              } else {
+                NavigationBarAnimationSpec
+              },
           )
 
         var expandQueueRequested by remember { mutableStateOf(false) }
@@ -1703,6 +1722,7 @@ class MainActivity : ComponentActivity() {
                     onPlayerMenuShown = { showPlayerMenuRequested = false },
                     showLyricsRequested = showLyricsRequested,
                     onLyricsShown = { showLyricsRequested = false },
+                    isInlineWithNav = isDefaultNavCollapsed,
                   )
 
                   val navSlideDistance =
@@ -1757,6 +1777,17 @@ class MainActivity : ComponentActivity() {
                     Box(
                       modifier =
                         Modifier.align(Alignment.BottomCenter)
+                          .zIndex(
+                            if (
+                              isDefaultNavCollapsed &&
+                                !playerBottomSheetState.isExpanded &&
+                                playerBottomSheetState.progress < 0.05f
+                            ) {
+                              2f
+                            } else {
+                              0f
+                            },
+                          )
                           .height(navSlideDistance)
                           .offset(y = navOffsetY),
                     ) {
@@ -1784,6 +1815,11 @@ class MainActivity : ComponentActivity() {
                           navController.navigate("wrapped") { launchSingleTop = true }
                         },
                         onSearchLongClick = onRailSearchLongClick,
+                        isCollapsed =
+                          isDefaultNavCollapsed &&
+                            !playerBottomSheetState.isExpanded &&
+                            playerBottomSheetState.progress < 0.05f,
+                        onExpandClick = { floatingNavBarScrollConnection.expand() },
                         isSelected = { screen ->
                           currentRoute == screen.route ||
                             currentRoute?.startsWith("${screen.route}/") == true
@@ -1842,6 +1878,7 @@ class MainActivity : ComponentActivity() {
                     onPlayerMenuShown = { showPlayerMenuRequested = false },
                     showLyricsRequested = showLyricsRequested,
                     onLyricsShown = { showLyricsRequested = false },
+                    isInlineWithNav = isDefaultNavCollapsed,
                   )
                 }
 
@@ -1870,7 +1907,7 @@ class MainActivity : ComponentActivity() {
               Modifier.fillMaxSize()
                 .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 .then(
-                  if (useFloatingNavBar) {
+                  if (!showRail && shouldShowNavigationBar) {
                     Modifier.nestedScroll(floatingNavBarScrollConnection)
                   } else {
                     Modifier
@@ -2038,6 +2075,62 @@ class MainActivity : ComponentActivity() {
 
           if (showAudioDeviceBottomSheet) {
             AudioDeviceBottomSheet(onDismiss = { showAudioDeviceBottomSheet = false })
+          }
+
+          val incomingPair by lanSyncManager.incomingPairRequest.collectAsState()
+          incomingPair?.let { pairReq ->
+            var codeInput by remember(pairReq.peer.id, pairReq.expiresAtMs) { mutableStateOf("") }
+            androidx.compose.material3.AlertDialog(
+              onDismissRequest = { lanSyncManager.dismissIncomingPairRequest() },
+              title = { Text("Pair with ${pairReq.peer.name}") },
+              text = {
+                Column(
+                  verticalArrangement =
+                    androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                ) {
+                  Text(
+                    "Enter the 6-digit Echo Connect code shown on ${pairReq.peer.name} to bind devices and sync.",
+                  )
+                  androidx.compose.material3.OutlinedTextField(
+                    value = codeInput,
+                    onValueChange = { next ->
+                      if (next.length <= 6 && next.all { it.isDigit() }) {
+                        codeInput = next
+                      }
+                    },
+                    label = { Text("6-digit code") },
+                    singleLine = true,
+                    keyboardOptions =
+                      androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number,
+                      ),
+                    modifier = Modifier.fillMaxWidth(),
+                  )
+                  if (!pairReq.error.isNullOrBlank()) {
+                    Text(
+                      text = pairReq.error!!,
+                      color = MaterialTheme.colorScheme.error,
+                      style = MaterialTheme.typography.bodySmall,
+                    )
+                  }
+                }
+              },
+              confirmButton = {
+                androidx.compose.material3.Button(
+                  onClick = { lanSyncManager.submitIncomingPairCode(codeInput) },
+                  enabled = !pairReq.busy && codeInput.length == 6,
+                ) {
+                  Text(if (pairReq.busy) "Pairing..." else "Pair")
+                }
+              },
+              dismissButton = {
+                androidx.compose.material3.TextButton(
+                  onClick = { lanSyncManager.dismissIncomingPairRequest() },
+                ) {
+                  Text("Cancel")
+                }
+              },
+            )
           }
 
           sharedSong?.let { song ->

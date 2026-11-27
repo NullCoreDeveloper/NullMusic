@@ -238,8 +238,6 @@ fun ContentSettings(
   val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
   val (quickPicks, onQuickPicksChange) =
     rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
-  val (showSpeedDial, onShowSpeedDialChange) =
-    rememberPreference(key = ShowSpeedDialKey, defaultValue = true)
   val (showHomeHeroCarousel, onShowHomeHeroCarouselChange) =
     rememberPreference(key = ShowHomeHeroCarouselKey, defaultValue = true)
   val (showHomeCommunity, onShowHomeCommunityChange) =
@@ -1196,24 +1194,6 @@ fun ContentSettings(
               )
             },
             onClick = { showQuickPicksDialog = true },
-          ),
-          Material3SettingsItem(
-            isHighlighted = (highlightKey == "Speed Dial"),
-            icon = painterResource(R.drawable.grid_view),
-            title = { Text(stringResource(R.string.home_shortcuts)) },
-            description = { Text(stringResource(R.string.home_shortcuts_desc)) },
-            trailingContent = {
-              Switch(
-                checked = showSpeedDial,
-                onCheckedChange = { onShowSpeedDialChange(it) },
-                colors =
-                  SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primary,
-                  ),
-              )
-            },
-            onClick = { onShowSpeedDialChange(!showSpeedDial) },
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.home_featured_carousel)),

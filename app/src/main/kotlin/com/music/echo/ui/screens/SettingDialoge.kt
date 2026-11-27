@@ -1,5 +1,14 @@
 package iad1tya.echo.music.ui.screens
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -56,6 +69,8 @@ fun SettingDialoge(
 
   val (useLoginForBrowse, onUseLoginForBrowseChange) = rememberPreference(UseLoginForBrowse, true)
   val (ytmSync, onYtmSyncChange) = rememberPreference(YtmSyncKey, true)
+  val (dismissDesktopBanner, onDismissDesktopBannerChange) =
+    rememberPreference(DismissDesktopReleaseBannerKey, false)
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -331,4 +346,134 @@ fun SettingDialoge(
             }
         )
     }
+}
+
+@Composable
+private fun DesktopReleaseBannerCard(
+  onClick: () -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val infiniteTransition = rememberInfiniteTransition(label = "DesktopReleaseShine")
+  val shineProgress by
+    infiniteTransition.animateFloat(
+      initialValue = -0.6f,
+      targetValue = 1.6f,
+      animationSpec =
+        infiniteRepeatable(
+          animation = tween(durationMillis = 2600, easing = LinearEasing),
+          repeatMode = RepeatMode.Restart,
+        ),
+      label = "shineProgress",
+    )
+  val borderAlpha by
+    infiniteTransition.animateFloat(
+      initialValue = 0.25f,
+      targetValue = 0.65f,
+      animationSpec =
+        infiniteRepeatable(
+          animation = tween(durationMillis = 1600, easing = LinearEasing),
+          repeatMode = RepeatMode.Reverse,
+        ),
+      label = "borderAlpha",
+    )
+
+  val primary = MaterialTheme.colorScheme.primary
+  val containerBg = MaterialTheme.colorScheme.surfaceContainerHigh
+
+  Surface(
+    shape = RoundedCornerShape(20.dp),
+    color = containerBg,
+    border = BorderStroke(1.dp, primary.copy(alpha = borderAlpha)),
+    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).clickable(onClick = onClick),
+  ) {
+    Box(
+      modifier =
+        Modifier.fillMaxWidth().drawWithContent {
+          drawContent()
+          val w = size.width
+          val h = size.height
+          val startX = w * shineProgress
+          drawRect(
+            brush =
+              Brush.linearGradient(
+                colors =
+                  listOf(
+                    Color.Transparent,
+                    primary.copy(alpha = 0.14f),
+                    Color.White.copy(alpha = 0.14f),
+                    primary.copy(alpha = 0.14f),
+                    Color.Transparent,
+                  ),
+                start = Offset(startX - w * 0.35f, 0f),
+                end = Offset(startX + w * 0.35f, h),
+              ),
+          )
+        },
+    ) {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Box(
+          modifier =
+            Modifier.size(40.dp)
+              .clip(CircleShape)
+              .background(MaterialTheme.colorScheme.primaryContainer),
+          contentAlignment = Alignment.Center,
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.new_release),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(22.dp),
+          )
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+              text = "Desktop Client is Out",
+              style = MaterialTheme.typography.titleMedium,
+              fontWeight = FontWeight.SemiBold,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.width(8.dp))
+            Surface(
+              color = MaterialTheme.colorScheme.primary,
+              shape = RoundedCornerShape(6.dp),
+            ) {
+              Text(
+                text = "NEW",
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                style =
+                  MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp,
+                  ),
+                color = MaterialTheme.colorScheme.onPrimary,
+              )
+            }
+          }
+          Spacer(Modifier.height(2.dp))
+          Text(
+            text = "Echo Music for your desktop",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+        Spacer(Modifier.width(4.dp))
+        IconButton(
+          onClick = onDismiss,
+          modifier = Modifier.size(32.dp),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.close),
+            contentDescription = "Dismiss",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(18.dp),
+          )
+        }
+      }
+    }
+  }
 }

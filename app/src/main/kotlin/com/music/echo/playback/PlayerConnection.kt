@@ -120,13 +120,23 @@ class PlayerConnection(
     Timber.tag(TAG).d("PlayerConnection state flows initialized successfully")
   }
 
+  val lanSync: echo.music.iad1tya.lansync.LanSyncManager by lazy {
+    echo.music.iad1tya.lansync.LanSyncManager.getInstance(this.context)
+  }
+
   val isEffectivelyPlaying =
     combine(
         isPlaying,
         service.castConnectionHandler?.isCasting ?: MutableStateFlow(false),
         service.castConnectionHandler?.castIsPlaying ?: MutableStateFlow(false),
-      ) { localPlaying, isCasting, castPlaying ->
-        if (isCasting) castPlaying else localPlaying
+        lanSync.isRemoteControlling,
+        lanSync.remotePlaying,
+      ) { localPlaying, isCasting, castPlaying, isLanRemote, lanPlaying ->
+        when {
+          isCasting -> castPlaying
+          isLanRemote -> lanPlaying
+          else -> localPlaying
+        }
       }
       .stateIn(
         scope,
@@ -485,6 +495,8 @@ class PlayerConnection(
         } else {
           castHandler.play()
         }
+      } else if (lanSync.isRemoteControlling.value) {
+        lanSync.togglePlayRemote()
       } else {
         player.togglePlayPause()
       }
@@ -503,6 +515,8 @@ class PlayerConnection(
       val castHandler = service.castConnectionHandler
       if (castHandler?.isCasting?.value == true) {
         castHandler.pause()
+      } else if (lanSync.isRemoteControlling.value) {
+        lanSync.pauseRemote()
       } else {
         player.playWhenReady = false
       }
@@ -516,6 +530,8 @@ class PlayerConnection(
       val castHandler = service.castConnectionHandler
       if (castHandler?.isCasting?.value == true) {
         castHandler.seekTo(position)
+      } else if (lanSync.isRemoteControlling.value) {
+        lanSync.seekRemote(position)
       } else {
         player.seekTo(position)
       }
@@ -530,6 +546,10 @@ class PlayerConnection(
       val castHandler = service.castConnectionHandler
       if (castHandler?.isCasting?.value == true) {
         castHandler.skipToNext()
+        return
+      }
+      if (lanSync.isRemoteControlling.value) {
+        lanSync.nextRemote()
         return
       }
       player.seekToNext()
@@ -551,6 +571,10 @@ class PlayerConnection(
       val castHandler = service.castConnectionHandler
       if (castHandler?.isCasting?.value == true) {
         castHandler.skipToPrevious()
+        return
+      }
+      if (lanSync.isRemoteControlling.value) {
+        lanSync.previousRemote()
         return
       }
 
@@ -584,6 +608,10 @@ class PlayerConnection(
       val castHandler = service.castConnectionHandler
       if (castHandler?.isCasting?.value == true) {
         castHandler.skipToPrevious()
+        return
+      }
+      if (lanSync.isRemoteControlling.value) {
+        lanSync.previousRemote()
         return
       }
       if (!player.hasPreviousMediaItem()) return

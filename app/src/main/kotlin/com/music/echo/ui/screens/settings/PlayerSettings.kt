@@ -1561,7 +1561,7 @@ fun PlayerSettings(
             title = { Text("Echo Connect (LAN Sync)") },
             description = {
               Text(
-                "Discover Echo Music Desktop on your Wi-Fi for playback handoff, remote control, and podcast sync",
+                "Discover NullMusic Desktop on your Wi-Fi for playback handoff, remote control, and podcast sync",
               )
             },
             trailingContent = {

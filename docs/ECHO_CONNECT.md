@@ -1,13 +1,13 @@
 # Echo Connect — Cross-Device Continuity & Sync Guide
 
-**Echo Connect** links **Echo Music (Android)** and **Echo Music Desktop** over your local Wi-Fi network with zero cloud servers or relay costs. Once paired, your phone and desktop act like a unified music ecosystem: hand off playback at the exact millisecond, remote-control either device from the other, automatically sign in your Google / YouTube Music account, and keep your local playlists, Spotify playlists, and podcast progress in sync.
+**Echo Connect** links **NullMusic (Android)** and **NullMusic Desktop** over your local Wi-Fi network with zero cloud servers or relay costs. Once paired, your phone and desktop act like a unified music ecosystem: hand off playback at the exact millisecond, remote-control either device from the other, automatically sign in your Google / YouTube Music account, and keep your local playlists, Spotify playlists, and podcast progress in sync.
 
 ---
 
 ## Requirements
 
-- **Echo Music (Android)** and **Echo Music Desktop** installed on devices connected to the **same Wi-Fi network** (or connected via USB with ADB port forwarding `45870`/`45871` if your Wi-Fi router enforces AP/client isolation).
-- **Local Network / Multicast Discovery** enabled (mDNS service `_echomusic._tcp.`).
+- **NullMusic (Android)** and **NullMusic Desktop** installed on devices connected to the **same Wi-Fi network** (or connected via USB with ADB port forwarding `45870`/`45871` if your Wi-Fi router enforces AP/client isolation).
+- **Local Network / Multicast Discovery** enabled (mDNS service `_nullmusic._tcp.`).
 
 ---
 
@@ -16,17 +16,17 @@
 Devices must be **paired (bound)** before playback handoff, remote control, or data sync can occur. Pairing works in **both directions**:
 
 ### Option A: Pair from Android
-1. Open **Echo Music** on Android and go to **Settings → Echo Connect** (located directly below **Account**).
+1. Open **NullMusic** on Android and go to **Settings → Echo Connect** (located directly below **Account**).
 2. Under **Available Devices**, tap your Desktop (e.g. `Aditya`).
 3. Android displays a **6-digit pairing code** that automatically refreshes every **60 seconds**.
-4. A pairing popup appears immediately on **Echo Music Desktop** — enter the 6-digit code and click **Pair**.
+4. A pairing popup appears immediately on **NullMusic Desktop** — enter the 6-digit code and click **Pair**.
 5. Both devices are now persistently bound and immediately run an initial full sync.
 
 ### Option B: Pair from Desktop
-1. Open **Echo Music Desktop** and go to **Settings → Echo Connect** (or click an unpaired phone in the playerbar/Now Playing device picker).
+1. Open **NullMusic Desktop** and go to **Settings → Echo Connect** (or click an unpaired phone in the playerbar/Now Playing device picker).
 2. Click **Pair** next to your Android device.
 3. Desktop displays a **6-digit pairing code** (auto-refreshing every **60 seconds**).
-4. A pairing dialog pops up immediately in **Echo Music (Android)** — enter the 6-digit code and tap **Pair**.
+4. A pairing dialog pops up immediately in **NullMusic (Android)** — enter the 6-digit code and tap **Pair**.
 5. Both devices bind and run the initial full sync.
 
 > **Unpairing**: You can unpair at any time from **Settings → Echo Connect → Unpair** on either device.

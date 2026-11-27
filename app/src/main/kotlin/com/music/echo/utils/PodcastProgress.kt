@@ -265,7 +265,7 @@ object PodcastProgress {
     save(existing.copy(positionMs = 0L, finished = true, updatedAt = System.currentTimeMillis()))
   }
 
-  /** Merges podcast progress received from a LAN peer (e.g. Echo Music Desktop). */
+  /** Merges podcast progress received from a LAN peer (e.g. NullMusic Desktop). */
   fun mergeLanEpisode(
     id: String,
     positionMs: Long,

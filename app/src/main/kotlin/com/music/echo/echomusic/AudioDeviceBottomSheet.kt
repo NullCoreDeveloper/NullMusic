@@ -1578,7 +1578,7 @@ private fun EchoConnectLanSection(onDismiss: () -> Unit) {
             modifier = Modifier.size(20.dp),
           )
           Text(
-            text = "Searching for Echo Music Desktop on your Wi-Fi...",
+            text = "Searching for NullMusic Desktop on your Wi-Fi...",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )

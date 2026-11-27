@@ -116,15 +116,15 @@ data class LanPeerState(
 )
 
 /**
- * Zero-server-cost LAN sync manager using Android NsdManager (_echomusic._tcp.) and an embedded
+ * Zero-server-cost LAN sync manager using Android NsdManager (_nullmusic._tcp.) and an embedded
  * lightweight HTTP/1.1 JSON server for playback handoff, Echo Connect remote control, and podcast
- * progress synchronization with Echo Music Desktop.
+ * progress synchronization with NullMusic Desktop.
  */
 class LanSyncManager private constructor(private val appContext: Context) {
 
   companion object {
     private const val TAG = "LanSyncManager"
-    private const val SERVICE_TYPE = "_echomusic._tcp."
+    private const val SERVICE_TYPE = "_nullmusic._tcp."
     private const val PREFS_NAME = "lan_sync_prefs"
     private const val KEY_DEVICE_ID = "device_id"
     private const val KEY_PAIRED_PEER_ID = "paired_peer_id"
@@ -476,7 +476,7 @@ class LanSyncManager private constructor(private val appContext: Context) {
         override fun onDiscoveryStarted(regType: String) {}
 
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-          if (!serviceInfo.serviceType.contains("_echomusic")) return
+          if (!serviceInfo.serviceType.contains("_nullmusic")) return
           if (serviceInfo.serviceName.contains(deviceId.take(8))) return
           resolvePeer(serviceInfo)
         }

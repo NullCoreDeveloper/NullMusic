@@ -322,7 +322,7 @@ fun EchoConnectSettingsScreen(
               Material3SettingsItem(
                 icon = painterResource(R.drawable.ic_echo_connect),
                 title = { Text("Searching Wi-Fi...") },
-                description = { Text("Open Echo Music on your Desktop on the same Wi-Fi") },
+                description = { Text("Open NullMusic on your Desktop on the same Wi-Fi") },
                 onClick = {},
               ),
             )
